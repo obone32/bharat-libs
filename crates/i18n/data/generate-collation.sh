@@ -1,5 +1,5 @@
 #!/bin/sh
-# Regenerates the collation data `collate` embeds, a postcard blob for the locales craft-i18n
+# Regenerates the collation data `collate` embeds, a postcard blob for the locales bharat-i18n
 # ships (its `locales/` directory) plus English, Persian and Hindi: each locale's default order,
 # and Chinese pinyin and stroke orders.
 # Needs icu4x-datagen at the version of the icu_collator dependency:

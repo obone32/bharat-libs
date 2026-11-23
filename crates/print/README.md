@@ -1,11 +1,11 @@
-# craft-print
+# bharat-print
 
 Submit a print-ready PDF to the system spooler. Used by PdfCraft and DesignCraft;
 there are no dependencies on either app or on a UI framework. Requires Rust 1.95.
 
 ```rust,no_run
-let job = craft_print::Job { title: "Report".into(), ..Default::default() };
-let receipt = craft_print::submit(&pdf_bytes, &job)?;
+let job = bharat_print::Job { title: "Report".into(), ..Default::default() };
+let receipt = bharat_print::submit(&pdf_bytes, &job)?;
 ```
 
 The caller generates the PDF, checks document permissions, and handles page selection,
@@ -87,7 +87,7 @@ copies and duplex; the events describe sheet processing, and do not confirm phys
 The callback runs on the thread calling submission, can capture non-`Send` state, and should
 return promptly. It is never retained. Keep waiting for the final `Result` even at full progress:
 the job can still fail. `submit_cancellable` can cancel a job only until it starts reaching
-the spooler (on Windows after craft-print's driver queries and preflight DEVMODE conversion;
+the spooler (on Windows after bharat-print's driver queries and preflight DEVMODE conversion;
 with CUPS before `lp` starts); a job already being sent completes. On Windows, winprint repeats
 the DEVMODE conversion after that boundary. Cancellation is already unavailable during this
 repeat, so a driver that stalls there can still block submission. CUPS reports no progress.
@@ -128,7 +128,7 @@ ticket names no colour, so the colour in the user's printing preferences (Proper
 Windows Settings) applies, black and white included. Single-page or single-copy jobs have no
 collating order to check.
 
-`cargo test -p craft-print` tests CUPS transport (including pipe-sized jobs and refusal),
+`cargo test -p bharat-print` tests CUPS transport (including pipe-sized jobs and refusal),
 printer parsing, PPD options and argument mapping, and on every platform the Windows pieces that
 need no printer: the PrintTicket, the checks on the driver's validated ticket and capabilities,
 paper matching, job file names, and the PDF sheet reader and its update (classic and compressed
@@ -137,11 +137,11 @@ that must fail without a panic). On Windows it also submits a mixed-orientation 
 and a shrink-to-fit job to a temporary paused queue (inbox "Generic / Text Only" driver on
 `LPT1:`) and checks each arrives as one job with all its sheets. The queue portion explicitly
 skips if the driver or administrative rights are absent. Windows CI installs the inbox test
-driver and sets `CRAFT_PRINT_REQUIRE_QUEUE=1`, making queue preparation/submission mandatory on
+driver and sets `BHARAT_PRINT_REQUIRE_QUEUE=1`, making queue preparation/submission mandatory on
 its runner. Two ignored tests check a real printer by hand: `an_installed_driver_validates_the_ticket`
-(`CRAFT_PRINT_TEST_PRINTER`; sends no job) and `an_installed_printer_prints_a_file`
-(`CRAFT_PRINT_TEST_PRINTER`, `CRAFT_PRINT_TEST_FILE`, optional `CRAFT_PRINT_TEST_SCALING=shrink`
-and `CRAFT_PRINT_TEST_DUPLEX=long`). Physical printer fidelity remains a hardware check.
+(`BHARAT_PRINT_TEST_PRINTER`; sends no job) and `an_installed_printer_prints_a_file`
+(`BHARAT_PRINT_TEST_PRINTER`, `BHARAT_PRINT_TEST_FILE`, optional `BHARAT_PRINT_TEST_SCALING=shrink`
+and `BHARAT_PRINT_TEST_DUPLEX=long`). Physical printer fidelity remains a hardware check.
 
 The cross-platform GitHub Actions workflow is defined in `.github/workflows/print.yml`.
 It runs formatting, Clippy and this crate's own tests on Windows, Linux and macOS when print
@@ -152,7 +152,7 @@ Windows discovery reports driver duplex support in `Printer::two_sided` (a two-s
 the driver's PrintCapabilities); CUPS leaves it unknown. Explicit simplex/duplex choices that the driver
 drops are refused before submission.
 
-Windows dependencies: the maintained [`winprint` fork](https://github.com/storytold/winprint.rs)
+Windows dependencies: the maintained [`winprint` fork](https://github.com/obone32/bharat-winprint)
 (BSD-3-Clause, pinned to an immutable Git revision, its PDFium-downloading `pdfium` feature off) and `winsafe` (MIT) hold every Win32 and WinRT call, so the crate keeps `unsafe` forbidden;
 `roxmltree` reads PrintTickets and `miniz_oxide` inflates PDF streams. `winprint` 0.2.1 lists
 reqwest (with rustls) and sigstore crates as non-optional build-dependencies, used only by its
@@ -161,7 +161,7 @@ running `cargo deny` need a licence exception for `webpki-root-certs` (CDLA-Perm
 list data reqwest brings) and an advisory ignore for RUSTSEC-2024-0370 (`proc-macro-error`
 unmaintained, a compile-time proc macro of winprint's `fmt-derive`).
 
-`craft_print::rgb` exposes the safe `craft-winprint-gdi` API for native driver settings,
+`bharat_print::rgb` exposes the safe `bharat-winprint-gdi` API for native driver settings,
 printable geometry, RGB pages and caller-composed vector strokes. Applications retain ICC
 conversion, document layout, labels and print-mark composition. The shared transport validates
 single-copy DEVMODE settings before emitting manual copies and checks GDI errors. Color policy

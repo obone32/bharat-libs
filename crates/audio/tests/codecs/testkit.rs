@@ -1,13 +1,13 @@
-//! The parts of FilmCraft's `filmcraft-testkit` that the ported codec tests use, on craft-media's
-//! oracle rules (`tests/common`): `CRAFT_MEDIA_FFMPEG`, then `PATH`; a missing tool skips unless
-//! `CRAFT_MEDIA_REQUIRE_ORACLES=1`; fixtures go to `$CRAFT_MEDIA_FIXTURES_DIR` or
+//! The parts of FilmCraft's `filmcraft-testkit` that the ported codec tests use, on bharat-media's
+//! oracle rules (`tests/common`): `BHARAT_MEDIA_FFMPEG`, then `PATH`; a missing tool skips unless
+//! `BHARAT_MEDIA_REQUIRE_ORACLES=1`; fixtures go to `$BHARAT_MEDIA_FIXTURES_DIR` or
 //! `target/fixtures`, never committed.
 
 use crate::common;
 use std::path::{Path, PathBuf};
 
 /// `let ff = require_ffmpeg!();`: the ffmpeg path, or return from the test after printing
-/// `SKIPPED` (a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// `SKIPPED` (a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 macro_rules! require_ffmpeg {
     () => {
         match $crate::testkit::ffmpeg_or_skip(concat!(module_path!(), ":", line!())) {
@@ -25,7 +25,7 @@ macro_rules! require_ffmpeg {
 
 /// ffmpeg, or `None` after printing `SKIPPED` for `context`.
 pub fn ffmpeg_or_skip(context: &str) -> Option<PathBuf> {
-    common::tool("ffmpeg").or_else(|| common::skip(&format!("{context}: ffmpeg not found (set CRAFT_MEDIA_FFMPEG or put ffmpeg on PATH)")))
+    common::tool("ffmpeg").or_else(|| common::skip(&format!("{context}: ffmpeg not found (set BHARAT_MEDIA_FFMPEG or put ffmpeg on PATH)")))
 }
 
 /// `<fixtures>/<sub>` (`sub` may hold `/`), created if missing.

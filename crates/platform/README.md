@@ -1,6 +1,6 @@
-# craft-platform
+# bharat-platform
 
-Small platform lifecycle services for Craft applications. Application state, settings, palettes,
+Small platform lifecycle services for Bharat applications. Application state, settings, palettes,
 document policy and native command routing remain in their current owners. Defaults add no
 third-party dependencies. Enable only the services a host uses.
 
@@ -35,7 +35,7 @@ actual save receipts, chained continuations and the decision to close.
 Retain the actual parent window through queued requests, preflight, the native picker AND any
 unconsumed application continuation. `DeferredClose::update` cancels close during pending work and
 returns a request to retry the application's normal close policy afterward. It never grants
-permission to discard work. Run those guards before `craft_quit::on_close_request` in `App::logic`.
+permission to discard work. Run those guards before `bharat_quit::on_close_request` in `App::logic`.
 
 ## Desktop appearance
 
@@ -75,7 +75,7 @@ and print iframe lifetimes remain separate. This service has no native filesyste
 ## Integration
 
 Enable only the services a host uses. Applications retain palettes, settings, document identity,
-close policy, filters, names, MIME types and native command routing. Existing craft-settings,
-craft-atomic, craft-print, craft-docpath and craft-quit remain canonical. `craft-window` owns
+close policy, filters, names, MIME types and native command routing. Existing bharat-settings,
+bharat-atomic, bharat-print, bharat-docpath and bharat-quit remain canonical. `bharat-window` owns
 decoration selection and window-button layout; appearance observation and native color hints here
 do not choose a frame or draw an application header.

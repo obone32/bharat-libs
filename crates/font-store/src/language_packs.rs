@@ -1,6 +1,6 @@
 //! The store's second item kind, `language-pack`: a language's spelling dictionary, hyphenation
-//! patterns and licence texts, published by storytold/craft-i18n as `<locale>.tar.zst` release
-//! assets listed in an `index.json`, and read at runtime by `craft-proof` (`craft_proof::packs`).
+//! patterns and licence texts, published by obone32/bharat-i18n as `<locale>.tar.zst` release
+//! assets listed in an `index.json`, and read at runtime by `bharat-proof` (`bharat_proof::packs`).
 //!
 //! It reuses the store's folder, consent ([`FontStore::enable_network`]), HTTP client and sha256
 //! checks: the app pins the index by URL and sha256 ([`PackIndexPin`]), each archive is checked
@@ -14,7 +14,7 @@
 //! <store>/indexes/language-packs.json  the last pack index fetched
 //! ```
 //!
-//! **Developer override (testing only):** `CRAFT_LANGUAGE_PACK_INDEX=<url or path>` replaces the
+//! **Developer override (testing only):** `BHARAT_LANGUAGE_PACK_INDEX=<url or path>` replaces the
 //! pinned index URL with an `http://` URL on a loopback host (`127.0.0.1`, `localhost`, `[::1]`),
 //! an `https://` URL or a local file path, and skips the index's sha256 pin. Archives are still
 //! checked against the sha256 and size in that index, and may then also be loopback `http://`
@@ -33,12 +33,12 @@ use crate::verify::{VerifyError, sha256_hex};
 /// The store's folder of installed Language packs.
 pub const LANGUAGE_PACKS: &str = "language-packs";
 /// The developer override of the pinned pack index (see the module docs). Testing only.
-pub const LANGUAGE_PACK_INDEX_ENV: &str = "CRAFT_LANGUAGE_PACK_INDEX";
+pub const LANGUAGE_PACK_INDEX_ENV: &str = "BHARAT_LANGUAGE_PACK_INDEX";
 /// Largest pack index read.
 pub const MAX_PACK_INDEX_BYTES: u64 = 4 << 20;
 /// Largest pack archive downloaded.
 pub const MAX_PACK_ARCHIVE_BYTES: u64 = 128 << 20;
-/// Largest file unpacked from a pack (craft-proof's dictionary cap).
+/// Largest file unpacked from a pack (bharat-proof's dictionary cap).
 pub const MAX_PACK_FILE_BYTES: u64 = 64 << 20;
 /// Largest total unpacked size of a pack.
 pub const MAX_PACK_UNPACKED_BYTES: u64 = 256 << 20;
@@ -49,11 +49,11 @@ const MAX_PACKS: usize = 1024;
 const INSTALLED: &str = "language-packs.json";
 const INDEX_CACHE_NAME: &str = "language-packs.json";
 
-/// The pack index an app trusts: `index.json` of a craft-i18n `language-packs-<n>` release, by
+/// The pack index an app trusts: `index.json` of a bharat-i18n `language-packs-<n>` release, by
 /// URL and sha256 (the app's Pin).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct PackIndexPin {
-    /// `https://github.com/storytold/craft-i18n/releases/download/language-packs-<n>/index.json`.
+    /// `https://github.com/obone32/bharat-i18n/releases/download/language-packs-<n>/index.json`.
     pub url: &'static str,
     /// The sha256 of that file, lowercase hex.
     pub sha256: &'static str,
@@ -77,7 +77,7 @@ pub struct PackEntry {
     pub locale: String,
     /// The language's own name (`Nederlands`).
     pub name: String,
-    /// The craft-i18n commit it was built from.
+    /// The bharat-i18n commit it was built from.
     #[serde(default)]
     pub version: String,
     /// The archive (`<locale>.tar.zst`).
@@ -111,7 +111,7 @@ pub struct InstalledLanguagePack {
     pub name: String,
     /// The release it came from.
     pub release: String,
-    /// The craft-i18n commit it was built from.
+    /// The bharat-i18n commit it was built from.
     pub version: String,
     /// SPDX licence expression.
     pub licence: String,
@@ -181,7 +181,7 @@ impl PackIndex {
 pub(crate) enum IndexSource {
     /// The pinned URL, checked against the pinned sha256.
     Pinned(PackIndexPin),
-    /// `CRAFT_LANGUAGE_PACK_INDEX`: no index pin; loopback `http://` and paths allowed.
+    /// `BHARAT_LANGUAGE_PACK_INDEX`: no index pin; loopback `http://` and paths allowed.
     Override(String),
 }
 
@@ -234,7 +234,7 @@ fn local_source(s: &str) -> Option<Result<&str, PathBuf>> {
     Some(Err(PathBuf::from(s)))
 }
 
-/// A lowercase BCP 47 tag as packs are named (craft-proof's rule): ASCII lowercase letters and
+/// A lowercase BCP 47 tag as packs are named (bharat-proof's rule): ASCII lowercase letters and
 /// digits in parts of 1 to 8 joined by `-`, at most 35 characters.
 fn is_locale(s: &str) -> bool {
     !windows_reserved(s)
@@ -249,7 +249,7 @@ fn is_sha256(s: &str) -> bool {
 
 impl FontStore {
     /// The folder of installed Language packs (`<store>/language-packs`): give it to
-    /// `craft_proof::packs::set_packs_dir`.
+    /// `bharat_proof::packs::set_packs_dir`.
     pub fn language_packs_dir(&self) -> PathBuf {
         self.dir().join(LANGUAGE_PACKS)
     }
@@ -323,7 +323,7 @@ impl FontStore {
 
     /// Downloads `pack` from `index`, checks its size and sha256, unpacks it and moves it into
     /// `language-packs/<locale>/` in one rename, replacing an older one. Needs the network on.
-    /// Then call `craft_proof::packs::reload()`.
+    /// Then call `bharat_proof::packs::reload()`.
     pub fn install_language_pack(
         &self,
         index: &PackIndex,
@@ -437,7 +437,7 @@ impl FontStore {
     }
 
     /// Removes the pack for `locale`: its folder disappears at once (one rename) and is deleted
-    /// after. No network needed. Then call `craft_proof::packs::reload()`.
+    /// after. No network needed. Then call `bharat_proof::packs::reload()`.
     pub fn remove_language_pack(&self, locale: &str) -> Result<(), Error> {
         if !is_locale(locale) {
             return Err(Error::NotInstalled(locale.chars().take(40).collect()));

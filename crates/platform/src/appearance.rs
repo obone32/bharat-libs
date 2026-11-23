@@ -311,7 +311,7 @@ mod portal {
                 }
             }
             let nonce = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_nanos();
-            let directory = std::env::temp_dir().join(format!("craft-platform-gsettings-{}-{nonce}", std::process::id()));
+            let directory = std::env::temp_dir().join(format!("bharat-platform-gsettings-{}-{nonce}", std::process::id()));
             std::fs::create_dir(&directory)?;
             let fixture = Fixture(directory);
             let helper = fixture.0.join("gsettings");

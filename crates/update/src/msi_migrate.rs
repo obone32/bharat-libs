@@ -1,6 +1,6 @@
 //! TEMPORARY: moves an app installed for one account to an install for everyone during its own
 //! update. Remove this module two releases after the app packages become per-machine only
-//! (craft-libs#422, step 4); from then on there are no per-user copies left to move.
+//! (bharat-libs#422, step 4); from then on there are no per-user copies left to move.
 //!
 //! The released packages refuse a per-machine install while a per-user copy exists, so the move
 //! removes first and installs second:

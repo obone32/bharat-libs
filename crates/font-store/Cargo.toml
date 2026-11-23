@@ -1,6 +1,6 @@
 [package]
-name = "craft-font-store"
-description = "The Craft apps' font store: the font indexes (Google Fonts, Noto, sources the user adds), exact font lookup, and verified installs into the suite's font folder."
+name = "bharat-font-store"
+description = "The Bharat apps' font store: the font indexes (Google Fonts, Noto, sources the user adds), exact font lookup, and verified installs into the suite's font folder."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -23,8 +23,8 @@ thiserror = { workspace = true }
 
 # The store and the network are native only; the web keeps fonts elsewhere.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-craft-atomic = { workspace = true }
-craft-font-catalog = { workspace = true }
+bharat-atomic = { workspace = true }
+bharat-font-catalog = { workspace = true }
 log = "0.4"
 # Language packs (`language_packs`): `<locale>.tar.zst` archives, unpacked in pure Rust.
 ruzstd = { version = "0.9", default-features = false, features = ["std"] }

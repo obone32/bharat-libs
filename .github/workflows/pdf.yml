@@ -25,7 +25,7 @@ jobs:
         os: ${{ github.event_name == 'workflow_dispatch' && fromJSON('["ubuntu-latest","windows-latest","macos-latest"]') || fromJSON('["ubuntu-latest","windows-latest"]') }}
     runs-on: ${{ matrix.os }}
     env:
-      RUSTFLAGS: --cfg craft_pdf_unicode_fixtures
+      RUSTFLAGS: --cfg bharat_pdf_unicode_fixtures
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
@@ -33,7 +33,7 @@ jobs:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-pdf
+          key: bharat-pdf
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
@@ -41,11 +41,11 @@ jobs:
         shell: bash
         run: |
           python scripts/test-fetch-pdf-test-fonts.py
-          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/craft-pdf-test-fonts"
-          echo "CRAFT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/craft-pdf-test-fonts" >> "$GITHUB_ENV"
+          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/bharat-pdf-test-fonts"
+          echo "BHARAT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/bharat-pdf-test-fonts" >> "$GITHUB_ENV"
       - run: cargo fmt --check
-      - run: cargo clippy -p craft-pdf --all-targets --all-features --locked -- -D warnings
-      - run: cargo test -p craft-pdf --all-features --locked
+      - run: cargo clippy -p bharat-pdf --all-targets --all-features --locked -- -D warnings
+      - run: cargo test -p bharat-pdf --all-features --locked
       - run: cargo test --manifest-path crates/pdf/read-only-contract/Cargo.toml --locked
   backends:
     name: PDF vendored contracts
@@ -55,13 +55,13 @@ jobs:
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-pdf-backends
+          key: bharat-pdf-backends
       - run: bash scripts/test-pdf-backends.sh
   wasm:
     name: PDF WASM runtime
     runs-on: ubuntu-latest
     env:
-      RUSTFLAGS: --cfg craft_pdf_unicode_fixtures
+      RUSTFLAGS: --cfg bharat_pdf_unicode_fixtures
       CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER: wasm-bindgen-test-runner
     steps:
       - uses: actions/checkout@v7
@@ -70,7 +70,7 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-pdf-wasm
+          key: bharat-pdf-wasm
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
@@ -78,17 +78,17 @@ jobs:
         shell: bash
         run: |
           python scripts/test-fetch-pdf-test-fonts.py
-          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/craft-pdf-test-fonts"
-          echo "CRAFT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/craft-pdf-test-fonts" >> "$GITHUB_ENV"
+          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/bharat-pdf-test-fonts"
+          echo "BHARAT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/bharat-pdf-test-fonts" >> "$GITHUB_ENV"
       - name: Install the matching WASM test runner
         shell: bash
         run: |
           runner_version=$(python3 -c 'import tomllib; d=tomllib.load(open("Cargo.lock", "rb")); print(next(p["version"] for p in d["package"] if p["name"] == "wasm-bindgen"))')
           cargo install wasm-bindgen-cli --version "$runner_version" --locked
-      - run: cargo test -p craft-pdf --all-features --locked --target wasm32-unknown-unknown
+      - run: cargo test -p bharat-pdf --all-features --locked --target wasm32-unknown-unknown
       - run: cargo test --manifest-path crates/pdf/read-only-contract/Cargo.toml --locked --target wasm32-unknown-unknown
   plate-test:
-    name: Plate tests and craft-prepress
+    name: Plate tests and bharat-prepress
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -97,7 +97,7 @@ jobs:
           components: clippy
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-plate-test
+          key: bharat-plate-test
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
@@ -105,7 +105,7 @@ jobs:
         shell: bash
         run: |
           python scripts/test-fetch-pdf-test-fonts.py
-          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/craft-pdf-test-fonts"
-          echo "CRAFT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/craft-pdf-test-fonts" >> "$GITHUB_ENV"
-      - run: cargo clippy -p craft-plate-test -p craft-prepress --all-targets --all-features --locked -- -D warnings
-      - run: cargo test -p craft-plate-test -p craft-prepress --all-features --locked
+          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/bharat-pdf-test-fonts"
+          echo "BHARAT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/bharat-pdf-test-fonts" >> "$GITHUB_ENV"
+      - run: cargo clippy -p bharat-plate-test -p bharat-prepress --all-targets --all-features --locked -- -D warnings
+      - run: cargo test -p bharat-plate-test -p bharat-prepress --all-features --locked

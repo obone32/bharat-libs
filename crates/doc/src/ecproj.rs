@@ -8,11 +8,11 @@
 //!
 //! Projects saved before `savedBy` existed start with `schema`. A project holds no rendered
 //! frames: footage is referenced by path. `savedBy` and `schema` are read with
-//! [`craft_ecproj_format::Head`].
+//! [`bharat_ecproj_format::Head`].
 
 use std::collections::BTreeMap;
 
-use craft_ecproj_format::{Head, ReadError};
+use bharat_ecproj_format::{Head, ReadError};
 use serde::Deserialize;
 
 use crate::{Budget, Error, Kind, Layer, Outline, Page, Rendition, Timing, check_depth, counted_map, counted_option, malformed, parse, too_new};

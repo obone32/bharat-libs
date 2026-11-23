@@ -624,7 +624,7 @@ fn decode_utf8_dic(dic: &[u8]) -> Result<String, String> {
 mod tests {
     use super::*;
 
-    /// CodeRabbit on craft-libs#489: without LibreOffice extension names no drive is probed; with
+    /// CodeRabbit on bharat-libs#489: without LibreOffice extension names no drive is probed; with
     /// them, only drives where LibreOffice is found give folders.
     #[test]
     fn libreoffice_drives_are_probed_only_when_wanted() {
@@ -633,7 +633,7 @@ mod tests {
             probes.set(probes.get() + 1);
             false
         };
-        // craft-libs#495 review: the drives are probed once, not on every lookup.
+        // bharat-libs#495 review: the drives are probed once, not on every lookup.
         let cache = std::sync::OnceLock::new();
         let cached = || cache.get_or_init(|| lo_drive_bases(count)).as_slice();
         assert!(lo_drive_dirs(None, cached).is_empty());
@@ -699,7 +699,7 @@ mod tests {
         }
     }
 
-    /// Review follow-up (craft-libs#485): a pack's `spelling.aff`/`.dic` that is a symbolic link
+    /// Review follow-up (bharat-libs#485): a pack's `spelling.aff`/`.dic` that is a symbolic link
     /// (swapped in after the pack scan) is never a candidate; one in a system folder still is.
     #[cfg(unix)]
     #[test]
@@ -963,7 +963,7 @@ mod tests {
         assert!(search_dirs(None).iter().all(|d| !d.to_string_lossy().contains("dict-")), "no language: no LibreOffice guess");
     }
 
-    /// craft-libs#482 re-review: a name is looked for in every folder before the next name, so
+    /// bharat-libs#482 re-review: a name is looked for in every folder before the next name, so
     /// an `en_US` in the dictionaries folder doesn't beat a system `en_GB` for British English.
     #[test]
     fn candidates_go_name_by_name_across_the_folders() {

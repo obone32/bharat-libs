@@ -36,7 +36,7 @@ and the hash after all patches (`sha256`), plus the hash of the `.crate` downloa
 Every change to `src/` updates its patch file, this ledger and `SOURCE.json` in the same
 commit. To take a new Krilla release: unpack the crates.io package, apply the patches in
 order, drop the ones the release makes unnecessary, regenerate `SOURCE.json`, and rerun the
-craft-pdf and plate-test suites.
+bharat-pdf and plate-test suites.
 
 ## 01: unwind-safe drop
 
@@ -51,9 +51,9 @@ explicit surface finalization, even if a caller retains the writer after a narro
 catch. A caller must still discard other captured app state after a panic. Normal
 finalization, including checks for unbalanced state, remains unchanged.
 
-Public marker constants, `CRAFT_UNWIND_SAFE_DROP` and `CRAFT_UNWIND_POISONING`, let craft-pdf reject an accidentally
+Public marker constants, `BHARAT_UNWIND_SAFE_DROP` and `BHARAT_UNWIND_POISONING`, let bharat-pdf reject an accidentally
 unpatched dependency at compile time. Consumers must copy the Krilla root patch
-from the craft-pdf README because Cargo ignores dependency workspaces' patches.
+from the bharat-pdf README because Cargo ignores dependency workspaces' patches.
 
 The shared writer's native subprocess regression covers the previously aborting
 cleanup and a successful fresh export afterward. Native and WASM export tests
@@ -255,14 +255,14 @@ version. DesignCraft and VectorCraft added these by rewriting the serialized byt
 - The PDF/A ledgers state the two output intents and the CMYK destination profile; krilla
   checks only that the profile has four components.
 
-krilla does not check PDF/X conformance; callers do. `CRAFT_PRINT_COLOR` marks the fork's
-print color patches (02 to 08) so craft-pdf fails to build against an unpatched Krilla.
+krilla does not check PDF/X conformance; callers do. `BHARAT_PRINT_COLOR` marks the fork's
+print color patches (02 to 08) so bharat-pdf fails to build against an unpatched Krilla.
 
 Tests: `crates/pdf/tests/print_color.rs` and the plate-test print preset over every scene.
 
 ## 09: master rendition in XMP
 
-From storytold/craft-libs#183 by Hamza (@Hamza0101). Upstream writes
+From obone32/bharat-libs#183 by Hamza (@Hamza0101). Upstream writes
 `xmpMM:RenditionClass` as `proof` on every document, which tells a prepress system that a
 print deliverable is a proof copy. XMP Part 2 (Media Management) defines `default` as the
 master rendition, so the patch writes `default`. Every document's XMP differs from
@@ -270,7 +270,7 @@ upstream's output in this value, whatever the other settings.
 
 ## 10: mesh gradients
 
-From storytold/craft-libs#184 by @fastmikey99.
+From obone32/bharat-libs#184 by @fastmikey99.
 
 Krilla 0.8.2 paints only flat color, linear, radial and sweep gradients and tiling patterns, so
 an app writing a gradient mesh had to cut each patch into flat-color pieces: a VectorCraft
@@ -338,7 +338,7 @@ get small hooks.
   other versioned features. The PDF/A-2, A-4 and UA-1 ledgers record that the one
   configuration has a `Name`, an `Order` listing every group and no `AS`.
 
-`CRAFT_OPTIONAL_CONTENT` marks the patch; craft-pdf requires it at compile time.
+`BHARAT_OPTIONAL_CONTENT` marks the patch; bharat-pdf requires it at compile time.
 
 Tests: `crates/pdf/tests/optional_content.rs`.
 

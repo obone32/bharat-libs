@@ -21,7 +21,7 @@ jobs:
     name: Keymap (Linux)
     runs-on: ubuntu-latest
     env:
-      CRAFT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/craft-fonts
+      BHARAT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/bharat-fonts
     steps:
       - uses: actions/checkout@v7
         with:
@@ -29,26 +29,26 @@ jobs:
       - name: Checkout test fonts
         uses: actions/checkout@v4
         with:
-          repository: storytold/craft-fonts
+          repository: obone32/bharat-fonts
           ref: b076417b5880bd4154bd22f00695b1d28c6bea83
-          path: .test-inputs/craft-fonts
+          path: .test-inputs/bharat-fonts
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-keymap-linux
-      - run: cargo fmt -p craft-keymap --check
-      - run: cargo clippy -p craft-keymap --all-targets --no-default-features --locked -- -D warnings
+          key: bharat-keymap-linux
+      - run: cargo fmt -p bharat-keymap --check
+      - run: cargo clippy -p bharat-keymap --all-targets --no-default-features --locked -- -D warnings
       # `snapshot` covers `ui` and `egui` and compiles the dialog screenshots, which need a GPU
       # to run, so the test steps leave them out.
-      - run: cargo clippy -p craft-keymap --all-targets --features snapshot --locked -- -D warnings
+      - run: cargo clippy -p bharat-keymap --all-targets --features snapshot --locked -- -D warnings
       # Doctests run once, in the `ui` step.
       - name: Test core
-        run: cargo test -p craft-keymap --no-default-features --lib --tests --locked
+        run: cargo test -p bharat-keymap --no-default-features --lib --tests --locked
       - name: Test egui dispatch and the shortcuts dialog
-        run: cargo test -p craft-keymap --features ui --locked
+        run: cargo test -p bharat-keymap --features ui --locked
   native:
     timeout-minutes: 15
     name: Keymap (${{ matrix.os }})
@@ -59,7 +59,7 @@ jobs:
         os: ${{ github.event_name == 'workflow_dispatch' && fromJSON('["macos-latest","windows-latest"]') || fromJSON('["windows-latest"]') }}
     runs-on: ${{ matrix.os }}
     env:
-      CRAFT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/craft-fonts
+      BHARAT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/bharat-fonts
     steps:
       - uses: actions/checkout@v7
         with:
@@ -67,15 +67,15 @@ jobs:
       - name: Checkout test fonts
         uses: actions/checkout@v4
         with:
-          repository: storytold/craft-fonts
+          repository: obone32/bharat-fonts
           ref: b076417b5880bd4154bd22f00695b1d28c6bea83
-          path: .test-inputs/craft-fonts
+          path: .test-inputs/bharat-fonts
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-keymap-${{ matrix.os }}
-      - run: cargo test -p craft-keymap --features ui --locked
+          key: bharat-keymap-${{ matrix.os }}
+      - run: cargo test -p bharat-keymap --features ui --locked
   wasm:
     timeout-minutes: 10
     name: Keymap WASM
@@ -89,5 +89,5 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-keymap-wasm
-      - run: cargo check -p craft-keymap --features ui --locked --target wasm32-unknown-unknown
+          key: bharat-keymap-wasm
+      - run: cargo check -p bharat-keymap --features ui --locked --target wasm32-unknown-unknown

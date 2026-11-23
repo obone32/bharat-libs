@@ -1,4 +1,4 @@
-//! ffmpeg as an external decoder oracle (skipped when absent, see `craft_media_testkit`): every stream must
+//! ffmpeg as an external decoder oracle (skipped when absent, see `bharat_media_testkit`): every stream must
 //! decode without an error to exactly the samples that went in, with the STREAMINFO MD5 matching
 //! ffmpeg's hash of the decoded audio. From FilmCraft's `filmcraft-flac` tests.
 
@@ -285,7 +285,7 @@ fn set_ogg_serials(mut file: Vec<u8>, serials: [u32; 2]) -> Vec<u8> {
         file[at + 14..at + 18].copy_from_slice(&serials[stream].to_le_bytes());
         // The page's checksum covers its serial number, and is computed with its own field zero.
         file[at + 22..at + 26].fill(0);
-        let crc = craft_media::ogg::crc32(&file[at..end]);
+        let crc = bharat_media::ogg::crc32(&file[at..end]);
         file[at + 22..at + 26].copy_from_slice(&crc.to_le_bytes());
         at = end;
     }
@@ -314,7 +314,7 @@ fn two_ogg_streams(ff: &Path, name: &str, args: &[&str], reversed: bool) -> Opti
     }
     let serials = if reversed { [2, 1] } else { [1, 2] };
     let bytes = set_ogg_serials(std::fs::read(&path).unwrap(), serials);
-    let file = craft_media::ogg::open(bytes.as_slice()).unwrap();
+    let file = bharat_media::ogg::open(bytes.as_slice()).unwrap();
     assert_eq!(file.streams.iter().map(|s| s.serial).collect::<Vec<_>>(), serials, "{name}");
     assert!(file.warnings.is_empty(), "{name}: {:?}", file.warnings);
     Some(bytes)

@@ -1,6 +1,6 @@
 [package]
-name = "craft-menu"
-description = "A Craft app's menus: layouts for macOS, Windows, Linux and the web, shortcuts from craft-keymap, a macOS backend, and key equivalents fed back to egui."
+name = "bharat-menu"
+description = "A Bharat app's menus: layouts for macOS, Windows, Linux and the web, shortcuts from bharat-keymap, a macOS backend, and key equivalents fed back to egui."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,11 +8,11 @@ rust-version.workspace = true
 repository.workspace = true
 
 [dependencies]
-craft-keymap = { workspace = true, features = ["egui"] }
-craft-quit = { workspace = true, features = ["egui"] }
+bharat-keymap = { workspace = true, features = ["egui"] }
+bharat-quit = { workspace = true, features = ["egui"] }
 egui = { workspace = true }
 
-# Already in the apps' Cargo.lock: muda through craft-quit's `menu` feature, objc2 and objc2-app-kit
+# Already in the apps' Cargo.lock: muda through bharat-quit's `menu` feature, objc2 and objc2-app-kit
 # through eframe.
 [target.'cfg(target_os = "macos")'.dependencies]
 muda = { version = "0.21.2", default-features = false }

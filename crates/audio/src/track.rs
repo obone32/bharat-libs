@@ -22,8 +22,8 @@ enum Inner {
 /// decoded sample is returned.
 ///
 /// ```no_run
-/// # fn demo(params: &craft_audio::CodecParams, packets: &[Vec<u8>]) -> craft_audio::Result<()> {
-/// use craft_audio::TrackDecoder;
+/// # fn demo(params: &bharat_audio::CodecParams, packets: &[Vec<u8>]) -> bharat_audio::Result<()> {
+/// use bharat_audio::TrackDecoder;
 ///
 /// let lookahead: Vec<&[u8]> = packets.iter().take(8).map(Vec::as_slice).collect();
 /// let mut dec = TrackDecoder::new(params, &lookahead)?;
@@ -65,7 +65,7 @@ impl TrackDecoder {
     /// [`AudioError::Malformed`].
     ///
     /// Codecs without a native packet decoder yet (AAC, MP3, FLAC, ALAC, Vorbis, Opus) are
-    /// [`AudioError::Unsupported`]; `craft_audio::decode` decodes them through symphonia when the
+    /// [`AudioError::Unsupported`]; `bharat_audio::decode` decodes them through symphonia when the
     /// `symphonia` feature is on.
     pub fn new(params: &CodecParams, lookahead: &[&[u8]]) -> Result<TrackDecoder> {
         let rate = params.sample_rate.unwrap_or(0);
@@ -173,7 +173,7 @@ impl TrackDecoder {
 
 fn unsupported(codec: CodecId) -> AudioError {
     if cfg!(feature = "symphonia") {
-        AudioError::Unsupported(format!("no native {} packet decoder yet (craft_audio::decode reads it through symphonia)", codec.name()))
+        AudioError::Unsupported(format!("no native {} packet decoder yet (bharat_audio::decode reads it through symphonia)", codec.name()))
     } else {
         AudioError::Unsupported(format!("no native {} packet decoder yet", codec.name()))
     }

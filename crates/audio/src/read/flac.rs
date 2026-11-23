@@ -1,6 +1,6 @@
 //! FLAC metadata checks run before symphonia decodes a stream (RFC 9639 metadata blocks).
 
-use craft_media::ogg;
+use bharat_media::ogg;
 
 use crate::pcm::{be_u32, le_u32};
 use crate::{AudioError, AudioInfo, ChannelLayout, CodecId, Container, Result, SampleFormat};

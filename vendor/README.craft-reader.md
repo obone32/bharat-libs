@@ -67,7 +67,7 @@ test in `crates/pdf/tests/plates.rs` checks that a knockout group separates with
 object where two objects overlap. The erase pass resolves the group's resources with
 `Resources::from_scope`, as the group's own draw does in this tree.
 
-A craft-libs patch, labeled `Craft patch (CMYK masks)` in code comments,
+A bharat-libs patch, labeled `Bharat patch (CMYK masks)` in code comments,
 takes a luminosity soft mask whose group is DeviceCMYK from the group's inks: ISO 32000-2
 §11.6.5.2 and §10.4.2.2 give `1 - min(1, 0.3c + 0.59m + 0.11y + k)`, where the colors as
 drawn through the CMYK profile leave K 100% at about a tenth. hayro's `renderer.rs` draws
@@ -255,7 +255,7 @@ than 32 levels, is ignored and `/OCGs` and `/P` decide; and hayro (18) (PdfCraft
 page renders as one transparency group over a transparent backdrop that is then put on the
 background, so a blend mode over an empty part of the page keeps its color; with a color
 replacement (reading colors) the background stays inside the group as its backdrop. A plate
-render (`InterpreterSettings::plate`) also keeps the background inside, marked `Craft patch`,
+render (`InterpreterSettings::plate`) also keeps the background inside, marked `Bharat patch`,
 so blend modes on a separation's film blend with the paper. The PdfCraft raster tests of both
 are adapted in `tests/upstream_raster.rs`.
 
@@ -314,7 +314,7 @@ as that box (VectorCraft #2920: an open zigzag in an `.ai` file opened as a clos
 a clip of that shape was dropped. Tests: `context::path_as_rect_tests` and the `rectangles`
 module of `crates/pdf/tests/interpretation.rs`, which fails without the change.
 
-Local fixes on top of these ports, marked `Craft patch` or in the comments of the ported
+Local fixes on top of these ports, marked `Bharat patch` or in the comments of the ported
 code: an inflated patch-mesh triangle is rebuilt with `Triangle::new`, so its stored dot
 products match its vertices (moving the points alone skewed barycentric coordinates by about
 5 %, in `covers` and in interpolation); a stencil image puts the fill alpha back itself, since
@@ -342,11 +342,11 @@ fonts without Encoding) and #1499 (byte-aligned packed TIFF predictor rows).
 Synthetic tests cover 1/2/4/8-bit RGB rows and rendering, plus embedded TrueType
 text with absent or partial ToUnicode maps and explicit encoding precedence.
 
-## Craft patches for the flattener
+## Bharat patches for the flattener
 
-Local changes for craft-prepress's PDF-in adapter (`craft_prepress::flatten::pdf`), which reads
+Local changes for bharat-prepress's PDF-in adapter (`bharat_prepress::flatten::pdf`), which reads
 pages through a `Device` that keeps colors as inks and embeds the source fonts again. Code
-comments label them `Craft patch (flatten)`.
+comments label them `Bharat patch (flatten)`.
 
 | Files | Change |
 |---|---|

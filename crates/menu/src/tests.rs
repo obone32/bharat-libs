@@ -17,8 +17,8 @@ fn chord(s: &str) -> Chord {
 }
 
 /// The modifiers held for a key-down: ⌘, ⌃, ⌥, ⇧.
-fn held([cmd, ctrl, alt, shift]: [bool; 4]) -> Option<craft_keymap::Mods> {
-    Some(craft_keymap::Mods { cmd, ctrl, alt, shift })
+fn held([cmd, ctrl, alt, shift]: [bool; 4]) -> Option<bharat_keymap::Mods> {
+    Some(bharat_keymap::Mods { cmd, ctrl, alt, shift })
 }
 
 fn typing(text_editing: bool) -> Gate {
@@ -139,7 +139,7 @@ fn the_app_menu_is_laid_out_the_mac_way() {
     );
 }
 
-/// Without a tagged Quit the layout adds craft-quit's; the app's translations name what the
+/// Without a tagged Quit the layout adds bharat-quit's; the app's translations name what the
 /// layout writes, AppKit's items included.
 #[test]
 fn an_untagged_quit_is_craft_quits_and_labels_are_translated() {
@@ -335,7 +335,7 @@ fn key_equivalents_become_one_key_press() {
     assert_eq!(raw.events, [press], "no made-up release: the real one comes in a later frame");
 }
 
-/// Minimize and craft-quit's Quit run in the crate; other clicks go to the app. The menus are
+/// Minimize and bharat-quit's Quit run in the crate; other clicks go to the app. The menus are
 /// laid out again only when the state changed or an event arrived.
 #[test]
 fn clicks_and_syncs() {
@@ -343,7 +343,7 @@ fn clicks_and_syncs() {
     let events = Rc::new(RefCell::new(vec![
         Event::Click(Builtin::Minimize.command()),
         Event::Click("edit.undo".into()),
-        Event::Click(craft_quit::QUIT_MENU_ID.into()),
+        Event::Click(bharat_quit::QUIT_MENU_ID.into()),
     ]));
     let mut menu = NativeMenu::new(Box::new(Fake { synced: synced.clone(), events: events.clone(), ..Default::default() }));
     let mut raw = egui::RawInput::default();

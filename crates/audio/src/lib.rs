@@ -3,13 +3,13 @@
 // The docs link items of every feature; built with fewer features, those links have no target.
 // CI and docs.rs build the docs with all features, where every link must resolve.
 #![cfg_attr(not(all(feature = "decode", feature = "encode", feature = "peaks")), allow(rustdoc::broken_intra_doc_links))]
-//! Audio file I/O and codecs for the Craft apps. Input and output are byte slices or a
-//! [`craft_media::ByteSource`] (no filesystem access of its own); builds for
+//! Audio file I/O and codecs for the Bharat apps. Input and output are byte slices or a
+//! [`bharat_media::ByteSource`] (no filesystem access of its own); builds for
 //! `wasm32-unknown-unknown`.
 //!
 //! - [`decode`], [`probe`], [`Decoder`] (streaming, seekable), [`tracks`], [`detect_container`]
 //!   (feature `decode`): WAV and AIFF are read natively; PCM in MP4/MOV and Matroska/WebM goes
-//!   through craft-media's demuxers and [`TrackDecoder`]; everything else (AAC, MP1/MP2/MP3,
+//!   through bharat-media's demuxers and [`TrackDecoder`]; everything else (AAC, MP1/MP2/MP3,
 //!   FLAC, ALAC, Vorbis, CAF, ADPCM, A-law, µ-law) through `symphonia`, which is to be replaced
 //!   by native decoders. Feature `decode-native` is the same without symphonia.
 //! - [`TrackDecoder`] (feature `decode-native`): one track's packets from any demuxer to planar
@@ -38,10 +38,10 @@ mod wav;
 mod write;
 
 pub use buffer::AudioBuffer;
-/// The craft-media this crate is built with, for its containers: using it rather than a separate
+/// The bharat-media this crate is built with, for its containers: using it rather than a separate
 /// dependency keeps the types the two crates share identical.
-pub use craft_media;
-pub use craft_media::{ByteSource, CodecId, CodecParams, Container, PcmFormat, ReadSeekSource};
+pub use bharat_media;
+pub use bharat_media::{ByteSource, CodecId, CodecParams, Container, PcmFormat, ReadSeekSource};
 pub use layout::{ChannelLayout, Speaker};
 #[cfg(feature = "decode-native")]
 pub use read::SharedSource;
@@ -249,7 +249,7 @@ pub enum BitDepth {
 /// `#[non_exhaustive]`: build it with [`EncodeOptions::new`] and the `with_*` methods.
 ///
 /// ```
-/// use craft_audio::{BitDepth, EncodeFormat, EncodeOptions};
+/// use bharat_audio::{BitDepth, EncodeFormat, EncodeOptions};
 ///
 /// let opts = EncodeOptions::new(EncodeFormat::Flac).with_bit_depth(BitDepth::Int16).with_dither(true);
 /// assert_eq!(opts.format, EncodeFormat::Flac);

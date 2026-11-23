@@ -30,8 +30,8 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-jpeg
-      - run: cargo fmt -p craft-jpeg --check
-      - run: cargo clippy -p craft-jpeg --all-targets --locked -- -D warnings
-      - run: cargo test -p craft-jpeg --locked
-      - run: cargo check -p craft-jpeg --locked --target wasm32-unknown-unknown
+          key: bharat-jpeg
+      - run: cargo fmt -p bharat-jpeg --check
+      - run: cargo clippy -p bharat-jpeg --all-targets --locked -- -D warnings
+      - run: cargo test -p bharat-jpeg --locked
+      - run: cargo check -p bharat-jpeg --locked --target wasm32-unknown-unknown

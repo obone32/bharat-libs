@@ -1,6 +1,6 @@
 [package]
-name = "craft-pdf"
-description = "Shared PDF reading, rendering and optional writing for Craft apps"
+name = "bharat-pdf"
+description = "Shared PDF reading, rendering and optional writing for Bharat apps"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

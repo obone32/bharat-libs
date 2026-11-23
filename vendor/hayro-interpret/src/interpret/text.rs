@@ -127,7 +127,7 @@ fn show_glyph<'a>(
 
     device.set_soft_mask(ctx.get().graphics_state.soft_mask.clone());
     device.set_blend_mode(ctx.get().graphics_state.blend_mode);
-    // Craft patch (flatten): tell the device the overprint parameters.
+    // Bharat patch (flatten): tell the device the overprint parameters.
     crate::interpret::path::set_overprint(ctx, device);
     let stroke_props = ctx.stroke_props();
 

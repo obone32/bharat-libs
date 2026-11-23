@@ -37,15 +37,15 @@
 //!     items: BTreeMap<u64, String>,
 //! }
 //!
-//! let project = Project { schema: craft_ecproj_format::SCHEMA_VERSION, items: BTreeMap::from([(1, "Comp 1".to_string())]) };
-//! craft_ecproj_format::check_schema(project.schema)?;
+//! let project = Project { schema: bharat_ecproj_format::SCHEMA_VERSION, items: BTreeMap::from([(1, "Comp 1".to_string())]) };
+//! bharat_ecproj_format::check_schema(project.schema)?;
 //! let view = BTreeMap::<String, u64>::new();
-//! let file = craft_ecproj_format::File::new("0.12.0", &view, &project);
+//! let file = bharat_ecproj_format::File::new("0.12.0", &view, &project);
 //! let text = file.to_json()?;
 //! assert_eq!(text, "{\n  \"savedBy\": \"0.12.0\",\n  \"schema\": 2,\n  \"items\": {\n    \"1\": \"Comp 1\"\n  }\n}");
 //! assert_eq!(file.to_json_compact()?, r#"{"savedBy":"0.12.0","schema":2,"items":{"1":"Comp 1"}}"#);
 //!
-//! let head = craft_ecproj_format::Head::read(&text)?;
+//! let head = bharat_ecproj_format::Head::read(&text)?;
 //! assert_eq!((head.saved_by.as_deref(), head.schema), (Some("0.12.0"), 2));
 //! # Ok::<(), Box<dyn std::error::Error>>(())
 //! ```
@@ -69,7 +69,7 @@ pub const SCHEMA_VERSION: u32 = 2;
 /// Other crates read its fields but do not build one:
 ///
 /// ```compile_fail
-/// let _ = craft_ecproj_format::TooNew { schema: 3, supported: 2 };
+/// let _ = bharat_ecproj_format::TooNew { schema: 3, supported: 2 };
 /// ```
 #[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
 #[error("project schema {schema} is newer than this version supports ({supported})")]
@@ -154,7 +154,7 @@ impl Head {
 /// Other crates match it with a wildcard arm, and match [`ReadError::TooNew`] with `..`:
 ///
 /// ```
-/// use craft_ecproj_format::{Head, ReadError};
+/// use bharat_ecproj_format::{Head, ReadError};
 ///
 /// let text = r#"{"savedBy": "0.13.0", "schema": 3}"#;
 /// let message = match Head::read(text) {
@@ -166,18 +166,18 @@ impl Head {
 /// ```
 ///
 /// ```compile_fail
-/// fn name(e: craft_ecproj_format::ReadError) -> &'static str {
+/// fn name(e: bharat_ecproj_format::ReadError) -> &'static str {
 ///     match e {
-///         craft_ecproj_format::ReadError::Json(_) => "json",
-///         craft_ecproj_format::ReadError::TooNew { .. } => "too new",
+///         bharat_ecproj_format::ReadError::Json(_) => "json",
+///         bharat_ecproj_format::ReadError::TooNew { .. } => "too new",
 ///     }
 /// }
 /// ```
 ///
 /// ```compile_fail
-/// fn saved_by(e: craft_ecproj_format::ReadError) -> Option<String> {
+/// fn saved_by(e: bharat_ecproj_format::ReadError) -> Option<String> {
 ///     match e {
-///         craft_ecproj_format::ReadError::TooNew { too_new: _, saved_by } => saved_by,
+///         bharat_ecproj_format::ReadError::TooNew { too_new: _, saved_by } => saved_by,
 ///         _ => None,
 ///     }
 /// }

@@ -38,12 +38,12 @@ jobs:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-ui
+          key: bharat-ui
       - run: cargo fmt --check
-      - run: cargo clippy -p craft-ui --all-targets --locked -- -D warnings
-      - run: cargo clippy -p craft-ui --all-targets --all-features --locked -- -D warnings
-      - run: cargo test -p craft-ui --locked
-      - run: cargo test -p craft-ui --all-features --locked
+      - run: cargo clippy -p bharat-ui --all-targets --locked -- -D warnings
+      - run: cargo clippy -p bharat-ui --all-targets --all-features --locked -- -D warnings
+      - run: cargo test -p bharat-ui --locked
+      - run: cargo test -p bharat-ui --all-features --locked
   wasm:
     timeout-minutes: 15
     name: UI WASM
@@ -55,5 +55,5 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
-          key: craft-ui-wasm
-      - run: cargo check -p craft-ui --all-features --locked --target wasm32-unknown-unknown
+          key: bharat-ui-wasm
+      - run: cargo check -p bharat-ui --all-features --locked --target wasm32-unknown-unknown

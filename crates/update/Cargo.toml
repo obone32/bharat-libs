@@ -1,6 +1,6 @@
 [package]
-name = "craft-update"
-description = "Release checking, downloading, installing and self-updating for the Craft App Suite and ArtCraft Launcher"
+name = "bharat-update"
+description = "Release checking, downloading, installing and self-updating for the Bharat App Suite and ArtCraft Launcher"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

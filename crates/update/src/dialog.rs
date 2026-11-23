@@ -106,7 +106,7 @@ impl StartupPrompt {
         let t = self.translate;
         let version = self.release.version_label();
 
-        egui::Area::new(egui::Id::unique("craft_update.startup_prompt"))
+        egui::Area::new(egui::Id::unique("bharat_update.startup_prompt"))
             .anchor(Align2::CENTER_CENTER, Vec2::ZERO)
             .order(egui::Order::Foreground)
             .show(ctx, |ui| {
@@ -265,7 +265,7 @@ impl Palette {
 /// it was clicked (a click outside the card).
 fn backdrop(ctx: &egui::Context) -> bool {
     let screen_rect = ctx.content_rect();
-    egui::Area::new(egui::Id::unique("craft_update_backdrop"))
+    egui::Area::new(egui::Id::unique("bharat_update_backdrop"))
         .order(egui::Order::Middle)
         .fixed_pos(screen_rect.min)
         .show(ctx, |ui| {
@@ -401,7 +401,7 @@ impl CheckResultDialog {
         let pal = Palette::new(ctx, self.app);
         let Palette { card_bg, border_color, text_primary, text_muted, fill, on_fill, .. } = pal;
         let t = self.translate;
-        egui::Area::new(egui::Id::unique("craft_update.check_result")).anchor(Align2::CENTER_CENTER, Vec2::ZERO).order(egui::Order::Foreground).show(
+        egui::Area::new(egui::Id::unique("bharat_update.check_result")).anchor(Align2::CENTER_CENTER, Vec2::ZERO).order(egui::Order::Foreground).show(
             ctx,
             |ui| {
                 egui::Frame::new()
@@ -503,7 +503,7 @@ fn contrast(a: Color32, b: Color32) -> f32 {
     (a.max(b) + 0.05) / (a.min(b) + 0.05)
 }
 
-/// Text for a label on `fill`: white or black, whichever contrasts more. Every Craft app accent
+/// Text for a label on `fill`: white or black, whichever contrasts more. Every Bharat app accent
 /// then reaches WCAG AA's 4.5:1 for the prompt's small labels (5:1 at the least).
 fn ink_on(fill: Color32) -> Color32 {
     if contrast(fill, Color32::WHITE) >= contrast(fill, Color32::BLACK) { Color32::WHITE } else { Color32::BLACK }
@@ -516,14 +516,14 @@ const ICON_MAX_SIDE: u32 = 1024;
 /// it doesn't decode, and the prompt shows the app's initial instead.
 fn icon_texture(ctx: &egui::Context, app: &App) -> Option<egui::TextureHandle> {
     let png = app.icon_png?;
-    let id = egui::Id::unique(("craft_update.icon", app.id));
+    let id = egui::Id::unique(("bharat_update.icon", app.id));
     if let Some(cached) = ctx.data(|d| d.get_temp::<Option<egui::TextureHandle>>(id)) {
         return cached;
     }
     // The renderer's own limit too: load_texture panics (debug) on a texture larger than it takes.
     let max_side = u32::try_from(ctx.input(|i| i.max_texture_side)).unwrap_or(u32::MAX).min(ICON_MAX_SIDE);
     let texture =
-        decode_icon(png, max_side).map(|image| ctx.load_texture(format!("craft_update.icon.{}", app.id), image, egui::TextureOptions::LINEAR));
+        decode_icon(png, max_side).map(|image| ctx.load_texture(format!("bharat_update.icon.{}", app.id), image, egui::TextureOptions::LINEAR));
     ctx.data_mut(|d| d.insert_temp(id, texture.clone()));
     texture
 }

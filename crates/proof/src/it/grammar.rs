@@ -396,7 +396,7 @@ mod tests {
         (a.to_string(), b.to_string())
     }
 
-    /// CodeRabbit on craft-libs#484: a sentence after the first one starts with a capital too.
+    /// CodeRabbit on bharat-libs#484: a sentence after the first one starts with a capital too.
     #[test]
     fn later_sentences_start_with_a_capital() {
         assert!(fixes("Vado a Roma. il cane dorme.").contains(&pair("il", "Il")));
@@ -410,7 +410,7 @@ mod tests {
         }
     }
 
-    /// craft-libs#496 review: narration after a quoted or dashed question or exclamation goes on in
+    /// bharat-libs#496 review: narration after a quoted or dashed question or exclamation goes on in
     /// lower case.
     #[test]
     fn narration_after_a_quoted_question_is_not_a_new_sentence() {

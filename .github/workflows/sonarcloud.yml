@@ -17,7 +17,7 @@ concurrency:
 jobs:
   sonarcloud:
     # Track shared CI improvements on main.
-    uses: storytold/craft-common-actions/.github/workflows/sonarcloud.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/sonarcloud.yml@main
     with:
       pdf-test-fonts: true
     secrets: inherit

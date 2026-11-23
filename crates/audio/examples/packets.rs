@@ -1,10 +1,10 @@
-//! Demux an MP4 with craft-media and decode its audio packets with `TrackDecoder`: what an app
+//! Demux an MP4 with bharat-media and decode its audio packets with `TrackDecoder`: what an app
 //! with its own container code (or a network stream) does instead of `decode`.
 //!
-//! `cargo run -p craft-audio --example packets --features decode -- clip.mov`
+//! `cargo run -p bharat-audio --example packets --features decode -- clip.mov`
 
-use craft_audio::TrackDecoder;
-use craft_media::isobmff;
+use bharat_audio::TrackDecoder;
+use bharat_media::isobmff;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let path = std::env::args().nth(1).ok_or("usage: packets <file.mp4>")?;
@@ -13,12 +13,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let file = isobmff::open(bytes.as_slice())?;
     let track = file.track_of_kind(isobmff::TrackKind::Audio).ok_or("no audio track")?;
     let t = &file.tracks[track];
-    // The container-neutral codec description every craft-media demuxer produces.
+    // The container-neutral codec description every bharat-media demuxer produces.
     let params = t.codec_params();
 
     let packets: Vec<Vec<u8>> = (0..t.samples.len()).map(|i| file.read_sample(bytes.as_slice(), track, i)).collect::<Result<_, _>>()?;
     // Codecs that find their configuration in the stream read it from the first packets.
-    let lookahead: Vec<&[u8]> = packets.iter().take(craft_audio::LOOKAHEAD_PACKETS).map(Vec::as_slice).collect();
+    let lookahead: Vec<&[u8]> = packets.iter().take(bharat_audio::LOOKAHEAD_PACKETS).map(Vec::as_slice).collect();
     let mut dec = TrackDecoder::new(&params, &lookahead)?;
     println!("{} {} Hz {}", dec.codec().name(), dec.sample_rate(), dec.layout());
 

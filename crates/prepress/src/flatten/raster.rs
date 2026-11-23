@@ -36,9 +36,9 @@
 //! `crates/engine/src/cmd/flatten.rs` (the image reaching a pixel past its area). VectorCraft
 //! renders RGB over white; here the plates give each ink's tint directly.
 
-use craft_pdf::OpenError;
-use craft_pdf::interpret::color::CmykConversion;
-use craft_pdf::write::backend::SerializeSettings;
+use bharat_pdf::OpenError;
+use bharat_pdf::interpret::color::CmykConversion;
+use bharat_pdf::write::backend::SerializeSettings;
 use kurbo::{Affine, Rect, Shape as _};
 
 use super::document::{FlattenDocumentError, FlattenDocumentOptions, flatten_document};

@@ -260,7 +260,7 @@ const VAR_PATH: &str = "fonts/NotoSerifTest/full/variable-ttf/NotoSerifTest[wdth
 const CJK_PATH: &str = "Sans/OTF/Japanese/NotoSansCJKtest-Regular.otf";
 const CONDENSED_PATH: &str = "fonts/TestSans/full/ttf/TestSans-CondensedBold.ttf";
 
-/// A format 1.1 index of another source, as craft-font-index's Noto index has it: URL templates
+/// A format 1.1 index of another source, as bharat-font-index's Noto index has it: URL templates
 /// with `{repo}` and `{ref}`, a family in another repository at a tag, licences with a sha256
 /// (one in a third repository), and a family Google Fonts also has, in a width it lacks.
 fn noto_fixture() -> Fixture {
@@ -454,7 +454,7 @@ mod store {
     use std::sync::{Arc, Mutex};
     use std::time::{Duration, Instant};
 
-    use craft_font_catalog::{Catalog, FontEnv, Os};
+    use bharat_font_catalog::{Catalog, FontEnv, Os};
 
     use super::*;
 
@@ -561,7 +561,7 @@ mod store {
 
     fn temp(name: &str) -> PathBuf {
         static N: AtomicUsize = AtomicUsize::new(0);
-        let d = std::env::temp_dir().join(format!("craft-font-store-{name}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
+        let d = std::env::temp_dir().join(format!("bharat-font-store-{name}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
         d
@@ -1043,7 +1043,7 @@ mod store {
     }
 
     /// Fetches the pinned indexes from jsDelivr and GitHub and installs a Noto family whose
-    /// licence is in another repository. `cargo test -p craft-font-store -- --ignored`.
+    /// licence is in another repository. `cargo test -p bharat-font-store -- --ignored`.
     #[test]
     #[ignore = "uses the network"]
     fn the_pinned_indexes_and_a_noto_family_download() {

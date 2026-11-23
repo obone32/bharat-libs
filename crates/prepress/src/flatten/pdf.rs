@@ -25,21 +25,21 @@ use std::collections::HashMap;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::Arc;
 
-use craft_pdf::interpret::color::{CmykSimulation, ColorSpace, Ink as PdfInk, InkPaint, InkSpace, SpotAlternate};
-use craft_pdf::interpret::font::{Glyph, OutlineGlyph};
-use craft_pdf::interpret::hayro_cmap::BfString;
-use craft_pdf::interpret::pattern::{Pattern, ShadingPattern, TilingPattern};
-use craft_pdf::interpret::shading::ShadingType;
-use craft_pdf::interpret::{
+use bharat_pdf::interpret::color::{CmykSimulation, ColorSpace, Ink as PdfInk, InkPaint, InkSpace, SpotAlternate};
+use bharat_pdf::interpret::font::{Glyph, OutlineGlyph};
+use bharat_pdf::interpret::hayro_cmap::BfString;
+use bharat_pdf::interpret::pattern::{Pattern, ShadingPattern, TilingPattern};
+use bharat_pdf::interpret::shading::ShadingType;
+use bharat_pdf::interpret::{
     BlendMode as PdfBlend, CacheKey, ClipPath, Context, Device, FillRule as PdfFillRule, GlyphDrawMode, Image, InterpreterCache, InterpreterSettings,
     MaskType, Paint as PdfPaint, PathDrawMode, RasterImage, SoftMask, StencilImage, StrokeProps, TransformExt, interpret_page,
 };
-use craft_pdf::syntax::Filter;
-use craft_pdf::syntax::Pdf;
-use craft_pdf::syntax::object::dict::keys::{ANNOTS, AP, BITS_PER_COMPONENT, COLORSPACE, DECODE, DECODE_PARMS, F, HEIGHT, N, WIDTH};
-use craft_pdf::syntax::object::{Array, Dict, Name, Stream};
-use craft_pdf::syntax::page::Page;
-use craft_pdf::{OpenError, open_slice};
+use bharat_pdf::syntax::Filter;
+use bharat_pdf::syntax::Pdf;
+use bharat_pdf::syntax::object::dict::keys::{ANNOTS, AP, BITS_PER_COMPONENT, COLORSPACE, DECODE, DECODE_PARMS, F, HEIGHT, N, WIDTH};
+use bharat_pdf::syntax::object::{Array, Dict, Name, Stream};
+use bharat_pdf::syntax::page::Page;
+use bharat_pdf::{OpenError, open_slice};
 use kurbo::{Affine, BezPath, PathEl, Point, Rect, Shape, Stroke, StrokeOpts};
 
 use super::font::FontCache;
@@ -475,7 +475,7 @@ impl<'s, 'a> Reader<'s, 'a> {
     }
 
     /// The color as inks; `None` when it paints nothing (the `None` colorant).
-    fn ink_color(&mut self, color: &craft_pdf::interpret::color::Color) -> Option<InkColor> {
+    fn ink_color(&mut self, color: &bharat_pdf::interpret::color::Color) -> Option<InkColor> {
         match color.ink_paint(self.shared.simulation.as_ref())? {
             InkPaint::Tints(tints) => {
                 let mut out = Vec::with_capacity(tints.len());
@@ -932,7 +932,7 @@ impl<'s, 'a> Reader<'s, 'a> {
         item.outlines.extend(outline.iter());
     }
 
-    fn type3_glyph(&mut self, glyph: &craft_pdf::interpret::font::Type3Glyph<'a>, transform: Affine, glyph_transform: Affine, paint: &PdfPaint<'a>) {
+    fn type3_glyph(&mut self, glyph: &bharat_pdf::interpret::font::Type3Glyph<'a>, transform: Affine, glyph_transform: Affine, paint: &PdfPaint<'a>) {
         let (run_paint, look, overprint) = match self.paint(paint, false) {
             Some(Painted::Flat(paint, look, overprint)) => (Some(paint), look, overprint),
             Some(Painted::Area) => (None, self.look(1.0), Overprint::default()),

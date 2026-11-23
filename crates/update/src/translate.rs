@@ -2,14 +2,14 @@
 //! interface language.
 //!
 //! The crate keeps its text in English, and that English text is the lookup key, as in the
-//! craft-i18n catalogs. An app with translations passes a [`Translate`] function to
+//! bharat-i18n catalogs. An app with translations passes a [`Translate`] function to
 //! `StartupPrompt::with_translator`, `CheckResultDialog::with_translator` and
 //! `Updater::with_translator`. The dialogs call it each time they draw a string, so a change of
 //! interface language shows on the next frame. Without one the text stays in English.
 //!
 //! A template names its values in braces (`{app} {version} is available…`) and the function
 //! gets the values beside it, so a translation can put them in another order. An app built on
-//! craft-i18n passes `|text, args| craft_i18n::fmt(i18n.t(lang, text), args)`. That also keeps a
+//! bharat-i18n passes `|text, args| bharat_i18n::fmt(i18n.t(lang, text), args)`. That also keeps a
 //! Latin app name in its place in a right-to-left sentence. Button labels are looked up in title
 //! case (`Later`, `Check Again`) and drawn in capitals, so the rows the app already has for its
 //! own buttons serve here too.
@@ -28,7 +28,7 @@ pub fn english(text: &str, args: &[(&str, &str)]) -> String {
 }
 
 /// `template` with each `{name}` in `args` replaced by its value, by the rules of
-/// `craft_i18n::fmt` (without its bidi isolates): a placeholder runs from a `{` to the next `}`,
+/// `bharat_i18n::fmt` (without its bidi isolates): a placeholder runs from a `{` to the next `}`,
 /// and one that `args` lacks stays as written, braces and all. An inserted value is never read as
 /// a template, so a value containing `{app}` stays intact.
 pub fn fill(template: &str, args: &[(&str, &str)]) -> String {
@@ -96,7 +96,7 @@ mod tests {
         assert_eq!(fill("{version}: {app}", &[("app", "A"), ("version", "1")]), "1: A");
         // Unknown and unclosed placeholders stay; a value holding a placeholder stays as it is.
         assert_eq!(fill("{nope} and {app", &[("app", "X")]), "{nope} and {app");
-        // An unknown candidate stays whole through its closing brace, as craft_i18n::fmt keeps it.
+        // An unknown candidate stays whole through its closing brace, as bharat_i18n::fmt keeps it.
         assert_eq!(fill("{bad {app}", &[("app", "X")]), "{bad {app}");
         assert_eq!(fill("{bad} {app}", &[("app", "X")]), "{bad} X");
         assert_eq!(fill("by {developer}", &[("developer", "{developer}")]), "by {developer}");

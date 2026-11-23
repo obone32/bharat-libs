@@ -457,7 +457,7 @@ mod tests {
     }
 
     pub(super) fn no_pins() -> PathBuf {
-        std::env::temp_dir().join("craft-update-tests-no-such-dir").join("versions.json")
+        std::env::temp_dir().join("bharat-update-tests-no-such-dir").join("versions.json")
     }
 
     /// Ticks until the running check has reported.
@@ -507,7 +507,7 @@ mod tests {
     // Child processes isolate environment overrides from parallel tests without unsafe set_var.
     #[test]
     fn pretend_versions_trigger_startup_prompts_for_every_app() {
-        const CHILD: &str = "CRAFT_UPDATE_PRETEND_TEST_APP";
+        const CHILD: &str = "BHARAT_UPDATE_PRETEND_TEST_APP";
         if let Ok(id) = std::env::var(CHILD) {
             let app = crate::suite::by_id(&id).unwrap();
             let mut u = Updater::new(app, "99.0.0").with_pins_path(no_pins());

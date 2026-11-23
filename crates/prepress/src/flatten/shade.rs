@@ -3,9 +3,9 @@
 
 use std::collections::HashMap;
 
-use craft_pdf::interpret::color::{CmykSimulation, ColorSpace};
-use craft_pdf::interpret::pattern::ShadingPattern;
-use craft_pdf::interpret::shading::{ShadingFunction, ShadingType, Triangle};
+use bharat_pdf::interpret::color::{CmykSimulation, ColorSpace};
+use bharat_pdf::interpret::pattern::ShadingPattern;
+use bharat_pdf::interpret::shading::{ShadingFunction, ShadingType, Triangle};
 use kurbo::{Affine, BezPath, PathEl, Point, Rect, Vec2};
 
 use super::{FillRule, GradientGeometry, ImageItem, ImageSpace, Item, Paint};

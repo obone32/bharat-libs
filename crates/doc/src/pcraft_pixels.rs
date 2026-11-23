@@ -3,7 +3,7 @@
 //!
 //! A surface is a pixel format, a default pixel and a list of 256 × 256 tiles on a grid in
 //! document pixels, so tiles may sit at negative columns and rows. Each tile is stored at
-//! [`craft_pcraft_format::tile_path`] of its hash as one zstd frame of interleaved little-endian
+//! [`bharat_pcraft_format::tile_path`] of its hash as one zstd frame of interleaved little-endian
 //! samples, row by row, the color channels first and then the alpha channel when the format has
 //! one; the hash is the BLAKE3 hash of those samples. Pixels without a tile hold the default
 //! pixel.
@@ -11,7 +11,7 @@
 use std::collections::{BTreeSet, HashMap};
 use std::io::Read;
 
-use craft_pcraft_format::TileRef;
+use bharat_pcraft_format::TileRef;
 use serde::Deserialize;
 
 use crate::zip::{Entry, Zip};

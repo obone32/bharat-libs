@@ -32,7 +32,7 @@ jobs:
           runner_version=$(python3 -c 'import tomllib; d=tomllib.load(open("Cargo.lock", "rb")); print(next(p["version"] for p in d["package"] if p["name"] == "wasm-bindgen"))')
           cargo install wasm-bindgen-cli --version "$runner_version" --locked
       - run: cargo fmt --check
-      - run: cargo clippy -p craft-web-api --all-targets --locked -- -D warnings
-      - run: cargo clippy -p craft-web-api --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
-      - run: cargo test -p craft-web-api --locked
-      - run: cargo test -p craft-web-api --locked --target wasm32-unknown-unknown
+      - run: cargo clippy -p bharat-web-api --all-targets --locked -- -D warnings
+      - run: cargo clippy -p bharat-web-api --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
+      - run: cargo test -p bharat-web-api --locked
+      - run: cargo test -p bharat-web-api --locked --target wasm32-unknown-unknown

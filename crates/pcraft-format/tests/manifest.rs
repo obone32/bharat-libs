@@ -1,12 +1,12 @@
-use craft_pcraft_format::{
+use bharat_pcraft_format::{
     BLOBS_DIR, COMPOSITE, COMPOSITE_DIR, EXTENSION, FORMAT_VERSION, Limits, MANIFEST, Manifest, OBJECT_SUFFIX, SAVE_LOCK, Step, THUMB, TILES_DIR,
     TileRef, blob_path, is_valid_hash, tile_path,
 };
 use serde::{Deserialize, Serialize};
 
-fn read<D: serde::de::DeserializeOwned>(text: &str) -> Result<Manifest<D>, craft_pcraft_format::Error> {
+fn read<D: serde::de::DeserializeOwned>(text: &str) -> Result<Manifest<D>, bharat_pcraft_format::Error> {
     let none: &[Step] = &[];
-    craft_pcraft_format::read_manifest(text.as_bytes(), &Limits::default(), none, FORMAT_VERSION)
+    bharat_pcraft_format::read_manifest(text.as_bytes(), &Limits::default(), none, FORMAT_VERSION)
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

@@ -1,4 +1,4 @@
-name: Craft documents
+name: Bharat documents
 
 on:
   workflow_dispatch:
@@ -29,8 +29,8 @@ jobs:
           components: rustfmt, clippy
           targets: wasm32-unknown-unknown
       - run: cargo fmt --check
-      - run: cargo clippy -p craft-doc --all-targets --locked -- -D warnings
-      - run: cargo clippy -p craft-doc --all-targets --all-features --locked -- -D warnings
-      - run: cargo test -p craft-doc --locked -- --nocapture
-      - run: cargo test -p craft-doc --all-features --locked -- --nocapture
-      - run: cargo check -p craft-doc --all-features --locked --target wasm32-unknown-unknown
+      - run: cargo clippy -p bharat-doc --all-targets --locked -- -D warnings
+      - run: cargo clippy -p bharat-doc --all-targets --all-features --locked -- -D warnings
+      - run: cargo test -p bharat-doc --locked -- --nocapture
+      - run: cargo test -p bharat-doc --all-features --locked -- --nocapture
+      - run: cargo check -p bharat-doc --all-features --locked --target wasm32-unknown-unknown

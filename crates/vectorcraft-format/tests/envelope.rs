@@ -1,6 +1,6 @@
 use std::io::Write;
 
-use craft_vectorcraft_format::{
+use bharat_vectorcraft_format::{
     BLOB_MAGIC, Contents, EXTENSION, Entries, Error, File, Head, INLINE_MAX, Image, LEGACY_EXTENSION, MAX_ENTRY, ReadError, Tail, VERSION, base64,
     check, entry, is_compressed, json_part, marker_at, sniff, split_tail,
 };
@@ -98,7 +98,7 @@ fn a_version_2_file_keeps_large_entries_inline_under_the_former_name() {
     let mut file = File::new(doc());
     file.format = LEGACY_EXTENSION.into();
     file.version = 2;
-    file.profiles.insert("Gray".into(), tail.image(craft_vectorcraft_format::ICC_MIME, &pdf, false));
+    file.profiles.insert("Gray".into(), tail.image(bharat_vectorcraft_format::ICC_MIME, &pdf, false));
     let bytes = written(&file, &tail, false);
     assert!(tail.is_empty());
     assert!(!bytes.contains(&0));
@@ -234,7 +234,7 @@ fn contents_read_the_document_images_and_profiles_without_the_preview_and_pdf() 
     file.generator = Some("VectorCraft 0.17.0".into());
     file.preview = Some(Image::inline("image/png", &big));
     file.pdf = Some(Image::inline("application/pdf", &big));
-    file.profiles.insert("Gray".into(), Image::inline(craft_vectorcraft_format::ICC_MIME, &[4, 5]));
+    file.profiles.insert("Gray".into(), Image::inline(bharat_vectorcraft_format::ICC_MIME, &[4, 5]));
     file.images.insert("k".into(), Image::inline("image/png", PNG));
     for json in [serde_json::to_vec(&file).unwrap(), serde_json::to_vec_pretty(&file).unwrap()] {
         let contents = Contents::<Doc>::read(&json).unwrap();

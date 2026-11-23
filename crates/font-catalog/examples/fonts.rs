@@ -1,14 +1,14 @@
 //! Lists what the catalog finds on this computer, to check discovery by hand.
 //!
 //! ```text
-//! cargo run -p craft-font-catalog --example fonts             # counts, folders, font store
-//! cargo run -p craft-font-catalog --example fonts -- Arial     # a family's faces
-//! cargo run -p craft-font-catalog --example fonts -- --watch   # report fonts installed or removed
+//! cargo run -p bharat-font-catalog --example fonts             # counts, folders, font store
+//! cargo run -p bharat-font-catalog --example fonts -- Arial     # a family's faces
+//! cargo run -p bharat-font-catalog --example fonts -- --watch   # report fonts installed or removed
 //! ```
 
 use std::time::{Duration, Instant};
 
-use craft_font_catalog::{Catalog, font_dirs, font_store_dir};
+use bharat_font_catalog::{Catalog, font_dirs, font_store_dir};
 
 fn main() {
     let catalog = Catalog::global();

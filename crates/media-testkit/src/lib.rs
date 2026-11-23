@@ -1,17 +1,17 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
-//! Oracle-test support for the craft-libs media crates (craft-media, craft-audio, and the video
+//! Oracle-test support for the bharat-libs media crates (bharat-media, bharat-audio, and the video
 //! crate to come): ffmpeg/ffprobe discovery, the skip-or-fail rule, and fixture locations.
 //! ffmpeg is used only as an external fixture generator and oracle (never linked). Test support
 //! only: unpublished, and used as a dev-dependency.
 //!
-//! Tool search order: `CRAFT_MEDIA_FFMPEG` / `CRAFT_MEDIA_FFPROBE` (an explicit path; a wrong
+//! Tool search order: `BHARAT_MEDIA_FFMPEG` / `BHARAT_MEDIA_FFPROBE` (an explicit path; a wrong
 //! path fails the test), then `PATH`, then well-known install directories. A missing tool, a
 //! failed fixture generator or a failed ffprobe run prints `SKIPPED` and the test passes, unless
-//! `CRAFT_MEDIA_REQUIRE_ORACLES=1` is set: then each of these fails the test.
-//! Fixtures are generated into `$CRAFT_MEDIA_FIXTURES_DIR` or `<workspace>/target/fixtures`, one
+//! `BHARAT_MEDIA_REQUIRE_ORACLES=1` is set: then each of these fails the test.
+//! Fixtures are generated into `$BHARAT_MEDIA_FIXTURES_DIR` or `<workspace>/target/fixtures`, one
 //! directory per crate or format, and never committed.
 //!
-//! Failing loudly is what a test helper is for: a wrong `CRAFT_MEDIA_*` setting or an unwritable
+//! Failing loudly is what a test helper is for: a wrong `BHARAT_MEDIA_*` setting or an unwritable
 //! fixture directory panics, which fails the test that asked.
 
 use std::path::{Path, PathBuf};
@@ -19,7 +19,7 @@ use std::process::Command;
 use std::sync::OnceLock;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-const REQUIRE_ENV: &str = "CRAFT_MEDIA_REQUIRE_ORACLES";
+const REQUIRE_ENV: &str = "BHARAT_MEDIA_REQUIRE_ORACLES";
 
 const KNOWN_DIRS: &[&str] = &[
     "/opt/homebrew/bin",
@@ -33,7 +33,7 @@ const KNOWN_DIRS: &[&str] = &[
 ];
 
 fn env_var(name: &str) -> String {
-    format!("CRAFT_MEDIA_{}", name.to_ascii_uppercase())
+    format!("BHARAT_MEDIA_{}", name.to_ascii_uppercase())
 }
 
 #[allow(clippy::panic)]
@@ -105,20 +105,20 @@ fn tool_or_skip(name: &str) -> Option<PathBuf> {
     tool(name).or_else(|| skip(&format!("{name} not found (set {} or put {name} on PATH)", env_var(name))))
 }
 
-/// ffmpeg, or `None` after printing `SKIPPED` (a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// ffmpeg, or `None` after printing `SKIPPED` (a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 pub fn ffmpeg() -> Option<PathBuf> {
     tool_or_skip("ffmpeg")
 }
 
-/// ffprobe, or `None` after printing `SKIPPED` (a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// ffprobe, or `None` after printing `SKIPPED` (a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 pub fn ffprobe() -> Option<PathBuf> {
     tool_or_skip("ffprobe")
 }
 
-/// `$CRAFT_MEDIA_FIXTURES_DIR/<name>` or `<workspace>/target/fixtures/<name>`, created if missing.
+/// `$BHARAT_MEDIA_FIXTURES_DIR/<name>` or `<workspace>/target/fixtures/<name>`, created if missing.
 #[allow(clippy::unwrap_used)]
 pub fn fixture_subdir(name: &str) -> PathBuf {
-    let d = match std::env::var_os("CRAFT_MEDIA_FIXTURES_DIR").filter(|v| !v.is_empty()) {
+    let d = match std::env::var_os("BHARAT_MEDIA_FIXTURES_DIR").filter(|v| !v.is_empty()) {
         Some(d) => PathBuf::from(d),
         None => {
             let here = Path::new(env!("CARGO_MANIFEST_DIR"));

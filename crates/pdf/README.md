@@ -1,4 +1,4 @@
-# craft-pdf
+# bharat-pdf
 
 Shared PDF infrastructure with independent optional features. Applications own document
 models, editing, layout, font policy, worker scheduling, output presets and printing.
@@ -57,7 +57,7 @@ Cancellation is polled between operators, so a decoder may finish before noticin
 
 The shared reader vendors the current patched Hayro trees from PdfCraft revision
 `ec0a965074f376a5bf610435948e4e5184bf3299`. See
-[`vendor/README.craft-reader.md`](../../vendor/README.craft-reader.md) for the transfer and
+[`vendor/README.bharat-reader.md`](../../vendor/README.bharat-reader.md) for the transfer and
 local patches. Lopdf, COS editing, inspection fallback and application caches remain app-owned.
 
 The patched 0.7 reader also carries focused compatibility changes from Hayro 0.8:
@@ -70,11 +70,11 @@ than exposing a partial page list. These changes do not imply full equivalence t
 the vendor notes record the boundaries. Existing consumers remain on their immutable
 revision until they explicitly adopt a new one.
 
-Consumers pin `craft-pdf` and their required root `[patch.crates-io]` entries to the same full
-`https://github.com/storytold/craft-libs` revision. Cargo ignores dependency-local patches.
+Consumers pin `bharat-pdf` and their required root `[patch.crates-io]` entries to the same full
+`https://github.com/obone32/bharat-libs` revision. Cargo ignores dependency-local patches.
 Reader consumers patch `hayro-syntax`, `hayro-interpret` and `hayro-jbig2`; raster consumers
 also patch `hayro`. Writer consumers patch `krilla`. A plain `write` consumer does not need
-reader patches. Keep unrelated craft-ui/craft-print versions unchanged when adopting PDF.
+reader patches. Keep unrelated bharat-ui/bharat-print versions unchanged when adopting PDF.
 A pinned commit must be available remotely before a fresh public checkout can resolve it.
 
 Synthetic native and WASM contracts cover opening, caller limits, alpha, geometry, settings,
@@ -133,14 +133,14 @@ with the settings for a plain CMYK print PDF: DeviceCMYK color and transparency 
 CMYK (`GroupColorSpace::Cmyk`), with no output intent. `write::print::settings` adds the
 document's CMYK profile as a `GTS_PDFX` output intent and `/Trapped /False`, for PDF/X. Both
 fail with `WriteError::InvalidProfile` when the profile is not a readable CMYK ICC profile.
-The profile is the document's working space. craft-pdf takes the profile bytes and does not
-depend on craft-cms. Its CC0 `builtin::COATED_FOGRA39_ICC` is the default working space, described by
+The profile is the document's working space. bharat-pdf takes the profile bytes and does not
+depend on bharat-cms. Its CC0 `builtin::COATED_FOGRA39_ICC` is the default working space, described by
 `PrintColor::fogra39`:
 
 ```rust
-use craft_pdf::write::print::{self, PrintColor};
+use bharat_pdf::write::print::{self, PrintColor};
 
-let settings = print::settings(PrintColor::fogra39(craft_cms::builtin::COATED_FOGRA39_ICC))?;
+let settings = print::settings(PrintColor::fogra39(bharat_cms::builtin::COATED_FOGRA39_ICC))?;
 let writer = Writer::new(SerializeSettings { configuration, ..settings }, metadata);
 ```
 
@@ -148,7 +148,7 @@ For another profile, fill `PrintColor` with its condition identifier (`Custom` w
 not registered) and `info`. The settings claim no PDF/X version and are not checked against
 PDF/X; apps that claim conformance set `pdfx_version` (and `pdfx_conformance` for PDF/X-1a
 and X-3) and keep their own checks. Writing these
-settings needs the patched Krilla (`CRAFT_PRINT_COLOR`, see
+settings needs the patched Krilla (`BHARAT_PRINT_COLOR`, see
 [`vendor/krilla/README.craft.md`](../../vendor/krilla/README.craft.md)).
 
 ### Optional content
@@ -161,7 +161,7 @@ when its stream finishes fails `Writer::finish`. The catalog lists every group i
 `/OCProperties`, hidden ones in `/OFF`; `Document::set_optional_content_page_mode(true)` adds
 `/PageMode /UseOC`. Optional content needs PDF 1.5 and fails PDF/A-1 validation (patch 12 in
 [`vendor/krilla/README.craft.md`](../../vendor/krilla/README.craft.md), marker
-`CRAFT_OPTIONAL_CONTENT`).
+`BHARAT_OPTIONAL_CONTENT`).
 
 `Writer::document_mut` and `write::backend` deliberately expose Krilla's page, resource and
 painting APIs. The apps keep their document walks, pagination, font selection/licensing,
@@ -180,7 +180,7 @@ failures. Font preparation bounds do not impose a total memory, output-size or t
 PDF serialization. Individual unsupported fonts still follow each app's existing outline
 fallback and warning behavior.
 
-Run `cargo test -p craft-pdf --no-default-features --features write`, and repeat with
+Run `cargo test -p bharat-pdf --no-default-features --features write`, and repeat with
 `--features write-pdf` and `--all-features`. The same writer contracts run with
 `--target wasm32-unknown-unknown` and a matching `wasm-bindgen-test-runner`. They exercise
 metadata, page sizes, versions, reproducibility, typed validation failures, malformed fonts,
@@ -193,22 +193,22 @@ Consumers pin both the facade and patched writer to the same full commit:
 
 ```toml
 [workspace.dependencies]
-craft-pdf = { git = "https://github.com/storytold/craft-libs", rev = "<full-commit-id>", version = "=0.1.0", default-features = false, features = ["write"] }
+bharat-pdf = { git = "https://github.com/obone32/bharat-libs", rev = "<full-commit-id>", version = "=0.1.0", default-features = false, features = ["write"] }
 
 [patch.crates-io]
-krilla = { git = "https://github.com/storytold/craft-libs", rev = "<full-commit-id>", version = "=0.8.2" }
+krilla = { git = "https://github.com/obone32/bharat-libs", rev = "<full-commit-id>", version = "=0.8.2" }
 ```
 
 Choose `write-pdf` only when embedding PDF pages. Cargo ignores dependency workspaces'
 root patches; copy the Krilla patch into the consuming workspace. A compile-time marker
 rejects unpatched Krilla. Check the normal dependency graph separately from the test graph
 and ensure there is one Krilla source, including uses through `krilla-svg`. This writer
-migration does not change an application's reader backend or its other craft-libs pins.
+migration does not change an application's reader backend or its other bharat-libs pins.
 The selected revision must be remotely available before fresh consumers can resolve it.
 Local path replacements are development-only and should not be committed to an app.
 
 Run `cargo fmt --check`, `cargo clippy --workspace --all-targets -- -D warnings` and
-`cargo test --workspace`, then test `craft-pdf` with `--features write` and
+`cargo test --workspace`, then test `bharat-pdf` with `--features write` and
 `--features write-pdf` (the default feature set intentionally enables no PDF operations).
 Run the same writer contracts on `wasm32-unknown-unknown` with a matching
 `wasm-bindgen-test-runner`. Native recovery tests are subprocess or unwind checks;
@@ -238,9 +238,9 @@ No PDF test fonts are stored in this repository. Obtain the licensed fixtures li
 one directory using the listed names, then run:
 
 ```sh
-CRAFT_PDF_TEST_FONT_DIR=/absolute/path/to/licensed-fonts \
-RUSTFLAGS="--cfg craft_pdf_unicode_fixtures" \
-cargo test -p craft-pdf --all-features --test unicode_writing
+BHARAT_PDF_TEST_FONT_DIR=/absolute/path/to/licensed-fonts \
+RUSTFLAGS="--cfg bharat_pdf_unicode_fixtures" \
+cargo test -p bharat-pdf --all-features --test unicode_writing
 ```
 
 Repeat with `--target wasm32-unknown-unknown` and the matching test runner for

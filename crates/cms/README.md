@@ -1,9 +1,9 @@
-# Craft CMS
+# Bharat CMS
 
-`craft-cms` is a pure-Rust ICC colour management module for the Craft suite: profile parsing
+`bharat-cms` is a pure-Rust ICC colour management module for the Bharat suite: profile parsing
 and writing, transforms between profiles, rendering intents, black point compensation, soft
 proofing, gamut checks, 3D LUTs and a set of built-in profiles. No C, no `unsafe`, and no
-dependency on other craft-libs crates. Implemented from the public ICC.1:2010 (v4.3) and
+dependency on other bharat-libs crates. Implemented from the public ICC.1:2010 (v4.3) and
 ICC.1:2001-04 (v2) specifications, CIE 15, and Adobe's published black point compensation paper.
 
 Extracted from PhotoCraft's `crates/cms` at
@@ -13,7 +13,7 @@ Extracted from PhotoCraft's `crates/cms` at
 ## API
 
 ```rust
-use craft_cms::{Builtin, Intent, Profile, Transform};
+use bharat_cms::{Builtin, Intent, Profile, Transform};
 
 let src = Profile::parse(&icc_bytes)?;                    // v2/v4: matrix/TRC, gray TRC, mft1/mft2/mAB/mBA
 let dst = Builtin::CoatedCmyk.profile();
@@ -79,7 +79,7 @@ published with, so profiles embedded in existing files still match byte for byte
 | `gray-gamma-2.2`, `sgray` | gray gamma 2.2; gray with the sRGB curve (default gray working space) |
 | `lab-d50` | Lab identity (v4 encoding) |
 | `coated-cmyk` | **Photocraft Coated CMYK (synthetic, 300% TAC, medium GCR)**: default CMYK |
-| `coated-fogra39` | Coated FOGRA39 (fitted, craft-cms): fitted to Fogra's FOGRA39 data, 330% TAC, medium GCR |
+| `coated-fogra39` | Coated FOGRA39 (fitted, bharat-cms): fitted to Fogra's FOGRA39 data, 330% TAC, medium GCR |
 
 ### The CMYK profiles
 
@@ -97,7 +97,7 @@ ISO 12647-2 coated-paper Lab aims for paper/C/M/Y/RGB overprints, parabolic dot 
 characterisation: its midtones are darker than FOGRA39 (mean ΔE00 6.7 against the FOGRA39
 patches, oranges such as 0/50/100/0 about 5 ΔE00 off).
 
-**`coated-fogra39`** (`profiles/craft-coated-fogra39.icc`, 713 KB, AToB 11⁴ lut16, BToA 33³
+**`coated-fogra39`** (`profiles/bharat-coated-fogra39.icc`, 713 KB, AToB 11⁴ lut16, BToA 33³
 lut16, 330 % ink limit) reproduces the colours of documents set up for Coated FOGRA39 or ISO
 Coated v2. It is fitted to Fogra's FOGRA39 characterisation data (`tests/data/FOGRA39.txt`,
 1617 IT8.7/4 patches, CMYK with D50 XYZ and Lab; ISO 12647-2:2004 Amd 1 offset on paper type
@@ -128,7 +128,7 @@ left out of the published crate, as only the tests read it.
 Regenerate the profiles with
 
 ```sh
-CRAFT_CMS_REGEN_PROFILES=1 cargo test -p craft-cms --release --test regen --test fogra39
+BHARAT_CMS_REGEN_PROFILES=1 cargo test -p bharat-cms --release --test regen --test fogra39
 ```
 
 Use your printer's profile for production print.
@@ -164,7 +164,7 @@ Page-layout and image editors usually convert CMYK for display with relative col
 black point compensation. To match them, keep BPC on (the `TransformOptions` default):
 
 ```rust
-use craft_cms::{Builtin, Intent, Profile, Transform};
+use bharat_cms::{Builtin, Intent, Profile, Transform};
 
 // The document's own profile first; a stand-in only when it carries no ICC bytes.
 let parsed;

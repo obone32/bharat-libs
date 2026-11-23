@@ -1,6 +1,6 @@
-//! Translations for the Craft apps.
+//! Translations for the Bharat apps.
 //!
-//! An app embeds the [craft-i18n](https://github.com/benandez/craft-i18n) catalogs at build time
+//! An app embeds the [bharat-i18n](https://github.com/benandez/bharat-i18n) catalogs at build time
 //! as an [`Embedded`] static, builds one [`I18n`] from it, and looks English source text up in a
 //! [`Lang`]. A missing translation is the English itself; nothing here fails.
 //!
@@ -640,7 +640,7 @@ fn marked(text: &str) -> String {
 
 /// The script a code without one means, for languages written in more than one (CLDR likely
 /// subtags). Any other language is taken to have one script.
-// ponytail: the multi-script languages a Craft app could plausibly ship; add a row with the locale.
+// ponytail: the multi-script languages a Bharat app could plausibly ship; add a row with the locale.
 fn usual_script(language: &str) -> Option<&'static str> {
     Some(match language {
         "be" | "kk" | "ky" | "mn" | "sr" | "tg" => "cyrl",
@@ -1134,8 +1134,8 @@ mod tests {
         assert_eq!(i.trn(lang(&i, "pt-br"), 0, "{n} file", "{n} files"), "0 arquivo");
     }
 
-    /// The counts craft-i18n's checker expects, which rejects a catalog whose `@plural` rows list
-    /// any other: every directory in craft-i18n's `locales/`, then languages it may add.
+    /// The counts bharat-i18n's checker expects, which rejects a catalog whose `@plural` rows list
+    /// any other: every directory in bharat-i18n's `locales/`, then languages it may add.
     #[test]
     fn plural_form_counts() {
         #[rustfmt::skip]

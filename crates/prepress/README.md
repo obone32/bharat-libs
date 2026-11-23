@@ -1,6 +1,6 @@
-# craft-prepress
+# bharat-prepress
 
-Prepress for the Craft apps: separations, ink limits and the ink manager.
+Prepress for the Bharat apps: separations, ink limits and the ink manager.
 
 - `ink`: the ink model the writers and previews share. `InkSet` holds the four process inks
   (always first, in plate order) and the spot inks of a job, and is the job's ink manager
@@ -12,7 +12,7 @@ Prepress for the Craft apps: separations, ink limits and the ink manager.
 - `coverage`: ink coverage at a pixel and over a page, total area coverage (TAC) per pixel,
   and the pixels and regions over a TAC limit.
 - `composite`: an sRGB preview of chosen plates.
-- `cms`: process color conversion into a CMYK printing condition through craft-cms.
+- `cms`: process color conversion into a CMYK printing condition through bharat-cms.
 
 - `flatten` (feature `flatten`): the display list a transparency flattener reads and writes:
   fills, text runs, images and transparency groups in page space, with ink colors and overprint
@@ -38,7 +38,7 @@ Prepress for the Craft apps: separations, ink limits and the ink manager.
 An app exports its PDF as usual, then separates a page of it:
 
 ```rust
-use craft_prepress::{plates, InkId, Options, Process};
+use bharat_prepress::{plates, InkId, Options, Process};
 
 let p = plates(&pdf, 0, 150.0, &Options::default())?;
 for (id, ink) in p.inks.iter() {
@@ -52,7 +52,7 @@ let gold = p.inks.lookup("Gold").and_then(|id| p.tint(id, 10, 10));
 The plates are the PDF as printed, so a preview built on them shows what the writer produced,
 not what the document model intended.
 
-How a plate is made: the page renders once per ink through craft-pdf's `raster` with
+How a plate is made: the page renders once per ink through bharat-pdf's `raster` with
 hayro-interpret's plate mode (`InterpreterSettings::plate`). Every paint draws its tint of
 that ink as gray film. A paint that overprints (`op`/`OP`, and `OPM 1` for zero DeviceCMYK
 components) without naming the ink leaves the film as it is; with `Options::overprint` off,
@@ -69,8 +69,8 @@ alternate measured from its sRGB appearance at 100%, so out-of-sRGB spots are cl
 RGB, CIE-based and ICCBased colors become CMYK through, in order:
 
 1. the CMYK profile of the page's or the document's output intent (a `GTS_PDFX` intent first),
-   when craft-cms can convert into it;
-2. `Options::fallback`: craft-cms's Coated FOGRA39 profile (the default), a profile the caller
+   when bharat-cms can convert into it;
+2. `Options::fallback`: bharat-cms's Coated FOGRA39 profile (the default), a profile the caller
    gives, or the ISO 32000-2 §10.4.2.4 device formulas.
 
 `Plates::conversion` says which was used. Conversions are relative colorimetric without black
@@ -84,7 +84,7 @@ separate as they are.
 | `MAX_SPOT_INKS` | 32 spot inks per page | A `DeviceN` space has at most 32 colorants, and each plate costs a render and a byte per pixel. Further spots are listed in `Plates::unseparated`. |
 | `MAX_PLATE_PIXELS` | 4 MP per plate (2000 × 2000) | A page with many inks stays within a few hundred megabytes. The resolution is lowered to fit; `Plates::dpi` reports the one used. |
 
-The renderer's side limit (`craft_pdf::raster::MAX_SIDE`) also lowers the resolution.
+The renderer's side limit (`bharat_pdf::raster::MAX_SIDE`) also lowers the resolution.
 
 ### Approximations
 
@@ -121,11 +121,11 @@ Overprint is already in the plates (the renderer decides per plate what overprin
 knocks out), so the preview shows it without rewriting any paint as a blend mode.
 
 ```rust
-use craft_prepress::{CmsConversion, InkId};
+use bharat_prepress::{CmsConversion, InkId};
 
 let cms = CmsConversion::fogra39();
 let mut enabled = vec![true; p.inks.len()];
-enabled[InkId::process(craft_prepress::Process::Black).index()] = false; // hide Black
+enabled[InkId::process(bharat_prepress::Process::Black).index()] = false; // hide Black
 let mut rgb = p.composite(&enabled, &cms);
 let over = p.above(300.0, &enabled);
 over.paint(&mut rgb, [255, 0, 255]); // TAC warning
@@ -159,7 +159,7 @@ Apply it in two places:
 
 ## Export
 
-`to_pdf_color(&color, &inks, &cms)` gives the krilla color (`craft_pdf::write::backend::color::Color`)
+`to_pdf_color(&color, &inks, &cms)` gives the krilla color (`bharat_pdf::write::backend::color::Color`)
 for an `InkColor`, choosing the color space from the inks it names:
 
 | Color | Written as |
@@ -176,7 +176,7 @@ A spot's alternate is `spot_cmyk`: a CMYK alternate as given, a Lab one converte
 32 colorants.
 
 ```rust
-use craft_prepress::{CmsConversion, InkColor, to_pdf_color};
+use bharat_prepress::{CmsConversion, InkColor, to_pdf_color};
 
 let cms = CmsConversion::fogra39();
 let printed = inks.resolve(&InkColor::Tints(vec![(gold, 1.0), (black, 0.5)]), &cms);
@@ -207,7 +207,7 @@ if let Some(color) = to_pdf_color(&printed, &inks, &cms) {
 - Plate mode, ink discovery, the output-intent handling and the coverage readings and
   composite (`Separations::above`, `stats`, `composite`) come from
   [storytold/pdfcraft#2770](https://github.com/storytold/pdfcraft/pull/2770) by Guillem Hermida
-  (guillehr2), with craft-cms in place of moxcms.
+  (guillehr2), with bharat-cms in place of moxcms.
 - Knockout groups in the renderer come from
   [storytold/pdfcraft#2974](https://github.com/storytold/pdfcraft/pull/2974) by mtlcl410.
 - The flattener's planar regions (`flatten::geom`) are ported from VectorCraft at commit

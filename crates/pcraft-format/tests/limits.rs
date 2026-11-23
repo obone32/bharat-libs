@@ -1,4 +1,4 @@
-use craft_pcraft_format::{Error, Limits, MAX_DEPTH, MAX_GROUP_DEPTH, MAX_MANIFEST_ITEMS, check_manifest, manifest_depth, parse_manifest};
+use bharat_pcraft_format::{Error, Limits, MAX_DEPTH, MAX_GROUP_DEPTH, MAX_MANIFEST_ITEMS, check_manifest, manifest_depth, parse_manifest};
 
 fn nested(depth: usize) -> Vec<u8> {
     let mut json = "[".repeat(depth).into_bytes();
@@ -90,8 +90,8 @@ fn invalid_or_trailing_json_is_a_json_error() {
 
 #[test]
 fn messages_read_as_photocraft_s() {
-    let none: &[craft_pcraft_format::Step] = &[];
-    let too_new = craft_pcraft_format::migrate(&mut serde_json::json!({"format_version": 2, "generator": "g"}), none, 1).err().map(|e| e.to_string());
+    let none: &[bharat_pcraft_format::Step] = &[];
+    let too_new = bharat_pcraft_format::migrate(&mut serde_json::json!({"format_version": 2, "generator": "g"}), none, 1).err().map(|e| e.to_string());
     assert_eq!(too_new.as_deref(), Some("bundle written by a newer version (format 2, this build reads up to 1)"));
     assert_eq!(Error::Corrupt("x".into()).to_string(), "corrupt .pcraft bundle: x");
     assert_eq!(Error::Unsupported("x".into()).to_string(), "unsupported .pcraft feature: x");

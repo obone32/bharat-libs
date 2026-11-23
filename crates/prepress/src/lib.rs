@@ -1,8 +1,8 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Prepress for the Craft apps: an ink model and ink manager shared by the writers,
+//! Prepress for the Bharat apps: an ink model and ink manager shared by the writers,
 //! plates rendered from a PDF, coverage and a color preview read from the plates, and process
-//! color conversion through craft-cms. See the README.
+//! color conversion through bharat-cms. See the README.
 
 pub mod cms;
 pub mod composite;

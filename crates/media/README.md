@@ -1,11 +1,11 @@
-# craft-media
+# bharat-media
 
-Media containers and bit-level I/O for the Craft apps: an MSB-first bit reader and writer,
+Media containers and bit-level I/O for the Bharat apps: an MSB-first bit reader and writer,
 clean-room ISO BMFF (MP4), QuickTime (MOV) and Matroska (MKV, WebM) demuxers and muxers, and an Ogg
 demuxer, written from the public specifications. No `unsafe`, no panics on malformed input, builds
 for `wasm32-unknown-unknown`. Dependencies: `thiserror` (for `isobmff`), `serde` (optional).
 
-Codecs are in separate crates that depend on this one: [`craft-audio`](../audio/README.md) for
+Codecs are in separate crates that depend on this one: [`bharat-audio`](../audio/README.md) for
 audio; video codecs will go in a separate crate. What both need lives here: the containers, the
 bit I/O, one `ByteSource` trait, and the [shared identifiers](#containers-codecs-and-codec-parameters)
 that codec crates use to describe a file and configure a decoder.
@@ -14,10 +14,10 @@ that codec crates use to describe a file and configure a decoder.
 
 | Feature | Module | Enables |
 |---|---|---|
-| `bitstream` | `craft_media::bitstream` | none |
-| `isobmff` | `craft_media::isobmff` | `bitstream`, `thiserror` |
-| `matroska` | `craft_media::matroska` | none |
-| `ogg` | `craft_media::ogg` | none |
+| `bitstream` | `bharat_media::bitstream` | none |
+| `isobmff` | `bharat_media::isobmff` | `bitstream`, `thiserror` |
+| `matroska` | `bharat_media::matroska` | none |
+| `ogg` | `bharat_media::ogg` | none |
 | (none) | `Container`, `CodecId`, `CodecParams`, `PcmFormat`, `xiph_lace`, `ByteSource`, `ReadSeekSource` | none |
 | `serde` | `Serialize`/`Deserialize` on `Container`, `CodecId`, `CodecParams` and `PcmFormat` | `serde` |
 
@@ -26,20 +26,20 @@ much code as `isobmff`, and most users of MP4/MOV (LightCraft, FigCraft, SoundCr
 do not read Matroska. `ogg` is opt-in as well. The features are independent.
 
 ```toml
-craft-media = { git = "https://github.com/storytold/craft-libs", rev = "<commit>", features = ["matroska"] }
+bharat-media = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>", features = ["matroska"] }
 ```
 
 A crate that needs only bit I/O (a codec) uses:
 
 ```toml
-craft-media = { git = "https://github.com/storytold/craft-libs", rev = "<commit>", default-features = false, features = ["bitstream"] }
+bharat-media = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>", default-features = false, features = ["bitstream"] }
 ```
 
 ## Boundaries
 
 - In scope: bit-level reading and writing, and container demuxing and muxing (boxes, sample
   tables, sample entries and codec configuration records) for audio and video tracks.
-- Out of scope: codecs. Audio codecs are in `craft-audio`; video codecs (H.264, HEVC, ProRes and
+- Out of scope: codecs. Audio codecs are in `bharat-audio`; video codecs (H.264, HEVC, ProRes and
   others) stay in the apps until a video crate exists. Containers only FilmCraft reads (MXF,
   MPEG-TS/PS, AVI) are not here yet.
 - Anything both the audio and the video codec crates need belongs here, so the two never depend
@@ -51,12 +51,12 @@ The code comes from FilmCraft's `filmcraft-bitstream`, `filmcraft-isobmff` and
 `filmcraft-matroska` crates at
 [storytold/filmcraft@6c3948a](https://github.com/storytold/filmcraft/commit/6c3948a36c80e4996d924766ba7157eec4fca85e).
 Public items keep their names and signatures, so FilmCraft can turn all three crates into
-re-exports (`pub use craft_media::isobmff::*;`), except for the renames below. Our own names use
+re-exports (`pub use bharat_media::isobmff::*;`), except for the renames below. Our own names use
 US spelling; names taken from a specification keep its spelling.
 
 Renamed:
 
-| FilmCraft | craft-media |
+| FilmCraft | bharat-media |
 |---|---|
 | `matroska::Colour` | `matroska::Color` |
 | `matroska::VideoInfo::colour` | `matroska::VideoInfo::color` |
@@ -81,8 +81,8 @@ Output that differs on valid input:
   labeled the signedness wrongly for the latter two. `raw ` under a sound handler reads as PCM.
 - Matroska `BlockDuration` is rounded to the nearest tick; FilmCraft truncated it.
 - A Matroska `TimestampScale` above 2³² is ignored, like a zero scale.
-- `matroska::MkvWriter` writes `MuxingApp` = `craft-media`, and `MuxOptions::default()` has
-  `writing_app` = `craft-media` (FilmCraft: `filmcraft-matroska` and `filmcraft`). Apps set
+- `matroska::MkvWriter` writes `MuxingApp` = `bharat-media`, and `MuxOptions::default()` has
+  `writing_app` = `bharat-media` (FilmCraft: `filmcraft-matroska` and `filmcraft`). Apps set
   `writing_app` to their own name.
 
 Other differences:
@@ -110,7 +110,7 @@ Other differences:
 - `isobmff::Mp4Writer::write_sample` returns an error when a track would pass 2³² − 1 samples
   (PCM: frames), the most `stsz` can count; FilmCraft clamped the count.
 - `isobmff::ByteSource`, `matroska::ByteSource` and `ogg::ByteSource` are one trait,
-  `craft_media::ByteSource` (with `ReadSeekSource`, which was Matroska's). A type FilmCraft
+  `bharat_media::ByteSource` (with `ReadSeekSource`, which was Matroska's). A type FilmCraft
   implements both traits for keeps one of its two impls.
 - `isobmff::Track`, `matroska::Track` and `ogg::Stream` have `codec_params()`, all returning a
   `CodecParams` (`CodecId::Unknown` for a codec without an identifier). The MP4 one describes
@@ -134,7 +134,7 @@ Other differences:
 ### Demuxing
 
 ```rust
-use craft_media::isobmff::{open, TrackKind};
+use bharat_media::isobmff::{open, TrackKind};
 
 let file = std::fs::File::open("clip.mov")?;
 let mp4 = open(&file)?;                        // any ByteSource: &[u8], Vec<u8>, Arc<[u8]>, File, ...
@@ -210,7 +210,7 @@ fragments) is capped at 2²⁶ samples.
 ### Muxing
 
 ```rust
-use craft_media::isobmff::*;
+use bharat_media::isobmff::*;
 let mut w = Mp4Writer::new(std::io::Cursor::new(Vec::new()), WriterOptions::new(Brand::Mp4))?;
 let v = w.add_track(TrackConfig::new(SampleEntry::avc(avcc, 1920, 1080), 90_000))?;
 let mut acfg = TrackConfig::new(SampleEntry::aac(asc, 2, 48_000), 48_000);
@@ -249,7 +249,7 @@ let bytes = w.finish_faststart()?.into_inner(); // or finish() for moov-at-end
 model: CR3 `uuid` boxes, HEIF `meta` items, JPEG 2000 (JP2, JPX, JPM, MJ2) boxes.
 
 ```rust
-use craft_media::isobmff::boxes::{BoxIter, Reader};
+use bharat_media::isobmff::boxes::{BoxIter, Reader};
 
 for b in BoxIter::new(&bytes) {
     let b = b?;
@@ -296,7 +296,7 @@ code (FFmpeg, libmatroska, mkvtoolnix) was consulted; FFmpeg is a test oracle on
 ### Demuxing
 
 ```rust
-use craft_media::matroska::{Demuxer, TrackKind, open};
+use bharat_media::matroska::{Demuxer, TrackKind, open};
 
 // Sample tables in the same shape as isobmff (any ByteSource: &[u8], Vec<u8>, Arc<[u8]>, File, ...)
 let file = std::fs::File::open("clip.mkv")?;
@@ -439,7 +439,7 @@ All are `#[non_exhaustive]`: new formats and fields are minor changes.
 
 ## `ByteSource`
 
-`craft_media::ByteSource` (`len`, `read_at(offset, buf)`) is what every demuxer reads from. It is
+`bharat_media::ByteSource` (`len`, `read_at(offset, buf)`) is what every demuxer reads from. It is
 always built, so a crate that uses only `bitstream` can name it too. `isobmff::ByteSource`,
 `matroska::ByteSource` and `ogg::ByteSource` are the same trait. It is implemented for `[u8]`,
 `Vec<u8>`, `&T`, `Arc<T>`, `Box<T>` and `std::fs::File` (not on wasm). `ReadSeekSource` adapts any
@@ -459,7 +459,7 @@ custom source (a web `Blob`, a network range reader) to use every container with
 - `tests/roundtrip.rs`: property tests that write random multi-track files (progressive and
   fragmented) and read them back.
 - `tests/oracle_demux.rs` and `tests/oracle_mux.rs` compare the demuxer and muxer with ffprobe and
-  ffmpeg on generated fixtures in `target/fixtures/isobmff/` (`$CRAFT_MEDIA_FIXTURES_DIR`
+  ffmpeg on generated fixtures in `target/fixtures/isobmff/` (`$BHARAT_MEDIA_FIXTURES_DIR`
   overrides it). Fixtures are never committed.
 - `tests/oracle_matroska.rs` compares every packet (stream, size, keyframe flag, pts, duration),
   codec names, time bases, dimensions and audio parameters with ffprobe on fixtures in
@@ -471,10 +471,10 @@ custom source (a web `Blob`, a network range reader) to use every container with
   `fuzz.rs` also walks every box of a mutated file as a container and checks that each payload
   range stays inside its parent.
 
-ffmpeg and ffprobe are test oracles only, never linked. The helpers are in `craft-media-testkit`
-(an unpublished crate, shared with craft-audio and the video crate to come). They are looked up in
-`$CRAFT_MEDIA_FFMPEG` / `$CRAFT_MEDIA_FFPROBE`, then `PATH`, then common install directories. When
-a tool is missing, the oracle tests print `SKIPPED` and pass; `CRAFT_MEDIA_REQUIRE_ORACLES=1` turns
+ffmpeg and ffprobe are test oracles only, never linked. The helpers are in `bharat-media-testkit`
+(an unpublished crate, shared with bharat-audio and the video crate to come). They are looked up in
+`$BHARAT_MEDIA_FFMPEG` / `$BHARAT_MEDIA_FFPROBE`, then `PATH`, then common install directories. When
+a tool is missing, the oracle tests print `SKIPPED` and pass; `BHARAT_MEDIA_REQUIRE_ORACLES=1` turns
 a skip into a failure. CI (`.github/workflows/media.yml`) sets it and installs Ubuntu's ffmpeg.
-craft-audio's oracle tests use the same variables. Generate every fixture ahead of time with
-`cargo test -p craft-media --all-features -- --ignored generate_fixtures`.
+bharat-audio's oracle tests use the same variables. Generate every fixture ahead of time with
+`cargo test -p bharat-media --all-features -- --ignored generate_fixtures`.

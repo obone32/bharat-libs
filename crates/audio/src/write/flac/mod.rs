@@ -8,7 +8,7 @@ mod md5;
 mod predict;
 
 #[cfg(test)]
-use craft_media_testkit as common;
+use bharat_media_testkit as common;
 #[cfg(test)]
 mod oracle_tests;
 

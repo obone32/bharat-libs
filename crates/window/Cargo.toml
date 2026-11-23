@@ -1,6 +1,6 @@
 [package]
-name = "craft-window"
-description = "Decide who draws the window frame (the desktop or the app) so every Craft app gets the same titlebar and borders per desktop, make an app-drawn strip act as the title bar, and keep the window list, cascade placement and Window menu for apps with one window per document."
+name = "bharat-window"
+description = "Decide who draws the window frame (the desktop or the app) so every Bharat app gets the same titlebar and borders per desktop, make an app-drawn strip act as the title bar, and keep the window list, cascade placement and Window menu for apps with one window per document."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

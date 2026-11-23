@@ -1,4 +1,4 @@
-//! Installing, updating, removing and starting Craft Apps.
+//! Installing, updating, removing and starting Bharat Apps.
 //!
 //! Apps go where their platform keeps applications, installed the platform's own way:
 //!
@@ -577,7 +577,7 @@ pub fn launch(app: &App, installed: &Installed, paths: &Paths) -> Result<(), Str
     .map_err(|e| format!("Couldn't open {}: {e}", app.name))
 }
 
-/// The environment a Craft App unpacked by the launcher runs with: its own `HOME` and the XDG
+/// The environment a Bharat App unpacked by the launcher runs with: its own `HOME` and the XDG
 /// base directories inside it. Apps read their settings from these, so everything they keep
 /// (settings, projects, caches) stays in that one folder.
 #[cfg(target_os = "linux")]
@@ -1373,7 +1373,7 @@ pub mod macos {
         Ok(user)
     }
 
-    /// The Apple Developer team that signs every Craft App and ArtCraft Launcher (Learning
+    /// The Apple Developer team that signs every Bharat App and ArtCraft Launcher (Learning
     /// Machines LLC): the macOS side of the Windows publisher check.
     pub const TEAM_ID: &str = "DJ6XS33FX8";
 
@@ -1990,7 +1990,7 @@ mod tests {
         assert_eq!(std::fs::read_dir(dir.path()).unwrap().count(), 0);
         #[cfg(unix)]
         {
-            let quoted = dir.path().join("Craft \"Apps\"");
+            let quoted = dir.path().join("Bharat \"Apps\"");
             std::fs::create_dir(&quoted).unwrap();
             assert_eq!(selected_folder(quoted.to_str().unwrap(), true).unwrap(), quoted);
         }
@@ -2040,9 +2040,9 @@ mod tests {
     fn msi_folder_assignment_preserves_spaces_unicode_and_root_separators() {
         for (value, argument) in [
             (r"D:\", r#"INSTALLFOLDER="D:\""#),
-            (r"D:\Craft Apps\PhotoCraft", r#"INSTALLFOLDER="D:\Craft Apps\PhotoCraft""#),
+            (r"D:\Bharat Apps\PhotoCraft", r#"INSTALLFOLDER="D:\Bharat Apps\PhotoCraft""#),
             (r"\\server\apps\绘画", r#"INSTALLFOLDER="\\server\apps\绘画""#),
-            (r"D:\Craft Apps\", r#"INSTALLFOLDER="D:\Craft Apps\""#),
+            (r"D:\Bharat Apps\", r#"INSTALLFOLDER="D:\Bharat Apps\""#),
         ] {
             assert_eq!(msi_folder_argument(Path::new(value)).unwrap(), argument);
         }
@@ -2054,7 +2054,7 @@ mod tests {
     #[test]
     fn appimage_updates_replace_only_the_recorded_file_in_the_same_folder() {
         let dir = tempfile::tempdir().unwrap();
-        let folder = dir.path().join("Craft Apps");
+        let folder = dir.path().join("Bharat Apps");
         std::fs::create_dir(&folder).unwrap();
         let download = dir.path().join("download");
         std::fs::write(&download, "first").unwrap();
@@ -3091,7 +3091,7 @@ esac
         #[test]
         fn custom_bundles_are_detected_and_updates_stay_in_their_actual_location() {
             let dir = tempfile::tempdir().unwrap();
-            let apps = dir.path().join("Craft Apps");
+            let apps = dir.path().join("Bharat Apps");
             std::fs::create_dir(&apps).unwrap();
             let paths = Paths::under(dir.path());
             let image = dmg(dir.path(), "0.6.0");
@@ -3201,12 +3201,12 @@ esac
             );
         }
 
-        /// A real release passes. Run with `CRAFT_APP=/path/to/PhotoCraft.app cargo test -p
+        /// A real release passes. Run with `BHARAT_APP=/path/to/PhotoCraft.app cargo test -p
         /// artcraft-launcher-native -- --ignored a_real_craft_app`.
         #[test]
-        #[ignore = "needs a Craft App from a real release"]
+        #[ignore = "needs a Bharat App from a real release"]
         fn a_real_craft_app_carries_the_teams_signature() {
-            let app = std::env::var("CRAFT_APP").expect("set CRAFT_APP to a Craft App bundle");
+            let app = std::env::var("BHARAT_APP").expect("set BHARAT_APP to a Bharat App bundle");
             assert!(signed_by(Path::new(&app), TEAM_ID), "{app} isn't signed by {TEAM_ID}");
         }
     }

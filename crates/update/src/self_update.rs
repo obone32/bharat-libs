@@ -1,6 +1,6 @@
 //! ArtCraft Launcher updating itself.
 //!
-//! The new version is downloaded and verified like any Craft App, then swapped in the way this
+//! The new version is downloaded and verified like any Bharat App, then swapped in the way this
 //! copy was installed. A small helper process waits for this launcher to exit, finishes anything
 //! that can't happen while it runs (Windows locks a running exe), and starts the new one. The
 //! launcher has to exit first anyway: it holds the single-instance lock, and a new copy started
@@ -81,7 +81,7 @@ impl Install {
 pub const PRETEND_VAR: &str = "ARTCRAFT_LAUNCHER_PRETEND_VERSION";
 
 /// Makes a development build believe it's an installed copy, to try the self-update.
-pub const DEV_VAR: &str = "CRAFT_UPDATE_DEV";
+pub const DEV_VAR: &str = "BHARAT_UPDATE_DEV";
 
 /// The version this app counts as (see [`PRETEND_VAR`]).
 pub fn current_version(app: &App, fallback_pkg_version: &str) -> Option<Version> {
@@ -1362,7 +1362,7 @@ mod tests {
         let other_in_folder = folder.join("other.exe");
         std::fs::write(&other_in_folder, "other").unwrap();
         let other_app = folder.join(format!("{}.exe", crate::suite::PHOTOCRAFT.id));
-        std::fs::write(&other_app, "another Craft app").unwrap();
+        std::fs::write(&other_app, "another Bharat app").unwrap();
         let staging = cache.join(PORTABLE_STAGING);
         let portable = |zip: &Path, tmp: &Path| Finish::Portable { zip: zip.to_path_buf(), tmp: tmp.to_path_buf() };
 
@@ -1373,7 +1373,7 @@ mod tests {
         assert!(check_helper(&crate::suite::LAUNCHER, &me, &paths, &other, &portable(&zip, &staging)).is_err());
         // A portable marker doesn't make a foreign executable the launcher.
         assert!(check_helper(&crate::suite::LAUNCHER, &me, &paths, &other_in_folder, &portable(&zip, &staging)).is_err());
-        // Another Craft App's executable is not the launcher, even in the same folder.
+        // Another Bharat App's executable is not the launcher, even in the same folder.
         assert!(check_helper(&crate::suite::LAUNCHER, &me, &paths, &other_app, &portable(&zip, &staging)).is_err());
         // A download from outside the cache.
         assert!(check_helper(&crate::suite::LAUNCHER, &me, &paths, &exe, &portable(&elsewhere, &staging)).is_err());
@@ -1817,9 +1817,9 @@ mod tests {
     fn a_development_build_under_a_custom_target_dir_is_detected() {
         let dir = tempfile::tempdir().unwrap();
         for exe in [
-            "debug/deps/craft_update-e8899812898c870d",
+            "debug/deps/bharat_update-e8899812898c870d",
             "release/artcraft-launcher",
-            "x86_64-pc-windows-gnu/debug/deps/craft_update-0123456789abcdef",
+            "x86_64-pc-windows-gnu/debug/deps/bharat_update-0123456789abcdef",
             "x86_64-pc-windows-gnu/my-profile/deps/artcraft-launcher-0123456789abcdef",
         ] {
             let exe = cargo_build_tree(dir.path(), "builds/egui037-craft-libs", exe);
@@ -1859,7 +1859,7 @@ mod tests {
     fn a_cargo_build_tree_without_rustc_info_is_detected() {
         let dir = tempfile::tempdir().unwrap();
         for (profile, exe) in [
-            ("debug", "debug/deps/craft_update-e8899812898c870d"),
+            ("debug", "debug/deps/bharat_update-e8899812898c870d"),
             ("release", "release/artcraft-launcher"),
             ("my-profile", "my-profile/artcraft-launcher"),
             ("x86_64-pc-windows-gnu/my-profile", "x86_64-pc-windows-gnu/my-profile/deps/artcraft-launcher-0123456789abcdef"),
@@ -1920,7 +1920,7 @@ mod tests {
         assert!(!is_development_build(&exe, false), "a directory named CACHEDIR.TAG");
     }
 
-    /// `CRAFT_UPDATE_DEV` still lets a development build try the self-update.
+    /// `BHARAT_UPDATE_DEV` still lets a development build try the self-update.
     #[test]
     fn a_development_build_can_opt_in_to_updating_itself() {
         let dir = tempfile::tempdir().unwrap();
@@ -1940,7 +1940,7 @@ mod tests {
     fn a_development_build_does_not_update_itself() {
         // An archived test runner may relocate its executable without Cargo's metadata.
         // Supply a complete cache-disabled build tree so this checks the updater guard,
-        // independent of the runner's location and the ambient `CRAFT_UPDATE_DEV` value.
+        // independent of the runner's location and the ambient `BHARAT_UPDATE_DEV` value.
         let dir = tempfile::tempdir().unwrap();
         let exe = cargo_build_tree_without_rustc_info(dir.path(), "debug", "debug/deps/artcraft-launcher");
         assert!(is_development_build(&exe, false), "{} should be inside a Cargo target directory", exe.display());

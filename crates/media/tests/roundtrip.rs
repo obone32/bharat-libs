@@ -1,6 +1,6 @@
 //! Property tests: write with our muxers, read back, compare sample tables and bytes.
 
-use craft_media::isobmff::*;
+use bharat_media::isobmff::*;
 use proptest::prelude::*;
 use std::collections::BTreeMap;
 use std::io::{Cursor, Seek, SeekFrom, Write};

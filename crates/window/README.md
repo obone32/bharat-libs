@@ -1,7 +1,7 @@
-craft-window
+bharat-window
 ============
 
-Decide who draws the window frame — the desktop or the app — so every Craft app shows the same
+Decide who draws the window frame — the desktop or the app — so every Bharat app shows the same
 titlebar and borders on a given desktop, make the app's own top strip act as the title bar
 when it draws one, and keep the window list, cascade placement and Window menu for apps with one
 window per document.
@@ -15,7 +15,7 @@ and draw their own. Across the suite this had drifted:
 - some always kept the desktop's,
 - some probed the compositor and only drew their own on GNOME.
 
-So two Craft apps open side by side on KDE could wear different titlebars. This crate makes the
+So two Bharat apps open side by side on KDE could wear different titlebars. This crate makes the
 decision in one place, matching each desktop.
 
 ## The rule
@@ -34,14 +34,14 @@ title bars differ.
 
 ### Override
 
-`<PREFIX>_TITLEBAR` forces the choice. With the default prefix `CRAFT`: `CRAFT_TITLEBAR=app` forces
+`<PREFIX>_TITLEBAR` forces the choice. With the default prefix `BHARAT`: `BHARAT_TITLEBAR=app` forces
 the app frame, `=system` (or `=desktop`) forces the desktop frame. Apps pass their own prefix
 (`Prefix::new("PDFCRAFT")` → `PDFCRAFT_TITLEBAR`) so each keeps its own variable name.
 
 ## Use
 
 ```rust,ignore
-use craft_window::{Choice, Prefix, decorate};
+use bharat_window::{Choice, Prefix, decorate};
 
 // Once at startup, before the window is created:
 let choice = Choice::probe(Prefix::new("PHOTOCRAFT"));
@@ -62,7 +62,7 @@ The `egui` feature adds [`decorate`], the [`title_bar`](#the-apps-own-title-bar)
 ## The app's own title bar
 
 An app that draws over the title bar — a hidden macOS title bar with a full-size content view, or
-`Frame::App` — makes its top strip act as one with `craft_window::title_bar` (`egui` feature):
+`Frame::App` — makes its top strip act as one with `bharat_window::title_bar` (`egui` feature):
 
 | Where the drag or double-click starts | What happens |
 | --- | --- |
@@ -75,12 +75,12 @@ An app that draws over the title bar — a hidden macOS title bar with a full-si
 ```rust,ignore
 egui::Panel::top("app_bar").show(ui, |ui| {
     // Before the bar's controls, so they sit on top and take their own clicks.
-    craft_window::title_bar::empty_area(ui, ui.max_rect());
+    bharat_window::title_bar::empty_area(ui, ui.max_rect());
     // ... the bar's controls ...
 });
 // macOS, once per frame after the UI: `applied` is app state, starting at `None`.
 #[cfg(target_os = "macos")]
-craft_window::title_bar::sync_movable(ui.ctx(), &mut self.applied);
+bharat_window::title_bar::sync_movable(ui.ctx(), &mut self.applied);
 ```
 
 On macOS, AppKit moves a full-size-content window from a drag anywhere in the title-bar band, the
@@ -124,7 +124,7 @@ With the `egui` feature, `Viewports` shows the windows as egui immediate viewpor
   to the root in the same frame unless the app should quit.
 
 ```rust,ignore
-use craft_window::{Document, Viewports, WindowEvent, WindowList, WindowMenu};
+use bharat_window::{Document, Viewports, WindowEvent, WindowList, WindowMenu};
 
 let menu = WindowMenu::new(&windows, |_, w| Document { key: w.doc, name: name_of(w.doc), dirty: is_dirty(w.doc) });
 let base = egui::ViewportBuilder::default().with_inner_size([1000.0, 700.0]);

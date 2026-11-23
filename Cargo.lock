@@ -771,7 +771,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-ai-core"
+name = "bharat-ai-core"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -780,18 +780,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-atomic"
+name = "bharat-atomic"
 version = "0.1.0"
 dependencies = [
  "rustix 1.1.5",
 ]
 
 [[package]]
-name = "craft-audio"
+name = "bharat-audio"
 version = "0.1.0"
 dependencies = [
- "craft-media",
- "craft-media-testkit",
+ "bharat-media",
+ "bharat-media-testkit",
  "log",
  "proptest",
  "serde",
@@ -801,7 +801,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-cms"
+name = "bharat-cms"
 version = "0.1.0"
 dependencies = [
  "moxcms",
@@ -809,7 +809,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-crw"
+name = "bharat-crw"
 version = "0.1.0"
 dependencies = [
  "proptest",
@@ -820,7 +820,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-dialogs"
+name = "bharat-dialogs"
 version = "0.1.0"
 dependencies = [
  "block2 0.6.2",
@@ -832,13 +832,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-doc"
+name = "bharat-doc"
 version = "0.1.0"
 dependencies = [
  "blake3",
- "craft-ecproj-format",
- "craft-pcraft-format",
- "craft-vectorcraft-format",
+ "bharat-ecproj-format",
+ "bharat-pcraft-format",
+ "bharat-vectorcraft-format",
  "flate2",
  "proptest",
  "ruzstd",
@@ -848,11 +848,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-docpath"
+name = "bharat-docpath"
 version = "0.1.0"
 
 [[package]]
-name = "craft-ecproj-format"
+name = "bharat-ecproj-format"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -861,7 +861,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-font-catalog"
+name = "bharat-font-catalog"
 version = "0.1.0"
 dependencies = [
  "fontique",
@@ -872,13 +872,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-font-manager"
+name = "bharat-font-manager"
 version = "0.1.0"
 dependencies = [
- "craft-font-catalog",
- "craft-font-store",
- "craft-i18n",
- "craft-ui",
+ "bharat-font-catalog",
+ "bharat-font-store",
+ "bharat-i18n",
+ "bharat-ui",
  "egui",
  "egui_kittest",
  "egui_system_font_provider",
@@ -889,11 +889,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-font-store"
+name = "bharat-font-store"
 version = "0.1.0"
 dependencies = [
- "craft-atomic",
- "craft-font-catalog",
+ "bharat-atomic",
+ "bharat-font-catalog",
  "flate2",
  "log",
  "ruzstd",
@@ -909,23 +909,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-fonts-build"
+name = "bharat-fonts-build"
 version = "0.1.0"
 dependencies = [
- "craft-fonts-build-consumer",
+ "bharat-fonts-build-consumer",
  "skera",
  "skrifa 0.48.0",
 ]
 
 [[package]]
-name = "craft-fonts-build-consumer"
+name = "bharat-fonts-build-consumer"
 version = "0.1.0"
 dependencies = [
- "craft-fonts-build",
+ "bharat-fonts-build",
 ]
 
 [[package]]
-name = "craft-i18n"
+name = "bharat-i18n"
 version = "0.1.0"
 dependencies = [
  "fixed_decimal",
@@ -948,7 +948,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-jpeg"
+name = "bharat-jpeg"
 version = "0.1.0"
 dependencies = [
  "jpeg-encoder",
@@ -957,12 +957,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-keymap"
+name = "bharat-keymap"
 version = "0.1.0"
 dependencies = [
- "craft-i18n",
- "craft-settings",
- "craft-ui",
+ "bharat-i18n",
+ "bharat-settings",
+ "bharat-ui",
  "egui",
  "egui_kittest",
  "image",
@@ -973,10 +973,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-media"
+name = "bharat-media"
 version = "0.1.0"
 dependencies = [
- "craft-media-testkit",
+ "bharat-media-testkit",
  "proptest",
  "serde",
  "serde_json",
@@ -984,15 +984,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-media-testkit"
+name = "bharat-media-testkit"
 version = "0.1.0"
 
 [[package]]
-name = "craft-menu"
+name = "bharat-menu"
 version = "0.1.0"
 dependencies = [
- "craft-keymap",
- "craft-quit",
+ "bharat-keymap",
+ "bharat-quit",
  "egui",
  "muda",
  "objc2 0.6.5",
@@ -1000,7 +1000,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-pcraft-format"
+name = "bharat-pcraft-format"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -1009,7 +1009,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-pdf"
+name = "bharat-pdf"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
@@ -1025,11 +1025,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-plate-test"
+name = "bharat-plate-test"
 version = "0.1.0"
 dependencies = [
- "craft-cms",
- "craft-pdf",
+ "bharat-cms",
+ "bharat-pdf",
  "hayro-syntax",
  "serde",
  "serde_json",
@@ -1038,7 +1038,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-platform"
+name = "bharat-platform"
 version = "0.1.0"
 dependencies = [
  "async-channel",
@@ -1055,12 +1055,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-prepress"
+name = "bharat-prepress"
 version = "0.1.0"
 dependencies = [
- "craft-cms",
- "craft-pdf",
- "craft-plate-test",
+ "bharat-cms",
+ "bharat-pdf",
+ "bharat-plate-test",
  "kurbo 0.13.1",
  "linesweeper",
  "thiserror 2.0.21",
@@ -1068,10 +1068,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-print"
+name = "bharat-print"
 version = "0.1.0"
 dependencies = [
- "craft-winprint-gdi",
+ "bharat-winprint-gdi",
  "log",
  "miniz_oxide 0.9.1",
  "roxmltree 0.21.2",
@@ -1081,7 +1081,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-proof"
+name = "bharat-proof"
 version = "0.1.0"
 dependencies = [
  "log",
@@ -1092,7 +1092,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-quit"
+name = "bharat-quit"
 version = "0.1.0"
 dependencies = [
  "dispatch2",
@@ -1103,10 +1103,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-settings"
+name = "bharat-settings"
 version = "0.1.0"
 dependencies = [
- "craft-atomic",
+ "bharat-atomic",
  "dirs",
  "serde",
  "tempfile",
@@ -1114,7 +1114,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-text"
+name = "bharat-text"
 version = "0.1.0"
 dependencies = [
  "hypher",
@@ -1128,11 +1128,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-ui"
+name = "bharat-ui"
 version = "0.1.0"
 dependencies = [
- "craft-fonts-build",
- "craft-i18n",
+ "bharat-fonts-build",
+ "bharat-i18n",
  "eframe",
  "egui",
  "egui_extras",
@@ -1156,7 +1156,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-update"
+name = "bharat-update"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -1183,7 +1183,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-vectorcraft-format"
+name = "bharat-vectorcraft-format"
 version = "0.1.0"
 dependencies = [
  "flate2",
@@ -1193,7 +1193,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-web-api"
+name = "bharat-web-api"
 version = "0.1.0"
 dependencies = [
  "js-sys",
@@ -1204,7 +1204,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-web-host"
+name = "bharat-web-host"
 version = "0.1.0"
 dependencies = [
  "wasm-bindgen",
@@ -1213,7 +1213,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-window"
+name = "bharat-window"
 version = "0.1.0"
 dependencies = [
  "egui",
@@ -1223,9 +1223,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-winprint-gdi"
+name = "bharat-winprint-gdi"
 version = "0.1.0"
-source = "git+https://github.com/storytold/winprint.rs?rev=417ac3c4d14d3da5485a99c7d5ce8f05664ec312#417ac3c4d14d3da5485a99c7d5ce8f05664ec312"
+source = "git+https://github.com/obone32/bharat-winprint?rev=417ac3c4d14d3da5485a99c7d5ce8f05664ec312#417ac3c4d14d3da5485a99c7d5ce8f05664ec312"
 dependencies = [
  "windows-sys 0.61.2",
 ]
@@ -1455,7 +1455,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 [[package]]
 name = "ecolor"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "emath",
@@ -1465,7 +1465,7 @@ dependencies = [
 [[package]]
 name = "eframe"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -1500,7 +1500,7 @@ dependencies = [
 [[package]]
 name = "egui"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "accesskit",
  "ahash",
@@ -1520,7 +1520,7 @@ dependencies = [
 [[package]]
 name = "egui-wgpu"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -1539,7 +1539,7 @@ dependencies = [
 [[package]]
 name = "egui-winit"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "block2 0.6.2",
  "bytemuck",
@@ -1559,7 +1559,7 @@ dependencies = [
 [[package]]
 name = "egui_extras"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "egui",
@@ -1573,7 +1573,7 @@ dependencies = [
 [[package]]
 name = "egui_glow"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "egui",
@@ -1586,7 +1586,7 @@ dependencies = [
 [[package]]
 name = "egui_kittest"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "dify",
  "eframe",
@@ -1606,7 +1606,7 @@ dependencies = [
 [[package]]
 name = "egui_system_font_provider"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "epaint",
  "fontique",
@@ -1626,7 +1626,7 @@ checksum = "0e9c71c2167ca323c882b99918929403426e2373ea17242ff5653e0d5e1058be"
 [[package]]
 name = "emath"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "serde",
@@ -1719,7 +1719,7 @@ dependencies = [
 [[package]]
 name = "epaint"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -1746,7 +1746,7 @@ dependencies = [
 [[package]]
 name = "epaint_default_fonts"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[package]]
 name = "equivalent"
@@ -6982,7 +6982,7 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 [[package]]
 name = "winit"
 version = "0.30.13"
-source = "git+https://github.com/storytold/winit.git?rev=a517b3846ee8457d84ee4975110bfda6797c44dc#a517b3846ee8457d84ee4975110bfda6797c44dc"
+source = "git+https://github.com/obone32/bharat-winit?rev=a517b3846ee8457d84ee4975110bfda6797c44dc#a517b3846ee8457d84ee4975110bfda6797c44dc"
 dependencies = [
  "android-activity",
  "atomic-waker",
@@ -7034,7 +7034,7 @@ dependencies = [
 [[package]]
 name = "winprint"
 version = "0.2.1"
-source = "git+https://github.com/storytold/winprint.rs?rev=5f80b9baf6b58937c401656634e42d33f00ddf49#5f80b9baf6b58937c401656634e42d33f00ddf49"
+source = "git+https://github.com/obone32/bharat-winprint?rev=5f80b9baf6b58937c401656634e42d33f00ddf49#5f80b9baf6b58937c401656634e42d33f00ddf49"
 dependencies = [
  "flate2",
  "fmt-derive",
@@ -7514,9 +7514,9 @@ dependencies = [
 [[patch.unused]]
 name = "egui_demo_lib"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[patch.unused]]
 name = "egui_inspection"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"

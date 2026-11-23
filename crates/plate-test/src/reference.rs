@@ -1,4 +1,4 @@
-//! The reference writer: draws a scene with krilla through craft-pdf.
+//! The reference writer: draws a scene with krilla through bharat-pdf.
 //!
 //! Each scene feature maps to one plain krilla call, so the output shows what the shared writer
 //! does on its own. Features the writer can't express yet return [`Error::Unsupported`] before
@@ -8,9 +8,9 @@ use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use craft_pdf::write::backend as krilla;
-use craft_pdf::write::print::{self, PrintColor};
-use craft_pdf::write::{self, Metadata, Writer};
+use bharat_pdf::write::backend as krilla;
+use bharat_pdf::write::print::{self, PrintColor};
+use bharat_pdf::write::{self, Metadata, Writer};
 use krilla::blend::{BlendMode, GroupOptions, Overprint};
 use krilla::color::device_n::{self, Colorant, DeviceNSpace, Process};
 use krilla::color::separation::{SeparationColorant, SeparationSpace};
@@ -31,7 +31,7 @@ use crate::scene::{Blend, GroupCs, ImageSource, Kind, MAX_NESTING, MaskKind, Nam
 /// The font used for text objects, from `scripts/fetch-pdf-test-fonts.py`.
 pub const FONT_FILE: &str = "Inter-Regular.ttf";
 /// Directory holding [`FONT_FILE`].
-pub const FONT_DIR_ENV: &str = "CRAFT_PDF_TEST_FONT_DIR";
+pub const FONT_DIR_ENV: &str = "BHARAT_PDF_TEST_FONT_DIR";
 
 /// What a scene may refer to outside itself.
 pub struct Context<'a> {
@@ -112,7 +112,7 @@ fn settings(scene: &Scene) -> Result<krilla::SerializeSettings, Error> {
 /// The printing condition for each name in [`OUTPUT_INTENTS`](crate::scene::OUTPUT_INTENTS).
 fn print_color(name: &str) -> Option<PrintColor<'static>> {
     match name {
-        "fogra39" => Some(PrintColor::fogra39(craft_cms::builtin::COATED_FOGRA39_ICC)),
+        "fogra39" => Some(PrintColor::fogra39(bharat_cms::builtin::COATED_FOGRA39_ICC)),
         _ => None,
     }
 }

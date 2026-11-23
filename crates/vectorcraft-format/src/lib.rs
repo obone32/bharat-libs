@@ -87,10 +87,10 @@ pub enum Error {
 /// Other crates match it with a wildcard arm:
 ///
 /// ```compile_fail
-/// fn name(e: craft_vectorcraft_format::ReadError) -> &'static str {
+/// fn name(e: bharat_vectorcraft_format::ReadError) -> &'static str {
 ///     match e {
-///         craft_vectorcraft_format::ReadError::Json(_) => "json",
-///         craft_vectorcraft_format::ReadError::Envelope(_) => "envelope",
+///         bharat_vectorcraft_format::ReadError::Json(_) => "json",
+///         bharat_vectorcraft_format::ReadError::Envelope(_) => "envelope",
 ///     }
 /// }
 /// ```
@@ -115,7 +115,7 @@ pub enum ReadError {
 /// Other crates start one with [`File::new`] and set its members:
 ///
 /// ```compile_fail
-/// let _ = craft_vectorcraft_format::File {
+/// let _ = bharat_vectorcraft_format::File {
 ///     format: "vectorcraft".into(), version: 4, generator: None, preview: None,
 ///     profiles: Default::default(), pdf: None, document: 0, images: Default::default(),
 /// };
@@ -316,7 +316,7 @@ pub fn check(format: &str, version: u32) -> Result<(), Error> {
 /// `preview` and `pdf`, in the order of the array form. Only [`Contents::read`] makes one:
 ///
 /// ```compile_fail
-/// let _ = craft_vectorcraft_format::Contents {
+/// let _ = bharat_vectorcraft_format::Contents {
 ///     format: "vectorcraft".into(), version: 4, document: 0,
 ///     images: Default::default(), profiles: Default::default(),
 /// };
@@ -354,7 +354,7 @@ impl<D> Contents<D> {
 /// `pdf` is refused.
 ///
 /// ```compile_fail
-/// let _ = craft_vectorcraft_format::Head { preview: None, pdf: None };
+/// let _ = bharat_vectorcraft_format::Head { preview: None, pdf: None };
 /// ```
 #[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
 #[non_exhaustive]
@@ -369,7 +369,7 @@ pub struct Head {
 /// one with [`Image::inline`], [`Tail::image`] or `Image::default()`:
 ///
 /// ```compile_fail
-/// let _ = craft_vectorcraft_format::Image { mime: String::new(), data: String::new(), blob: None, proxy: false };
+/// let _ = bharat_vectorcraft_format::Image { mime: String::new(), data: String::new(), blob: None, proxy: false };
 /// ```
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[non_exhaustive]
@@ -644,7 +644,7 @@ pub fn marker_at(file: &[u8]) -> Option<usize> {
 /// One entry placed after the JSON by [`Tail::image`].
 ///
 /// ```compile_fail
-/// let _ = craft_vectorcraft_format::Part { mime: String::new(), bytes: &[] };
+/// let _ = bharat_vectorcraft_format::Part { mime: String::new(), bytes: &[] };
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[non_exhaustive]

@@ -16,7 +16,7 @@ use backend::page::PageSettings;
 use backend::paint::Fill;
 use backend::surface::Surface;
 use backend::tagging::ContentTag;
-use craft_pdf::write::{self, Metadata, WriteError, Writer, backend};
+use bharat_pdf::write::{self, Metadata, WriteError, Writer, backend};
 use hayro_syntax::object::{Array, Dict, Name, Stream, String as PdfString};
 
 const NOTES: &str = "注記";

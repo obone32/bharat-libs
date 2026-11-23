@@ -1,6 +1,6 @@
 //! The font store folder: consent, installs, the manifest, removal and checks.
 //!
-//! Layout of the folder ([`craft_font_catalog::font_store_dir`]):
+//! Layout of the folder ([`bharat_font_catalog::font_store_dir`]):
 //!
 //! ```text
 //! settings.json        the consent setting and the sources the user added
@@ -20,7 +20,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, SystemTime};
 
-use craft_font_catalog::{Catalog, FontEnv, font_store_dir};
+use bharat_font_catalog::{Catalog, FontEnv, font_store_dir};
 use serde::{Deserialize, Serialize};
 
 use crate::http::{Cancel, Client, FetchError};
@@ -744,7 +744,7 @@ impl FontStore {
 
     pub(crate) fn write_file(&self, name: &str, bytes: &[u8]) -> Result<(), Error> {
         std::fs::create_dir_all(&self.dir).map_err(io("creating the font store folder"))?;
-        craft_atomic::atomic_write(&self.dir.join(name), bytes).map_err(io(format!("saving {name}")))
+        bharat_atomic::atomic_write(&self.dir.join(name), bytes).map_err(io(format!("saving {name}")))
     }
 
     pub(crate) fn sweep_staging(&self) {

@@ -1,6 +1,6 @@
 //! Deterministic mutation fuzzing of the Matroska demuxer: it must never panic on corrupted input.
 
-use craft_media::matroska::*;
+use bharat_media::matroska::*;
 use std::io::Cursor;
 
 struct Rng(u64);

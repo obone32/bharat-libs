@@ -1,7 +1,7 @@
 //! The bridge an app's web shell calls: find the host, hear its messages, post the app's.
 //!
 //! ```ignore
-//! if let Some(host) = craft_web_host::web::Host::connect("pdfcraft", &canvas) {
+//! if let Some(host) = bharat_web_host::web::Host::connect("pdfcraft", &canvas) {
 //!     host.listen(move |message| inbox.push(message));
 //!     host.post_ready(env!("CARGO_PKG_VERSION"), false);
 //! }

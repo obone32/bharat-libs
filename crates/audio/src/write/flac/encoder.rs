@@ -93,7 +93,7 @@ impl Encoder {
         let mut v = b"fLaC".to_vec();
         v.extend_from_slice(&[0, 0, 0, 34]);
         v.extend_from_slice(&self.streaminfo_with(0, 0, 0, [0; 16]));
-        let vendor = concat!("craft-audio ", env!("CARGO_PKG_VERSION"));
+        let vendor = concat!("bharat-audio ", env!("CARGO_PKG_VERSION"));
         let len = 4 + vendor.len() + 4 + comments.iter().map(|c| 4 + c.len()).sum::<usize>();
         // last metadata block, type 4 (VORBIS_COMMENT), little-endian lengths inside
         v.push(0x84);
@@ -114,7 +114,7 @@ impl Encoder {
     }
 
     fn streaminfo_with(&self, min_frame: u32, max_frame: u32, total: u64, md5: [u8; 16]) -> [u8; 34] {
-        let mut w = craft_media::bitstream::BitWriter::new();
+        let mut w = bharat_media::bitstream::BitWriter::new();
         let bs = u32::from(self.cfg.block_size);
         w.write_bits(bs, 16);
         w.write_bits(bs, 16);

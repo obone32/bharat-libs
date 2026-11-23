@@ -1,9 +1,9 @@
-//! `craft_audio::decode` routes each container and codec below to the home-grown demuxers and
+//! `bharat_audio::decode` routes each container and codec below to the home-grown demuxers and
 //! decoders, or to symphonia (FLAC): each pair decodes, sample-aligned, to its presentation
 //! length, within an SNR of ffmpeg's decode; truncated and corrupted copies never panic. Fixtures are written by ffmpeg
 //! (skipped without it).
 
-use craft_audio::{ChannelLayout, CodecId, Container, decode, probe};
+use bharat_audio::{ChannelLayout, CodecId, Container, decode, probe};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -187,7 +187,7 @@ fn snr_planar(ours: &[Vec<f32>], reference: &[Vec<f32>]) -> f64 {
 /// codecs; within the codec's bound where the decoder state is reconstructed from a pre-roll).
 #[test]
 fn streaming_and_seeking_match_the_whole_file_decode() {
-    use craft_audio::{DecodeOptions, Decoder};
+    use bharat_audio::{DecodeOptions, Decoder};
     let ff = require_ffmpeg!();
     for c in CASES {
         let Some(path) = fixture(&ff, c) else { continue };
@@ -218,12 +218,12 @@ fn streaming_and_seeking_match_the_whole_file_decode() {
     }
 }
 
-/// `TrackDecoder` on the packets craft-media's demuxer reads gives the audio `decode` presents:
+/// `TrackDecoder` on the packets bharat-media's demuxer reads gives the audio `decode` presents:
 /// the same samples once the container's priming is skipped.
 #[test]
 fn track_decoder_on_demuxed_packets_matches_decode() {
-    use craft_audio::TrackDecoder;
-    use craft_media::isobmff;
+    use bharat_audio::TrackDecoder;
+    use bharat_media::isobmff;
     let ff = require_ffmpeg!();
     for name in ["pcm-s24be.mov"] {
         let c = CASES.iter().find(|c| c.name == name).unwrap();
@@ -255,7 +255,7 @@ fn track_decoder_on_demuxed_packets_matches_decode() {
 /// a longer decode.
 #[test]
 fn track_choice_and_the_sample_limit() {
-    use craft_audio::{AudioError, DecodeOptions, decode_with, tracks};
+    use bharat_audio::{AudioError, DecodeOptions, decode_with, tracks};
     let ff = require_ffmpeg!();
     for ext in ["mkv", "mov"] {
         let out = crate::testkit::fixtures_dir("routing").join(format!("two-tracks-pcm.{ext}"));
@@ -304,7 +304,7 @@ fn track_choice_and_the_sample_limit() {
 /// `Decoder::open` reads from a file without loading it.
 #[test]
 fn decoder_reads_from_a_file() {
-    use craft_audio::{DecodeOptions, Decoder};
+    use bharat_audio::{DecodeOptions, Decoder};
     let ff = require_ffmpeg!();
     let c = CASES.iter().find(|c| c.name == "pcm-s24be.mov").unwrap();
     let Some(path) = fixture(&ff, c) else { return };

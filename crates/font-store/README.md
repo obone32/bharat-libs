@@ -1,8 +1,8 @@
-# craft-font-store
+# bharat-font-store
 
-The suite's font store: the font indexes of every source, exact lookup of a missing font, and verified installs into the one folder every app's font catalog reads ([`craft-font-catalog`](../font-catalog/README.md)'s `font_store_dir`).
+The suite's font store: the font indexes of every source, exact lookup of a missing font, and verified installs into the one folder every app's font catalog reads ([`bharat-font-catalog`](../font-catalog/README.md)'s `font_store_dir`).
 
-The indexes are [aiongg/craft-font-index](https://github.com/aiongg/craft-font-index) (format 1.x), designed by @kntrttm for photocraft#1135 and #2453. Every font file and licence in an index has a size and a sha256, and only families under a licence that allows redistribution (OFL, Apache 2.0, Ubuntu Font Licence) are listed.
+The indexes are [aiongg/bharat-font-index](https://github.com/aiongg/bharat-font-index) (format 1.x), designed by @kntrttm for photocraft#1135 and #2453. Every font file and licence in an index has a size and a sha256, and only families under a licence that allows redistribution (OFL, Apache 2.0, Ubuntu Font Licence) are listed.
 
 ## Sources
 
@@ -28,7 +28,7 @@ A source the user adds is an index file at an https URL (`.json` or `.json.gz`).
 | Off until the user turns it on | `FontStore::network()` is `Network::Off` until `enable_network()`. The setting is `settings.json` in the store folder, so it holds for every app. |
 | Only the user turns it on | `FontStore::for_user` is for the app's own interface; call `enable_network()` from a setting or from the user's Install click. `FontStore::for_agent` (MCP, CLI, scripting) gets `Error::NotAllowed`. An agent can install while the user has the network on. |
 | No requests at startup | Nothing in the crate makes a request on its own. Only `fetch_indexes` and the installs do, and they return `Error::NetworkOff` without one while the network is off. |
-| One HTTP client | `Client`: ureq with rustls and the webpki roots, HTTPS only, no cookies, `User-Agent: craft-font-store/<version>`. Timeouts: 15 s to connect, 30 s to the response headers, 10 minutes per file. |
+| One HTTP client | `Client`: ureq with rustls and the webpki roots, HTTPS only, no cookies, `User-Agent: bharat-font-store/<version>`. Timeouts: 15 s to connect, 30 s to the response headers, 10 minutes per file. |
 
 A file's URLs come from its source's URL templates, best first. Both built-in sources use `https://cdn.jsdelivr.net/gh/{repo}@{ref}/{path}`, then `https://raw.githubusercontent.com/{repo}/{ref}/{path}`. The store tries the next URL after any failure: a network error, an HTTP error (jsDelivr answers 403 for files over 20 MB, such as the Noto Serif CJK fonts), or bytes that don't verify.
 
@@ -66,8 +66,8 @@ A family without the style asked for is `Unavailable::NoStyle`: the store never 
 ## Installing
 
 ```rust
-use craft_font_catalog::{Catalog, FontEnv};
-use craft_font_store::{Cancel, FontStore, Index};
+use bharat_font_catalog::{Catalog, FontEnv};
+use bharat_font_store::{Cancel, FontStore, Index};
 
 let store = FontStore::for_user(&FontEnv::from_process()).unwrap().with_catalog(Catalog::global().clone());
 let index = store.offline_indexes();
@@ -85,7 +85,7 @@ store.install_face(&index, face, &cancel, &mut |p| println!("{} of {} bytes", p.
 
 The licence file (`OFL.txt`, `LICENSE`) is checked against its size and sha256 and goes beside the fonts. For a format 1.0 index, which has no sha256 for it, only its size is checked (1 MiB at most).
 
-When every file has passed, the store takes `.lock`, moves the files into the family's folder and writes `manifest.json` (written atomically through `craft-atomic`). If a move or the manifest fails, the files moved so far are taken back out and replaced files are restored. A failed or cancelled install leaves nothing behind. Files already installed with the same sha256 aren't downloaded again.
+When every file has passed, the store takes `.lock`, moves the files into the family's folder and writes `manifest.json` (written atomically through `bharat-atomic`). If a move or the manifest fails, the files moved so far are taken back out and replaced files are restored. A failed or cancelled install leaves nothing behind. Files already installed with the same sha256 aren't downloaded again.
 
 ## The store folder
 
@@ -117,14 +117,14 @@ The catalog scans the store folder. With `with_catalog(catalog)`, every install 
 
 ## Language packs
 
-The store's second item kind, `language-pack`: a language's spelling dictionary, hyphenation patterns and licence texts, published by [storytold/craft-i18n](https://github.com/storytold/craft-i18n) as `<locale>.tar.zst` release assets listed in an `index.json`, and read at runtime by `craft-proof` (`craft_proof::packs`). It reuses the store's folder, consent, HTTP client, staging and sha256 checks; there is no second downloader.
+The store's second item kind, `language-pack`: a language's spelling dictionary, hyphenation patterns and licence texts, published by [obone32/bharat-i18n](https://github.com/obone32/bharat-i18n) as `<locale>.tar.zst` release assets listed in an `index.json`, and read at runtime by `bharat-proof` (`bharat_proof::packs`). It reuses the store's folder, consent, HTTP client, staging and sha256 checks; there is no second downloader.
 
 ```rust
-const PACKS: PackIndexPin = PackIndexPin { url: "https://github.com/storytold/craft-i18n/releases/download/language-packs-1/index.json", sha256: "<hex>" };
+const PACKS: PackIndexPin = PackIndexPin { url: "https://github.com/obone32/bharat-i18n/releases/download/language-packs-1/index.json", sha256: "<hex>" };
 let index = store.fetch_language_pack_index(&PACKS, &Cancel::new())?;   // or cached_language_pack_index(&PACKS)
 let nl = index.pack("nl").unwrap();
 store.install_language_pack(&index, nl, &Cancel::new(), &mut |p| ())?;  // network on, like fonts
-craft_proof::packs::set_packs_dir(Some(store.language_packs_dir()));      // then packs::reload() after each change
+bharat_proof::packs::set_packs_dir(Some(store.language_packs_dir()));      // then packs::reload() after each change
 store.remove_language_pack("nl")?;
 let installed = store.installed_language_packs();
 ```
@@ -136,11 +136,11 @@ let installed = store.installed_language_packs();
 | `install_language_pack(index, pack, cancel, progress)` | Downloads the archive (at most 128 MiB), checks size and sha256, unpacks it into `.staging/` and moves it into `language-packs/<locale>/` with one rename (an older pack is replaced the same way). Records it in `language-packs.json`. |
 | `remove_language_pack(locale)` | Moves the folder out at once, updates the record, deletes the files. No network needed. |
 | `installed_language_packs()` | The recorded packs whose folder is there. |
-| `language_packs_dir()` | `<store>/language-packs`, for `craft_proof::packs::set_packs_dir`. |
+| `language_packs_dir()` | `<store>/language-packs`, for `bharat_proof::packs::set_packs_dir`. |
 
 **Unpacking is hostile-input safe:** pure-Rust zstd (`ruzstd`, MIT; every frame is read, and nothing but tar padding may follow the archive) and `tar` (MIT OR Apache-2.0); regular files and the `LICENCES` folder only (no links or devices). Only the contract's names are allowed: `pack.toml`, `spelling.aff`, `spelling.dic`, `hyphenation.pat` at the root and `LICENCES/<name>` (`[A-Za-z0-9._-]`, no leading or trailing dot, no Windows device names such as `CON` or `nul.txt`). Each file at most 64 MiB, 256 MiB and 256 entries per pack. `pack.toml` is required and must name the entry's locale; the files the index promises (`spelling`, `hyphenation`) must be there. Index entries need a lowercase BCP 47 locale (listed once, not a Windows device name), a sha256 and an `https://` URL; names, licences, versions, classes and the release lose control and bidi/format characters before they are stored or listed; an optional `source` must be an `https://` URL. At most 4096 zstd frames per archive. An unreadable `language-packs.json` is copied to `language-packs.json.bad` and rebuilt from the pack folders (each `pack.toml`) atomically in place, as is a missing one when pack folders are there, so no installed pack drops out of the list. Only an install or removal (under the store lock) rewrites it; listing reads the folders meanwhile and writes nothing.
 
-**Developer override (testing only — bypasses the pin):** `CRAFT_LANGUAGE_PACK_INDEX=<url or path>` replaces the pinned index URL with an `http://` URL on a loopback host (`127.0.0.1`, `localhost`, `[::1]`), an `https://` URL or a local file path (`file://` URLs are not taken), and **skips the index's sha256 pin**. Archives are still checked against the sha256 and size in that index, and may then also be loopback `http://` URLs or local paths. Off unless the variable is set; it works in release builds too (for end-to-end tests of a real build), a warning is logged whenever it is used, and `language_pack_index_overridden() -> Option<String>` returns the value so apps can show that the pin is bypassed. Never set it for users.
+**Developer override (testing only — bypasses the pin):** `BHARAT_LANGUAGE_PACK_INDEX=<url or path>` replaces the pinned index URL with an `http://` URL on a loopback host (`127.0.0.1`, `localhost`, `[::1]`), an `https://` URL or a local file path (`file://` URLs are not taken), and **skips the index's sha256 pin**. Archives are still checked against the sha256 and size in that index, and may then also be loopback `http://` URLs or local paths. Off unless the variable is set; it works in release builds too (for end-to-end tests of a real build), a warning is logged whenever it is used, and `language_pack_index_overridden() -> Option<String>` returns the value so apps can show that the pin is bypassed. Never set it for users.
 
 ## Web
 
@@ -148,4 +148,4 @@ The index, the lookups, `verify_font` and `IndexPin` build for `wasm32-unknown-u
 
 ## Tests
 
-`cargo test -p craft-font-store --all-features`. The store tests run a small HTTP server on 127.0.0.1 that stands in for jsDelivr, raw GitHub and a user's host; no test uses the network. One ignored test fetches the pinned indexes and installs a Noto family over the network: `cargo test -p craft-font-store --all-features -- --ignored`.
+`cargo test -p bharat-font-store --all-features`. The store tests run a small HTTP server on 127.0.0.1 that stands in for jsDelivr, raw GitHub and a user's host; no test uses the network. One ignored test fetches the pinned indexes and installs a Noto family over the network: `cargo test -p bharat-font-store --all-features -- --ignored`.

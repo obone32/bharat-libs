@@ -218,7 +218,7 @@ mod tests {
 
     #[test]
     fn a_folder_included_many_times_is_listed_once() {
-        let root = std::env::temp_dir().join(format!("craft-font-catalog-fc-dirs-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("bharat-font-catalog-fc-dirs-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let conf_d = root.join("conf.d");
         std::fs::create_dir_all(&conf_d).unwrap();

@@ -8,7 +8,7 @@ use std::time::Duration;
 use super::*;
 use crate::store::Caller;
 
-const RELEASE: &str = "https://github.com/storytold/craft-i18n/releases/download/language-packs-1/";
+const RELEASE: &str = "https://github.com/obone32/bharat-i18n/releases/download/language-packs-1/";
 
 /// A local HTTP server answering 200 with the body set for a path, else 404.
 struct Server {
@@ -66,7 +66,7 @@ fn answer(mut s: TcpStream, routes: &Mutex<HashMap<String, Vec<u8>>>) {
 
 fn temp(name: &str) -> PathBuf {
     static N: AtomicUsize = AtomicUsize::new(0);
-    let d = std::env::temp_dir().join(format!("craft-language-packs-{name}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
+    let d = std::env::temp_dir().join(format!("bharat-language-packs-{name}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
     let _ = std::fs::remove_dir_all(&d);
     std::fs::create_dir_all(&d).unwrap();
     d
@@ -133,7 +133,7 @@ fn setup(name: &str) -> (FontStore, Server, PackIndexPin, Vec<u8>) {
     server.serve("release/nl.tar.zst", &archive);
     server.serve("release/index.json", &index);
     let sha: &'static str = Box::leak(sha256_hex(&index).into_boxed_str());
-    let pin = PackIndexPin { url: "https://github.com/storytold/craft-i18n/releases/download/language-packs-1/index.json", sha256: sha };
+    let pin = PackIndexPin { url: "https://github.com/obone32/bharat-i18n/releases/download/language-packs-1/index.json", sha256: sha };
     let store = FontStore::new(temp(name), Caller::User).with_client(server.client());
     store.enable_network().unwrap();
     (store, server, pin, archive)
@@ -237,7 +237,7 @@ fn indexes_are_checked() {
     }
 }
 
-/// The developer override (`CRAFT_LANGUAGE_PACK_INDEX`): an index from a local path or a
+/// The developer override (`BHARAT_LANGUAGE_PACK_INDEX`): an index from a local path or a
 /// loopback http server, with no index pin, while archives are still checked against its sha256.
 #[test]
 fn developer_override_reads_a_local_index_without_the_pin() {
@@ -387,7 +387,7 @@ fn a_corrupt_record_is_rebuilt_from_the_folders() {
     // Still listed, with the name from its pack.toml.
     let listed = store.installed_language_packs();
     assert_eq!(listed.iter().map(|p| (p.locale.as_str(), p.name.as_str())).collect::<Vec<_>>(), [("nl", "Test")]);
-    // craft-libs#486 review: listing holds no store lock, so it never writes the record (it
+    // bharat-libs#486 review: listing holds no store lock, so it never writes the record (it
     // could race an install); the next install or removal repairs it.
     assert_eq!(std::fs::read(&record).unwrap(), b"{ not json");
     assert!(!store.dir().join("language-packs.json.bad").exists());

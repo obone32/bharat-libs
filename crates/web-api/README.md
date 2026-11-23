@@ -1,6 +1,6 @@
-# craft-web-api
+# bharat-web-api
 
-The page command API for every Craft web build: one `window.<app>` shape over the app's JSON
+The page command API for every Bharat web build: one `window.<app>` shape over the app's JSON
 control channel.
 
 ## The JS API
@@ -36,8 +36,8 @@ internals. Using VectorCraft's channel (the same one the desktop control server 
 ```rust
 use std::rc::Rc;
 
-use craft_web_api::methods::Methods;
-use craft_web_api::page::{PageApi, Request};
+use bharat_web_api::methods::Methods;
+use bharat_web_api::page::{PageApi, Request};
 
 // Send a ControlRequest to the app and await its reply object ({ok, result} / {ok: false, error}).
 let request: Request = Rc::new(move |method: String, params: serde_json::Value| {
@@ -52,7 +52,7 @@ page.install()?; // window.vectorcraft
 ## Beside the host messages
 
 Opening a document, handing a saved or exported file to the host, the document name and the dirty
-flag stay with the host messages in [`craft-web-host`](../web-host/README.md) (`<app>:open`,
+flag stay with the host messages in [`bharat-web-host`](../web-host/README.md) (`<app>:open`,
 `<app>:save`, `<app>:dirty`, …) and the app's own control methods. A page reaches any control
 method through `request(method, params)`.
 

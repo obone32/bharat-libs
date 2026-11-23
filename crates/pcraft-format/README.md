@@ -1,4 +1,4 @@
-# craft-pcraft-format
+# bharat-pcraft-format
 
 The envelope of PhotoCraft's `.pcraft` bundle: the manifest around the document, tile
 references, the entry paths, the limits for reading a manifest, and the runner for manifest
@@ -8,7 +8,7 @@ input, and it builds for `wasm32-unknown-unknown`. The dependencies are `serde`,
 and `thiserror`.
 
 ```toml
-craft-pcraft-format = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-pcraft-format = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ## Bundle layout
@@ -34,11 +34,11 @@ directories, and `OBJECT_SUFFIX` (`.zst`) ends every tile and blob entry. `EXTEN
 ## Use
 
 ```rust
-use craft_pcraft_format::{FORMAT_VERSION, Limits, Manifest, Step};
+use bharat_pcraft_format::{FORMAT_VERSION, Limits, Manifest, Step};
 
 const STEPS: &[Step] = &[];
 
-let manifest: Manifest<MyDocument> = craft_pcraft_format::read_manifest(&manifest_json, &Limits::default(), STEPS, FORMAT_VERSION)?;
+let manifest: Manifest<MyDocument> = bharat_pcraft_format::read_manifest(&manifest_json, &Limits::default(), STEPS, FORMAT_VERSION)?;
 ```
 
 - `read_manifest(json, &Limits, steps, target)` is the reader of a manifest. It runs
@@ -88,13 +88,13 @@ caller that decompresses the entries enforces them. The struct is `#[non_exhaust
 defaults and set the fields you change.
 
 ```rust
-let mut limits = craft_pcraft_format::Limits::default();
+let mut limits = bharat_pcraft_format::Limits::default();
 limits.max_manifest_bytes = 16 << 20;
 ```
 
 ## Testing
 
-`cargo test -p craft-pcraft-format` runs:
+`cargo test -p bharat-pcraft-format` runs:
 
 - `tests/manifest.rs`: a manifest with and without previews serializes with
   `serde_json::to_vec_pretty` to JSON written by hand in the test, byte for byte, and reads

@@ -1,4 +1,4 @@
-//! Starting programs: the Craft Apps themselves, the file manager, and helper tools.
+//! Starting programs: the Bharat Apps themselves, the file manager, and helper tools.
 
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};

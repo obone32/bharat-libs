@@ -1,5 +1,5 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
-//! Read-only access to the Craft apps' native documents, without the apps: PhotoCraft
+//! Read-only access to the Bharat apps' native documents, without the apps: PhotoCraft
 //! `.pcraft`, VectorCraft `.vectorcraft` (and `.drawcraft`) and EffectCraft `.ecproj`.
 //!
 //! - [`sniff`] tells which app wrote a file, from its first bytes.
@@ -10,8 +10,8 @@
 //!   and its layer mask.
 //!
 //! Bytes go in and plain data comes out: no file system access, no rendering and no app crate.
-//! Each format's envelope is read through its craft-libs crate: `craft-pcraft-format`,
-//! `craft-vectorcraft-format` and `craft-ecproj-format`.
+//! Each format's envelope is read through its bharat-libs crate: `bharat-pcraft-format`,
+//! `bharat-vectorcraft-format` and `bharat-ecproj-format`.
 //! A file whose format version is newer than this crate reads gives [`Info::supported`] `false`
 //! from [`info`] and [`Error::TooNew`] from the other calls.
 //!
@@ -20,8 +20,8 @@
 //!
 //! ```
 //! let file = br#"{"format":"vectorcraft","version":4,"generator":"VectorCraft 0.1.0","document":{"artboards":[],"layers":[]}}"#;
-//! assert_eq!(craft_doc::sniff(file), Some(craft_doc::Kind::VectorCraft));
-//! let info = craft_doc::info(file, &craft_doc::Limits::default()).unwrap();
+//! assert_eq!(bharat_doc::sniff(file), Some(bharat_doc::Kind::VectorCraft));
+//! let info = bharat_doc::info(file, &bharat_doc::Limits::default()).unwrap();
 //! assert_eq!(info.version, 4);
 //! assert!(info.supported);
 //! ```
@@ -71,9 +71,9 @@ impl Kind {
     /// `version` or EffectCraft's `schema`.
     pub fn supported_version(self) -> u32 {
         match self {
-            Kind::PhotoCraft => craft_pcraft_format::FORMAT_VERSION,
-            Kind::VectorCraft => craft_vectorcraft_format::VERSION,
-            Kind::EffectCraft => craft_ecproj_format::SCHEMA_VERSION,
+            Kind::PhotoCraft => bharat_pcraft_format::FORMAT_VERSION,
+            Kind::VectorCraft => bharat_vectorcraft_format::VERSION,
+            Kind::EffectCraft => bharat_ecproj_format::SCHEMA_VERSION,
         }
     }
 }
@@ -98,7 +98,7 @@ pub struct Info {
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[non_exhaustive]
 pub enum Error {
-    /// [`sniff`] does not recognize the bytes as a Craft document, or a ZIP archive's
+    /// [`sniff`] does not recognize the bytes as a Bharat document, or a ZIP archive's
     /// `manifest.json` is a JSON object without `format_version`, so the archive is not a
     /// PhotoCraft bundle.
     #[error("not a PhotoCraft, VectorCraft or EffectCraft document")]
@@ -122,7 +122,7 @@ pub enum Error {
 /// are allocated.
 ///
 /// ```
-/// let mut limits = craft_doc::Limits::default();
+/// let mut limits = bharat_doc::Limits::default();
 /// limits.max_entry = 16 << 20;
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -141,7 +141,7 @@ pub struct Limits {
     /// Deepest nesting of JSON arrays and objects, at most [`MAX_DEPTH`] (a larger value counts
     /// as [`MAX_DEPTH`]). Default [`MAX_DEPTH`]. [`renditions`] and [`outline`] also refuse a
     /// PhotoCraft manifest nested deeper than PhotoCraft reads, 367 levels
-    /// (`craft_pcraft_format::manifest_depth(MAX_GROUP_DEPTH)`).
+    /// (`bharat_pcraft_format::manifest_depth(MAX_GROUP_DEPTH)`).
     pub max_depth: u32,
     /// Most list elements one call reads, together: EffectCraft project items and composition
     /// layers, VectorCraft artboards and layers, and PhotoCraft layers at every level. Each is

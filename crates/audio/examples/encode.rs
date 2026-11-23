@@ -1,8 +1,8 @@
 //! Write a tone as WAV and FLAC, whole and streamed.
 //!
-//! `cargo run -p craft-audio --example encode --features lossless-encode -- out`
+//! `cargo run -p bharat-audio --example encode --features lossless-encode -- out`
 
-use craft_audio::{AudioBuffer, BitDepth, ChannelLayout, EncodeFormat, EncodeOptions, FileEncoder, encode};
+use bharat_audio::{AudioBuffer, BitDepth, ChannelLayout, EncodeFormat, EncodeOptions, FileEncoder, encode};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let dir = std::path::PathBuf::from(std::env::args().nth(1).unwrap_or_else(|| ".".into()));

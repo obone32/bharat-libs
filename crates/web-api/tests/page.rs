@@ -11,8 +11,8 @@ use wasm_bindgen::prelude::{Closure, JsValue};
 use wasm_bindgen_futures::JsFuture;
 use wasm_bindgen_test::wasm_bindgen_test;
 
-use craft_web_api::methods::Methods;
-use craft_web_api::page::{PageApi, Request};
+use bharat_web_api::methods::Methods;
+use bharat_web_api::page::{PageApi, Request};
 
 thread_local! {
     /// (method, params) pairs recorded by the fake control channel.

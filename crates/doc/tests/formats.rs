@@ -4,7 +4,7 @@
 mod common;
 
 use common::*;
-use craft_doc::{Error, Kind, Limits, RenditionKind, info, outline, renditions, sniff};
+use bharat_doc::{Error, Kind, Limits, RenditionKind, info, outline, renditions, sniff};
 
 fn limits() -> Limits {
     Limits::default()
@@ -190,7 +190,7 @@ fn the_marker_follows_the_json_directly() {
     file.push(b' ');
     file.extend(BLOB_MAGIC);
     file.extend(PDF);
-    assert!(craft_vectorcraft_format::split_tail(&file).1.is_empty());
+    assert!(bharat_vectorcraft_format::split_tail(&file).1.is_empty());
     for bytes in [file.clone(), gzip(&file)] {
         assert!(matches!(info(&bytes, &limits()), Err(Error::Malformed(_))));
         assert!(matches!(renditions(&bytes, &limits()), Err(Error::Malformed(_))));

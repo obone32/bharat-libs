@@ -1,4 +1,4 @@
-//! The native decode path: craft-media's demuxers (ISO BMFF / QuickTime, Matroska / WebM) and
+//! The native decode path: bharat-media's demuxers (ISO BMFF / QuickTime, Matroska / WebM) and
 //! WAV / AIFF PCM, feeding [`TrackDecoder`].
 //! [`Native::open`] answers `None` for a stream with no native codec (AAC, MP1/MP2/MP3, FLAC,
 //! ALAC, Vorbis, Opus, ...) or a container these demuxers do not read; the caller then uses symphonia.
@@ -13,7 +13,7 @@ use super::source::{Src, io_error};
 use super::wav::{self, WavParse};
 use crate::track::TrackDecoder;
 use crate::{AudioBuffer, AudioError, AudioInfo, CodecId, CodecParams, Container, PcmFormat, Result};
-use craft_media::{isobmff, matroska, ogg};
+use bharat_media::{isobmff, matroska, ogg};
 
 /// Corrupt packets tolerated before a stream that has produced nothing is an error.
 const MAX_ERRORS: usize = 1000;
@@ -596,7 +596,7 @@ pub(crate) fn damage(src: &Src<'_>, detected: Option<Container>) -> Option<Strin
     }
 }
 
-/// Why a craft-media demuxer could not read a file.
+/// Why a bharat-media demuxer could not read a file.
 enum Failure {
     /// The source failed to read.
     Io(std::io::Error),
@@ -606,7 +606,7 @@ enum Failure {
     Other,
 }
 
-/// A craft-media demuxer's result for the native path: the source's failure to read as
+/// A bharat-media demuxer's result for the native path: the source's failure to read as
 /// [`AudioError::Io`], and `None` when the demuxer does not read the file, so the other path
 /// tries it. Without symphonia there is no other path, so a damaged file is
 /// [`AudioError::Malformed`]; with it, the file is malformed when symphonia cannot read it either

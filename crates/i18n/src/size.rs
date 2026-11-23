@@ -29,7 +29,7 @@ impl SizeUnit {
 /// [`FileSize::DECIMAL`] and adjust:
 ///
 /// ```
-/// use craft_i18n::{FileSize, SizeUnit};
+/// use bharat_i18n::{FileSize, SizeUnit};
 /// // `12 MB`, `3.4 MB`, `640 KB`: decimal steps, whole kilobytes, no decimals from 10 MB.
 /// let style = FileSize::DECIMAL.smallest(SizeUnit::Kilo).largest(SizeUnit::Mega).unit_decimals(SizeUnit::Kilo, 0).whole_from(10);
 /// ```
