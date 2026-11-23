@@ -43,8 +43,8 @@ pub fn hammer(name: &str, seed: &[u8], iters: usize, run: impl Fn(&[u8])) {
         run_one(name, &format!("truncation to {n}"), &seed[..n], &run);
     }
     let mut rng = Rng((0x5EED_F00D ^ seed.len() as u64) | 1);
-    // CRAFT_MEDIA_HOSTILE_MULT=10 runs ten times the iterations (soak runs).
-    let mult = std::env::var("CRAFT_MEDIA_HOSTILE_MULT").ok().and_then(|v| v.parse::<usize>().ok()).unwrap_or(1);
+    // BHARAT_MEDIA_HOSTILE_MULT=10 runs ten times the iterations (soak runs).
+    let mult = std::env::var("BHARAT_MEDIA_HOSTILE_MULT").ok().and_then(|v| v.parse::<usize>().ok()).unwrap_or(1);
     for _ in 0..iters.saturating_mul(mult) {
         let mut d = seed.to_vec();
         let mut what = String::new();

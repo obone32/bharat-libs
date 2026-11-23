@@ -1,7 +1,7 @@
 //! Public-API contract for the `.atn` parser, against independently encoded wire fixtures.
-use craft_psd::PsdError;
-use craft_psd::atn::{self, AtnAction, AtnEvent, AtnFile, AtnItem};
-use craft_psd::descriptor::{Class, Descriptor, Id, MAX_DEPTH, ObjectArray, ReferenceItem, UnicodeString, Value};
+use bharat_psd::PsdError;
+use bharat_psd::atn::{self, AtnAction, AtnEvent, AtnFile, AtnItem};
+use bharat_psd::descriptor::{Class, Descriptor, Id, MAX_DEPTH, ObjectArray, ReferenceItem, UnicodeString, Value};
 
 #[path = "common/atn_roundtrip.rs"]
 mod atn_roundtrip;

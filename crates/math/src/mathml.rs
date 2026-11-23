@@ -475,30 +475,30 @@ fn text_into(e: &El, s: &mut String, depth: usize) {
 /// for MathML read from an XML file or a clipboard format. At most [`MAX_NODES`] elements are
 /// kept; `None` when there is no `math` element or the text is not XML.
 pub fn parse(xml: &str) -> Option<El> {
-    let limits = craft_xml::Limits { max_nodes: MAX_NODES.saturating_mul(4), max_depth: MAX_DEPTH.saturating_mul(2), ..craft_xml::Limits::DEFAULT };
-    let (root, _) = craft_xml::Options { ns_decls: false, ..craft_xml::Options::default() }.with_limits(limits).parse_streaming_partial(
+    let limits = bharat_xml::Limits { max_nodes: MAX_NODES.saturating_mul(4), max_depth: MAX_DEPTH.saturating_mul(2), ..bharat_xml::Limits::DEFAULT };
+    let (root, _) = bharat_xml::Options { ns_decls: false, ..bharat_xml::Options::default() }.with_limits(limits).parse_streaming_partial(
         xml.as_bytes(),
         &[],
-        |_| Ok::<(), craft_xml::Error>(()),
+        |_| Ok::<(), bharat_xml::Error>(()),
     );
     let root = root?;
-    let math = if local(&root.name).eq_ignore_ascii_case("math") { &root } else { root.find(craft_xml::Local("math"))? };
+    let math = if local(&root.name).eq_ignore_ascii_case("math") { &root } else { root.find(bharat_xml::Local("math"))? };
     let mut budget = MAX_NODES;
     Some(from_xml(math, 0, &mut budget))
 }
 
-fn from_xml(e: &craft_xml::El, depth: usize, budget: &mut usize) -> El {
+fn from_xml(e: &bharat_xml::El, depth: usize, budget: &mut usize) -> El {
     let mut out = El { name: e.name.to_ascii_lowercase(), attrs: e.attrs.clone(), children: Vec::new() };
     if depth > MAX_DEPTH {
         return out;
     }
     for n in &e.children {
         match n {
-            craft_xml::Node::El(c) if *budget > 0 => {
+            bharat_xml::Node::El(c) if *budget > 0 => {
                 *budget -= 1;
                 out.children.push(Item::El(from_xml(c, depth + 1, budget)));
             }
-            craft_xml::Node::Text(t) => out.children.push(Item::Text(t.clone())),
+            bharat_xml::Node::Text(t) => out.children.push(Item::Text(t.clone())),
             _ => {}
         }
     }

@@ -1,5 +1,5 @@
 [package]
-name = "craft-xfl"
+name = "bharat-xfl"
 description = "Bounded XFL/FLA package reader and native shape-edge parser."
 version.workspace = true
 edition.workspace = true

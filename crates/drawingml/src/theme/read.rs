@@ -4,7 +4,7 @@ use crate::color::{ColorScheme, Rgba, SchemeSlot};
 use crate::style::{ColorBase, Effects};
 use crate::theme::{FontScheme, FontSet, FormatScheme, ScriptFont, Theme, default_format};
 
-use craft_xml::{El, Local};
+use bharat_xml::{El, Local};
 
 use crate::part::Source;
 use crate::read as dml;

@@ -91,7 +91,7 @@ fn pages_libraries_and_the_manifest_read() {
         serde_json::from_value(json!({"id": "t", "name": "Body", "fontFamily": "Inter", "fontSize": "14", "fontWeight": 400, "lineHeight": "1.2"}))
             .unwrap();
     assert_eq!((t.font_size, t.font_weight), (Some(json!("14")), Some(json!(400))));
-    let m: Manifest = serde_json::from_value(manifest("craft-penpot/test", &[(FILE, "File", json!(["components/v2"]))])).unwrap();
+    let m: Manifest = serde_json::from_value(manifest("bharat-penpot/test", &[(FILE, "File", json!(["components/v2"]))])).unwrap();
     assert_eq!((m.kind.as_deref(), m.version), (Some(MANIFEST_TYPE), Some(1.0)));
     assert_eq!(m.files.as_ref().unwrap()[0].features.as_deref(), Some(&["components/v2".to_string()][..]));
     let c: Component = serde_json::from_value(json!({"id": "k", "name": "Button", "mainInstanceId": SHAPE, "mainInstancePage": PAGE})).unwrap();
@@ -121,7 +121,7 @@ fn the_archive_reads_and_writes_typed_members() {
     let root = Shape { id: Some(ROOT_ID.into()), kind: Some(ShapeType::Frame), shapes: Some(vec![SHAPE.into()]), ..Shape::default() };
     let page = Page { id: Some(PAGE.into()), name: Some("Canvas".into()), index: Some(0.0), ..Page::default() };
     let members: Vec<(String, Vec<u8>)> = vec![
-        ("manifest.json".into(), serde_json::to_vec(&manifest("craft-penpot/test", &[(FILE, "File", json!([]))])).unwrap()),
+        ("manifest.json".into(), serde_json::to_vec(&manifest("bharat-penpot/test", &[(FILE, "File", json!([]))])).unwrap()),
         (format!("files/{FILE}/pages/{PAGE}.json"), serde_json::to_vec(&page).unwrap()),
         (format!("files/{FILE}/pages/{PAGE}/{ROOT_ID}.json"), serde_json::to_vec(&root).unwrap()),
         (format!("files/{FILE}/pages/{PAGE}/{SHAPE}.json"), serde_json::to_vec(&shape).unwrap()),

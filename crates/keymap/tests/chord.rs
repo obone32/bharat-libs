@@ -1,5 +1,5 @@
-use craft_keymap::chord::foreign::{Flavor, ForeignError, ReadNote, read_foreign};
-use craft_keymap::{Chord, Key, MAX_CHORD_TEXT, Mods, ParseError, Platform, Trigger};
+use bharat_keymap::chord::foreign::{Flavor, ForeignError, ReadNote, read_foreign};
+use bharat_keymap::{Chord, Key, MAX_CHORD_TEXT, Mods, ParseError, Platform, Trigger};
 
 fn chord(text: &str) -> Chord {
     Chord::parse(text).unwrap_or_else(|e| panic!("{text}: {e}"))
@@ -80,7 +80,7 @@ fn aliases_parse_to_canonical_chords() {
         ("⌘Shift+K", "Cmd+Shift+K"),
         ("control+opt+left", "Ctrl+Alt+Left"),
         ("ctl+option+ArrowUp", "Ctrl+Alt+Up"),
-        // craft-menu writes Ctrl before Cmd.
+        // bharat-menu writes Ctrl before Cmd.
         ("Ctrl+Cmd+Alt+Shift+M", "Cmd+Ctrl+Alt+Shift+M"),
         ("Ctrl+Cmd+F", "Cmd+Ctrl+F"),
         ("Cmd++", "Cmd++"),

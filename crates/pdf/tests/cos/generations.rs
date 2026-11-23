@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use craft_pdf::cos::{Document, ObjRef, Object, SaveOptions, XrefEntry, write_full, write_incremental};
+use bharat_pdf::cos::{Document, ObjRef, Object, SaveOptions, XrefEntry, write_full, write_incremental};
 use hayro_syntax::object::{Dict as HayroDict, ObjectIdentifier};
 
 /// Object 3 was reused: only 3 1 R refers to the current value, never 3 0 R.

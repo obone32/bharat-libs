@@ -4,7 +4,7 @@
 //! Coefficients are kept in bitstream order ("interleaved": group → band → window → line), so every
 //! (group, band) is a contiguous slice and short-window grouping needs no special casing.
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use crate::aac::huffman::{self, ZERO_HCB};
 use crate::aac::ics::IcsInfo;
@@ -473,7 +473,7 @@ mod tests {
     use crate::aac::ics::WindowSequence;
     use crate::aac::mdct::WindowShape;
     use crate::aac::tables::swb_offsets_long;
-    use craft_media::bitstream::BitWriter;
+    use bharat_media::bitstream::BitWriter;
 
     #[test]
     fn bit_count_matches_written_bits() {

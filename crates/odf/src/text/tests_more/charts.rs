@@ -7,8 +7,8 @@ use std::sync::Arc;
 
 use crate::text::parse;
 use crate::text::tests::{NS_T, paras, zip_of};
-use craft_flow::Inline;
-use craft_wordmodel::chart::{ChartSeries, ChartSpec, ChartType, LegendPos};
+use bharat_flow::Inline;
+use bharat_wordmodel::chart::{ChartSeries, ChartSpec, ChartType, LegendPos};
 
 const NS_C: &str = r#"xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink""#;
 
@@ -34,7 +34,7 @@ fn chart_xml(class: &str, plot: &str, ser: &str, inner: &str, series: &str) -> S
 
 /// What the document holding chart object `chart` (with a replacement picture) reads as: the
 /// paragraph's charts, and whether a picture was read instead.
-fn read(chart: &str) -> (Vec<craft_flow::Chart>, bool) {
+fn read(chart: &str) -> (Vec<bharat_flow::Chart>, bool) {
     let frame = r#"<draw:frame draw:name="Object1" text:anchor-type="as-char" svg:width="5.9055in" svg:height="2.9528in"><draw:object xlink:href="./Object 1" xlink:type="simple"/><draw:image xlink:href="./ObjectReplacements/Object 1"/></draw:frame>"#;
     let content = format!(
         r#"<office:document-content {NS_T} xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink"><office:body><office:text><text:p>Before {frame}</text:p></office:text></office:body></office:document-content>"#
@@ -170,9 +170,9 @@ fn hostile_chart_tables_are_bounded() {
         r#"<office:document-content><office:body><office:chart><chart:chart chart:class="chart:line"><chart:plot-area><chart:axis chart:dimension="x"><chart:categories table:cell-range-address="t.A1:XFD1048576"/></chart:axis>{series}</chart:plot-area>{table}</chart:chart></office:chart></office:body></office:document-content>"#
     );
     let s = spec(&xml).expect("a chart");
-    assert!(s.series.len() <= craft_wordmodel::chart::MAX_SERIES);
-    assert!(s.series.iter().all(|x| x.values.len() <= craft_wordmodel::chart::MAX_POINTS));
-    assert!(s.categories.len() <= craft_wordmodel::chart::MAX_POINTS);
+    assert!(s.series.len() <= bharat_wordmodel::chart::MAX_SERIES);
+    assert!(s.series.iter().all(|x| x.values.len() <= bharat_wordmodel::chart::MAX_POINTS));
+    assert!(s.categories.len() <= bharat_wordmodel::chart::MAX_POINTS);
 }
 
 #[test]
@@ -183,13 +183,13 @@ fn an_imported_chart_is_an_editable_chart_object() {
         r#"<office:document-content {NS_T} xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink"><office:body><office:text><text:p>{frame}</text:p></office:text></office:body></office:document-content>"#
     );
     let doc = crate::text::import(&zip_of(&[("content.xml", content.as_bytes()), ("Object 1/content.xml", xml.as_bytes())])).unwrap();
-    let graphics: Vec<Arc<craft_wordmodel::graphic::Graphic>> = doc
+    let graphics: Vec<Arc<bharat_wordmodel::graphic::Graphic>> = doc
         .body
         .iter()
         .filter_map(|b| b.as_para())
         .flat_map(|p| p.objects_with_offsets())
         .filter_map(
-            |(_, o)| if let craft_wordmodel::para::InlineObject::Graphic { graphic, w, h, .. } = o { Some((graphic.clone(), *w, *h)) } else { None },
+            |(_, o)| if let bharat_wordmodel::para::InlineObject::Graphic { graphic, w, h, .. } = o { Some((graphic.clone(), *w, *h)) } else { None },
         )
         .map(|(g, w, h)| {
             assert_eq!((w, h), (288.0, 144.0));
@@ -197,23 +197,23 @@ fn an_imported_chart_is_an_editable_chart_object() {
         })
         .collect();
     let g = graphics.first().expect("a chart object");
-    assert_eq!(g.kind, craft_wordmodel::graphic::GraphicKind::Chart);
+    assert_eq!(g.kind, bharat_wordmodel::graphic::GraphicKind::Chart);
     assert_eq!(g.chart.as_ref().map(|c| c.kind), Some(ChartType::Line));
 }
 
 /// A document holding `spec` as a chart `w` × `h` points, after some text.
-fn doc_with(spec: ChartSpec, float: bool) -> craft_wordmodel::Document {
-    let flow = craft_flow::Flow {
-        blocks: vec![craft_flow::FBlock::Para(craft_flow::Para {
+fn doc_with(spec: ChartSpec, float: bool) -> bharat_wordmodel::Document {
+    let flow = bharat_flow::Flow {
+        blocks: vec![bharat_flow::FBlock::Para(bharat_flow::Para {
             inlines: vec![
                 Inline::Text("See ".into(), Default::default()),
-                Inline::Chart(craft_flow::Chart {
+                Inline::Chart(bharat_flow::Chart {
                     spec: Arc::new(spec),
                     w: 300.0,
                     h: 180.0,
                     alt: "Sales chart".into(),
                     float: float.then(|| {
-                        Box::new(craft_wordmodel::para::Float { wrap: craft_wordmodel::para::Wrap::Square, x: 20.0, y: 10.0, ..Default::default() })
+                        Box::new(bharat_wordmodel::para::Float { wrap: bharat_wordmodel::para::Wrap::Square, x: 20.0, y: 10.0, ..Default::default() })
                     }),
                     source: None,
                 }),
@@ -222,11 +222,11 @@ fn doc_with(spec: ChartSpec, float: bool) -> craft_wordmodel::Document {
         })],
         ..Default::default()
     };
-    craft_flow::to_doc(&flow)
+    bharat_flow::to_doc(&flow)
 }
 
 /// The charts the saved document reads back as.
-fn reread(bytes: &[u8]) -> Vec<craft_flow::Chart> {
+fn reread(bytes: &[u8]) -> Vec<bharat_flow::Chart> {
     paras(&parse(bytes).unwrap())
         .into_iter()
         .flat_map(|p| p.inlines.clone())
@@ -267,7 +267,7 @@ fn a_floating_chart_keeps_its_place_and_wrap() {
     let bytes = crate::text::export(&doc_with(ChartSpec::sample(ChartType::Column), true)).unwrap();
     let back = reread(&bytes);
     let f = back.first().and_then(|c| c.float.as_deref()).expect("a floating chart");
-    assert_eq!((f.wrap, f.x.round(), f.y.round()), (craft_wordmodel::para::Wrap::Square, 20.0, 10.0));
+    assert_eq!((f.wrap, f.x.round(), f.y.round()), (bharat_wordmodel::para::Wrap::Square, 20.0, 10.0));
 }
 
 #[test]
@@ -275,15 +275,15 @@ fn a_flat_document_holds_its_chart_inline() {
     let flat = crate::text::export_flat(&doc_with(ChartSpec::sample(ChartType::Pie), false)).unwrap();
     let text = String::from_utf8(flat.clone()).unwrap();
     assert!(text.contains("<draw:object><office:document"), "{text}");
-    let back: Vec<craft_flow::Chart> = crate::text::import_flat(&flat)
+    let back: Vec<bharat_flow::Chart> = crate::text::import_flat(&flat)
         .unwrap()
         .body
         .iter()
         .filter_map(|b| b.as_para())
         .flat_map(|p| p.objects.clone())
         .filter_map(|o| match o {
-            craft_wordmodel::para::InlineObject::Graphic { graphic, w, h, alt, .. } => {
-                graphic.chart.clone().map(|spec| craft_flow::Chart { spec, w, h, alt, float: None, source: None })
+            bharat_wordmodel::para::InlineObject::Graphic { graphic, w, h, alt, .. } => {
+                graphic.chart.clone().map(|spec| bharat_flow::Chart { spec, w, h, alt, float: None, source: None })
             }
             _ => None,
         })
@@ -336,9 +336,9 @@ fn an_unchanged_chart_is_written_back_as_it_was_and_an_edited_one_anew() {
     // Edited: a new title.
     let mut edited = doc.clone();
     for b in edited.body.iter_mut() {
-        if let craft_wordmodel::Block::Para(p) = Arc::make_mut(b) {
+        if let bharat_wordmodel::Block::Para(p) = Arc::make_mut(b) {
             for o in &mut p.objects {
-                if let craft_wordmodel::para::InlineObject::Graphic { graphic, .. } = o {
+                if let bharat_wordmodel::para::InlineObject::Graphic { graphic, .. } = o {
                     let g = Arc::make_mut(graphic);
                     let mut spec = (**g.chart.as_ref().unwrap()).clone();
                     spec.title = Some("Revenue".into());

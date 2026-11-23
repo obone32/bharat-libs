@@ -1,7 +1,7 @@
 //! Stories: paragraph and character ranges, their text, and what text holds (tables, notes,
 //! anchored page items, hyperlink and change containers).
 
-use craft_xml::{El, Local, Node};
+use bharat_xml::{El, Local, Node};
 
 use super::{PageItem, Values, tidy};
 

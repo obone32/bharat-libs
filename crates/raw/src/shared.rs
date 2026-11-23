@@ -2,7 +2,7 @@
 //! for files that state none.
 
 use crate::{BlackLevel, Cfa, LevelSource, Rect};
-use craft_tiff::Tiff;
+use bharat_tiff::Tiff;
 use std::ops::Range;
 
 /// The colour-filter layout from the Exif `CFAPattern` tag (`0xa302`: two 16-bit repeat counts, found in either
@@ -242,7 +242,7 @@ pub(crate) fn declare_strip_len(file: &mut [u8], len: u32, declared: u32) {
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
-    use craft_tiff::tags as t;
+    use bharat_tiff::tags as t;
 
     /// `file`, whose image IFD holds one strip, as two strips at the same offset whose StripByteCounts are LONG8 (which
     /// classic TIFF readers accept) `[u64::MAX, 1]`: their sum is past `u64::MAX`.

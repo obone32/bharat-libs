@@ -1,10 +1,10 @@
-# craft-drawingml
+# bharat-drawingml
 
 The parts of DrawingML (ECMA-376 part 1, chapter 20) that presentations, word-processing
 documents and spreadsheets share. A `.pptx` slide, a `.docx` drawing and an `.xlsx` drawing all
 hold the same `a:` elements; this crate is the one place that knows what they mean.
 
-Nothing here opens a package. Readers take a `craft_xml::El` and writers a `craft_xml::Writer`,
+Nothing here opens a package. Readers take a `bharat_xml::El` and writers a `bharat_xml::Writer`,
 so the caller decides which part the markup comes from. Lengths are points (1/72 inch) as `f64`;
 files store EMU (12 700 per point).
 
@@ -39,7 +39,7 @@ adjust values; no geometry table is copied. Adjust values use the file conventio
 1/100 000 of the shorter side (or of the width or height), angles in 1/60 000 degree.
 
 ```rust
-let g = craft_drawingml::preset::build("roundRect", 200.0, 100.0, &[25_000.0]).unwrap();
+let g = bharat_drawingml::preset::build("roundRect", 200.0, 100.0, &[25_000.0]).unwrap();
 assert!(!g.paths.is_empty());
 assert!(g.text_rect.width() < 200.0);
 ```

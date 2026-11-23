@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use std::io::{Cursor, Write};
 use std::sync::Arc;
 
-use craft_opc::{
+use bharat_opc::{
     Compression, Error, LazyPackage, Limits, Oversized, Package, PackageOut, RT_BASE, RelsOut, ZipOut, compression_for, declared_oversized,
     zip_entries,
 };
@@ -201,13 +201,13 @@ fn backslash_zip_entry_names_are_found() {
 fn xml_parts_are_read_with_the_callers_options() {
     let z = zip_of(&[("a.xml", b"<w:a><w:b/></w:a>".to_vec()), ("bad.xml", b"<a><b></a>".to_vec())]);
     let p = Package::open(&z, &LIMITS).unwrap();
-    let local = craft_xml::Options::local();
+    let local = bharat_xml::Options::local();
     assert_eq!(p.xml("a.xml", &local).unwrap().map(|e| e.name), Some("a".to_string()));
-    assert_eq!(p.xml("a.xml", &craft_xml::Options::default()).unwrap().map(|e| e.name), Some("w:a".to_string()));
+    assert_eq!(p.xml("a.xml", &bharat_xml::Options::default()).unwrap().map(|e| e.name), Some("w:a".to_string()));
     assert_eq!(p.xml("missing.xml", &local), Ok(None));
     assert!(p.xml("bad.xml", &local).unwrap().is_some(), "lenient");
     assert!(matches!(p.xml("bad.xml", &local.strict()), Err(Error::Xml { part, .. }) if part == "bad.xml"));
-    let tiny = local.with_limits(craft_xml::Limits { max_nodes: 1, ..craft_xml::Limits::DEFAULT });
+    let tiny = local.with_limits(bharat_xml::Limits { max_nodes: 1, ..bharat_xml::Limits::DEFAULT });
     assert!(p.xml("a.xml", &tiny).is_err_and(|e| e.is_limit()));
     let mut lazy = LazyPackage::open(&z, &LIMITS).unwrap();
     assert_eq!(lazy.read_xml("a.xml", &local).unwrap().map(|e| e.name), Some("a".to_string()));
@@ -290,7 +290,7 @@ fn relationships_being_written_reuse_identical_targets() {
     assert_ne!(out.add_new("image", "../media/a.png", false), fresh);
     assert_eq!(out.add("image", "../media/a.png", false), fresh, "add reuses the first add_new made");
     assert_eq!(out.add("http://schemas.microsoft.com/office/2007/relationships/media", "a&b.mp4", false), format!("rId{}", n + 4));
-    let back = craft_opc::Rels::parse(&out.to_xml(), "ppt/slides/slide1.xml");
+    let back = bharat_opc::Rels::parse(&out.to_xml(), "ppt/slides/slide1.xml");
     assert_eq!(back.list.len(), n + 4);
     assert_eq!(back.by_id(&fresh).map(|r| (r.ty.clone(), r.target.as_str())), Some((format!("{RT_BASE}image"), "ppt/media/a.png")));
     assert_eq!(back.first("media").map(|r| r.target_raw.as_str()), Some("a&b.mp4"), "escaped on the way out");
@@ -325,7 +325,7 @@ fn a_written_package_reads_back() {
     assert_eq!(ct.of("ppt/presentation.xml"), Some("application/presentation+xml"));
     assert_eq!(ct.of("ppt/media/image2.png"), Some("image/png"));
     assert_eq!(ct.of("ppt/media/odd.png"), Some("image/x-odd"), "an Override where the extension is taken");
-    assert_eq!(ct.of("ppt/_rels/presentation.xml.rels"), Some(craft_opc::CT_RELATIONSHIPS));
+    assert_eq!(ct.of("ppt/_rels/presentation.xml.rels"), Some(bharat_opc::CT_RELATIONSHIPS));
     assert_eq!(ct.of("docProps/thumbnail.xml"), Some("application/xml"));
     let main = p.rels("").first("officeDocument").map(|r| r.target.clone()).unwrap();
     let r = p.rels(&main);

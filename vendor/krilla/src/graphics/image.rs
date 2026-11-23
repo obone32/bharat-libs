@@ -563,7 +563,7 @@ fn png_metadata(data: &[u8]) -> Result<ImageMetadata, String> {
     let reader = decoder
         .read_info()
         .map_err(|e| e.to_string().to_ascii_lowercase())?;
-    // Craft patch: refused here too, so `Image::from_png` fails instead of the deferred decode.
+    // Bharat patch: refused here too, so `Image::from_png` fails instead of the deferred decode.
     if reader
         .output_buffer_size()
         .is_none_or(|n| n > MAX_DECODED_PNG_BYTES)
@@ -604,7 +604,7 @@ fn png_metadata(data: &[u8]) -> Result<ImageMetadata, String> {
     })
 }
 
-/// Craft patch: most bytes a PNG may decode to (16384 x 16384 RGBA8). The header alone sets the
+/// Bharat patch: most bytes a PNG may decode to (16384 x 16384 RGBA8). The header alone sets the
 /// output size, so it is checked before any pixel data, and reserved fallibly, so that a bad
 /// image is an error instead of an allocation failure that ends the process.
 const MAX_DECODED_PNG_BYTES: usize = 1 << 30;
@@ -793,7 +793,7 @@ fn decode_webp(data: Data) -> Result<Repr, String> {
     }))
 }
 
-/// Craft patch: an empty vector with room for `capacity` bytes, or an error instead of the
+/// Bharat patch: an empty vector with room for `capacity` bytes, or an error instead of the
 /// allocation failure that would end the process. Splitting a decoded image into colour and alpha
 /// briefly needs about twice its size beside the decoded pixels.
 fn try_buffer(capacity: usize) -> Result<Vec<u8>, String> {

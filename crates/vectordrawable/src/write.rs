@@ -281,7 +281,7 @@ mod tests {
     /// The written file, checked to be well-formed and free of numbers Android can't read.
     fn written(width: f64, height: f64, items: &[Item]) -> String {
         let xml = document(width, height, items);
-        if let Err(e) = craft_xml::parse(xml.as_bytes()) {
+        if let Err(e) = bharat_xml::parse(xml.as_bytes()) {
             panic!("not well-formed: {e}\n{xml}");
         }
         for bad in ["NaN", "inf", "=\"-0\"", "e+", "e-"] {
@@ -359,7 +359,7 @@ mod tests {
             p.name = Some("Icon & \"co\" <1>\" android:pathData=\"M9,9".into());
         }
         let xml = written(1.0, 1.0, &[it]);
-        let root = craft_xml::parse(xml.as_bytes()).unwrap();
+        let root = bharat_xml::parse(xml.as_bytes()).unwrap();
         let path = root.elements().next().unwrap();
         assert_eq!(path.attr("android:name"), Some("Icon & \"co\" <1>\" android:pathData=\"M9,9"));
         assert_eq!(path.attr("android:pathData"), Some("M0,0 L1,0 L1,1 L0,1 Z"));

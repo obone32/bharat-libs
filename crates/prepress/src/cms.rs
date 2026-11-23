@@ -1,14 +1,14 @@
-//! Process color conversion for plate mode through craft-cms.
+//! Process color conversion for plate mode through bharat-cms.
 
 use std::sync::{Arc, OnceLock};
 
-use craft_cms::{Builtin, ColorSpace, Intent, Profile, Transform, TransformOptions, builtin, cached, math};
-use craft_pdf::interpret::color::{CmykConversion, CmykSimulation};
+use bharat_cms::{Builtin, ColorSpace, Intent, Profile, Transform, TransformOptions, builtin, cached, math};
+use bharat_pdf::interpret::color::{CmykConversion, CmykSimulation};
 
-/// Converts process color into a CMYK printing condition with craft-cms: relative
+/// Converts process color into a CMYK printing condition with bharat-cms: relative
 /// colorimetric, without black point compensation, as the plate renderer expects (see
 /// [`CmykConversion`]). CMYK shows as sRGB relative colorimetric with black point
-/// compensation. Transforms are built on first use and shared through craft-cms's cache.
+/// compensation. Transforms are built on first use and shared through bharat-cms's cache.
 pub struct CmsConversion {
     profile: Profile,
     perceptual: bool,
@@ -43,12 +43,12 @@ impl CmsConversion {
         if profile.pcs_to_device(Intent::RelativeColorimetric).is_err() {
             return Err(ProfileError::NoPcsToDevice);
         }
-        // Without a colorimetric BToA1 table craft-cms uses BToA0, the perceptual one.
+        // Without a colorimetric BToA1 table bharat-cms uses BToA0, the perceptual one.
         let perceptual = profile.b2a[1].is_none() && profile.b2a[0].is_some();
         Ok(Self { profile, perceptual, from_srgb: OnceLock::new(), from_lab: OnceLock::new(), to_srgb: OnceLock::new() })
     }
 
-    /// craft-cms's Coated FOGRA39 profile.
+    /// bharat-cms's Coated FOGRA39 profile.
     pub fn fogra39() -> Self {
         let profile = Builtin::CoatedFogra39.profile().clone();
         let perceptual = profile.b2a[1].is_none() && profile.b2a[0].is_some();
@@ -134,7 +134,7 @@ pub(crate) fn encode_lab([l, a, b]: [f32; 3]) -> [f32; 3] {
     [l / 100.0, (a + 128.0) / 255.0, (b + 128.0) / 255.0]
 }
 
-/// CIE L\*a\*b\* (D50) of an sRGB color, relative colorimetric; `None` if craft-cms can't
+/// CIE L\*a\*b\* (D50) of an sRGB color, relative colorimetric; `None` if bharat-cms can't
 /// convert.
 pub(crate) fn srgb8_to_lab(rgb: [u8; 3]) -> Option<[f32; 3]> {
     static T: OnceLock<Option<Arc<Transform>>> = OnceLock::new();
@@ -146,7 +146,7 @@ pub(crate) fn srgb8_to_lab(rgb: [u8; 3]) -> Option<[f32; 3]> {
 }
 
 /// sRGB of CIE L\*a\*b\* (D50) colors, relative colorimetric, three values per color in
-/// both; `None` if craft-cms can't convert or the lengths disagree.
+/// both; `None` if bharat-cms can't convert or the lengths disagree.
 pub(crate) fn lab_to_srgb8(lab: &[f32], rgb: &mut [u8]) -> Option<()> {
     static T: OnceLock<Option<Arc<Transform>>> = OnceLock::new();
     if !lab.len().is_multiple_of(3) || lab.len() != rgb.len() {

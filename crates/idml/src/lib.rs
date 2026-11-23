@@ -12,7 +12,7 @@
 //!   `designmap.xml` and puts the parts it includes in place ([`Document`]).
 //! - [`write_package`] zips parts behind the stored `mimetype`; [`part_root`], [`part_xml`] and
 //!   [`designmap_xml`] make the parts.
-//! - Elements are [`craft_xml::El`]. [`Props`] adds IDML's two spellings of a property: an
+//! - Elements are [`bharat_xml::El`]. [`Props`] adds IDML's two spellings of a property: an
 //!   attribute, or a child of `<Properties>`.
 //! - [`value`] has the codecs of attribute values: numbers, transforms, `Self` ids, style names,
 //!   link URIs, base64 `Contents`.
@@ -37,7 +37,7 @@ mod part;
 pub mod tagged;
 pub mod value;
 
-pub use craft_xml::{El, Local, Node};
+pub use bharat_xml::{El, Local, Node};
 pub use package::{Document, Limits, Package, write_package};
 pub use part::{CONTAINER_XML, Props, designmap_xml, parse_part, part_root, part_xml, prop, with_props, xml_limits};
 

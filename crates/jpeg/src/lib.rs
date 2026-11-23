@@ -23,7 +23,7 @@
 //!
 //! ```
 //! fn use_craft_jpeg(bytes: &[u8]) -> bool {
-//!     match craft_jpeg::frame(bytes) {
+//!     match bharat_jpeg::frame(bytes) {
 //!         Some(f) if (0xC9..=0xCB).contains(&f.marker) => true,
 //!         Some(f) if matches!(f.marker, 0xC0 | 0xC1) => f.precision != 8,
 //!         _ => false,
@@ -132,7 +132,7 @@ pub fn with_avi1_default_huffman(jpeg: &[u8]) -> std::borrow::Cow<'_, [u8]> {
 /// allocated.
 ///
 /// ```
-/// let mut limits = craft_jpeg::Limits::default();
+/// let mut limits = bharat_jpeg::Limits::default();
 /// limits.max_alloc = 512 << 20;
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

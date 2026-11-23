@@ -1,5 +1,5 @@
 [package]
-name = "craft-hdr"
+name = "bharat-hdr"
 description = "Clean-room Radiance HDR (RGBE) picture reader: flat, old and new run-length scan lines, all eight axis orders, to linear float RGB."
 version.workspace = true
 edition.workspace = true

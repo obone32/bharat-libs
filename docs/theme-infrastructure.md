@@ -1,11 +1,11 @@
 # Shared theme infrastructure
 
-The first shared mechanism is `craft-ui::theme::WidgetPalette`: it applies colors to egui's five
+The first shared mechanism is `bharat-ui::theme::WidgetPalette`: it applies colors to egui's five
 widget states, with a supplied foreground stroke and corner radius. VectorCraft, DesignCraft and
 LightCraft use the same operation. Their complete palettes, theme choices, fonts and preferences
 remain in their frontends.
 
-This follows the reusable-UI workstream of [craft-libs issue 2](https://github.com/storytold/craft-libs/issues/2).
+This follows the reusable-UI workstream of [bharat-libs issue 2](https://github.com/obone32/bharat-libs/issues/2).
 The [cross-app architecture discussion](https://github.com/storytold/vectorcraft/issues/647) and
 [base-crate request](https://github.com/storytold/photocraft/issues/1217) provide context; this change
 keeps the existing repository, document and release boundaries.
@@ -77,7 +77,7 @@ those four properties. Borders, expansion, selection, shadows and the rest of eg
 stay untouched. Apps apply their state-specific exceptions afterward. `noninteractive` names
 egui's state, not a new disabled-control policy.
 
-A separate `craft-theme` crate adds no useful boundary: this mechanism already depends on egui
+A separate `bharat-theme` crate adds no useful boundary: this mechanism already depends on egui
 and belongs beside the controls it styles. A universal token structure, theme enum, application
 identifier or global context key is unnecessary. Constructing another large visual-options
 object would mostly rename `egui::Visuals` fields without simplifying their use. Context lookup
@@ -94,8 +94,8 @@ uses `vectorcraft_text`; DesignCraft and WordCraft use their font crates; PdfCra
 and system fallback; LightCraft uses its engine catalog; FilmCraft and EffectCraft use their text
 crates and local font discovery. DesignCraft also configures named Arabic shaping families.
 Those dependencies and the font files stay in the apps. What they had in common, the fallback
-order and the system-font fallback, is `craft_ui::fonts` (see the
-[craft-ui README](../crates/ui/README.md#ui-fonts)); each app hands it the faces it embeds.
+order and the system-font fallback, is `bharat_ui::fonts` (see the
+[bharat-ui README](../crates/ui/README.md#ui-fonts)); each app hands it the faces it embeds.
 
 Theme references occur throughout panels, menus and tools, with local visual/spacing overrides
 in every app. A source search alone cannot turn this into a percentage of correctly themed UI:
@@ -130,7 +130,7 @@ Examples worth preserving or reviewing separately:
   customize backgrounds and slider widths.
 
 This extraction preserves those choices. It does not certify whole-app accessibility or theme
-consistency. Font installation is separate from theme application: `craft_ui::fonts` handles it.
+consistency. Font installation is separate from theme application: `bharat_ui::fonts` handles it.
 
 ## Migration and validation
 

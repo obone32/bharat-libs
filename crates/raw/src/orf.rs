@@ -40,9 +40,9 @@ use crate::shared::{cfa_from_exif, white_from_data_sourced};
 use crate::tiffraw::{Packing, read_image};
 use crate::unpack::unpack_msb;
 use crate::{BlackLevel, Camera, Cfa, ColorData, Limits, Mode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result};
-use craft_tiff::image::chunk_bytes;
-use craft_tiff::makernote::MakerNote;
-use craft_tiff::{Ifd, Tiff, Value, makernote, tags as t};
+use bharat_tiff::image::chunk_bytes;
+use bharat_tiff::makernote::MakerNote;
+use bharat_tiff::{Ifd, Tiff, Value, makernote, tags as t};
 use rayon::prelude::*;
 
 const CAMERA_SETTINGS: u16 = 0x2020;
@@ -74,8 +74,8 @@ pub(crate) fn sub_ifd(bytes: &[u8], mn: &MakerNote, tag: u16) -> Option<Ifd> {
         Value::Undefined(_) | Value::Byte(_) => e.offset,
         _ => mn.base.checked_add(mn.ifd.u64(tag)?)?,
     };
-    let opts = craft_tiff::ParseOptions { max_ifds: 4, max_depth: 1, follow_children: false, ..Default::default() };
-    craft_tiff::parse_ifd_at(bytes, at, mn.order, mn.base, false, &opts).ok().map(|(i, _)| i)
+    let opts = bharat_tiff::ParseOptions { max_ifds: 4, max_depth: 1, follow_children: false, ..Default::default() };
+    bharat_tiff::parse_ifd_at(bytes, at, mn.order, mn.base, false, &opts).ok().map(|(i, _)| i)
 }
 
 /// Black level of a body without ImageProcessing: the main note's `0x1012` BlackLevel (the mean of its four values)
@@ -368,7 +368,7 @@ pub(crate) fn preview(bytes: &[u8]) -> Option<&[u8]> {
 mod tests {
     use super::*;
     use crate::EXIF_CFA_PATTERN;
-    use craft_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter};
+    use bharat_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter};
 
     fn orf(w: u32, h: u32, bits: u16, strip: Vec<u8>) -> Vec<u8> {
         orf_with(w, h, bits, strip, None)

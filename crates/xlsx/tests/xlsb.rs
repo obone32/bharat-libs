@@ -4,8 +4,8 @@
 mod common;
 
 use common::{read, read_with};
-use craft_xlsx::testing::zip;
-use craft_xlsx::{CellError, CellRef, Error, Limits, Range, SheetKind, Value, Visibility, is_xlsb};
+use bharat_xlsx::testing::zip;
+use bharat_xlsx::{CellError, CellRef, Error, Limits, Range, SheetKind, Value, Visibility, is_xlsb};
 
 const ROOT: &str = r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="book" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="records/book.bin"/></Relationships>"#;
 const RELS: &str = r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="one" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="../data/one.bin"/><Relationship Id="two" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="../data/two.bin"/><Relationship Id="strings" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="../text/strings.bin"/></Relationships>"#;
@@ -186,7 +186,7 @@ fn cells_carry_their_format_index_and_blank_cells_their_format() {
     blank.extend((7u32 | 0x0100_0000).to_le_bytes());
     data.extend(record(1, &blank));
     let bytes = file(&worksheet(&data, &[]));
-    let mut p = craft_xlsx::Package::open(&bytes, &craft_xlsx::Limits::default()).unwrap();
+    let mut p = bharat_xlsx::Package::open(&bytes, &bharat_xlsx::Limits::default()).unwrap();
     assert!(p.styles().unwrap().is_none());
     let wb = p.workbook().unwrap();
     let mut cells = vec![];
@@ -196,7 +196,7 @@ fn cells_carry_their_format_index_and_blank_cells_their_format() {
     })
     .unwrap();
     assert_eq!(cells.len(), 1);
-    assert_eq!((cells[0].style, cells[0].phonetic, &cells[0].value), (7, true, &craft_xlsx::CellValue::Empty));
+    assert_eq!((cells[0].style, cells[0].phonetic, &cells[0].value), (7, true, &bharat_xlsx::CellValue::Empty));
 }
 
 #[test]

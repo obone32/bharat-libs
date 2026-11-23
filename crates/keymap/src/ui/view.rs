@@ -8,10 +8,10 @@
 use std::ops::Range;
 use std::sync::Arc;
 
-use craft_ui::ComboBox;
-use craft_ui::buttons::{IconButton, IconButtonStyle};
-use craft_ui::layout::{ResizeHandle, SplitAxis, SplitSize, split_rect};
-use craft_ui::tabs::{self, Tab};
+use bharat_ui::ComboBox;
+use bharat_ui::buttons::{IconButton, IconButtonStyle};
+use bharat_ui::layout::{ResizeHandle, SplitAxis, SplitSize, split_rect};
+use bharat_ui::tabs::{self, Tab};
 use egui::Galley;
 use egui::accesskit::Live;
 use egui::text::{LayoutJob, TextFormat, TextWrapping};
@@ -59,7 +59,7 @@ pub(crate) fn body(ui: &mut Ui, env: &mut Env, state: &mut DialogState) {
     let style = env.options.style.unwrap_or_else(|| DialogStyle::from_visuals(ui.visuals()));
     let icons = style::icon_buttons(ui.visuals());
     let row_h = ui.text_style_height(&TextStyle::Body) + 6.0;
-    let base = ui.scope_id().with("craft_keymap_shortcuts");
+    let base = ui.scope_id().with("bharat_keymap_shortcuts");
     let mut d = Draw { env, state, style, icons, base, row_h };
     d.keys(ui);
     d.layout(ui);
@@ -75,7 +75,7 @@ struct Draw<'s, 'e> {
 }
 
 fn fill(source: String, args: &[(&str, &str)]) -> String {
-    craft_i18n::fmt(&source, args)
+    bharat_i18n::fmt(&source, args)
 }
 
 /// What a click in the table asked for, applied after the rows are drawn.

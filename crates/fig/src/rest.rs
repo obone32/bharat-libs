@@ -1,4 +1,4 @@
-//! A decoded `.fig` message mapped onto the REST API file JSON ([`craft_figma_rest`]), the shape
+//! A decoded `.fig` message mapped onto the REST API file JSON ([`bharat_figma_rest`]), the shape
 //! an application's importer takes.
 //!
 //! The message lists node changes; each names its id (`guid`), its parent and its position among
@@ -9,7 +9,7 @@
 //! doesn't have (sticky notes, connectors, tables, …) come out as the closest frames, text and
 //! vectors. Anything not understood is skipped with a warning; malformed input never panics.
 //!
-//! Besides the public REST fields, the result carries the extensions [`craft_figma_rest::ext`]
+//! Besides the public REST fields, the result carries the extensions [`bharat_figma_rest::ext`]
 //! documents (`vectorNetwork`, `vectorNetworkRef`, `pointCount`, `innerRadius`,
 //! `_letterSpacingPercent`) and private `_fig*` handoffs for an importer that wants the file's
 //! provenance ([`FIG_SOURCE_FIELD`], [`FIG_LIBRARY_CONTEXTS_FIELD`], [`FIG_CAPPED_MAINS_FIELD`],
@@ -18,7 +18,7 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::rc::Rc;
 
-use craft_figma_rest::ext::VectorNetwork;
+use bharat_figma_rest::ext::VectorNetwork;
 use kurbo::{Affine, Point, Rect};
 use serde_json::{Map, Value, json};
 
@@ -114,7 +114,7 @@ impl Default for Options<'_> {
 /// What [`to_rest`] makes of a message.
 #[derive(Debug)]
 pub struct Mapped {
-    /// The file JSON, in the shape [`craft_figma_rest::File`] reads.
+    /// The file JSON, in the shape [`bharat_figma_rest::File`] reads.
     pub json: Value,
     /// What was skipped or approximated, each once (`(×n)` after one met n times).
     pub warnings: Vec<String>,
@@ -430,7 +430,7 @@ struct Mapper<'a> {
     library_contexts: Vec<Value>,
     /// Layers visited while scanning internal canvases, across all of them.
     library_scan_count: usize,
-    warnings: craft_figma_rest::Warnings,
+    warnings: bharat_figma_rest::Warnings,
     geometry: &'a dyn Geometry,
     outlined_stroke: Option<(&'a str, &'a str)>,
     board: bool,
@@ -526,7 +526,7 @@ impl<'a> Mapper<'a> {
             override_scope_entries: 0,
             library_contexts: Vec::new(),
             library_scan_count: 0,
-            warnings: craft_figma_rest::Warnings::default(),
+            warnings: bharat_figma_rest::Warnings::default(),
             geometry: options.geometry,
             outlined_stroke: options.outlined_stroke,
             board: options.board,

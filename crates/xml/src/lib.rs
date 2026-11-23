@@ -14,11 +14,11 @@
 //! The text the reader produces is therefore never more than three times its input.
 //!
 //! ```
-//! let root = craft_xml::parse(b"<a x='1'><b>one &amp; two</b><b/></a>")?;
+//! let root = bharat_xml::parse(b"<a x='1'><b>one &amp; two</b><b/></a>")?;
 //! assert_eq!(root.attr_u32("x"), Some(1));
 //! assert_eq!(root.child("b").map(|b| b.text().into_owned()).as_deref(), Some("one & two"));
 //! assert_eq!(root.to_xml(), r#"<a x="1"><b>one &amp; two</b><b/></a>"#);
-//! # Ok::<(), craft_xml::Error>(())
+//! # Ok::<(), bharat_xml::Error>(())
 //! ```
 
 #[cfg(doctest)]

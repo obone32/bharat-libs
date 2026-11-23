@@ -21,7 +21,7 @@ fn binding_text(km: &Keymap, text: &dyn Text, b: &Binding, home: &Scope) -> Stri
     match &b.scope {
         Some(s) if s != home => {
             let scope = if s.is_app() { text.ui("Application").into_owned() } else { text.segment(s.as_str()).into_owned() };
-            craft_i18n::fmt(&text.ui("{chord} ({scope})"), &[("chord", &chord), ("scope", &scope)])
+            bharat_i18n::fmt(&text.ui("{chord} ({scope})"), &[("chord", &chord), ("scope", &scope)])
         }
         _ => chord,
     }

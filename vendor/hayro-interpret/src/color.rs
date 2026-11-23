@@ -1600,7 +1600,7 @@ pub struct Plate {
     /// PdfCraft patch (36): the printing condition process colour converts to, from the
     /// document's output intent. `None` converts by the ISO 32000-2 §10.4.2 device formulas.
     pub simulation: Option<CmykSimulation>,
-    /// Craft patch (CMYK masks): spot colorants paint the process plates through their
+    /// Bharat patch (CMYK masks): spot colorants paint the process plates through their
     /// alternate space and tint transform, as a composite CMYK device converts them, so no spot
     /// ink has a plate of its own. A DeviceCMYK soft mask's luminosity is separated this way;
     /// separations leave it `false`.
@@ -1608,7 +1608,7 @@ pub struct Plate {
 }
 
 impl Plate {
-    /// Craft patch (CMYK masks): the tint, `0.0` (no ink) to `1.0` (solid), that `color` puts
+    /// Bharat patch (CMYK masks): the tint, `0.0` (no ink) to `1.0` (solid), that `color` puts
     /// on this plate, ignoring overprint and opacity.
     pub fn tint(&self, color: &Color) -> f32 {
         match color.color_space.ink_use(&self.ink, self.spots_as_process) {
@@ -2089,7 +2089,7 @@ impl ColorSpace {
     }
 
     /// PdfCraft patch (35): DeviceCMYK itself (`CalCMYK` reads as it too), where the nonzero
-    /// overprint mode applies. Craft patch (flatten): public.
+    /// overprint mode applies. Bharat patch (flatten): public.
     pub fn is_device_cmyk(&self) -> bool {
         matches!(self.0.as_ref(), ColorSpaceType::DeviceCmyk)
     }
@@ -2104,7 +2104,7 @@ impl ColorSpace {
         }
     }
 
-    /// Craft patch (CMYK masks): the alternate space of a `Separation` or `DeviceN` space that
+    /// Bharat patch (CMYK masks): the alternate space of a `Separation` or `DeviceN` space that
     /// names a spot ink; `None` for other spaces, and for colorants that are all process inks,
     /// `All` or `None`.
     fn spot_alternate_space(&self) -> Option<&ColorSpace> {
@@ -2118,7 +2118,7 @@ impl ColorSpace {
         }
     }
 
-    /// Craft patch (CMYK masks): a `Separation` or `DeviceN` color in its alternate space,
+    /// Bharat patch (CMYK masks): a `Separation` or `DeviceN` color in its alternate space,
     /// through the tint transform; the components unchanged for other spaces.
     fn tint_transform(&self, components: &[f32]) -> ColorComponents {
         let (function, alternate) = match self.0.as_ref() {
@@ -2134,7 +2134,7 @@ impl ColorSpace {
 
     /// PdfCraft patch (35): how the space paints `ink`'s plate. Gray, RGB, CIE-based and ICC
     /// spaces are process colour: they specify the four process inks and no spot ink. With
-    /// `spots_as_process` (Craft patch, CMYK masks), a space naming a spot ink paints as its
+    /// `spots_as_process` (Bharat patch, CMYK masks), a space naming a spot ink paints as its
     /// alternate space.
     pub(crate) fn ink_use(&self, ink: &Ink, spots_as_process: bool) -> InkUse {
         if spots_as_process && let Some(alternate) = self.spot_alternate_space() {
@@ -2326,7 +2326,7 @@ pub(crate) struct PlateSpace {
     ink: Ink,
     /// Patch 36: the printing condition process colour converts to, if any.
     simulation: Option<CmykSimulation>,
-    /// Craft patch (CMYK masks): see [`Plate::spots_as_process`].
+    /// Bharat patch (CMYK masks): see [`Plate::spots_as_process`].
     spots_as_process: bool,
 }
 
@@ -2556,7 +2556,7 @@ pub(crate) trait ToRgb {
     }
 }
 
-/// Craft patch (flatten): the inks a colour paints, for devices that keep colours as inks
+/// Bharat patch (flatten): the inks a colour paints, for devices that keep colours as inks
 /// instead of RGB (see [`Color::ink_paint`]).
 #[derive(Clone, Debug, PartialEq)]
 pub enum InkPaint {
@@ -2569,7 +2569,7 @@ pub enum InkPaint {
     None,
 }
 
-/// Craft patch (flatten): how a spot ink looks at 100%, from its colour space's alternate.
+/// Bharat patch (flatten): how a spot ink looks at 100%, from its colour space's alternate.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SpotAlternate {
     /// The alternate space is DeviceCMYK: the tint transform's CMYK.
@@ -2579,18 +2579,18 @@ pub enum SpotAlternate {
 }
 
 impl Color {
-    /// Craft patch (flatten): the opacity (`ca` or `CA`) the colour paints with.
+    /// Bharat patch (flatten): the opacity (`ca` or `CA`) the colour paints with.
     pub fn opacity(&self) -> f32 {
         self.opacity
     }
 
-    /// Craft patch (flatten): whether the colour was set in DeviceCMYK itself, where the
+    /// Bharat patch (flatten): whether the colour was set in DeviceCMYK itself, where the
     /// nonzero overprint mode applies (ISO 32000-2 §8.6.7).
     pub fn is_device_cmyk(&self) -> bool {
         self.color_space.is_device_cmyk()
     }
 
-    /// Craft patch (flatten): the inks the colour paints, as plate mode separates it:
+    /// Bharat patch (flatten): the inks the colour paints, as plate mode separates it:
     /// `Separation` and `DeviceN` colorants as they are, and process colour as CMYK, converted
     /// through `simulation` where plate mode converts it. `None` for a pattern space.
     pub fn ink_paint(&self, simulation: Option<&CmykSimulation>) -> Option<InkPaint> {
@@ -2598,7 +2598,7 @@ impl Color {
             .ink_paint(&self.components, simulation, false)
     }
 
-    /// Craft patch (flatten): how spot `ink` of this colour's space looks at 100%; `None` when
+    /// Bharat patch (flatten): how spot `ink` of this colour's space looks at 100%; `None` when
     /// the space doesn't name it.
     pub fn spot_alternate(&self, ink: &Ink) -> Option<SpotAlternate> {
         self.color_space.spot_alternate(ink)
@@ -2606,7 +2606,7 @@ impl Color {
 }
 
 impl ColorSpace {
-    /// Craft patch (flatten): see [`Color::ink_paint`].
+    /// Bharat patch (flatten): see [`Color::ink_paint`].
     fn ink_paint(
         &self,
         components: &[f32],
@@ -2652,7 +2652,7 @@ impl ColorSpace {
         })
     }
 
-    /// Craft patch (flatten): see [`Color::spot_alternate`].
+    /// Bharat patch (flatten): see [`Color::spot_alternate`].
     pub fn spot_alternate(&self, ink: &Ink) -> Option<SpotAlternate> {
         let (alternate, transform, components) = match self.0.as_ref() {
             ColorSpaceType::Separation(s) => {
@@ -2685,7 +2685,7 @@ impl ColorSpace {
     }
 }
 
-/// Craft patch (flatten): the components a device that keeps colours as inks stores a space's
+/// Bharat patch (flatten): the components a device that keeps colours as inks stores a space's
 /// colours in, as plate mode separates them (see [`ColorSpace::ink_values`]).
 #[derive(Clone, Debug, PartialEq)]
 pub enum InkSpace {
@@ -2723,12 +2723,12 @@ impl InkSpace {
 }
 
 impl ColorSpace {
-    /// Craft patch (flatten): the components per colour.
+    /// Bharat patch (flatten): the components per colour.
     pub fn components(&self) -> usize {
         usize::from(self.num_components())
     }
 
-    /// Craft patch (flatten): how [`Self::ink_values`] stores this space's colours. An Indexed
+    /// Bharat patch (flatten): how [`Self::ink_values`] stores this space's colours. An Indexed
     /// space stores its base space's.
     pub fn ink_space(&self, simulation: Option<&CmykSimulation>) -> InkSpace {
         match self.0.as_ref() {
@@ -2764,7 +2764,7 @@ impl ColorSpace {
         }
     }
 
-    /// Craft patch (flatten): the colours `colors` (whole colours of [`Self::components`]
+    /// Bharat patch (flatten): the colours `colors` (whole colours of [`Self::components`]
     /// values each) appended to `out` as [`Self::ink_space`] values, `0.0..=1.0`. Process
     /// colour converts as [`Color::ink_paint`] does, in batches.
     pub fn ink_values(&self, colors: &[f32], simulation: Option<&CmykSimulation>, out: &mut Vec<f32>) {

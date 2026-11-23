@@ -8,7 +8,7 @@
 //! of kept pictures, or at the first damaged frame after the first, and [`Animation::stop`] says
 //! which.
 //!
-//! shortcut: the limit and result types mirror `craft_gif::frames` rather than sharing one crate
+//! shortcut: the limit and result types mirror `bharat_gif::frames` rather than sharing one crate
 //! (one crate per format); unify them if a third animated format needs the same loop.
 
 use std::io::Cursor;

@@ -1,8 +1,8 @@
 # The test cases and the files that hold them
 
-The tests of `craft-aep` (and the After Effects import tests of `effectcraft-engine`) address
+The tests of `bharat-aep` (and the After Effects import tests of `effectcraft-engine`) address
 a case by the name of the single-case file it was first written against. The cases live in the
-combined projects of the corpus (in the folder named by `CRAFT_AEP_FIXTURES`): each case is the composition named like the case without its
+combined projects of the corpus (in the folder named by `BHARAT_AEP_FIXTURES`): each case is the composition named like the case without its
 extension, built like the single-case file's composition `C` (1920x1080, 25 fps, 5 s, black, one
 red 1920x1080 solid `L`) plus the case's change (and the compositions that change uses). A test
 gets the case as a project of its own, cut from the combined file (`tests/it/common/mod.rs`).

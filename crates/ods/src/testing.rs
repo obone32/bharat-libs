@@ -17,7 +17,7 @@ pub fn spreadsheet(tables: &str) -> Vec<u8> {
 
 /// An `.ods` package with this `content.xml`.
 pub fn package(content: &[u8]) -> Vec<u8> {
-    let mut w = craft_odf::PackageWriter::new(craft_odf::mime::SPREADSHEET);
+    let mut w = bharat_odf::PackageWriter::new(bharat_odf::mime::SPREADSHEET);
     w.file("content.xml", "text/xml", content);
     w.finish().unwrap_or_default()
 }

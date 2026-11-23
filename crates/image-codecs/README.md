@@ -1,8 +1,8 @@
-# craft-image-codecs
+# bharat-image-codecs
 
 Codecs for flat raster image formats, written in pure Rust. This crate defines its own `Image`
-type and shares its baseline and extended JPEG decoders through `craft-jpeg`, and its optional
-HEIF decoder through `craft-heif`. It builds for `wasm32-unknown-unknown` and does no filesystem
+type and shares its baseline and extended JPEG decoders through `bharat-jpeg`, and its optional
+HEIF decoder through `bharat-heif`. It builds for `wasm32-unknown-unknown` and does no filesystem
 I/O: decoders take `&[u8]` and encoders return `Vec<u8>`.
 
 It follows the "Avoiding GIMP's hole" rules in `docs/architecture.md` §1.1:
@@ -20,7 +20,7 @@ It follows the "Avoiding GIMP's hole" rules in `docs/architecture.md` §1.1:
   pages left out, or data that ended early.
 
 ```rust
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 let img = decode(&bytes)?;                               // detect + decode (default Limits)
 for w in fidelity_warnings(&img, Format::Jpeg) {         // e.g. "16-bit will be reduced to 8-bit"
@@ -30,7 +30,7 @@ let out = encode(&img, Format::Tiff, &EncodeOptions::default())?;
 ```
 
 ```toml
-craft-image-codecs = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-image-codecs = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ## Capability matrix (default build)
@@ -167,7 +167,7 @@ embedded table (and a PNG's transparent entry) so `photocraft-io` can open them 
   with `CodecError::Unsupported`: they are sensor data, not flat images. `photocraft-raw` decodes
   and develops them, and `photocraft-io` routes them there.
 
-* **HEIF/HEIC (read-only, feature `heif`).** Decoding lives in the optional `craft-heif` crate
+* **HEIF/HEIC (read-only, feature `heif`).** Decoding lives in the optional `bharat-heif` crate
   behind the non-default `heif` feature (official PhotoCraft builds enable it; distributors choose).
   Without it, HEIF is still detected and decoding returns `CodecError::Unsupported` ("HEIC/HEIF
   support isn't included in this build"). iPhone and Mac photos decode with `heic-rs` (pure Rust, no `unsafe`):
@@ -307,7 +307,7 @@ including chunks after IDAT. This budget is separate from pixels, not a total pr
 
 ## Tests
 
-`cargo test -p craft-image-codecs` covers:
+`cargo test -p bharat-image-codecs` covers:
 
 * the full round-trip matrix (every writable format × 4 sample types × 6 layouts), exact for
   lossless formats and above a PSNR threshold for lossy ones;

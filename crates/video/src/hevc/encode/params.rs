@@ -1,8 +1,8 @@
 //! Parameter sets (7.3.2.1 VPS, 7.3.2.2 SPS with E.2.1 VUI, 7.3.2.3 PPS), profile_tier_level (7.3.3),
 //! level selection (Annex A, Table A.8) and the `hvcC` record (ISO/IEC 14496-15 §8.3.3.1).
 
-use craft_media::bitstream::{BitWriter, escape_rbsp};
-use craft_media::isobmff::{HevcConfig, HevcNalArray};
+use bharat_media::bitstream::{BitWriter, escape_rbsp};
+use bharat_media::isobmff::{HevcConfig, HevcNalArray};
 
 pub const NAL_TRAIL_R: u8 = 1;
 pub const NAL_IDR_N_LP: u8 = 20;

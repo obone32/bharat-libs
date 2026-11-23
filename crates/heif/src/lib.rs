@@ -1,4 +1,4 @@
-//! `craft-heif`: the optional HEIF / HEIC (iPhone and Mac photo) decoder.
+//! `bharat-heif`: the optional HEIF / HEIC (iPhone and Mac photo) decoder.
 //!
 //! `heic-rs`, a pure-Rust HEIF container and HEVC still-picture decoder, reads the container and
 //! reconstructs the coded pictures (bit-exact against libde265 on iPhone photos); this crate turns

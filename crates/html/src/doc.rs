@@ -1,5 +1,5 @@
-//! HTML documents (feature `flow`): read into and written from the craft-flow model and a
-//! craft-wordmodel `Document`.
+//! HTML documents (feature `flow`): read into and written from the bharat-flow model and a
+//! bharat-wordmodel `Document`.
 //!
 //! Import is a tolerant tag-soup reader (no DOM): a tokenizer plus a stack of open elements with
 //! HTML's implicit closes for `p`, `li`, `tr`, `td`/`th` and headings. It understands `p`, `div`,
@@ -19,11 +19,11 @@
 
 use std::sync::Arc;
 
-use craft_wordmodel::props::LineSpacing;
-use craft_wordmodel::props::VAlign;
-use craft_wordmodel::{Align, Document};
+use bharat_wordmodel::props::LineSpacing;
+use bharat_wordmodel::props::VAlign;
+use bharat_wordmodel::{Align, Document};
 
-use craft_flow::{
+use bharat_flow::{
     self as model, Cell, FBlock, FTable, Flow, Fmt, Inline, Kind, ListInfo, Meta, Para, Spacing, base64_encode, data_uri, make_img, mime_of,
     parse_color,
 };

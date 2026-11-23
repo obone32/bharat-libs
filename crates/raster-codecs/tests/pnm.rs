@@ -1,4 +1,4 @@
-use craft_raster_codecs::{ChannelLayout, CodecError, Image, Limits, SampleType, pnm};
+use bharat_raster_codecs::{ChannelLayout, CodecError, Image, Limits, SampleType, pnm};
 
 fn decode(b: &[u8]) -> Result<Image, CodecError> {
     pnm::decode(b, &Limits::default())
@@ -184,7 +184,7 @@ fn pnm_valid_variants() {
 
 /// `Limits::max_alloc` budgets the decoded pixels, so the decoder must not build a wider scratch
 /// copy next to them (it once collected a `u32` per sample). Reads the process's peak RSS, so it
-/// runs alone: `cargo test -p craft-raster-codecs --test pnm -- --ignored --test-threads 1`.
+/// runs alone: `cargo test -p bharat-raster-codecs --test pnm -- --ignored --test-threads 1`.
 #[cfg(target_os = "linux")]
 #[test]
 #[ignore = "measures the peak RSS of the process; run it alone"]

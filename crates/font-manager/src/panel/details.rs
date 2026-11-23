@@ -3,7 +3,7 @@
 
 use std::sync::Arc;
 
-use craft_ui::direction;
+use bharat_ui::direction;
 use egui::{
     Align, Color32, Context, CornerRadius, FontFamily, FontId, Id, Layout, Margin, Order, Rect, RichText, Sense, Stroke, StrokeKind, Ui, UiBuilder,
     vec2,
@@ -84,7 +84,7 @@ fn file_of<'a>(family: &'a Family, face: &FaceInfo) -> Option<&'a FontFile> {
 impl FontsPanel {
     pub(crate) fn details(&mut self, ctx: &Context, area: Rect) {
         let open = self.detail.is_some();
-        let k = ctx.animate_bool_with_time(Id::unique("craft-fonts.sheet"), open, ctx.global_style().animation_time * 1.5);
+        let k = ctx.animate_bool_with_time(Id::unique("bharat-fonts.sheet"), open, ctx.global_style().animation_time * 1.5);
         let Some(detail) = self.detail.clone() else { return };
         let s = self.skin.clone();
         let dark = ctx.theme() == egui::Theme::Dark;
@@ -92,13 +92,13 @@ impl FontsPanel {
         let height = (area.height() - 32.0).max(200.0).min(area.height());
         let sheet = Rect::from_center_size(area.center() + vec2(0.0, (1.0 - k) * 16.0), vec2(width, height));
         let mut close = false;
-        egui::Area::new(Id::unique("craft-fonts.details")).order(Order::Foreground).fixed_pos(area.min).constrain(false).show(ctx, |ui| {
+        egui::Area::new(Id::unique("bharat-fonts.details")).order(Order::Foreground).fixed_pos(area.min).constrain(false).show(ctx, |ui| {
             let (rect, scrim) = ui.allocate_exact_size(area.size(), Sense::click());
             let alpha = if dark { 165.0 } else { 100.0 } * k;
             ui.painter().rect_filled(rect, CornerRadius::ZERO, Color32::from_black_alpha(alpha.round() as u8));
             close |= scrim.clicked();
             // Clicks on the sheet's own empty space stay on the sheet.
-            let _ = ui.interact(sheet, Id::unique("craft-fonts.sheet-bg"), Sense::click());
+            let _ = ui.interact(sheet, Id::unique("bharat-fonts.sheet-bg"), Sense::click());
             let painter = ui.painter();
             painter.add(
                 egui::epaint::Shadow { offset: [0, 8], blur: 24, spread: 0, color: Color32::from_black_alpha(if dark { 140 } else { 36 }) }
@@ -108,7 +108,7 @@ impl FontsPanel {
             let mut child = ui.new_child(UiBuilder::new().max_rect(sheet).layout(direction::column(ui)));
             child.set_opacity(k.clamp(0.0, 1.0));
             child.set_clip_rect(sheet);
-            egui::ScrollArea::vertical().id_salt(("craft-fonts.sheet-scroll", format!("{detail:?}"))).auto_shrink([false, false]).show(
+            egui::ScrollArea::vertical().id_salt(("bharat-fonts.sheet-scroll", format!("{detail:?}"))).auto_shrink([false, false]).show(
                 &mut child,
                 |ui| {
                     egui::Frame::new().inner_margin(Margin::same(24)).show(ui, |ui| {
@@ -223,7 +223,7 @@ impl FontsPanel {
                     ui.spacing_mut().item_spacing.y = 2.0;
                     ui.label(RichText::new(tl!("Not curated")).color(s.p.warn));
                     let text = fmt(
-                        "This family comes from a source you added ({url}). Craft doesn't review its fonts or their licences.",
+                        "This family comes from a source you added ({url}). Bharat doesn't review its fonts or their licences.",
                         &[("url", &added)],
                     );
                     ui.add(egui::Label::new(RichText::new(text).size(12.5).color(s.p.muted)).wrap());
@@ -481,7 +481,7 @@ impl FontsPanel {
         };
         let size = if face.is_some() { size } else { size.min(20.0) };
         // Sample text keeps its own direction whatever the interface's.
-        let align = if craft_i18n::base_direction(text) == Some(craft_i18n::Direction::Rtl) { Align::Max } else { Align::Min };
+        let align = if bharat_i18n::base_direction(text) == Some(bharat_i18n::Direction::Rtl) { Align::Max } else { Align::Min };
         ui.allocate_ui_with_layout(vec2(width, 0.0), Layout::top_down(align), |ui| {
             ui.add(egui::Label::new(RichText::new(text).font(FontId::new(size, family)).color(color)).wrap());
         });

@@ -1,15 +1,15 @@
-# craft-xml
+# bharat-xml
 
 Bounded XML for hostile input: an owned element tree, streaming of repeated elements, a pull
-reader, escaping and a writer. It replaces the small XML helper each Craft app carried.
+reader, escaping and a writer. It replaces the small XML helper each Bharat app carried.
 
 It is built on `quick-xml`'s tokenizer (MIT). Everything above the tokens is here: limits,
 references, namespaces, recovery, the tree and the writer.
 
 ```rust
-use craft_xml::{Local, Options};
+use bharat_xml::{Local, Options};
 
-let root = craft_xml::parse(b"<p:sp id='5'><p:t>one &amp; two</p:t></p:sp>").unwrap();
+let root = bharat_xml::parse(b"<p:sp id='5'><p:t>one &amp; two</p:t></p:sp>").unwrap();
 assert_eq!(root.attr_u32("id"), Some(5));
 assert_eq!(root.child(Local("t")).map(|t| t.deep_text()).as_deref(), Some("one & two"));
 
@@ -18,7 +18,7 @@ let part = b"<sheetData><row r='1'/><row r='2'/></sheetData>";
 let mut rows = 0;
 let sheet = Options::local().parse_streaming(part, &["row"], |row| {
     rows += row.attr_u32("r").unwrap_or(0);
-    Ok::<(), craft_xml::Error>(())
+    Ok::<(), bharat_xml::Error>(())
 });
 assert_eq!((rows, sheet.map(|s| s.children.len())), (3, Ok(0)));
 ```
@@ -145,7 +145,7 @@ instructions and comments. It does not keep:
 
 ### WordCraft `crates/docx/src/xml.rs`
 
-| WordCraft | craft-xml |
+| WordCraft | bharat-xml |
 | --- | --- |
 | `MAX_DEPTH`, `MAX_ELEMENTS`, `MAX_ATTRS` | `Limits`. `max_nodes` counts text nodes too: use twice the element count. |
 | `NAMESPACES`, `OTHER_NAMESPACES`, `STRICT`, `prefix_for` | The tables stay in WordCraft, as `Canonical::namespaces`; `Canonical::prefix`. |
@@ -165,11 +165,11 @@ instructions and comments. It does not keep:
 
 ### GridCraft `crates/xlsx/src/xml.rs`
 
-| GridCraft | craft-xml |
+| GridCraft | bharat-xml |
 | --- | --- |
 | `MAX_DEPTH`, `MAX_XML_NODES` | `Limits` |
 | `parse` | `Options { unknown_entity: Literal, ..Options::local() }.parse` |
-| `parse_streaming(xml, split, cb)` | `.parse_streaming(xml, split, cb)`; `cb` returns any error that is `From<craft_xml::Error>` |
+| `parse_streaming(xml, split, cb)` | `.parse_streaming(xml, split, cb)`; `cb` returns any error that is `From<bharat_xml::Error>` |
 | `first_start(xml, name)` | `Options::local().first_start(xml, name)` |
 | `El.children` (elements), `El.text` | `elements()`, `text()` |
 | `attr`, `attr_u32`, `attr_i64`, `attr_f64`, `attr_bool`, `flag`, `child`, `path` | The same names |
@@ -179,10 +179,10 @@ instructions and comments. It does not keep:
 
 ### DeckCraft `crates/pptx/src/xml.rs`
 
-| DeckCraft | craft-xml |
+| DeckCraft | bharat-xml |
 | --- | --- |
 | `MAX_DEPTH`, `MAX_NODES` | `Limits` |
-| `parse(bytes)?.root`, `Doc::ns_decls` | `craft_xml::parse(bytes)?`, `root.ns_decls()` (prefix and URI) |
+| `parse(bytes)?.root`, `Doc::ns_decls` | `bharat_xml::parse(bytes)?`, `root.ns_decls()` (prefix and URI) |
 | `attr(n)`, `has_attr(n)` | `attr_local(n)`, `attr_local(n).is_some()` |
 | `i64(n)`, `i32(n)`, `u32(n)` | `attr_local(n).and_then(value::to_i64_lossy)` and `to_i32_lossy`, `to_u32_lossy` |
 | `f64(n)`, `bool(n)` | `attr_local(n).and_then(value::to_f64)` and `to_bool` |
@@ -199,7 +199,7 @@ instructions and comments. It does not keep:
 
 ### DesignCraft `crates/idml/src/xml.rs`, `crates/pptx/src/xml.rs`, `crates/engine/src/cmd/xml.rs`
 
-| DesignCraft | craft-xml |
+| DesignCraft | bharat-xml |
 | --- | --- |
 | `parse` | `Options { strict: true, pis: true, ..Options::default() }.parse` |
 | `Node::Pi(target, content)` | `Node::Pi { target, data }` |
@@ -216,7 +216,7 @@ instructions and comments. It does not keep:
 
 ### The others
 
-| App helper | craft-xml |
+| App helper | bharat-xml |
 | --- | --- |
 | WordCraft `formats/src/odt/xml.rs`: `events`, `events_at`, `Ev`, `Attrs`, `get`, `local` | `Options::events(utf8)`, `Events::next`, `Events::span`, `Event`. `Event::End` names the start tag. An error is returned, not swallowed. `length` stays. |
 | AniCraft `crates/xml`: `parse` | `Options { strict: true, drop_blank_text: true, unknown_entity: Literal, ..Options::default() }.parse` |

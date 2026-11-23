@@ -1,4 +1,4 @@
-use craft_raster_codecs::{ChannelLayout, CodecError, Image, Limits, xpm};
+use bharat_raster_codecs::{ChannelLayout, CodecError, Image, Limits, xpm};
 
 fn decode(b: &[u8]) -> Result<Image, CodecError> {
     xpm::decode(b, &Limits::default())

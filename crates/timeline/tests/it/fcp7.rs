@@ -3,12 +3,12 @@
 
 use crate::support;
 
-use craft_timeline::model::{
+use bharat_timeline::model::{
     BinEntry, ClipId, Generator, ItemId, ItemKind, Keyframe, Label, Marker, MarkerId, MarkerKind, MediaRef, Param, ParamValue, Project, Sequence,
     TrackKind, TransitionAlign,
 };
-use craft_timeline::time::{FrameRate, Tick};
-use craft_timeline::{ExportOptions, Format, Imported, Report, detect_text};
+use bharat_timeline::time::{FrameRate, Tick};
+use bharat_timeline::{ExportOptions, Format, Imported, Report, detect_text};
 use proptest::prelude::*;
 use support::*;
 

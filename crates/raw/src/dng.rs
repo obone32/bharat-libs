@@ -8,8 +8,8 @@ use crate::{
     BlackLevel, Camera, Cfa, CinemaTags, ColorData, Limits, Matrix3, Mode, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result,
     Timecode, opcodes,
 };
-use craft_tiff::tags::{self as t, photometric};
-use craft_tiff::{ByteOrder, Ifd, Tiff, Value};
+use bharat_tiff::tags::{self as t, photometric};
+use bharat_tiff::{ByteOrder, Ifd, Tiff, Value};
 
 /// The main raw IFD: full-resolution (NewSubfileType 0) CFA or LinearRaw image with the most pixels.
 pub(crate) fn raw_ifd(tiff: &Tiff) -> Option<&Ifd> {
@@ -187,7 +187,7 @@ pub(crate) fn is_plain_cfa_tiff(tiff: &Tiff, bytes: &[u8]) -> bool {
         t::compression::JPEG => info
             .chunks(bytes.len() as u64)
             .first()
-            .and_then(|c| craft_tiff::image::chunk_bytes(bytes, c))
+            .and_then(|c| bharat_tiff::image::chunk_bytes(bytes, c))
             .is_some_and(|src| crate::ljpeg::frame_info(src).is_ok()),
         _ => false,
     }

@@ -1,27 +1,27 @@
 //! Times the flattener in stages on every plate-test scene and on a synthetic heavy page, at
 //! 300 dpi. A report, not a benchmark: run it in release with
-//! `cargo test --release -p craft-prepress --features flatten --test flatten_timings -- --ignored --nocapture`.
+//! `cargo test --release -p bharat-prepress --features flatten --test flatten_timings -- --ignored --nocapture`.
 #![cfg(feature = "flatten")]
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::sync::OnceLock;
 use std::time::{Duration, Instant};
 
-use craft_pdf::write::backend::SerializeSettings;
+use bharat_pdf::write::backend::SerializeSettings;
 
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::print::{self, PrintColor};
-use craft_pdf::write::{Metadata, Writer};
-use craft_plate_test::reference::{self, Context};
-use craft_plate_test::scene;
-use craft_prepress::flatten::kurbo::{Affine, Circle, Point, Rect, Shape};
-use craft_prepress::flatten::pdf::{ReadOptions, read_page};
-use craft_prepress::flatten::raster::Rasterizer;
-use craft_prepress::flatten::write::{page_pdf, write_flattened};
-use craft_prepress::flatten::{
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::print::{self, PrintColor};
+use bharat_pdf::write::{Metadata, Writer};
+use bharat_plate_test::reference::{self, Context};
+use bharat_plate_test::scene;
+use bharat_prepress::flatten::kurbo::{Affine, Circle, Point, Rect, Shape};
+use bharat_prepress::flatten::pdf::{ReadOptions, read_page};
+use bharat_prepress::flatten::raster::Rasterizer;
+use bharat_prepress::flatten::write::{page_pdf, write_flattened};
+use bharat_prepress::flatten::{
     BlendMode, DisplayList, FillItem, FillRule, FlattenOptions, FlattenPageOptions, GradientGeometry, GroupItem, Item, Paint, flatten, flatten_page,
 };
-use craft_prepress::{CmsConversion, Fallback, InkColor, InkId, InkSet, Options, Overprint, Process, plates};
+use bharat_prepress::{CmsConversion, Fallback, InkColor, InkId, InkSet, Options, Overprint, Process, plates};
 
 const DPI: f32 = 300.0;
 
@@ -93,7 +93,7 @@ fn written(list: &DisplayList, st: &mut Stages) -> Vec<u8> {
 
 fn settings() -> SerializeSettings {
     static SETTINGS: OnceLock<SerializeSettings> = OnceLock::new();
-    SETTINGS.get_or_init(|| print::settings(PrintColor::fogra39(craft_cms::builtin::COATED_FOGRA39_ICC)).unwrap()).clone()
+    SETTINGS.get_or_init(|| print::settings(PrintColor::fogra39(bharat_cms::builtin::COATED_FOGRA39_ICC)).unwrap()).clone()
 }
 
 fn ms(d: Duration) -> String {

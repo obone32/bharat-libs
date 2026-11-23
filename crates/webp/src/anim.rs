@@ -1,6 +1,6 @@
 //! Animated WebP writing: the `VP8X`, `ANIM` and `ANMF` chunks around frames another encoder
 //! made ([`animation`]), and, with feature `vp8`, whole lossy animations from RGBA frames through
-//! `craft-video`'s VP8 encoder ([`lossy_animation`]).
+//! `bharat-video`'s VP8 encoder ([`lossy_animation`]).
 
 use crate::{Error, MAX_CANVAS, MAX_VP8_DIMENSION, chunk};
 
@@ -133,7 +133,7 @@ pub fn animation(width: u32, height: u32, frames: &[AnimFrame], opts: &AnimOptio
 /// whose pixels are all opaque gets no alpha plane. Frames replace the canvas (no blending).
 #[cfg(feature = "vp8")]
 pub fn lossy_animation(width: u32, height: u32, frames: &[(&[u8], u32)], quality: u8, opts: &AnimOptions) -> Result<Vec<u8>, Error> {
-    use craft_video::vp8::{Vp8Error, Vp8Params, encode_rgba};
+    use bharat_video::vp8::{Vp8Error, Vp8Params, encode_rgba};
     let params = Vp8Params { quality, loop_filter: None };
     let mut encoded = Vec::with_capacity(frames.len());
     for (rgba, duration_ms) in frames {

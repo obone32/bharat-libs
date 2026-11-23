@@ -1,6 +1,6 @@
-# craft-metafile
+# bharat-metafile
 
-Windows metafiles for the Craft apps: one reader for WMF, EMF and EMF+, and writers for EMF and WMF.
+Windows metafiles for the Bharat apps: one reader for WMF, EMF and EMF+, and writers for EMF and WMF.
 
 - `parse(bytes) -> Picture` plays a file's records on a model of the GDI device context and
   returns what was drawn: paths, pattern fills, bitmaps and text, each with its clip.
@@ -186,7 +186,7 @@ bundles no sample files.
 
 | Before | After |
 |---|---|
-| `deckcraft_metafile::{parse, is_metafile, Picture, Item, Seg, Tile, Text, Font, HAlign, VAlign, SYMBOL_CHARSET, PlacedItem, MAX_BITMAP_SIDE, Error}` | The same names in `craft_metafile`. |
+| `deckcraft_metafile::{parse, is_metafile, Picture, Item, Seg, Tile, Text, Font, HAlign, VAlign, SYMBOL_CHARSET, PlacedItem, MAX_BITMAP_SIDE, Error}` | The same names in `bharat_metafile`. |
 | `Item::Path { segs, fill, stroke, even_odd, region }` | Adds `line` and `clips`. Draw `line` when stroking; clip to each of `clips` as to `region`. |
 | `Item::Bitmap { rect, .. }`, `Item::Pattern { .. }`, `Text` | Add `clips`; `Item::Bitmap` adds `transform` (equal to `rect` unless the bitmap is turned). |
 | `PlacedItem::*` | Add `clips` (`PlacedClip`: a path and its fill rule); `Path` adds `line`; `Bitmap` adds `transform`. |
@@ -197,7 +197,7 @@ bundles no sample files.
 
 | Before | After |
 |---|---|
-| `parse`, `size`, `is_metafile`, `Picture`, `Seg`, `Error`, `MAX_BITMAP_SIDE`, `crop_window`, `Picture::{has_size, fit, place}`, `Item::take_pixels` | The same names in `craft_metafile`. |
+| `parse`, `size`, `is_metafile`, `Picture`, `Seg`, `Error`, `MAX_BITMAP_SIDE`, `crop_window`, `Picture::{has_size, fit, place}`, `Item::take_pixels` | The same names in `bharat_metafile`. |
 | `Item::Path`, `Item::Bitmap` | Add `region`, `clips`, `line`, `transform` as above; new `Item::Pattern` (hatch and pattern brushes now draw). |
 | `Text { text, x, y, size, cell, font, bold, italic, color, angle, halign, valign, dx }` | `Text { transform, text, dx, font: Font { family, height, weight, italic, .. }, color, background, h_align, v_align, clip, region, clips }`. The reference point and angle are in `transform`; `size` is `font.height.abs()` in text units and `cell` is `font.height > 0`; `bold` is `font.weight >= 600`. A height of 0 and an empty family are the file's "default font": WordCraft's 16-unit Arial default moves to WordCraft. |
 | `Text::layout`, `TextLayout` | Stay in WordCraft, over the shared `Text`. |
@@ -208,9 +208,9 @@ bundles no sample files.
 
 | Before | After |
 |---|---|
-| `sniff`, `Kind` | `craft_metafile::{sniff, Kind}`. |
-| `import(bytes) -> Imported { document, kind, warnings }` | `craft_metafile::parse(bytes)`, then VectorCraft's own mapping of `Picture` to a `Document`: `Item::Path` to a path node (`line` to cap, join, miter limit and dash), `clips` to clipping groups (`Arc::ptr_eq` groups items), `region` to a rectangle clip, `Item::Bitmap` to an image placed by `transform`, `Item::Text` to point type, `Item::Pattern` to its tile or a flat colour, `skipped_records` to the warning. |
-| `export(doc, region, kind) -> Output` | VectorCraft's `scene` walk produces `craft_metafile::write::Op`s, then `write::emf(&ops, region, "VectorCraft", &doc.title)` or `write::wmf(&ops, region)`; `Wmf`'s flags become the two WMF warnings. |
+| `sniff`, `Kind` | `bharat_metafile::{sniff, Kind}`. |
+| `import(bytes) -> Imported { document, kind, warnings }` | `bharat_metafile::parse(bytes)`, then VectorCraft's own mapping of `Picture` to a `Document`: `Item::Path` to a path node (`line` to cap, join, miter limit and dash), `clips` to clipping groups (`Arc::ptr_eq` groups items), `region` to a rectangle clip, `Item::Bitmap` to an image placed by `transform`, `Item::Text` to point type, `Item::Pattern` to its tile or a flat colour, `skipped_records` to the warning. |
+| `export(doc, region, kind) -> Output` | VectorCraft's `scene` walk produces `bharat_metafile::write::Op`s, then `write::emf(&ops, region, "VectorCraft", &doc.title)` or `write::wmf(&ops, region)`; `Wmf`'s flags become the two WMF warnings. |
 | `scene::Pen { cap: LineCap, join: LineJoin, dash: Option<Dash> }` | `write::Pen { cap: Cap, join: Join, dash: Option<write::Dash> }` (`Cap::Flat` is `LineCap::Butt`). A dash with `align_corners`, or one `Dash::emf_pen_draws` refuses, is cut by VectorCraft and passed as the path with no dash, to keep its own dash cutting. |
 | `dib::Rgba::fitted`, `to_png` | Stay in VectorCraft. |
 | EMF+ only files: a warning and nothing imported | They are read. |

@@ -11,14 +11,14 @@ struct ReadmeExamples;
 
 use std::sync::Arc;
 
-use craft_wordmodel::numbering::{AbstractNum, Level, ListKind, Num, levels_for};
-use craft_wordmodel::para::{InlineObject, OBJ, PAGE_BREAK, RubyAlign, Run, ruby_raise};
-use craft_wordmodel::props::{
+use bharat_wordmodel::numbering::{AbstractNum, Level, ListKind, Num, levels_for};
+use bharat_wordmodel::para::{InlineObject, OBJ, PAGE_BREAK, RubyAlign, Run, ruby_raise};
+use bharat_wordmodel::props::{
     Border, BorderStyle, Borders, CellProps, CharProps, NumRef, ParaProps, PropChange, RowProps, TextColor, Underline, VAlign, VMerge, VertAlign,
 };
-use craft_wordmodel::section::NumFormat;
-use craft_wordmodel::styles::{Style, StyleKind};
-use craft_wordmodel::{Align, Block, Blocks, Document, Paragraph, Revision, RevisionKind, Rgb, Table, para_block};
+use bharat_wordmodel::section::NumFormat;
+use bharat_wordmodel::styles::{Style, StyleKind};
+use bharat_wordmodel::{Align, Block, Blocks, Document, Paragraph, Revision, RevisionKind, Rgb, Table, para_block};
 
 mod color;
 mod from_doc;
@@ -57,10 +57,10 @@ mod tests {
     /// result they hold, from the document or from a flow with fields; ODT keeps it.
     #[test]
     fn ask_and_set_fields_export_no_text() {
-        let mut doc = craft_wordmodel::Document::from_text("Before after");
-        if let Ok(p) = doc.para_mut(craft_wordmodel::StoryRef::Body, &craft_wordmodel::Path::top(0)) {
+        let mut doc = bharat_wordmodel::Document::from_text("Before after");
+        if let Ok(p) = doc.para_mut(bharat_wordmodel::StoryRef::Body, &bharat_wordmodel::Path::top(0)) {
             for instr in ["SET name other", "ASK other \"Prompt\""] {
-                let field = craft_wordmodel::para::InlineObject::Field {
+                let field = bharat_wordmodel::para::InlineObject::Field {
                     instr: instr.into(),
                     result: "SECRETVALUE".into(),
                     locked: false,

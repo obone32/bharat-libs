@@ -1,5 +1,5 @@
 [package]
-name = "craft-openpgp"
+name = "bharat-openpgp"
 description = "OpenPGP for mail: PGP/MIME and cleartext Digital signatures checked, attached Public keys and Autocrypt headers read, a secret key file inspected; no I/O of its own."
 version.workspace = true
 edition.workspace = true

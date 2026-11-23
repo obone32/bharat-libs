@@ -1,7 +1,7 @@
 //! Every extension `DECODE_EXTENSIONS` names is a hint `detect_container` knows, and a file of
 //! that kind probes and decodes.
 
-use craft_audio::{AudioBuffer, BitDepth, DECODE_EXTENSIONS, EncodeFormat, EncodeOptions, decode, detect_container, encode, probe};
+use bharat_audio::{AudioBuffer, BitDepth, DECODE_EXTENSIONS, EncodeFormat, EncodeOptions, decode, detect_container, encode, probe};
 
 fn fixture(name: &str) -> Vec<u8> {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures").join(name);
@@ -62,8 +62,8 @@ fn every_decode_extension_probes_and_decodes() {
 fn every_encode_format_has_an_extension_it_is_written_and_read_under() {
     for &format in EncodeFormat::ALL {
         let ext = format.extension();
-        assert_eq!(craft_audio::encode_format_for(ext), Some(format), "{ext}");
-        assert!(craft_audio::ENCODE_EXTENSIONS.contains(&ext), "{ext}");
+        assert_eq!(bharat_audio::encode_format_for(ext), Some(format), "{ext}");
+        assert!(bharat_audio::ENCODE_EXTENSIONS.contains(&ext), "{ext}");
         assert!(DECODE_EXTENSIONS.contains(&ext), "{ext}: what is written reads back");
         assert!(format.mime_type().starts_with("audio/"), "{format:?}");
     }

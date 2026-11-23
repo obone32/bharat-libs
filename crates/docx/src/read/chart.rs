@@ -8,9 +8,9 @@
 
 use std::f64::consts::{FRAC_PI_2, TAU};
 
-use craft_wordmodel::graphic::{GraphicItem, PathSeg, TextAlign};
-use craft_wordmodel::para::ShapeKind;
-use craft_wordmodel::props::Rgb;
+use bharat_wordmodel::graphic::{GraphicItem, PathSeg, TextAlign};
+use bharat_wordmodel::para::ShapeKind;
+use bharat_wordmodel::props::Rgb;
 
 use super::drawing_color::{fill_colour, slot};
 use crate::units::{int, measure};

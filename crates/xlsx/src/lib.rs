@@ -3,7 +3,7 @@
 //! `.xlsb` (the same package with binary parts, [MS-XLSB]). Clean-room, from the specifications
 //! and observed files.
 //!
-//! This is the part layer: a [`Package`] opens the OPC container (`craft-opc`) and reads
+//! This is the part layer: a [`Package`] opens the OPC container (`bharat-opc`) and reads
 //!
 //! - the workbook part: sheets, the date system, defined names ([`Workbook`]);
 //! - shared strings with their rich-text runs and phonetic readings ([`StringItem`]);
@@ -34,9 +34,9 @@
 //! file.
 //!
 //! ```
-//! # fn main() -> Result<(), craft_xlsx::Error> {
-//! # let bytes = craft_xlsx::testing::workbook(&[("Prices", r#"<row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1"><v>2.5</v></c></row>"#)], &["Tea"]);
-//! let mut package = craft_xlsx::Package::open(&bytes, &craft_xlsx::Limits::default())?;
+//! # fn main() -> Result<(), bharat_xlsx::Error> {
+//! # let bytes = bharat_xlsx::testing::workbook(&[("Prices", r#"<row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1"><v>2.5</v></c></row>"#)], &["Tea"]);
+//! let mut package = bharat_xlsx::Package::open(&bytes, &bharat_xlsx::Limits::default())?;
 //! let workbook = package.workbook()?;
 //! let strings = package.shared_strings()?;
 //! let mut values = Vec::new();
@@ -44,7 +44,7 @@
 //!     values.extend(row.cells.iter().map(|c| c.value.resolve(&strings, workbook.date_1904)));
 //!     Ok(())
 //! })?;
-//! assert_eq!(values, [craft_xlsx::Value::text("Tea"), craft_xlsx::Value::Number(2.5)]);
+//! assert_eq!(values, [bharat_xlsx::Value::text("Tea"), bharat_xlsx::Value::Number(2.5)]);
 //! # Ok(())
 //! # }
 //! ```
@@ -66,8 +66,8 @@ mod workbook;
 mod write;
 mod xlsb;
 
-pub use craft_drawingml;
-pub use craft_sheet::{
+pub use bharat_drawingml;
+pub use bharat_sheet::{
     BorderStyle, CellError, CellRef, DEFAULT_PALETTE, HAlign, MAX_COLS, MAX_ROWS, Pattern, Range, Script, Underline, VAlign, Value, Visibility,
     builtin_format, builtin_format_id, quote_sheet, sheet_needs_quotes,
 };
@@ -109,19 +109,19 @@ pub enum Error {
     TooLarge(String),
 }
 
-impl From<craft_opc::Error> for Error {
-    fn from(e: craft_opc::Error) -> Self {
+impl From<bharat_opc::Error> for Error {
+    fn from(e: bharat_opc::Error) -> Self {
         match e {
             e if e.is_limit() => Error::TooLarge(e.to_string()),
-            craft_opc::Error::Zip(m) => Error::Zip(m),
-            craft_opc::Error::Xml { .. } => Error::Xml(e.to_string()),
+            bharat_opc::Error::Zip(m) => Error::Zip(m),
+            bharat_opc::Error::Xml { .. } => Error::Xml(e.to_string()),
             e => Error::Invalid(e.to_string()),
         }
     }
 }
 
-impl From<craft_xml::Error> for Error {
-    fn from(e: craft_xml::Error) -> Self {
+impl From<bharat_xml::Error> for Error {
+    fn from(e: bharat_xml::Error) -> Self {
         if e.is_limit() { Error::TooLarge(e.to_string()) } else { Error::Xml(e.to_string()) }
     }
 }
@@ -131,10 +131,10 @@ impl From<craft_xml::Error> for Error {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Limits {
     /// The ZIP package: entries, bytes per part and bytes in all.
-    pub package: craft_opc::Limits,
+    pub package: bharat_opc::Limits,
     /// One XML part. Rows and shared strings are streamed, so `max_nodes` bounds one row or one
     /// string and what is left of a part, not a sheet's length.
-    pub xml: craft_xml::Limits,
+    pub xml: bharat_xml::Limits,
     /// Records read from a binary workbook, every part together. Records are skipped or decoded
     /// without being kept, so this bounds parse time, not memory. Excel writes four records per
     /// row besides the cells, and one per formatted empty cell, so a sheet needs many more
@@ -150,9 +150,9 @@ pub struct Limits {
 impl Default for Limits {
     fn default() -> Self {
         Limits {
-            package: craft_opc::Limits::new(200_000, 512 << 20, 1 << 30),
-            xml: craft_xml::Limits { max_input: 512 << 20, ..craft_xml::Limits::DEFAULT },
-            // The limits of `craft-xls`.
+            package: bharat_opc::Limits::new(200_000, 512 << 20, 1 << 30),
+            xml: bharat_xml::Limits { max_input: 512 << 20, ..bharat_xml::Limits::DEFAULT },
+            // The limits of `bharat-xls`.
             binary_records: 40_000_000,
             binary_cells: 4_000_000,
             binary_text: 256 << 20,

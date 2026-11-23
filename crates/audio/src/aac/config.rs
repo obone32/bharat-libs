@@ -1,7 +1,7 @@
 //! `AudioSpecificConfig` (ISO/IEC 14496-3 §1.6.2.1), `program_config_element` (§4.4.1.1) and ADTS
 //! framing (§1.A.2.2).
 
-use craft_media::bitstream::{BitReader, BitWriter};
+use bharat_media::bitstream::{BitReader, BitWriter};
 
 use crate::aac::tables::{SAMPLE_RATES, table_index_for_rate};
 use crate::aac::{Error, Result};
@@ -50,7 +50,7 @@ pub struct ProgramConfig {
 }
 
 impl ProgramConfig {
-    // Public for FilmCraft's re-export only; it takes craft-media's bit reader.
+    // Public for FilmCraft's re-export only; it takes bharat-media's bit reader.
     #[doc(hidden)]
     pub fn parse(br: &mut BitReader) -> Result<ProgramConfig> {
         let mut p = ProgramConfig {
@@ -472,7 +472,7 @@ pub(crate) fn split_adts_upto(mut data: &[u8], max: usize) -> Result<Vec<(AdtsHe
 mod tests {
     use super::*;
 
-    /// Backward-compatible signalling, as craft-media's Matroska demuxer and some MP4 muxers
+    /// Backward-compatible signalling, as bharat-media's Matroska demuxer and some MP4 muxers
     /// write it: an AAC-LC config, then `0x2b7`, object type 5 and the output rate.
     #[test]
     fn a_sync_extension_after_the_config_signals_sbr_and_ps() {

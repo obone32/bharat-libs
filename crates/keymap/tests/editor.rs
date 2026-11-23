@@ -1,5 +1,5 @@
-use craft_keymap::editor::{MAX_UNDO_BYTES, holders, search};
-use craft_keymap::{
+use bharat_keymap::editor::{MAX_UNDO_BYTES, holders, search};
+use bharat_keymap::{
     AssignError, Bindable, Binding, Chord, CommandRef, DOUBLE_PRESS, EditSession, Holder, Keymap, MAX_BINDING_TEXT, MAX_BINDINGS, MAX_COMMANDS,
     MAX_UNDO, Overrides, Platform, Policy, Recorded, Recorder, Scope, Scopes, Trigger,
 };

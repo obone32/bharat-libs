@@ -46,13 +46,13 @@ jobs:
           components: rustfmt, clippy
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-ui
+          key: bharat-ui
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo fmt --check
-      - run: cargo clippy -p craft-ui --all-targets --locked -- -D warnings
-      - run: cargo clippy -p craft-ui --all-targets --all-features --locked -- -D warnings
-      - run: cargo test -p craft-ui --locked
-      - run: cargo test -p craft-ui --all-features --locked
+      - run: cargo clippy -p bharat-ui --all-targets --locked -- -D warnings
+      - run: cargo clippy -p bharat-ui --all-targets --all-features --locked -- -D warnings
+      - run: cargo test -p bharat-ui --locked
+      - run: cargo test -p bharat-ui --all-features --locked
   wasm:
     timeout-minutes: 15
     name: UI WASM
@@ -69,6 +69,6 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-ui-wasm
+          key: bharat-ui-wasm
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo check -p craft-ui --all-features --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-ui --all-features --locked --target wasm32-unknown-unknown

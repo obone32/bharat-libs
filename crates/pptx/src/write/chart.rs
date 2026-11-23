@@ -1,8 +1,8 @@
 //! Charts: the parts an unchanged chart carried (workbook, styles, colours), written back under
 //! fresh names.
 
-use craft_drawingml::chart::write::sidecar_part;
-pub(crate) use craft_drawingml::chart::write::{chart_xml, chartex_part};
+use bharat_drawingml::chart::write::sidecar_part;
+pub(crate) use bharat_drawingml::chart::write::{chart_xml, chartex_part};
 
 use crate::chart::Chart;
 
@@ -10,10 +10,10 @@ use crate::chart::Chart;
 /// names and `n` is unique within the package, so a kept part never lands on (or duplicates) a
 /// part the writer makes, whatever the source file called it.
 fn kept_name(original: &str, n: u32) -> String {
-    let norm = craft_opc::normalize(original);
+    let norm = bharat_opc::normalize(original);
     let area = norm.split('/').nth(1).unwrap_or("embeddings");
     let area = if matches!(area, "embeddings" | "charts" | "drawings" | "media") { area } else { "embeddings" };
-    let file = craft_opc::file_of(&norm);
+    let file = bharat_opc::file_of(&norm);
     let ext = file
         .rsplit_once('.')
         .map(|(_, e)| e)
@@ -26,10 +26,10 @@ fn kept_name(original: &str, n: u32) -> String {
 /// written under a fresh name ([`kept_name`]) and the relationships between kept parts are
 /// rewritten to those names; a relationship to anything that was not kept is dropped.
 /// `n_kept` numbers kept parts across the package.
-pub fn write_kept(pkg: &mut craft_opc::PackageOut, chart_name: &str, c: &Chart, n_kept: &mut u32) {
+pub fn write_kept(pkg: &mut bharat_opc::PackageOut, chart_name: &str, c: &Chart, n_kept: &mut u32) {
     use std::collections::HashMap;
 
-    use craft_opc::{RelOut, RelsOut, normalize as norm, relative, rels_path};
+    use bharat_opc::{RelOut, RelsOut, normalize as norm, relative, rels_path};
 
     if c.kept.rels.is_empty() {
         return;
@@ -74,7 +74,7 @@ pub fn write_kept(pkg: &mut craft_opc::PackageOut, chart_name: &str, c: &Chart, 
         let rp = norm(&rels_path(&p.name));
         let Some(rels_part) = parts_by_norm.get(&rp) else { continue };
         let mut out = RelsOut::default();
-        for r in craft_opc::Rels::parse(&rels_part.bytes, &p.name).list {
+        for r in bharat_opc::Rels::parse(&rels_part.bytes, &p.name).list {
             if r.external {
                 out.items.push(RelOut { id: r.id, ty: r.ty, target: r.target_raw, external: true });
             } else if let Some(new) = names.get(&norm(&r.target)) {

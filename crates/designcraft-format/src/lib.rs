@@ -8,8 +8,8 @@
 use std::collections::{HashMap, HashSet};
 use std::io::{Read, Seek};
 
-pub use craft_document_bundle::Asset;
-use craft_document_bundle::Spec;
+pub use bharat_document_bundle::Asset;
+use bharat_document_bundle::Spec;
 use serde::{Serialize, de::DeserializeOwned};
 use serde_json::Value;
 
@@ -42,12 +42,12 @@ pub enum Error {
     Unsaveable(String),
 }
 
-impl From<craft_document_bundle::Error> for Error {
-    fn from(error: craft_document_bundle::Error) -> Self {
+impl From<bharat_document_bundle::Error> for Error {
+    fn from(error: bharat_document_bundle::Error) -> Self {
         match error {
-            craft_document_bundle::Error::TooNew(version) => Error::TooNew(version),
-            craft_document_bundle::Error::NotBundle(message) => Error::NotOurs(message),
-            craft_document_bundle::Error::Read(message) | craft_document_bundle::Error::Write(message) => Error::Io(message),
+            bharat_document_bundle::Error::TooNew(version) => Error::TooNew(version),
+            bharat_document_bundle::Error::NotBundle(message) => Error::NotOurs(message),
+            bharat_document_bundle::Error::Read(message) | bharat_document_bundle::Error::Write(message) => Error::Io(message),
         }
     }
 }
@@ -65,7 +65,7 @@ pub fn required_version(document: &Value, assets: &[Asset<'_>]) -> u32 {
     if has_version_four_feature(document) {
         return 4;
     }
-    if assets.iter().any(|asset| craft_eps::is_eps(asset.data)) { 3 } else { 2 }
+    if assets.iter().any(|asset| bharat_eps::is_eps(asset.data)) { 3 } else { 2 }
 }
 
 /// Serialize a document and its external assets as a `.designcraft` ZIP bundle.
@@ -73,13 +73,13 @@ pub fn save<T: Serialize>(document: &T, generator: &str, preview: Option<&[u8]>,
     let value = serde_json::to_value(document).map_err(|error| Error::Io(error.to_string()))?;
     let version = required_version(&value, assets);
     let json = serde_json::to_vec_pretty(&value).map_err(|error| Error::Io(error.to_string()))?;
-    craft_document_bundle::write(&json, version, generator, preview, assets, BUNDLE).map_err(Into::into)
+    bharat_document_bundle::write(&json, version, generator, preview, assets, BUNDLE).map_err(Into::into)
 }
 
 /// Read a `.designcraft` ZIP or legacy single-file JSON, applying all versioned schema migrations
 /// before deserializing the caller's model.
 pub fn load<T: DeserializeOwned>(bytes: &[u8]) -> Result<Loaded<T>, Error> {
-    let mut package = craft_document_bundle::read(bytes, VERSION, BUNDLE)?;
+    let mut package = bharat_document_bundle::read(bytes, VERSION, BUNDLE)?;
     upgrade_legacy_json(&mut package.document, package.version);
     let document = serde_json::from_value(package.document).map_err(|error| Error::NotOurs(error.to_string()))?;
     Ok(Loaded { document, assets: package.assets })
@@ -87,17 +87,17 @@ pub fn load<T: DeserializeOwned>(bytes: &[u8]) -> Result<Loaded<T>, Error> {
 
 /// Whether `bytes` are a native DesignCraft ZIP package.
 pub fn is_designcraft(bytes: &[u8]) -> bool {
-    craft_document_bundle::has_document(bytes, BUNDLE)
+    bharat_document_bundle::has_document(bytes, BUNDLE)
 }
 
 /// Whether `prefix` begins with this format's stored mimetype entry.
 pub fn starts_designcraft(prefix: &[u8]) -> bool {
-    craft_document_bundle::starts_with_mimetype(prefix, BUNDLE)
+    bharat_document_bundle::starts_with_mimetype(prefix, BUNDLE)
 }
 
 /// Read the first-page PNG preview from a ZIP package, with a fixed 4 MiB cap.
 pub fn read_preview<R: Read + Seek>(reader: R) -> Option<Vec<u8>> {
-    craft_document_bundle::read_preview_from(reader, PREVIEW)
+    bharat_document_bundle::read_preview_from(reader, PREVIEW)
 }
 
 fn has_version_four_feature(document: &Value) -> bool {

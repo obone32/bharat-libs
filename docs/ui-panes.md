@@ -1,6 +1,6 @@
 # Task panes
 
-`craft_ui::panes` draws task panes around an app's own document: Navigation, Styles, Comments,
+`bharat_ui::panes` draws task panes around an app's own document: Navigation, Styles, Comments,
 Format Shape and the like. Each pane is an egui side or bottom panel, or a floating frame. The
 document stays the app's `CentralPanel`.
 
@@ -19,7 +19,7 @@ document stays the app's `CentralPanel`.
 ## API
 
 ```rust
-use craft_ui::panes::{Edge, PaneContent, PaneHost, PaneRequest, PaneState, Place, SidePolicy};
+use bharat_ui::panes::{Edge, PaneContent, PaneHost, PaneRequest, PaneState, Place, SidePolicy};
 
 impl PaneContent<Pane> for MyPanes<'_> {
     fn title(&self, pane: &Pane) -> String { tr(pane.title()) }
@@ -84,7 +84,7 @@ place of the open one; a click on the open pane's icon closes it. The rail store
 app owns which pane is open, as with `PaneHost`.
 
 ```rust
-use craft_ui::panes::{Edge, PaneHost, Rail, RailItem, RailRequest, SidePolicy};
+use bharat_ui::panes::{Edge, PaneHost, Rail, RailItem, RailRequest, SidePolicy};
 
 let items = [
     RailItem::new(Pane::Comments, icons.source("comments"), tr("Comments")).marker(has_comments),

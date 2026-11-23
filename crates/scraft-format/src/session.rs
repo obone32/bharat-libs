@@ -386,7 +386,7 @@ pub struct Session {
 }
 
 /// Older SoundCraft builds repaired an in-range but invalid sample rate after reading a session.
-/// `craft-time` validates `SampleRate` during serde, so keep that file compatibility at this
+/// `bharat-time` validates `SampleRate` during serde, so keep that file compatibility at this
 /// domain boundary while retaining strict serde validation for direct `SampleRate` use.
 fn sample_rate_or_default<'de, D>(deserializer: D) -> Result<SampleRate, D::Error>
 where

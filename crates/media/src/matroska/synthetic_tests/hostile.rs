@@ -70,6 +70,6 @@ fn exercise(d: &[u8]) {
 fn hostile_input_never_panics() {
     let seeds = [synthetic(), muxed(LacingMode::None), muxed(LacingMode::Xiph), muxed(LacingMode::Ebml), muxed(LacingMode::FixedOrEbml)];
     for (i, s) in seeds.iter().enumerate() {
-        craft_media_testkit::hostile::hammer(&format!("matroska seed {i}"), s, 20_000, exercise);
+        bharat_media_testkit::hostile::hammer(&format!("matroska seed {i}"), s, 20_000, exercise);
     }
 }

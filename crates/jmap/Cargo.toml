@@ -1,5 +1,5 @@
 [package]
-name = "craft-jmap"
+name = "bharat-jmap"
 description = "JMAP (RFC 8620) protocol core without sockets: session, requests of method calls with result references, responses, ids, address templates and the judgement of HTTP answers, over any HTTP implementation."
 version.workspace = true
 edition.workspace = true

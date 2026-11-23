@@ -1,5 +1,5 @@
 [package]
-name = "craft-audio"
+name = "bharat-audio"
 description = "Audio file I/O and codecs: WAV/AIFF read and write, FLAC encoder, AAC and ALAC decoders and encoders, AC-3/E-AC-3 decoder and encoder, MP3 decoder and encoder, Opus decoder and encoder, MP1/MP2 decoders."
 version.workspace = true
 edition.workspace = true
@@ -15,11 +15,11 @@ workspace = true
 
 [features]
 # Probe and decode files: WAV and AIFF natively; AAC, ALAC, Opus, AC-3/E-AC-3, MP1/MP2/MP3 and
-# PCM through craft-media's demuxers and this crate's decoders; FLAC, Vorbis, CAF, ADPCM, A-law,
+# PCM through bharat-media's demuxers and this crate's decoders; FLAC, Vorbis, CAF, ADPCM, A-law,
 # µ-law and free-format MP3 through symphonia.
 decode = ["decode-native", "symphonia"]
 # `decode` without symphonia: only the formats with a native decoder (others are Unsupported).
-decode-native = ["aac-decode", "alac-decode", "opus-decode", "ac3-decode", "mpa-decode", "mp3-decode", "craft-media/isobmff", "craft-media/matroska", "craft-media/ogg", "dep:log"]
+decode-native = ["aac-decode", "alac-decode", "opus-decode", "ac3-decode", "mpa-decode", "mp3-decode", "bharat-media/isobmff", "bharat-media/matroska", "bharat-media/ogg", "dep:log"]
 # The symphonia fallback for the formats with no native decoder yet.
 symphonia = ["decode-native", "dep:symphonia"]
 # Every encoder: the lossless file writers and the AAC, ALAC, AC-3/E-AC-3, MP3 and Opus encoders.
@@ -29,41 +29,41 @@ lossless-encode = ["pcm-encode", "flac-encode"]
 # Encode WAV/BWF/RF64 and AIFF/AIFF-C files.
 pcm-encode = []
 # Encode FLAC files.
-flac-encode = ["craft-media/bitstream"]
+flac-encode = ["bharat-media/bitstream"]
 # Codec modules on their own, for packet-level use.
-aac-decode = ["craft-media/bitstream"]
-aac-encode = ["craft-media/bitstream"]
+aac-decode = ["bharat-media/bitstream"]
+aac-encode = ["bharat-media/bitstream"]
 opus-decode = []
 opus-encode = []
-ac3-decode = ["craft-media/bitstream"]
-mpa-decode = ["craft-media/bitstream"]
+ac3-decode = ["bharat-media/bitstream"]
+mpa-decode = ["bharat-media/bitstream"]
 # MPEG-1/2 Layer III (MP3) decoder (`mp3::Decoder`).
 mp3-decode = ["mpa-decode"]
 # ALAC packet decoder and encoder (`alac`), ported from Apple's reference implementation.
 alac-decode = []
 alac-encode = []
-ac3-encode = ["craft-media/bitstream"]
-eac3-encode = ["craft-media/bitstream"]
+ac3-encode = ["bharat-media/bitstream"]
+eac3-encode = ["bharat-media/bitstream"]
 # MPEG-1/2 Layer III (MP3) encoder (`mp3`).
-mp3-encode = ["craft-media/bitstream"]
+mp3-encode = ["bharat-media/bitstream"]
 # Multi-resolution waveform overviews (`peaks`).
 peaks = []
 # Encode AAC channels in parallel (with `aac-encode`).
 rayon = ["dep:rayon"]
 # Serialize and Deserialize for the shared types.
-serde = ["dep:serde", "craft-media/serde"]
+serde = ["dep:serde", "bharat-media/serde"]
 
 [dependencies]
-craft-media = { workspace = true }
+bharat-media = { workspace = true }
 thiserror = { workspace = true }
 serde = { workspace = true, optional = true }
 log = { version = "0.4", optional = true }
 rayon = { workspace = true, optional = true }
-# symphonia keeps its AAC decoder for AAC in CAF, a container craft-media does not read.
+# symphonia keeps its AAC decoder for AAC in CAF, a container bharat-media does not read.
 symphonia = { version = "0.6.1", optional = true, default-features = false, features = ["mp3", "flac", "vorbis", "ogg", "wav", "pcm", "aiff", "isomp4", "aac", "alac", "adpcm", "caf", "mkv"] }
 
 [dev-dependencies]
-craft-media-testkit = { workspace = true }
+bharat-media-testkit = { workspace = true }
 proptest = { workspace = true }
 serde_json = { workspace = true }
 

@@ -1,35 +1,35 @@
-# craft-doc
+# bharat-doc
 
 Reads PhotoCraft `.pcraft`, VectorCraft `.vectorcraft` and EffectCraft `.ecproj` documents
 without the apps: which app wrote a file, its format version, the previews and PDF it carries,
 and its pages and layers. It takes bytes and returns plain data. It does not open files, render
 or composite. No `unsafe`, no panics on malformed input, and it builds for
 `wasm32-unknown-unknown`. Each format's envelope is read through its crate in this repository:
-[`craft-pcraft-format`](../pcraft-format/README.md) (the `Manifest` members and checks, and
+[`bharat-pcraft-format`](../pcraft-format/README.md) (the `Manifest` members and checks, and
 `check_manifest`),
-[`craft-vectorcraft-format`](../vectorcraft-format/README.md) (`Image`, `sniff`, the version
-and the marker) and [`craft-ecproj-format`](../ecproj-format/README.md) (`Head`, the
-schema check). The outlines are read with craft-doc's own read-only views of the documents. The
+[`bharat-vectorcraft-format`](../vectorcraft-format/README.md) (`Image`, `sniff`, the version
+and the marker) and [`bharat-ecproj-format`](../ecproj-format/README.md) (`Head`, the
+schema check). The outlines are read with bharat-doc's own read-only views of the documents. The
 other dependencies are `serde`, `serde_json`, `thiserror` and `flate2` (its pure-Rust backend).
 
 ```toml
-craft-doc = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-doc = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ## Use
 
 ```rust
-use craft_doc::{Kind, Limits, RenditionKind};
+use bharat_doc::{Kind, Limits, RenditionKind};
 
 let limits = Limits::default();
-match craft_doc::sniff(&bytes) {
+match bharat_doc::sniff(&bytes) {
     Some(Kind::VectorCraft) => {
-        let pdf = craft_doc::renditions(&bytes, &limits)?.into_iter().find(|r| r.kind == RenditionKind::Pdf);
+        let pdf = bharat_doc::renditions(&bytes, &limits)?.into_iter().find(|r| r.kind == RenditionKind::Pdf);
     }
     Some(kind) => { /* ... */ }
-    None => { /* not a Craft document */ }
+    None => { /* not a Bharat document */ }
 }
-let outline = craft_doc::outline(&bytes, &limits)?;
+let outline = bharat_doc::outline(&bytes, &limits)?;
 ```
 
 - `sniff(head) -> Option<Kind>` reads the first bytes. The first 64 KiB are enough for every file
@@ -37,7 +37,7 @@ let outline = craft_doc::outline(&bytes, &limits)?;
   recognized only when `head` holds the whole file. When `head` holds a whole ZIP archive, the
   reader checks its central-directory names when the archive opens. Otherwise it checks its local
   headers. A VectorCraft file is recognized by its top-level
-  `format` member, as `craft_vectorcraft_format::sniff` recognizes it, so a file written as a
+  `format` member, as `bharat_vectorcraft_format::sniff` recognizes it, so a file written as a
   JSON array, which `File::read` also reads, is not.
 - `info(bytes, &Limits) -> Result<Info, Error>`: the kind, the version the file declares, the
   writer it names, and `supported`, which is `false` when the version is newer than the crate
@@ -66,7 +66,7 @@ let outline = craft_doc::outline(&bytes, &limits)?;
   `check_manifest` counts them (opening array/object brackets and commas outside strings),
   capped at that format's own ceiling. The caller owns its type's
   allocations and behavior. No pixel feature is required. A cancellation variant can follow
-  after the cooperative document-read APIs in [#571](https://github.com/storytold/craft-libs/pull/571)
+  after the cooperative document-read APIs in [#571](https://github.com/obone32/bharat-libs/pull/571)
   merge.
 - `Error` is `Unrecognized`, `Malformed`, `TooNew`, `Unsupported`, `LimitExceeded` or `Cancelled`. A file
   whose version is newer than the crate reads gives `TooNew` from `renditions` and `outline`. A
@@ -82,7 +82,7 @@ that call stops with `Error::Cancelled`, even if a later callback result would b
 use std::sync::atomic::{AtomicBool, Ordering};
 
 let stopped = AtomicBool::new(false);
-let renditions = craft_doc::renditions_with_cancel(&bytes, &limits, &|| stopped.load(Ordering::Relaxed))?;
+let renditions = bharat_doc::renditions_with_cancel(&bytes, &limits, &|| stopped.load(Ordering::Relaxed))?;
 ```
 
 Checks occur during format detection, JSON scans and parsing, gzip input and output, rendition
@@ -123,7 +123,7 @@ With the feature `pcraft-pixels`, which adds `ruzstd` and `blake3` (both pure Ru
 canvas:
 
 ```toml
-craft-doc = { git = "https://github.com/storytold/craft-libs", rev = "<commit>", features = ["pcraft-pixels"] }
+bharat-doc = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>", features = ["pcraft-pixels"] }
 ```
 
 - `layer` is a path of indexes through `Outline::layers` and each group's `children`, bottom
@@ -155,7 +155,7 @@ craft-doc = { git = "https://github.com/storytold/craft-libs", rev = "<commit>",
   `max_items`, including other layers. Video frames and other unrecognized members are skipped.
 
 `tests/pixels.rs` builds bundles with tiles compressed by `ruzstd` and runs with
-`cargo test -p craft-doc --all-features`: 8, 16 and 32-bit tiles, the default pixel, negative
+`cargo test -p bharat-doc --all-features`: 8, 16 and 32-bit tiles, the default pixel, negative
 tile coordinates, a mask, layers in groups and layers without pixels, text, shape and smart
 object copies, bitmap and indexed documents, a CMYK document, a zstd bomb, a tile shared by many
 references, and the limits.
@@ -196,10 +196,10 @@ validated color profile and does not promise that a renderer honors those bytes.
 - `max_depth` (400, also the largest value it takes, `MAX_DEPTH`): the nesting of JSON arrays and
   objects, checked before parsing. PhotoCraft nests up to 100 groups of layers, three levels each.
   `renditions` and `outline` refuse a PhotoCraft manifest nested deeper than 367 levels
-  (`craft_pcraft_format::manifest_depth(MAX_GROUP_DEPTH)`), as PhotoCraft does.
+  (`bharat_pcraft_format::manifest_depth(MAX_GROUP_DEPTH)`), as PhotoCraft does.
 
 A PhotoCraft manifest with more than 4,194,304 JSON items
-(`craft_pcraft_format::MAX_MANIFEST_ITEMS`) is refused with `Error::LimitExceeded`, as PhotoCraft
+(`bharat_pcraft_format::MAX_MANIFEST_ITEMS`) is refused with `Error::LimitExceeded`, as PhotoCraft
 reads it.
 
 On a compressed `.vectorcraft` file, `info` and `outline` read the JSON from the decompressed
@@ -211,13 +211,13 @@ keeps only their bytes. The struct is `#[non_exhaustive]`: start from the defaul
 change.
 
 ```rust
-let mut limits = craft_doc::Limits::default();
+let mut limits = bharat_doc::Limits::default();
 limits.max_entry = 32 << 20;
 ```
 
 ## Testing
 
-`cargo test -p craft-doc` runs:
+`cargo test -p bharat-doc` runs:
 
 - `tests/formats.rs`: documents of each format written by the tests (JSON by hand, PNG and ZIP
   bytes assembled in the test, gzip through `flate2`), read back through each call: plain and

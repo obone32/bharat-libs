@@ -2,7 +2,7 @@
 //! styles we write (generated from theme accents, matching how they are drawn).
 
 use crate::ns::NS_A;
-use craft_xml::{Local, Writer};
+use bharat_xml::{Local, Writer};
 
 /// Well-known built-in table style GUIDs (format identifiers) and our equivalent ids.
 const KNOWN: &[(&str, &str)] = &[

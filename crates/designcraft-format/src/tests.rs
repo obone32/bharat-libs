@@ -65,7 +65,7 @@ fn legacy_json_extracts_assets_and_applies_v1_migrations() -> Result<(), Box<dyn
 
 #[test]
 fn newer_metadata_precedes_malformed_document_json() -> Result<(), Box<dyn std::error::Error>> {
-    let bytes = craft_document_bundle::write(b"{", VERSION + 1, "future", None, &[], BUNDLE)?;
+    let bytes = bharat_document_bundle::write(b"{", VERSION + 1, "future", None, &[], BUNDLE)?;
     assert!(matches!(load::<Value>(&bytes), Err(Error::TooNew(version)) if version == u64::from(VERSION + 1)));
     assert!(matches!(load::<Value>(b"not a package"), Err(Error::NotOurs(_))));
     Ok(())

@@ -12,11 +12,11 @@
 //! harness's language is not visible to the app otherwise.
 //!
 //! ```no_run
-//! use craft_ui::testing::{KOREAN, Screens, compose};
+//! use bharat_ui::testing::{KOREAN, Screens, compose};
 //! use egui_kittest::kittest::Queryable as _;
 //!
-//! # const FACES: &[craft_ui::fonts::CraftFace] = &[];
-//! let screens = Screens::new("rename").size([320.0, 160.0]).fonts(|fonts| fonts.craft_faces(FACES));
+//! # const FACES: &[bharat_ui::fonts::BharatFace] = &[];
+//! let screens = Screens::new("rename").size([320.0, 160.0]).fonts(|fonts| fonts.bharat_faces(FACES));
 //! // Compares tests/snapshots/rename-ar.png, rename-ja.png, … (UPDATE_SNAPSHOTS=1 writes them).
 //! screens.snapshots(|ui, locale| {
 //!     ui.label(locale.language);
@@ -32,9 +32,9 @@
 //!
 //! # Shortcut smoke test
 //!
-//! craft-ui doesn't depend on craft-keymap, so this one is a recipe. Send the key event egui
+//! bharat-ui doesn't depend on bharat-keymap, so this one is a recipe. Send the key event egui
 //! reports for a press on a non-Latin layout and check the app ran the command the press means
-//! by craft-keymap's layout rule. On Hebrew, the key at the Q position types `/`; with Ctrl held
+//! by bharat-keymap's layout rule. On Hebrew, the key at the Q position types `/`; with Ctrl held
 //! egui reports `Slash` at physical `Q`, and the rule reads it as Ctrl+Q once the layout is known
 //! not to be Latin (`Layout::with_latin(false)`, or after the app has seen Hebrew typed):
 //!
@@ -53,7 +53,7 @@
 //! ```
 //!
 //! On Russian, the `с` key reports `C` at physical `C` and must run Ctrl+C. The app's dispatcher
-//! (`craft_keymap::egui::Dispatcher`) turns the event into a `KeyInput` with
+//! (`bharat_keymap::egui::Dispatcher`) turns the event into a `KeyInput` with
 //! `KeyInput::from_egui`.
 
 #[cfg(test)]
@@ -61,7 +61,7 @@ mod tests;
 
 use std::rc::Rc;
 
-use craft_i18n::Direction;
+use bharat_i18n::Direction;
 use egui::{Align, Context, Event, ImeEvent, Layout, Ui, Vec2};
 use egui_kittest::{Harness, SnapshotResults};
 
@@ -82,7 +82,7 @@ pub struct Locale {
 
 impl Locale {
     pub fn new(language: &'static str) -> Self {
-        Self { language, direction: craft_i18n::direction(language) }
+        Self { language, direction: bharat_i18n::direction(language) }
     }
 }
 
@@ -212,7 +212,7 @@ pub const TELEX: Composition<'static> = Composition { preedit: &["V", "Vi", "Vie
 
 /// The events an input method sends for `composition`: a preedit per keystroke, then the commit.
 /// Each preedit marks its whole text as the segment being converted. egui's `TextEdit` and
-/// canvases reading `Event::Ime`, such as craft-ui's IME composer, both take these.
+/// canvases reading `Event::Ime`, such as bharat-ui's IME composer, both take these.
 pub fn ime_events(composition: &Composition<'_>) -> Vec<Event> {
     let preedit = composition
         .preedit

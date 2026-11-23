@@ -1,9 +1,9 @@
 //! Reader for the Word 97-2003 binary file format (`.doc`, [MS-DOC]), WordCraft's.
 //!
-//! [`read`] turns the bytes of a `.doc` file into a [`craft_wordmodel::Document`]. There is no
+//! [`read`] turns the bytes of a `.doc` file into a [`bharat_wordmodel::Document`]. There is no
 //! writer: saving always goes through the other formats. The reader is written from the public
 //! specification ([MS-DOC], Word (.doc) Binary File Format, Microsoft Open Specifications) and,
-//! like the other Craft parsers, is lenient by design (unknown structures are skipped, bad numbers
+//! like the other Bharat parsers, is lenient by design (unknown structures are skipped, bad numbers
 //! fall back to defaults) and bounded (stream sizes, piece counts and property counts are
 //! capped), so hostile input yields an error or a best-effort document, never a panic.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
@@ -32,16 +32,16 @@ mod table;
 
 use std::sync::Arc;
 
-use craft_wordmodel::link::hyperlink_target;
-use craft_wordmodel::para::InlineObject;
-use craft_wordmodel::para::NoteKind;
-use craft_wordmodel::para::Paragraph;
-use craft_wordmodel::para::Run;
-use craft_wordmodel::props::CharProps;
-use craft_wordmodel::props::NumRef;
-use craft_wordmodel::section::HeaderSet;
-use craft_wordmodel::styles::StyleSheet;
-use craft_wordmodel::{Document, PartKind};
+use bharat_wordmodel::link::hyperlink_target;
+use bharat_wordmodel::para::InlineObject;
+use bharat_wordmodel::para::NoteKind;
+use bharat_wordmodel::para::Paragraph;
+use bharat_wordmodel::para::Run;
+use bharat_wordmodel::props::CharProps;
+use bharat_wordmodel::props::NumRef;
+use bharat_wordmodel::section::HeaderSet;
+use bharat_wordmodel::styles::StyleSheet;
+use bharat_wordmodel::{Document, PartKind};
 
 use fkp::Bins;
 use piece::{PieceTable, PrmRef};
@@ -192,10 +192,10 @@ pub fn is_encrypted(bytes: &[u8]) -> bool {
     stream(&comp, "WordDocument").ok().flatten().is_some_and(|w| fib::peek_encryption(&w).is_some())
 }
 
-/// Open the compound file around a `.doc` with `craft-cfb`, which bounds the directory and the
+/// Open the compound file around a `.doc` with `bharat-cfb`, which bounds the directory and the
 /// streams it reads.
-fn open_container(bytes: &[u8]) -> Result<craft_cfb::CompoundFile<'_>, DocbinError> {
-    craft_cfb::CompoundFile::open_with(bytes, craft_cfb::Limits { max_stream_size: MAX_STREAM, ..craft_cfb::Limits::default() })
+fn open_container(bytes: &[u8]) -> Result<bharat_cfb::CompoundFile<'_>, DocbinError> {
+    bharat_cfb::CompoundFile::open_with(bytes, bharat_cfb::Limits { max_stream_size: MAX_STREAM, ..bharat_cfb::Limits::default() })
         .map_err(|e| DocbinError::Container(e.to_string()))
 }
 
@@ -443,7 +443,7 @@ fn story_blocks(
     b: u32,
     pics: &mut media::Pictures,
     max_paragraphs: usize,
-) -> Result<craft_wordmodel::Blocks, DocbinError> {
+) -> Result<bharat_wordmodel::Blocks, DocbinError> {
     let paras = walk(ctx, a, b, pics);
     if ctx.paragraphs.exceeded.get() {
         return Err(paragraph_limit(max_paragraphs));
@@ -466,7 +466,7 @@ fn header_story_blocks(
     b: u32,
     pics: &mut media::Pictures,
     max_paragraphs: usize,
-) -> Result<craft_wordmodel::Blocks, DocbinError> {
+) -> Result<bharat_wordmodel::Blocks, DocbinError> {
     let mut paras = walk(ctx, a, b, pics);
     if ctx.paragraphs.exceeded.get() {
         return Err(paragraph_limit(max_paragraphs));
@@ -548,7 +548,7 @@ impl ParaBudget {
 struct ParaBuild {
     text: String,
     runs: Vec<Run>,
-    props: craft_wordmodel::props::ParaProps,
+    props: bharat_wordmodel::props::ParaProps,
     mark: CharProps,
     /// Which resolved formatting ([`FmtState::generation`]) the last character came from, while
     /// the last run is still the one it extended: the same generation means equal properties.
@@ -1039,10 +1039,10 @@ fn char_props(grpprl: &[u8], fonts: &[String], base: &CharProps) -> CharProps {
 
 /// Read a root-level stream fully; `None` if it is absent or cannot be read. A stream larger than
 /// [`MAX_STREAM`] is [`DocbinError::Limit`], and nothing is allocated for it.
-fn stream(comp: &craft_cfb::CompoundFile<'_>, name: &str) -> Result<Option<Vec<u8>>, DocbinError> {
+fn stream(comp: &bharat_cfb::CompoundFile<'_>, name: &str) -> Result<Option<Vec<u8>>, DocbinError> {
     match comp.read_path_capped(name, MAX_STREAM) {
         Ok(v) => Ok(Some(v)),
-        Err(craft_cfb::Error::LimitExceeded(e)) => Err(DocbinError::Limit(format!("{name} stream: {e}"))),
+        Err(bharat_cfb::Error::LimitExceeded(e)) => Err(DocbinError::Limit(format!("{name} stream: {e}"))),
         Err(_) => Ok(None),
     }
 }

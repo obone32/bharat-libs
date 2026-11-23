@@ -37,7 +37,7 @@ pub mod legacy_form;
 pub mod line_dash;
 pub mod link;
 pub mod locale_number;
-pub use craft_math::{math, math_latex, math_linear, math_symbols, math_tree, symbol_fonts};
+pub use bharat_math::{math, math_latex, math_linear, math_symbols, math_tree, symbol_fonts};
 pub mod numbering;
 pub mod para;
 pub mod picfx;

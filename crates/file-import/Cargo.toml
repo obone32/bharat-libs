@@ -1,5 +1,5 @@
 [package]
-name = "craft-file-import"
+name = "bharat-file-import"
 description = "Shared format registry and bounded neutral scene import dispatch"
 version.workspace = true
 edition.workspace = true
@@ -8,12 +8,12 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-craft-file-formats = { workspace = true }
-craft-raster-codecs = { workspace = true }
-craft-svg = { workspace = true }
-craft-dxf = { workspace = true }
-craft-pdf = { workspace = true, features = ["paths", "write"] }
-craft-eps = { workspace = true, features = ["paths"] }
+bharat-file-formats = { workspace = true }
+bharat-raster-codecs = { workspace = true }
+bharat-svg = { workspace = true }
+bharat-dxf = { workspace = true }
+bharat-pdf = { workspace = true, features = ["paths", "write"] }
+bharat-eps = { workspace = true, features = ["paths"] }
 kurbo = { workspace = true }
 thiserror = { workspace = true }
 vectorcraft-geom = { workspace = true }

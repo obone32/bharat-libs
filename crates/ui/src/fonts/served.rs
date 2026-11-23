@@ -6,7 +6,7 @@ use std::sync::Arc;
 use egui::FontFamily;
 use egui::epaint::text::Blob;
 
-use super::{CjkRows, CraftFace, EM_SQUARE_SCRIPTS, Stack, baseline_fallback, set_weight};
+use super::{CjkRows, BharatFace, EM_SQUARE_SCRIPTS, Stack, baseline_fallback, set_weight};
 
 #[cfg(any(test, target_arch = "wasm32"))]
 pub(super) mod loader;
@@ -20,15 +20,15 @@ pub(super) const SYMBOLS: &str = "Zsym";
 /// ISO 15924 `Zmth`, mathematical notation.
 pub(super) const MATH: &str = "Zmth";
 
-/// A craft-fonts face served beside the app, one per line of `fonts/manifest.txt`. The tables that
-/// `craft-fonts-build`'s `Embed::serve` writes are slices of these.
+/// A bharat-fonts face served beside the app, one per line of `fonts/manifest.txt`. The tables that
+/// `bharat-fonts-build`'s `Embed::serve` writes are slices of these.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ServedFace {
     /// Family name, e.g. `"Noto Sans Arabic"`.
     pub family: &'static str,
     /// `"Regular"` or `"Bold"`; faces with other styles are not used for UI text.
     pub style: &'static str,
-    /// The manifest's script tags, as in [`CraftFace::scripts`].
+    /// The manifest's script tags, as in [`BharatFace::scripts`].
     pub scripts: &'static [&'static str],
     /// Face index in a font collection (`.ttc`); faces of one collection share a URL.
     pub index: u32,
@@ -39,7 +39,7 @@ pub struct ServedFace {
     /// Subresource Integrity value (`sha256-…`) the browser checks the file against; empty for
     /// none.
     pub integrity: &'static str,
-    /// The characters the face maps, in `craft_fonts_build::coverage`'s encoding. A character no
+    /// The characters the face maps, in `bharat_fonts_build::coverage`'s encoding. A character no
     /// served face maps fetches nothing.
     pub coverage: &'static [u8],
 }
@@ -52,12 +52,12 @@ impl ServedFace {
 
     /// Whether the face maps `c`.
     pub fn covers(&self, c: char) -> bool {
-        craft_fonts_build::coverage::contains(self.coverage, c)
+        bharat_fonts_build::coverage::contains(self.coverage, c)
     }
 
     /// The face as the stack orders it, without bytes.
-    pub(super) fn craft_face(&self) -> CraftFace {
-        CraftFace { family: self.family, style: self.style, scripts: self.scripts, bytes: &[], index: self.index }
+    pub(super) fn bharat_face(&self) -> BharatFace {
+        BharatFace { family: self.family, style: self.style, scripts: self.scripts, bytes: &[], index: self.index }
     }
 }
 
@@ -99,8 +99,8 @@ impl Stack {
         for want in wanted {
             for name in configured.into_iter().flatten().chain(self.after_system.chain(family)) {
                 if let Some(face) = self.served_face(name)
-                    && face.craft_face().covers(want)
-                    && !(alphabet && face.craft_face().covers("Hani"))
+                    && face.bharat_face().covers(want)
+                    && !(alphabet && face.bharat_face().covers("Hani"))
                     && face.covers(c)
                     && !faces.contains(&face)
                 {
@@ -165,7 +165,7 @@ impl Stack {
             for (name, data) in after {
                 self.after_system.insert(&name, data);
             }
-            if self.cjk_rows == CjkRows::Fit && EM_SQUARE_SCRIPTS.iter().any(|script| face.craft_face().covers(script)) {
+            if self.cjk_rows == CjkRows::Fit && EM_SQUARE_SCRIPTS.iter().any(|script| face.bharat_face().covers(script)) {
                 self.fit_into_rows(&names);
             }
         }

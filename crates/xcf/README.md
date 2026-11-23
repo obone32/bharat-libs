@@ -1,4 +1,4 @@
-# craft-xcf
+# bharat-xcf
 
 GIMP XCF images (`.xcf`, `.xcf.gz`), read. Written from the public specification
 (<https://developer.gimp.org/core/standards/xcf/>, versions 0 to 26) and from files GIMP 3.2

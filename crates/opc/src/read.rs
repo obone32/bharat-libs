@@ -4,18 +4,18 @@ use std::collections::hash_map::Entry;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::sync::Arc;
 
-use craft_xml::{El, Options};
+use bharat_xml::{El, Options};
 
 use crate::name::{normalize, rels_path};
 use crate::rels::{ContentTypes, Rels, targets_of};
 use crate::{Error, Limits, Oversized};
 
-type Zip<'a> = craft_zip::Archive<'a>;
+type Zip<'a> = bharat_zip::Archive<'a>;
 
 /// The archive, its declared entry count checked before it is indexed. `max_total` is the
 /// archive's own total; a reader that keeps its own counts passes `u64::MAX`.
 fn open_zip<'a>(bytes: &'a [u8], limits: &Limits, max_total: u64) -> Result<Zip<'a>, Error> {
-    let zip = craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries as u64, max_total_bytes: max_total })
+    let zip = bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries as u64, max_total_bytes: max_total })
         .map_err(crate::zip_error)?;
     // `zip` keeps one entry of a repeated name. Part names are compared by spelling rules this
     // crate applies itself (see `Package::new`); an exact repeat is noted, as other spellings are.

@@ -1,4 +1,4 @@
-# craft-av1enc
+# bharat-av1enc
 
 Clean-room, pure-Rust AV1 encoder for MP4 / WebM export (layer L0, `std` only,
 no `unsafe`, builds for `wasm32-unknown-unknown`).

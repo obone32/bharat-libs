@@ -4,8 +4,8 @@
 
 mod common;
 
-use craft_media::CodecId;
-use craft_media::mpegts::{Codec, File, Format, Kind, open};
+use bharat_media::CodecId;
+use bharat_media::mpegts::{Codec, File, Format, Kind, open};
 use serde_json::Value;
 use std::path::{Path, PathBuf};
 use std::process::Command;

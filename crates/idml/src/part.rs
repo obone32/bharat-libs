@@ -1,10 +1,10 @@
 //! The XML of a part: reading with IDML's limits, the `<Properties>` form, and writing.
 
-use craft_xml::{DECL_STANDALONE, El, Local, Node, Options};
+use bharat_xml::{DECL_STANDALONE, El, Local, Node, Options};
 
 use crate::{DOM_VERSION, PACKAGING_NS};
 
-pub(crate) const XML_LIMITS: craft_xml::Limits = craft_xml::Limits {
+pub(crate) const XML_LIMITS: bharat_xml::Limits = bharat_xml::Limits {
     max_input: 512 << 20,
     max_depth: 256,
     max_nodes: 8_000_000,
@@ -15,7 +15,7 @@ pub(crate) const XML_LIMITS: craft_xml::Limits = craft_xml::Limits {
 
 /// The XML limits a part is read with: 512 MiB of input, 256 levels of nesting (InDesign's
 /// packages stay under a few dozen), 8,000,000 nodes and 32,000,000 attributes in one part.
-pub const fn xml_limits() -> craft_xml::Limits {
+pub const fn xml_limits() -> bharat_xml::Limits {
     XML_LIMITS
 }
 
@@ -28,11 +28,11 @@ pub const CONTAINER_XML: &str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standa
 /// joins the text around it, and processing instructions inside elements are kept as
 /// [`Node::Pi`]: InDesign writes special characters as `<?ACE 18?>`. The read is strict: a part
 /// that is cut off, or whose tags don't match, is an error rather than half a part.
-pub fn parse_part(bytes: &[u8]) -> Result<El, craft_xml::Error> {
+pub fn parse_part(bytes: &[u8]) -> Result<El, bharat_xml::Error> {
     parse_with(bytes, XML_LIMITS)
 }
 
-pub(crate) fn parse_with(bytes: &[u8], limits: craft_xml::Limits) -> Result<El, craft_xml::Error> {
+pub(crate) fn parse_with(bytes: &[u8], limits: bharat_xml::Limits) -> Result<El, bharat_xml::Error> {
     Options { pis: true, ..Options::default() }.strict().with_limits(limits).parse(bytes)
 }
 

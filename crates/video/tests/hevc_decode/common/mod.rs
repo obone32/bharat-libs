@@ -2,7 +2,7 @@
 //! comparison helpers.
 #![allow(dead_code)]
 
-use craft_video::hevc::decode::{ChromaFormat, Decoder, Picture};
+use bharat_video::hevc::decode::{ChromaFormat, Decoder, Picture};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -123,13 +123,13 @@ pub fn fixture(name: &str) -> &'static Fixture {
     FIXTURES.iter().find(|f| f.name == name).unwrap_or_else(|| panic!("unknown fixture {name}"))
 }
 
-/// ffmpeg (see `craft_media_testkit::oracle`).
+/// ffmpeg (see `bharat_media_testkit::oracle`).
 pub fn ffmpeg() -> Option<PathBuf> {
-    craft_media_testkit::ffmpeg()
+    bharat_media_testkit::ffmpeg()
 }
 
 pub fn fixtures_dir() -> PathBuf {
-    craft_media_testkit::fixtures_dir("hevc")
+    bharat_media_testkit::fixtures_dir("hevc")
 }
 
 fn run(cmd: &mut Command) -> bool {
@@ -174,12 +174,12 @@ fn stream_pix_fmt(ffprobe: &Path, path: &Path) -> Option<String> {
 /// Generate (if needed) the fixture stream and its ffmpeg reference decode.
 /// Returns None (with a message) when ffmpeg or the encoder is unavailable.
 pub fn ensure(f: &Fixture) -> Option<(PathBuf, PathBuf)> {
-    let ff = craft_media_testkit::ffmpeg_or_skip(f.name)?;
+    let ff = bharat_media_testkit::ffmpeg_or_skip(f.name)?;
     let dir = fixtures_dir();
     let hevc = dir.join(format!("{}.hevc", f.name));
     let yuv = dir.join(format!("{}.yuv", f.name));
     if !hevc.exists() {
-        let tmp = craft_media_testkit::temp_path(&hevc);
+        let tmp = bharat_media_testkit::temp_path(&hevc);
         let mut vf = format!("{}=size={}x{}:rate=25,format={}", f.source, f.width, f.height, pix_fmt(f.bit_depth, f.chroma));
         if !f.filter.is_empty() {
             vf.push(',');
@@ -201,28 +201,28 @@ pub fn ensure(f: &Fixture) -> Option<(PathBuf, PathBuf)> {
             eprintln!("SKIPPED ({}): encoder unavailable", f.name);
             return None;
         }
-        craft_media_testkit::fixtures::publish(&tmp, &hevc).unwrap();
+        bharat_media_testkit::fixtures::publish(&tmp, &hevc).unwrap();
     }
     if f.bit_depth > 8 {
         // An 8-bit-only libx265 (Arch Linux ARM's) encodes 8-bit without an error when asked for
         // 10, and the reference decode scales that up to 10 bits, so no sample would match.
-        let probe = craft_media_testkit::ffprobe()?;
+        let probe = bharat_media_testkit::ffprobe()?;
         let got = stream_pix_fmt(&probe, &hevc);
         if got.as_deref() != Some(pix_fmt(f.bit_depth, f.chroma)) {
             let _ = std::fs::remove_file(&hevc);
             let _ = std::fs::remove_file(&yuv);
             let reason = format!("the encoder made {} instead of {}", got.as_deref().unwrap_or("no stream"), pix_fmt(f.bit_depth, f.chroma));
-            craft_media_testkit::skip_test(f.name, &format!("{reason} (libx265 built for 8 bits only?)"));
+            bharat_media_testkit::skip_test(f.name, &format!("{reason} (libx265 built for 8 bits only?)"));
             return None;
         }
     }
     if !yuv.exists() {
-        let tmp = craft_media_testkit::temp_path(&yuv);
+        let tmp = bharat_media_testkit::temp_path(&yuv);
         let mut c = Command::new(&ff);
         c.args(["-hide_banner", "-loglevel", "error", "-y", "-i"]).arg(&hevc);
         c.args(["-fps_mode", "passthrough", "-f", "rawvideo", "-pix_fmt", pix_fmt(f.bit_depth, f.chroma)]).arg(&tmp);
         assert!(run(&mut c), "reference decode failed for {}", f.name);
-        craft_media_testkit::fixtures::publish(&tmp, &yuv).unwrap();
+        bharat_media_testkit::fixtures::publish(&tmp, &yuv).unwrap();
     }
     Some((hevc, yuv))
 }
@@ -271,7 +271,7 @@ pub fn split_access_units(data: &[u8]) -> Vec<&[u8]> {
 }
 
 /// Failed decode: (access unit index, error, pictures output before the error).
-pub type DecodeFailure = (usize, craft_video::hevc::decode::Error, Vec<Picture>);
+pub type DecodeFailure = (usize, bharat_video::hevc::decode::Error, Vec<Picture>);
 
 /// Decode with `threads` worker threads (0 = decoder default), pts = access unit index.
 pub fn decode_file_threads(path: &Path, threads: usize) -> Result<Vec<Picture>, DecodeFailure> {

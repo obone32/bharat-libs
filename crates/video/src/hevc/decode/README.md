@@ -1,8 +1,8 @@
-# H.265 / HEVC decoder (`craft_video::hevc::decode`, feature `hevc-decode`)
+# H.265 / HEVC decoder (`bharat_video::hevc::decode`, feature `hevc-decode`)
 
 Clean-room, pure-Rust (no `unsafe`) H.265 / HEVC decoder, implemented from the public ITU-T
 Rec. H.265 (08/2021, ISO/IEC 23008-2) specification. It depends only on
-`craft_media::bitstream`, `thiserror`, and optionally `rayon` (feature `threads`), and builds
+`bharat_media::bitstream`, `thiserror`, and optionally `rayon` (feature `threads`), and builds
 for `wasm32-unknown-unknown`.
 
 All syntax tables (the CABAC `initValue` tables arranged per `initType` following Table 9-4, default
@@ -38,7 +38,7 @@ and fixture generators.
 ## API
 
 ```rust
-use craft_video::hevc::decode::{ChromaFormat, Decoder, Plane};
+use bharat_video::hevc::decode::{ChromaFormat, Decoder, Plane};
 
 let mut dec = Decoder::new(); // or Decoder::with_threads(n), Decoder::from_hvcc(&hvcc)?
 for (pts, access_unit) in access_units {
@@ -89,7 +89,7 @@ bumping), `cabac`, `slicedec` (CTU syntax + reconstruction), `mvpred` (merge / A
 
 A picture is refused when the pictures the decoder would hold at its size (the DPB, the current
 picture and those in flight, at two bytes a sample) do not fit `Decoder::set_memory_budget`
-(`craft_video::budget::DECODE_MEMORY_BUDGET` by default: 4 GiB, 1 GiB on 32-bit targets); the
+(`bharat_video::budget::DECODE_MEMORY_BUDGET` by default: 4 GiB, 1 GiB on 32-bit targets); the
 per-picture size cap applies as well.
 
 `configure_hvcc` checks every array of the record before it handles any NAL unit: arrays may hold
@@ -98,7 +98,7 @@ record that carries a picture slice is an error and starts no picture.
 
 ## Tests
 
-`cargo test -p craft-video --features hevc-decode,threads` (fixtures are generated on first use into `target/fixtures/hevc/`
+`cargo test -p bharat-video --features hevc-decode,threads` (fixtures are generated on first use into `target/fixtures/hevc/`
 with ffmpeg; tests print a message and skip when ffmpeg is absent).
 
 - Unit tests: CABAC engine round trip against an encoder model and context initialisation, scan
@@ -158,12 +158,12 @@ libx265 unless noted (x265 enables WPP by default, so most streams carry entry p
 | odd_1918x1078_422_10 / uhd_4k_422_10 | 1918x1078 / 3840x2160 | 4:2:2 cropping and 4K |
 | synthetic (7 streams) | 96x64 | tiles, PCM, slices, dependent segments, LTR, list modification |
 
-`cargo test -p craft-video --features hevc-decode,threads --test hevc_decode conformance::coverage_report -- --ignored --nocapture` prints the
+`cargo test -p bharat-video --features hevc-decode,threads --test hevc_decode conformance::coverage_report -- --ignored --nocapture` prints the
 decoder statistics per fixture.
 
 ## Performance
 
-`cargo test --release -p craft-video --features hevc-decode,threads --test hevc_decode perf:: -- --ignored --nocapture` (bit-exactness is
+`cargo test --release -p bharat-video --features hevc-decode,threads --test hevc_decode perf:: -- --ignored --nocapture` (bit-exactness is
 verified first). Apple M4 Pro (14 cores), measured while the machine was heavily shared (load
 average 50-100), so these are lower bounds:
 
@@ -185,7 +185,7 @@ against the direct product on random sparse and dense blocks). SAO edge offset h
 loop for samples whose neighbours are inside the CTB. Together: ~60 % less CPU per frame
 (1080p 78 → 33 ms, 2160p 320 → 129 ms of CPU per frame through the media stack, alternating A/B), see
 [docs/performance.md](../../docs/performance.md).
-`cargo run --release -p craft-video --features hevc-decode,threads --example hevc_hevcdec -- in.hevc out.yuv` decodes a file
+`cargo run --release -p bharat-video --features hevc-decode,threads --example hevc_hevcdec -- in.hevc out.yuv` decodes a file
 (`HEVC_THREADS=n`, `HEVC_LOOPS=k`, `HEVC_DRAFT=1`).
 
 M4.10 (2026-10-03), CPU cycles per frame counted by the kernel (`/usr/bin/time -l`, all threads

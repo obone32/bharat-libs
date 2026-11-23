@@ -45,7 +45,7 @@ pub(super) fn events(xml: &[u8], mut f: impl FnMut(Ev)) {
 pub(super) fn events_at(xml: &[u8], mut f: impl FnMut(Ev, (usize, usize))) {
     // Names and attributes as written; no limit but the input's own size (each part is at most a
     // package entry), and at most 128 attributes kept per element.
-    let limits = craft_xml::Limits {
+    let limits = bharat_xml::Limits {
         max_input: usize::MAX,
         max_depth: usize::MAX,
         max_nodes: usize::MAX,
@@ -53,19 +53,19 @@ pub(super) fn events_at(xml: &[u8], mut f: impl FnMut(Ev, (usize, usize))) {
         max_attrs: usize::MAX,
         max_attrs_total: usize::MAX,
     };
-    let opts = craft_xml::Options::default().with_limits(limits);
+    let opts = bharat_xml::Options::default().with_limits(limits);
     let mut events = opts.events(xml);
     // Malformed XML ends the stream.
     while let Ok(Some(ev)) = events.next() {
         let span = events.span();
         let at = (span.start, span.end);
         match ev {
-            craft_xml::Event::Start { name, mut attrs } => {
+            bharat_xml::Event::Start { name, mut attrs } => {
                 attrs.truncate(128);
                 f(Ev::Start(name, attrs), at)
             }
-            craft_xml::Event::End { name } => f(Ev::End(name), at),
-            craft_xml::Event::Text(t) | craft_xml::Event::CData(t) => f(Ev::Text(t), at),
+            bharat_xml::Event::End { name } => f(Ev::End(name), at),
+            bharat_xml::Event::Text(t) | bharat_xml::Event::CData(t) => f(Ev::Text(t), at),
             _ => {}
         }
     }

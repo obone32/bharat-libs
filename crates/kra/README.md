@@ -1,4 +1,4 @@
-# craft-kra
+# bharat-kra
 
 Krita documents (`.kra`, `.krz`), read. Written from files Krita writes; no Krita code is used.
 

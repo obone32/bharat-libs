@@ -1,7 +1,7 @@
 //! Writing DDS textures: every storage read back through the reader, the header fields, sizes
 //! that aren't a multiple of four, the mip chain, and the block-compression error on ramps.
 
-use craft_image_codecs::{
+use bharat_image_codecs::{
     ChannelLayout, DdsCompression, DdsOptions, EncodeOptions, FidelityWarning, Format, Image, decode, encode, fidelity_warnings_with,
 };
 
@@ -355,7 +355,7 @@ fn compression_names_round_trip() {
 /// Encode timings on a synthetic ~30 MP texture (6336×4752). Ignored by default; run in release:
 ///
 /// ```sh
-/// cargo test --release -p craft-image-codecs --test it -- dds_write:: --ignored --nocapture
+/// cargo test --release -p bharat-image-codecs --test it -- dds_write:: --ignored --nocapture
 /// ```
 #[test]
 #[ignore]

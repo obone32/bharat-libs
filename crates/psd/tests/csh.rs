@@ -1,6 +1,6 @@
-use craft_psd::PsdError;
-use craft_psd::csh;
-use craft_psd::path::{PathData, PsdKnot, PsdSubpath};
+use bharat_psd::PsdError;
+use bharat_psd::csh;
+use bharat_psd::path::{PathData, PsdKnot, PsdSubpath};
 
 fn fixture(names: &[&str]) -> Vec<u8> {
     let mut bytes = b"cush".to_vec();

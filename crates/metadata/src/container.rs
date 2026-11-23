@@ -12,9 +12,9 @@
 //! - JPEG XL (ISO base media file, see [`crate::jxl`]): the `Exif` and `xml ` boxes, plain or Brotli-wrapped
 //!   in `brob`; a bare codestream has no metadata.
 //!
-//! PSD, MRW and HEIF files are read by `craft-psd`, `craft-raw` and `craft-heif`.
+//! PSD, MRW and HEIF files are read by `bharat-psd`, `bharat-raw` and `bharat-heif`.
 
-use craft_tiff::{Tiff, tags};
+use bharat_tiff::{Tiff, tags};
 
 /// Metadata blocks found in a file.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -70,8 +70,8 @@ pub fn embedded(bytes: &[u8]) -> Embedded {
             xmp_extended_guid: None,
             icc: ifd0.bytes(tags::ICC_PROFILE).map(|b| b.to_vec()),
             iptc: ifd0.value(tags::IPTC_NAA).map(|v| match v {
-                craft_tiff::Value::Byte(b) | craft_tiff::Value::Undefined(b) => b.clone(),
-                other => craft_tiff::writer::encode(t.order, other),
+                bharat_tiff::Value::Byte(b) | bharat_tiff::Value::Undefined(b) => b.clone(),
+                other => bharat_tiff::writer::encode(t.order, other),
             }),
             chunk_walk_incomplete: false,
             xmp_extended_error: None,
@@ -484,7 +484,7 @@ pub fn webp_chunks(b: &[u8]) -> Embedded {
 mod tests {
     use super::*;
     use crate::exif::tests::sample_exif;
-    use craft_tiff::{ByteOrder, IfdBuilder, TiffWriter, Value};
+    use bharat_tiff::{ByteOrder, IfdBuilder, TiffWriter, Value};
 
     fn seg(marker: u8, payload: &[u8]) -> Vec<u8> {
         let mut v = vec![0xff, marker];

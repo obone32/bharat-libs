@@ -111,7 +111,7 @@ pub enum Han {
 /// usual script. Latin product names and units appear in every language, so Latn is listed only
 /// where it is the language's own script. A language not in the table is taken to be written in
 /// Latin.
-// ponytail: the languages a Craft app ships or could plausibly ship; add a row with the locale.
+// ponytail: the languages a Bharat app ships or could plausibly ship; add a row with the locale.
 pub fn scripts(tag: &str) -> &'static [Script] {
     use Script::*;
     let tag = Subtags::parse(tag);
@@ -303,7 +303,7 @@ mod tests {
         assert_eq!(base_direction(""), None);
     }
 
-    /// Every locale the craft-i18n catalogs or an app ship, as the apps spell them.
+    /// Every locale the bharat-i18n catalogs or an app ship, as the apps spell them.
     #[test]
     fn shipped_locales() {
         for (tag, want, han_forms) in [

@@ -1,19 +1,19 @@
-//! The former name of [`craft_svg`]'s geometry reader, CSS colour parser and SVG writer.
+//! The former name of [`bharat_svg`]'s geometry reader, CSS colour parser and SVG writer.
 //!
-//! Everything here is a re-export, so code written against `craft-svg-paths` keeps building.
-//! New code depends on `craft-svg`: [`craft_svg::paths`], [`craft_svg::color`] and
-//! [`craft_svg::write`].
+//! Everything here is a re-export, so code written against `bharat-svg-paths` keeps building.
+//! New code depends on `bharat-svg`: [`bharat_svg::paths`], [`bharat_svg::color`] and
+//! [`bharat_svg::write`].
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 
-pub use craft_svg::paths::*;
-pub use craft_svg::{color, write};
+pub use bharat_svg::paths::*;
+pub use bharat_svg::{color, write};
 
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    /// The names the crate had before it became part of `craft-svg`, used the way callers do.
+    /// The names the crate had before it became part of `bharat-svg`, used the way callers do.
     #[test]
     fn the_old_paths_still_name_the_reader_the_colour_parser_and_the_writer() {
         #[derive(Clone, Default, PartialEq, Debug)]

@@ -210,7 +210,7 @@ pub(crate) fn draw_form_xobject<'a, 'b>(
         if x_object.is_knockout {
             device.set_knockout();
         }
-        // Craft patch (flatten): tell the device the group is isolated.
+        // Bharat patch (flatten): tell the device the group is isolated.
         if x_object.is_isolated {
             device.set_isolated();
         }
@@ -345,7 +345,7 @@ pub(crate) fn draw_image_xobject<'a, 'b>(
 
     device.set_soft_mask(None);
     device.set_blend_mode(BlendMode::default());
-    // Craft patch (flatten): tell the device the overprint parameters.
+    // Bharat patch (flatten): tell the device the overprint parameters.
     set_overprint(context, device);
     // PdfCraft patch (46): the group just pushed applies the fill opacity, so a stencil mask's
     // paint (the fill color) must not carry it again: at `ca 0.5` a mask was drawn at a
@@ -957,7 +957,7 @@ fn decode_raster(
     Some(DecodedRaster { image, alpha })
 }
 
-/// Craft patch (flatten): the image's samples in its own space's inks (see
+/// Bharat patch (flatten): the image's samples in its own space's inks (see
 /// [`RasterImage::with_inks`](crate::RasterImage::with_inks)): `/Decode` and `/Matte` applied,
 /// process colour converted as [`ColorSpace::ink_values`] does, transfer functions left out
 /// (as on a plate).

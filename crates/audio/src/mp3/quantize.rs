@@ -9,7 +9,7 @@
 //! its threshold and the bit reservoir can take the savings, the global gain is coarsened again
 //! as far as the thresholds allow.
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use super::filterbank::GRANULE;
 use super::huffman::{self, Coding};

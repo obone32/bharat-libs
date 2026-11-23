@@ -149,7 +149,7 @@ fn armour_body(armour: &str) -> Option<Vec<u8>> {
         body.push_str(line);
     }
     let compact = body.trim_end_matches('=');
-    craft_mime::base64::STANDARD_NO_PAD.decode(compact).ok().filter(|b| !b.is_empty())
+    bharat_mime::base64::STANDARD_NO_PAD.decode(compact).ok().filter(|b| !b.is_empty())
 }
 
 /// One DER element: its tag, its contents and what follows it. Only the definite lengths DER
@@ -290,5 +290,5 @@ pub(crate) fn line(key: &ContactKey) -> Option<String> {
     // Only what the reader would keep as this very key: never secret material a mailbox file
     // may hold.
     (key_of(&key.data, Some(key.kind)).as_ref() == Some(key))
-        .then(|| format!("KEY;TYPE={kind};ENCODING=b:{}", craft_mime::base64::STANDARD.encode(&key.data)))
+        .then(|| format!("KEY;TYPE={kind};ENCODING=b:{}", bharat_mime::base64::STANDARD.encode(&key.data)))
 }

@@ -1,11 +1,11 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! A Craft app's menus, laid out for macOS, Windows, Linux and the web.
+//! A Bharat app's menus, laid out for macOS, Windows, Linux and the web.
 //!
 //! The app supplies its menus as a tree ([`MenuBar`]), built directly or from the flat rows of
 //! its in-window bar ([`from_items`]), gives each top-level menu its role ([`MenuRole`]), and
 //! tags the items the layouts put in fixed places ([`MenuBar::tag_item`], [`MenuBar::tag_submenu`]).
-//! Each item runs a [`craft_keymap::CommandRef`], its shortcut is a [`craft_keymap::Chord`], and
+//! Each item runs a [`bharat_keymap::CommandRef`], its shortcut is a [`bharat_keymap::Chord`], and
 //! its [`ItemKind`] makes it plain, a check item or a radio item. [`layout`]
 //! arranges them the way the platform's apps do, and [`NativeMenu`] hands the result to a platform
 //! [`Backend`] and brings its events back. This part is pure and platform-free, so it is tested
@@ -23,7 +23,7 @@
 //! list with nothing in it shows the disabled placeholder item the app supplies.
 //!
 //! **Keymap.** [`apply_keymap`] sets the items' shortcuts from the app's
-//! [`craft_keymap::Keymap`], user overrides included, and makes toggle commands check items;
+//! [`bharat_keymap::Keymap`], user overrides included, and makes toggle commands check items;
 //! [`apply_state`] sets enabled and checked per frame from an [`ItemState`] the app returns for
 //! each command. Both run on the app's bar, before the layout.
 //!
@@ -57,7 +57,7 @@
 //! to run like an in-window menu click; so is a key equivalent the layout assigned (⌘Q on the
 //! app's Quit item, ⌘, on Settings), which the app's key handling doesn't know, and, while a text
 //! field has the keys ([`Gate::text_editing`]), every key equivalent but the field's own
-//! (⌘C, ⌘X, ⌘V and [`craft_keymap::text_editing_chords`]): an app's key handling skips shortcuts
+//! (⌘C, ⌘X, ⌘V and [`bharat_keymap::text_editing_chords`]): an app's key handling skips shortcuts
 //! while text has the keys, and a Mac app's menu commands (⌘S, ⌘N) run while typing. Only
 //! shortcuts with ⌘ or ⌃ become key equivalents; tool keys (`B`, `⇧B`, `F5`) stay with the app.
 //!
@@ -67,7 +67,7 @@
 //! the gate closed. While a shortcut is
 //! recorded, key equivalents reach egui as plain key presses.
 //!
-//! craft-menu owns muda's one menu event handler: `mac::install` (a full menu bar) and
+//! bharat-menu owns muda's one menu event handler: `mac::install` (a full menu bar) and
 //! `mac::install_app_menu` (a minimal app menu, for apps without a [`MenuBar`]) both use it.
 //! [`NativeMenu::on_command`] sees each allowed click as it arrives, also while egui is idle.
 //!
@@ -88,7 +88,7 @@ mod model;
 pub mod mac;
 
 pub use bar::{BarStyle, Labeled, MenuBarUi};
-pub use craft_keymap::{Chord, CommandRef};
+pub use bharat_keymap::{Chord, CommandRef};
 pub use driver::{Backend, ClipboardKeys, CommandHook, Dispatch, Event, Gate, NativeMenu, had_input};
 pub use keymap::{ItemState, apply_keymap, apply_state};
 pub use layout::{Clash, Layout, LayoutOptions, Target, desktop_layout, layout, mac_layout, web_layout};

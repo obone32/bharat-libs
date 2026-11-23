@@ -48,7 +48,7 @@ impl TrDict {
 mod tests {
     use super::*;
 
-    /// CodeRabbit on craft-libs#484/#489: suffix conditions, homonyms and morphological fields,
+    /// CodeRabbit on bharat-libs#484/#489: suffix conditions, homonyms and morphological fields,
     /// each answer as hunspell 1.7 gives it on the same files.
     #[test]
     fn conditions_homonyms_and_fields_follow_hunspell() {

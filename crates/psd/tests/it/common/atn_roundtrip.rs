@@ -1,6 +1,6 @@
 //! Shared round-trip invariant for the `.atn` parser contract suite.
-use craft_psd::atn::{self, AtnFile};
-use craft_psd::descriptor::{Descriptor, Value};
+use bharat_psd::atn::{self, AtnFile};
+use bharat_psd::descriptor::{Descriptor, Value};
 
 fn scalar(value: &mut f64, bits: &mut Vec<u64>) {
     bits.push(value.to_bits());

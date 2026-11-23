@@ -1,15 +1,15 @@
-# craft-raster-codecs
+# bharat-raster-codecs
 
-Small raster image formats for the Craft apps, from PhotoCraft's `photocraft-codecs`: one module
+Small raster image formats for the Bharat apps, from PhotoCraft's `photocraft-codecs`: one module
 per format, one implementation of each. Decoders take untrusted bytes and `Limits`, check the
 declared size before allocating, and never panic. No `unsafe`; it builds for
 `wasm32-unknown-unknown`. The `common` RGBA image facade delegates PNG/JPEG/BMP/GIF/TIFF/WebP
-decoding and PNG/JPEG encoding to [`craft-image-codecs`](../image-codecs/README.md), the shared
+decoding and PNG/JPEG encoding to [`bharat-image-codecs`](../image-codecs/README.md), the shared
 depth- and metadata-preserving codec implementation. Other dependencies are `thiserror`, and
 `rayon` on native targets (the DDS encoder compresses rows of blocks in parallel).
 
 ```toml
-craft-raster-codecs = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-raster-codecs = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 | Module | Format | Read | Write |
@@ -30,7 +30,7 @@ samples, top row first. It also carries what these formats state beside the pixe
 `text` (FITS header cards) and `warnings` (a FITS cube opened as its first plane).
 
 ```rust
-use craft_raster_codecs::{Limits, pnm};
+use bharat_raster_codecs::{Limits, pnm};
 
 let image = pnm::decode(b"P2\n2 1\n255\n0 255\n", &Limits::default())?;
 assert_eq!(image.data(), &[0, 255]);
@@ -59,7 +59,7 @@ formats (plain PNM, XPM) reserve from the bytes present, not from the header.
 
 ## Tests
 
-`cargo test -p craft-raster-codecs`. `tests/roundtrip.rs` writes every layout and depth each
+`cargo test -p bharat-raster-codecs`. `tests/roundtrip.rs` writes every layout and depth each
 writer stores and reads it back exactly, then truncates, bit-flips and overwrites header bytes of
 a valid file of every format: a reader may refuse, never panic. Two tests are ignored by default:
 a DDS encode timing, and a PNM peak-memory check that reads the process's RSS.

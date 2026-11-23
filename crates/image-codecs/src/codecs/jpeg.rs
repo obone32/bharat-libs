@@ -1,5 +1,5 @@
 //! JPEG: decode via `zune-jpeg` (gray, YCbCr, CMYK, YCCK; arithmetic-coded and 12-bit files
-//! via [`craft_jpeg`]), encode via
+//! via [`bharat_jpeg`]), encode via
 //! `jpeg-encoder` (gray, RGB, CMYK). Metadata (APP0 JFIF density, APP1
 //! EXIF/XMP, APP2 multi-segment ICC, APP13 Photoshop resources, APP14 Adobe) is
 //! parsed by our own marker scanner so behaviour does not depend on decoder internals.
@@ -244,22 +244,22 @@ fn without_extended_xmp(b: &[u8]) -> Option<Vec<u8>> {
     Some(out)
 }
 
-/// Whether `craft-jpeg` (rather than `zune-jpeg`) decodes the file: arithmetic coding
+/// Whether `bharat-jpeg` (rather than `zune-jpeg`) decodes the file: arithmetic coding
 /// (SOF9–SOF11), lossless (SOF3), or a DCT frame whose precision isn't 8 bits (#4934, #5003).
-/// This includes 12-bit progressive Huffman (SOF2), which `craft-jpeg` supports.
+/// This includes 12-bit progressive Huffman (SOF2), which `bharat-jpeg` supports.
 fn uses_craft_jpeg(bytes: &[u8]) -> bool {
-    match craft_jpeg::frame(bytes) {
+    match bharat_jpeg::frame(bytes) {
         Some(f) if (0xC9..=0xCB).contains(&f.marker) || f.marker == 0xC3 => true,
         Some(f) if matches!(f.marker, 0xC0..=0xC2) => f.precision != 8,
         _ => false,
     }
 }
 
-fn craft_jpeg_error(e: craft_jpeg::Error) -> CodecError {
+fn bharat_jpeg_error(e: bharat_jpeg::Error) -> CodecError {
     match e {
-        craft_jpeg::Error::Malformed(m) => err(m),
-        craft_jpeg::Error::Unsupported(m) => CodecError::unsupported(F, m),
-        craft_jpeg::Error::LimitExceeded(m) => CodecError::LimitExceeded(m),
+        bharat_jpeg::Error::Malformed(m) => err(m),
+        bharat_jpeg::Error::Unsupported(m) => CodecError::unsupported(F, m),
+        bharat_jpeg::Error::LimitExceeded(m) => CodecError::LimitExceeded(m),
         e => err(e),
     }
 }
@@ -267,10 +267,10 @@ fn craft_jpeg_error(e: craft_jpeg::Error) -> CodecError {
 /// Decode a file [`uses_craft_jpeg`] routes away from `zune-jpeg`; `damaged` says entropy-coded
 /// data was cut short or corrupt.
 fn decode_craft_jpeg(bytes: &[u8], limits: &Limits, adobe_transform: Option<u8>) -> Result<(Image, bool), CodecError> {
-    let mut lim = craft_jpeg::Limits::default();
+    let mut lim = bharat_jpeg::Limits::default();
     lim.max_pixels = limits.max_pixels;
     lim.max_alloc = limits.max_alloc;
-    let d = craft_jpeg::decode(bytes, &lim, adobe_transform).map_err(craft_jpeg_error)?;
+    let d = bharat_jpeg::decode(bytes, &lim, adobe_transform).map_err(bharat_jpeg_error)?;
     let layout = match d.components {
         1 => ChannelLayout::Gray,
         3 => ChannelLayout::Rgb,
@@ -278,8 +278,8 @@ fn decode_craft_jpeg(bytes: &[u8], limits: &Limits, adobe_transform: Option<u8>)
         n => return Err(err(format!("{n} components"))),
     };
     let img = match d.samples {
-        craft_jpeg::Samples::U8(px) => Image::from_raw(d.width, d.height, layout, SampleType::U8, px)?,
-        craft_jpeg::Samples::U16(px) => Image::from_u16(d.width, d.height, layout, &px)?,
+        bharat_jpeg::Samples::U8(px) => Image::from_raw(d.width, d.height, layout, SampleType::U8, px)?,
+        bharat_jpeg::Samples::U16(px) => Image::from_u16(d.width, d.height, layout, &px)?,
     };
     Ok((img, d.damaged))
 }
@@ -299,7 +299,7 @@ pub(crate) fn decode(bytes: &[u8], limits: &Limits) -> Result<Image, CodecError>
         limits.check_bytes(w, h, u64::from(nc.max(1)))?;
     }
     if uses_craft_jpeg(bytes) {
-        // craft-jpeg sizes its buffers from the frame header before it reads a scan.
+        // bharat-jpeg sizes its buffers from the frame header before it reads a scan.
         if scan_bytes == 0 {
             return Err(err("the file has no scan data"));
         }
@@ -754,7 +754,7 @@ mod tests {
         assert_eq!(scan_metadata(&bytes).dpi, Some((96.0, 96.0)));
     }
 
-    // --- Arithmetic-coded and 12-bit files, decoded by craft-jpeg ---
+    // --- Arithmetic-coded and 12-bit files, decoded by bharat-jpeg ---
 
     fn segment(out: &mut Vec<u8>, marker: u8, body: &[u8]) {
         out.extend_from_slice(&[0xFF, marker]);

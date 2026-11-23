@@ -1,11 +1,11 @@
 //! Writing DDS textures: every storage read back through the reader, the header fields, sizes
 //! that aren't a multiple of four, the mip chain, and the block-compression error on ramps.
 
-use craft_raster_codecs::dds::{DdsCompression, DdsOptions, encode};
-use craft_raster_codecs::{ChannelLayout, CodecError, Image, Limits};
+use bharat_raster_codecs::dds::{DdsCompression, DdsOptions, encode};
+use bharat_raster_codecs::{ChannelLayout, CodecError, Image, Limits};
 
 fn decode(b: &[u8]) -> Result<Image, CodecError> {
-    craft_raster_codecs::dds::decode(b, &Limits::default())
+    bharat_raster_codecs::dds::decode(b, &Limits::default())
 }
 
 const DDSD_PITCH: u32 = 0x8;
@@ -343,7 +343,7 @@ fn compression_names_round_trip() {
 /// Encode timings on a synthetic ~30 MP texture (6336×4752). Ignored by default; run in release:
 ///
 /// ```sh
-/// cargo test --release -p craft-raster-codecs --test dds_write -- --ignored --nocapture
+/// cargo test --release -p bharat-raster-codecs --test dds_write -- --ignored --nocapture
 /// ```
 #[test]
 #[ignore]

@@ -1,5 +1,5 @@
 [package]
-name = "craft-image-codecs"
+name = "bharat-image-codecs"
 description = "Bounded, depth- and metadata-preserving codecs for flat raster image formats"
 version.workspace = true
 edition.workspace = true
@@ -14,7 +14,7 @@ workspace = true
 corpus = []
 default = []
 avif = ["image/avif"]
-heif = ["dep:craft-heif"]
+heif = ["dep:bharat-heif"]
 
 [dependencies]
 thiserror = { workspace = true }
@@ -29,9 +29,9 @@ image-webp = "0.2"
 zune-jpeg = "0.5"
 zune-core = "0.5"
 jpeg-encoder = "0.6"
-craft-jpeg = { workspace = true }
+bharat-jpeg = { workspace = true }
 zune-jpegxl = { version = "=0.5.2", default-features = false, features = ["std"] }
-craft-heif = { workspace = true, optional = true }
+bharat-heif = { workspace = true, optional = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 rayon = { workspace = true }

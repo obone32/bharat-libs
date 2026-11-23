@@ -1,5 +1,5 @@
 use super::*;
-use craft_wordmodel::THEME_COLORS;
+use bharat_wordmodel::THEME_COLORS;
 
 const NS: &str =
     r#"xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main""#;

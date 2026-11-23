@@ -208,7 +208,7 @@ mod tests {
     #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "openbsd", target_os = "netbsd"))]
     #[test]
     fn settings_files_are_read_from_the_config_dir() {
-        let dir = std::env::temp_dir().join(format!("craft-window-layout-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("bharat-window-layout-{}", std::process::id()));
         std::fs::create_dir_all(dir.join("gtk-3.0")).unwrap_or_default();
         std::fs::write(dir.join("gtk-3.0/settings.ini"), "[Settings]\ngtk-theme-name=Yaru\ngtk-decoration-layout=close,maximize:\n")
             .unwrap_or_default();

@@ -1,5 +1,5 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
-//! OpenEXR handling shared by the Craft apps.
+//! OpenEXR handling shared by the Bharat apps.
 //!
 //! This first part is the naming layer every reader needs once it has a file's channel list and
 //! header attributes, whichever decoder produced them:

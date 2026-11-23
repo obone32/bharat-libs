@@ -1,7 +1,7 @@
 //! Hand-built containers for odd but well-formed shapes the reader must keep, and the limits against hostile
 //! input. Every successfully parsed input must write back byte for byte.
 
-use craft_aep::{AepError, Body, Chunk, Limits, parse, parse_with_limits, write};
+use bharat_aep::{AepError, Body, Chunk, Limits, parse, parse_with_limits, write};
 
 /// One chunk with its pad byte (`pad` is used when the body is odd).
 fn chunk(id: &[u8; 4], body: &[u8], pad: u8) -> Vec<u8> {
@@ -35,7 +35,7 @@ fn file(chunks: &[Vec<u8>], trailer: &[u8]) -> Vec<u8> {
     v
 }
 
-fn assert_round_trip(bytes: &[u8]) -> craft_aep::AepFile<'_> {
+fn assert_round_trip(bytes: &[u8]) -> bharat_aep::AepFile<'_> {
     let f = parse(bytes).unwrap();
     assert!(write(&f).unwrap() == bytes, "round trip differs");
     f
@@ -260,7 +260,7 @@ fn writer_rejects_absurd_depth_instead_of_overflowing_the_stack() {
     for _ in 0..2000 {
         c = Chunk::list(*b"deep", vec![c]);
     }
-    let f = craft_aep::AepFile { chunks: vec![c], trailer: std::borrow::Cow::Borrowed(&[]) };
+    let f = bharat_aep::AepFile { chunks: vec![c], trailer: std::borrow::Cow::Borrowed(&[]) };
     assert_eq!(write(&f), Err(AepError::TooDeep));
     // Dropping the deep tree must not overflow either (2000 levels).
 }

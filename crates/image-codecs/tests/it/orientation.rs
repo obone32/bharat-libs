@@ -3,7 +3,7 @@
 
 use crate::common;
 use common::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 use proptest::prelude::{any, prop_assert, prop_assert_eq, proptest};
 
 /// A minimal EXIF (TIFF-structured) block: a filler tag, then Orientation.
@@ -466,7 +466,7 @@ fn every_layout_and_depth_orients_and_inverts() {
 }
 
 /// #285 performance budget: turning a 24 MP photo upright on open adds ≤ 50 ms
-/// (release build: `cargo test --release -p craft-image-codecs --test it -- orientation:: --ignored`).
+/// (release build: `cargo test --release -p bharat-image-codecs --test it -- orientation:: --ignored`).
 #[test]
 #[ignore = "timing; run in release"]
 fn rotating_24_mp_is_fast() {

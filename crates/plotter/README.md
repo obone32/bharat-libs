@@ -1,4 +1,4 @@
-# craft-plotter
+# bharat-plotter
 
 The command languages of vinyl cutters and pen plotters. A job (polylines in millimetres, tool
 settings, registration marks) goes in; the exact command bytes of one language come out. The
@@ -12,12 +12,12 @@ for wasm: opening a port, writing to it and waiting for the device stay with the
 | GP-GL, plain | `gpgl` | `!<speed>` when set, `M<down>,<right>` / `D<down>,<right>` at 0.1 mm steps, park `M<below>,0`. Each command ends with ETX. |
 | GP-GL, Silhouette dialect | `gpgl::silhouette` | Setup preamble per generation (legacy, Cameo 3, Cameo 4 line), registration marks, `M`/`D` at 0.05 mm units, park `M<below>,0` `SO0`. Each command ends with ETX. Status, firmware-version and tool-setup queries and their reply parsers. |
 
-G-code is not here: it is [`craft-gcode`](../gcode/src/lib.rs).
+G-code is not here: it is [`bharat-gcode`](../gcode/src/lib.rs).
 
 ## Use
 
 ```rust
-use craft_plotter::{hpgl, Job, Operation};
+use bharat_plotter::{hpgl, Job, Operation};
 
 let job = Job {
     operations: vec![Operation { holder: 1, paths: vec![vec![(0.0, 0.0), (10.0, 0.0), (10.0, 10.0)]], ..Operation::default() }],
@@ -63,7 +63,7 @@ They were not verified on hardware by this crate's authors.
   [`fablabnbg/inkscape-silhouette`](https://github.com/fablabnbg/inkscape-silhouette) (GPL-2.0),
   [`virtualabs/inkscape-cutcutgo`](https://github.com/virtualabs/inkscape-cutcutgo) (GPL-3.0),
   `pklaus/Silhouette-Cutting-Plotters`, and the `robocut` lineage they credit.
-- GP-GL: Graphtec's GP-GL command list (CraftRobo Pro S / CE5000):
+- GP-GL: Graphtec's GP-GL command list (BharatRobo Pro S / CE5000):
   <https://web.archive.org/web/20160801023226/http://ohthehugemanatee.net/uploads/2011/07/GP-GL.pdf>.
   The plain encoder assumes the panel's GP-GL step size is 0.1 mm and the Silhouette axis order
   (feed first).

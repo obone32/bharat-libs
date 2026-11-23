@@ -6,7 +6,7 @@
 use backend::geom::Point;
 use backend::page::PageSettings;
 use backend::text::{GlyphId, KrillaGlyph};
-use craft_pdf::write::{self, Metadata, Writer, backend};
+use bharat_pdf::write::{self, Metadata, Writer, backend};
 use hayro_syntax::object::{Object, Stream};
 
 /// A two-glyph TrueType font with an `OS/2` table whose `fsType` is 4 (Preview & Print).

@@ -1,16 +1,16 @@
-//! What the readers and writers of the office XML formats need on top of `craft-xml`: the part
+//! What the readers and writers of the office XML formats need on top of `bharat-xml`: the part
 //! parser with their limits, markup-compatibility branches, fragments kept as text with their
 //! namespace declarations, and relationship ids inside a fragment.
 //!
-//! Readers here match elements with [`craft_xml::Local`] and attributes with
+//! Readers here match elements with [`bharat_xml::Local`] and attributes with
 //! [`El::attr_local`], so a document may use any prefixes. Integers are read with
-//! [`craft_xml::value::to_i64_lossy`] and its siblings: producers write `12700.0` and values
+//! [`bharat_xml::value::to_i64_lossy`] and its siblings: producers write `12700.0` and values
 //! far out of range, and neither should lose the element.
 
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 
-use craft_xml::{El, Limits, Local, Node, Options, Tag};
+use bharat_xml::{El, Limits, Local, Node, Options, Tag};
 
 /// Deepest element nesting any walk in this crate follows; also the parser's limit.
 pub const MAX_DEPTH: usize = 256;
@@ -19,7 +19,7 @@ pub const MAX_NODES: usize = 4_000_000;
 
 /// Parses a part: names as written, namespace declarations kept, [`MAX_DEPTH`] and
 /// [`MAX_NODES`].
-pub fn parse(bytes: &[u8]) -> Result<El, craft_xml::Error> {
+pub fn parse(bytes: &[u8]) -> Result<El, bharat_xml::Error> {
     Options { limits: Limits { max_depth: MAX_DEPTH, max_nodes: MAX_NODES, ..Limits::DEFAULT }, ..Options::default() }.parse(bytes)
 }
 
@@ -352,7 +352,7 @@ mod tests {
 
     #[test]
     fn an_attribute_list_writes_booleans_as_digits_and_skips_absent_values() {
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         w.tag("x").list(A::new().a("k", 1).o("n", None::<i32>).b("b", Some(false)).t("t", true).t("f", false)).empty();
         assert_eq!(w.finish(), r#"<x k="1" b="0" t="1"/>"#);
     }

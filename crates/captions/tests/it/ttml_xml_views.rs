@@ -1,8 +1,8 @@
-//! The TTML reader used to sit on `roxmltree` and now sits on `craft-xml`. Its logic is the same;
+//! The TTML reader used to sit on `roxmltree` and now sits on `bharat-xml`. Its logic is the same;
 //! what changed is the tree it is handed. This compares the two trees on TTML documents: element
 //! names by namespace, attributes by namespace, and character data, in document order.
 
-use craft_captions::{Cue, Document, Format, FrameRate, WriteOptions, write};
+use bharat_captions::{Cue, Document, Format, FrameRate, WriteOptions, write};
 
 const NAMESPACES: [(&str, &str); 11] = [
     ("tt", "http://www.w3.org/ns/ttml"),
@@ -44,15 +44,15 @@ fn dump_rox(n: roxmltree::Node, out: &mut Vec<String>) {
     out.push(">".into());
 }
 
-fn dump_craft(n: &craft_xml::El, out: &mut Vec<String>) {
+fn dump_craft(n: &bharat_xml::El, out: &mut Vec<String>) {
     let mut attrs: Vec<String> = n.attrs.iter().map(|(k, v)| format!("@{k}={v}")).collect();
     attrs.sort();
     out.push(format!("<{} {}", n.name, attrs.join(" ")));
     let mut text = String::new();
     for c in &n.children {
         match c {
-            craft_xml::Node::Text(t) | craft_xml::Node::CData(t) => text.push_str(t),
-            craft_xml::Node::El(e) => {
+            bharat_xml::Node::Text(t) | bharat_xml::Node::CData(t) => text.push_str(t),
+            bharat_xml::Node::El(e) => {
                 out.push(format!("#{}", std::mem::take(&mut text)));
                 dump_craft(e, out);
             }
@@ -111,11 +111,11 @@ fn documents() -> Vec<String> {
 }
 
 #[test]
-fn craft_xml_hands_the_ttml_reader_the_tree_roxmltree_did() {
-    let canonical = craft_xml::Canonical::new(&NAMESPACES);
+fn bharat_xml_hands_the_ttml_reader_the_tree_roxmltree_did() {
+    let canonical = bharat_xml::Canonical::new(&NAMESPACES);
     for text in documents() {
         let rox = roxmltree::Document::parse(&text).unwrap();
-        let craft = craft_xml::Options::canonical(&canonical).strict().parse(text.as_bytes()).unwrap();
+        let craft = bharat_xml::Options::canonical(&canonical).strict().parse(text.as_bytes()).unwrap();
         let (mut a, mut b) = (Vec::new(), Vec::new());
         dump_rox(rox.root_element(), &mut a);
         dump_craft(&craft, &mut b);

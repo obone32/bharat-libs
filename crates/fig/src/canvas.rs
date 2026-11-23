@@ -2,7 +2,7 @@
 
 use std::io::{Read, Write};
 
-use craft_kiwi::Schema;
+use bharat_kiwi::Schema;
 
 use crate::{Error, corrupt};
 
@@ -37,11 +37,11 @@ const MAX_VALUES: usize = 128 << 20;
 const MAX_VALUES: usize = 32 << 20;
 
 /// Most values to decode ([`Schema::decode_message_within`]) from a file whose compressed canvas
-/// is `packed` bytes: at least [`craft_kiwi::DEFAULT_MAX_VALUES`], four per byte, and at most 128
+/// is `packed` bytes: at least [`bharat_kiwi::DEFAULT_MAX_VALUES`], four per byte, and at most 128
 /// million (32 million on 32-bit targets). A large real file decodes while a small one can't
 /// expand into a huge tree, however far its chunks inflate.
 pub fn value_budget(packed: usize) -> usize {
-    packed.saturating_mul(VALUES_PER_PACKED_BYTE).clamp(craft_kiwi::DEFAULT_MAX_VALUES, MAX_VALUES)
+    packed.saturating_mul(VALUES_PER_PACKED_BYTE).clamp(bharat_kiwi::DEFAULT_MAX_VALUES, MAX_VALUES)
 }
 
 /// The schema and the raw (decompressed) message of a `canvas.fig`.

@@ -2,7 +2,7 @@
 
 use std::collections::{HashMap, HashSet};
 
-use craft_timeline::time::{FrameRate, Tick};
+use bharat_timeline::time::{FrameRate, Tick};
 
 use super::bento::Container;
 use crate::model::{CClip, CItem, CKind, CTrack, CTransition, Composition, Document, Gain, Source, units_to_ticks};
@@ -361,7 +361,7 @@ impl R<'_, '_> {
                         b"DOSL" => self.string(l, "OMFI:DOSL:PathName"),
                         b"MACL" => self.string(l, "OMFI:MACL:PathName"),
                         b"TXTL" => self.string(l, "OMFI:TXTL:Name"),
-                        b"NETL" => self.string(l, "OMFI:NETL:URLString").map(|u| craft_timeline::path::file_url_to_path(&u)),
+                        b"NETL" => self.string(l, "OMFI:NETL:URLString").map(|u| bharat_timeline::path::file_url_to_path(&u)),
                         _ => None,
                     };
                     if p.is_some() {

@@ -4,7 +4,7 @@ use crate::color::{ColorScheme, Rgba, SchemeSlot};
 use crate::style::{ColorRef, Effects, Fill};
 use crate::theme::{FontSet, Theme, default_format};
 
-use craft_xml::Writer;
+use bharat_xml::Writer;
 
 use crate::ns::{NS_A, NS_R};
 use crate::part::Sink;

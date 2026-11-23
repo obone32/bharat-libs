@@ -24,7 +24,7 @@
 use crate::shared::white_from_data_sourced;
 use crate::unpack::{unpack_lsb, unpack_words32_msb};
 use crate::{BlackLevel, Camera, Cfa, ColorData, Limits, Mode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result};
-use craft_tiff::{ByteOrder, Ifd, Tiff};
+use bharat_tiff::{ByteOrder, Ifd, Tiff};
 use rayon::prelude::*;
 
 const CROP_TOP_LEFT: u16 = 0x0110;
@@ -87,7 +87,7 @@ fn pair(h: &Header, tag: u16) -> Option<(usize, usize)> {
 pub(crate) fn raw_ifd(raw: &[u8]) -> Result<Ifd> {
     let tiff = Tiff::parse(raw).map_err(|_| RawError::Unsupported("RAF without a raw IFD (older FinePix layout)".into()))?;
     let off = tiff.ifds.first().and_then(|i| i.u64(0xf000)).ok_or_else(|| RawError::Unsupported("RAF without a raw IFD".into()))?;
-    let (ifd, _) = craft_tiff::parse_ifd_at(raw, off, ByteOrder::Little, 0, false, &Default::default())?;
+    let (ifd, _) = bharat_tiff::parse_ifd_at(raw, off, ByteOrder::Little, 0, false, &Default::default())?;
     Ok(ifd)
 }
 
@@ -232,7 +232,7 @@ pub(crate) fn decode(bytes: &[u8], mode: Mode, limits: &Limits) -> Result<RawIma
     let kelvin_presets = fuji_kelvin_presets(&ifd);
     let exif = h.jpeg.and_then(jpeg_exif_tiff);
     let ifd0 = exif.as_ref().and_then(|t| t.ifds.first());
-    let orientation = Orientation::from_exif(ifd0.and_then(|i| i.u16(craft_tiff::tags::ORIENTATION)).unwrap_or(1));
+    let orientation = Orientation::from_exif(ifd0.and_then(|i| i.u16(bharat_tiff::tags::ORIENTATION)).unwrap_or(1));
     let img = RawImage {
         format: RawFormat::Raf,
         width: w,
@@ -378,7 +378,7 @@ pub(super) mod tests {
     /// past the start of scan, a truncated segment or a missing SOI.
     #[test]
     fn orientation_and_camera_come_from_the_jpeg_exif() {
-        use craft_tiff::{IfdBuilder, TiffWriter, Value, tags as t};
+        use bharat_tiff::{IfdBuilder, TiffWriter, Value, tags as t};
         let mut ifd0 = IfdBuilder::new();
         ifd0.set(t::MAKE, Value::Ascii("FUJIFILM".into()));
         ifd0.set(t::MODEL, Value::Ascii("X-T4".into()));

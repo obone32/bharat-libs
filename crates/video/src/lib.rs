@@ -1,5 +1,5 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
-//! Clean-room pure-Rust video codecs for the Craft apps, one feature per codec. Input and output
+//! Clean-room pure-Rust video codecs for the Bharat apps, one feature per codec. Input and output
 //! are byte slices and planar sample buffers (no filesystem access of its own); builds for
 //! `wasm32-unknown-unknown`.
 //!
@@ -21,8 +21,8 @@
 //!
 //! The decoders bound the pictures they hold with a memory budget ([`budget`]).
 //!
-//! Containers and bit-level I/O are in `craft-media`; the codecs here share its `bitstream`
-//! module and describe their streams with `craft_media::CodecParams`.
+//! Containers and bit-level I/O are in `bharat-media`; the codecs here share its `bitstream`
+//! module and describe their streams with `bharat_media::CodecParams`.
 
 pub mod budget;
 

@@ -1279,21 +1279,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-aaf"
+name = "bharat-aaf"
 version = "0.1.0"
 dependencies = [
- "craft-audio",
- "craft-cfb",
- "craft-timeline",
+ "bharat-audio",
+ "bharat-cfb",
+ "bharat-timeline",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-aep"
+name = "bharat-aep"
 version = "0.1.0"
 
 [[package]]
-name = "craft-affinity"
+name = "bharat-affinity"
 version = "0.1.0"
 dependencies = [
  "crc32fast",
@@ -1305,7 +1305,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-ai-core"
+name = "bharat-ai-core"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -1314,7 +1314,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-assuan"
+name = "bharat-assuan"
 version = "0.1.0"
 dependencies = [
  "proptest",
@@ -1322,18 +1322,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-atomic"
+name = "bharat-atomic"
 version = "0.1.0"
 dependencies = [
  "rustix 1.1.5",
 ]
 
 [[package]]
-name = "craft-audio"
+name = "bharat-audio"
 version = "0.1.0"
 dependencies = [
- "craft-media",
- "craft-media-testkit",
+ "bharat-media",
+ "bharat-media-testkit",
  "log",
  "proptest",
  "rayon",
@@ -1344,25 +1344,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-captions"
+name = "bharat-captions"
 version = "0.1.0"
 dependencies = [
- "craft-timeline",
- "craft-xml",
+ "bharat-timeline",
+ "bharat-xml",
  "proptest",
  "roxmltree 0.21.2",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-cfb"
+name = "bharat-cfb"
 version = "0.1.0"
 dependencies = [
- "craft-media-testkit",
+ "bharat-media-testkit",
 ]
 
 [[package]]
-name = "craft-cms"
+name = "bharat-cms"
 version = "0.1.0"
 dependencies = [
  "md-5 0.10.6",
@@ -1371,23 +1371,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-codepage"
+name = "bharat-codepage"
 version = "0.1.0"
 dependencies = [
  "encoding_rs",
 ]
 
 [[package]]
-name = "craft-crs"
+name = "bharat-crs"
 version = "0.1.0"
 dependencies = [
- "craft-metadata",
- "craft-xml",
+ "bharat-metadata",
+ "bharat-xml",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-crw"
+name = "bharat-crw"
 version = "0.1.0"
 dependencies = [
  "proptest",
@@ -1398,33 +1398,33 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-csv"
+name = "bharat-csv"
 version = "0.1.0"
 dependencies = [
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-dav"
+name = "bharat-dav"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
+ "bharat-xml",
  "proptest",
 ]
 
 [[package]]
-name = "craft-designcraft-format"
+name = "bharat-designcraft-format"
 version = "0.1.0"
 dependencies = [
- "craft-document-bundle",
- "craft-eps",
+ "bharat-document-bundle",
+ "bharat-eps",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-dialogs"
+name = "bharat-dialogs"
 version = "0.1.0"
 dependencies = [
  "block2 0.6.2",
@@ -1436,13 +1436,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-doc"
+name = "bharat-doc"
 version = "0.1.0"
 dependencies = [
  "blake3",
- "craft-ecproj-format",
- "craft-pcraft-format",
- "craft-vectorcraft-format",
+ "bharat-ecproj-format",
+ "bharat-pcraft-format",
+ "bharat-vectorcraft-format",
  "flate2",
  "proptest",
  "ruzstd",
@@ -1452,14 +1452,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-doc-binary"
+name = "bharat-doc-binary"
 version = "0.1.0"
 dependencies = [
  "cfb",
  "chrono",
- "craft-cfb",
- "craft-codepage",
- "craft-wordmodel",
+ "bharat-cfb",
+ "bharat-codepage",
+ "bharat-wordmodel",
  "image",
  "log",
  "miniz_oxide 0.9.1",
@@ -1470,32 +1470,32 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-docpath"
+name = "bharat-docpath"
 version = "0.1.0"
 
 [[package]]
-name = "craft-document-bundle"
+name = "bharat-document-bundle"
 version = "0.1.0"
 dependencies = [
- "craft-zip",
+ "bharat-zip",
  "serde_json",
  "thiserror 2.0.21",
  "zip",
 ]
 
 [[package]]
-name = "craft-docx"
+name = "bharat-docx"
 version = "0.1.0"
 dependencies = [
  "base64 0.23.1",
  "chrono",
- "craft-cfb",
- "craft-drawingml",
- "craft-math",
- "craft-offcrypto",
- "craft-opc",
- "craft-wordmodel",
- "craft-xml",
+ "bharat-cfb",
+ "bharat-drawingml",
+ "bharat-math",
+ "bharat-offcrypto",
+ "bharat-opc",
+ "bharat-wordmodel",
+ "bharat-xml",
  "image",
  "log",
  "proptest",
@@ -1508,17 +1508,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-dpx"
+name = "bharat-dpx"
 version = "0.1.0"
 dependencies = [
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-drawingml"
+name = "bharat-drawingml"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
+ "bharat-xml",
  "kurbo 0.13.1",
  "log",
  "serde",
@@ -1526,7 +1526,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-dwg"
+name = "bharat-dwg"
 version = "0.1.0"
 dependencies = [
  "acadrust",
@@ -1534,10 +1534,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-dxf"
+name = "bharat-dxf"
 version = "0.1.0"
 dependencies = [
- "craft-codepage",
+ "bharat-codepage",
  "encoding_rs",
  "kurbo 0.13.1",
  "log",
@@ -1545,7 +1545,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-ecproj-format"
+name = "bharat-ecproj-format"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -1554,7 +1554,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-eps"
+name = "bharat-eps"
 version = "0.1.0"
 dependencies = [
  "kurbo 0.13.1",
@@ -1564,25 +1564,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-epub"
+name = "bharat-epub"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
- "craft-zip",
+ "bharat-xml",
+ "bharat-zip",
  "thiserror 2.0.21",
  "zip",
 ]
 
 [[package]]
-name = "craft-ews"
+name = "bharat-ews"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
+ "bharat-xml",
  "proptest",
 ]
 
 [[package]]
-name = "craft-exr"
+name = "bharat-exr"
 version = "0.1.0"
 dependencies = [
  "exr",
@@ -1593,12 +1593,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-fig"
+name = "bharat-fig"
 version = "0.1.0"
 dependencies = [
- "craft-figma-rest",
- "craft-kiwi",
- "craft-zip",
+ "bharat-figma-rest",
+ "bharat-kiwi",
+ "bharat-zip",
  "flate2",
  "kurbo 0.13.1",
  "ruzstd",
@@ -1608,10 +1608,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-figcraft-format"
+name = "bharat-figcraft-format"
 version = "0.1.0"
 dependencies = [
- "craft-zip",
+ "bharat-zip",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -1619,7 +1619,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-figma-rest"
+name = "bharat-figma-rest"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -1628,58 +1628,58 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-file-formats"
+name = "bharat-file-formats"
 version = "0.1.0"
 dependencies = [
- "craft-eps",
- "craft-idml",
- "craft-image-codecs",
- "craft-kra",
- "craft-ora",
- "craft-pcraft-bundle",
- "craft-raw",
- "craft-svg",
- "craft-zip",
+ "bharat-eps",
+ "bharat-idml",
+ "bharat-image-codecs",
+ "bharat-kra",
+ "bharat-ora",
+ "bharat-pcraft-bundle",
+ "bharat-raw",
+ "bharat-svg",
+ "bharat-zip",
  "serde",
  "serde_json",
 ]
 
 [[package]]
-name = "craft-file-import"
+name = "bharat-file-import"
 version = "0.1.0"
 dependencies = [
- "craft-dxf",
- "craft-eps",
- "craft-file-formats",
- "craft-pdf 0.1.0",
- "craft-raster-codecs",
- "craft-svg",
+ "bharat-dxf",
+ "bharat-eps",
+ "bharat-file-formats",
+ "bharat-pdf 0.1.0",
+ "bharat-raster-codecs",
+ "bharat-svg",
  "kurbo 0.13.1",
  "thiserror 2.0.21",
  "vectorcraft-geom",
 ]
 
 [[package]]
-name = "craft-flags"
+name = "bharat-flags"
 version = "0.1.0"
 dependencies = [
- "craft-atomic",
+ "bharat-atomic",
  "dirs",
  "tempfile",
  "toml_edit",
 ]
 
 [[package]]
-name = "craft-flow"
+name = "bharat-flow"
 version = "0.1.0"
 dependencies = [
- "craft-wordmodel",
+ "bharat-wordmodel",
  "image",
  "log",
 ]
 
 [[package]]
-name = "craft-font-catalog"
+name = "bharat-font-catalog"
 version = "0.1.0"
 dependencies = [
  "fontique",
@@ -1690,13 +1690,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-font-manager"
+name = "bharat-font-manager"
 version = "0.1.0"
 dependencies = [
- "craft-font-catalog",
- "craft-font-store",
- "craft-i18n",
- "craft-ui",
+ "bharat-font-catalog",
+ "bharat-font-store",
+ "bharat-i18n",
+ "bharat-ui",
  "egui",
  "egui_kittest",
  "egui_system_font_provider",
@@ -1707,12 +1707,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-font-store"
+name = "bharat-font-store"
 version = "0.1.0"
 dependencies = [
  "cap-primitives",
- "craft-atomic",
- "craft-font-catalog",
+ "bharat-atomic",
+ "bharat-font-catalog",
  "flate2",
  "log",
  "ruzstd",
@@ -1728,37 +1728,37 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-fonts-build"
+name = "bharat-fonts-build"
 version = "0.1.0"
 dependencies = [
- "craft-fonts-build-consumer",
+ "bharat-fonts-build-consumer",
  "skera",
  "skrifa 0.48.0",
 ]
 
 [[package]]
-name = "craft-fonts-build-consumer"
+name = "bharat-fonts-build-consumer"
 version = "0.1.0"
 dependencies = [
- "craft-fonts-build",
+ "bharat-fonts-build",
 ]
 
 [[package]]
-name = "craft-gainmap"
-version = "0.1.0"
-dependencies = [
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "craft-gcode"
+name = "bharat-gainmap"
 version = "0.1.0"
 dependencies = [
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-gif"
+name = "bharat-gcode"
+version = "0.1.0"
+dependencies = [
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "bharat-gif"
 version = "0.1.0"
 dependencies = [
  "gif",
@@ -1766,14 +1766,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-hdr"
+name = "bharat-hdr"
 version = "0.1.0"
 dependencies = [
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-heif"
+name = "bharat-heif"
 version = "0.1.0"
 dependencies = [
  "heic-rs",
@@ -1781,20 +1781,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-html"
+name = "bharat-html"
 version = "0.1.0"
 dependencies = [
- "craft-codepage",
- "craft-flow",
- "craft-math",
- "craft-mime",
- "craft-wordmodel",
+ "bharat-codepage",
+ "bharat-flow",
+ "bharat-math",
+ "bharat-mime",
+ "bharat-wordmodel",
  "encoding_rs",
  "proptest",
 ]
 
 [[package]]
-name = "craft-i18n"
+name = "bharat-i18n"
 version = "0.1.0"
 dependencies = [
  "fixed_decimal",
@@ -1817,7 +1817,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-ical"
+name = "bharat-ical"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -1825,21 +1825,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-idml"
+name = "bharat-idml"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
- "craft-zip",
+ "bharat-xml",
+ "bharat-zip",
  "thiserror 2.0.21",
  "zip",
 ]
 
 [[package]]
-name = "craft-image-codecs"
+name = "bharat-image-codecs"
 version = "0.1.0"
 dependencies = [
- "craft-heif",
- "craft-jpeg",
+ "bharat-heif",
+ "bharat-jpeg",
  "exr",
  "flate2",
  "half",
@@ -1859,14 +1859,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-indd"
+name = "bharat-indd"
 version = "0.1.0"
 dependencies = [
  "indd",
 ]
 
 [[package]]
-name = "craft-jmap"
+name = "bharat-jmap"
 version = "0.1.0"
 dependencies = [
  "proptest",
@@ -1874,7 +1874,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-jpeg"
+name = "bharat-jpeg"
 version = "0.1.0"
 dependencies = [
  "jpeg-encoder 0.6.1",
@@ -1883,22 +1883,22 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-jxl"
+name = "bharat-jxl"
 version = "0.1.0"
 dependencies = [
- "craft-cms",
+ "bharat-cms",
  "jixel",
  "jxl-oxide",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-keymap"
+name = "bharat-keymap"
 version = "0.1.0"
 dependencies = [
- "craft-i18n",
- "craft-settings",
- "craft-ui",
+ "bharat-i18n",
+ "bharat-settings",
+ "bharat-ui",
  "egui",
  "egui_kittest",
  "image",
@@ -1909,73 +1909,73 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-kiwi"
+name = "bharat-kiwi"
 version = "0.1.0"
 
 [[package]]
-name = "craft-kra"
+name = "bharat-kra"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
- "craft-zip",
+ "bharat-xml",
+ "bharat-zip",
  "thiserror 2.0.21",
  "zip",
 ]
 
 [[package]]
-name = "craft-latex"
+name = "bharat-latex"
 version = "0.1.0"
 dependencies = [
- "craft-flow",
- "craft-markdown",
- "craft-math",
- "craft-mime",
- "craft-wordmodel",
+ "bharat-flow",
+ "bharat-markdown",
+ "bharat-math",
+ "bharat-mime",
+ "bharat-wordmodel",
  "proptest",
 ]
 
 [[package]]
-name = "craft-lottie"
+name = "bharat-lottie"
 version = "0.1.0"
 dependencies = [
- "craft-zip",
+ "bharat-zip",
  "serde_json",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-markdown"
+name = "bharat-markdown"
 version = "0.1.0"
 dependencies = [
- "craft-flow",
- "craft-html",
- "craft-wordmodel",
+ "bharat-flow",
+ "bharat-html",
+ "bharat-wordmodel",
 ]
 
 [[package]]
-name = "craft-materialx"
+name = "bharat-materialx"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
+ "bharat-xml",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-math"
+name = "bharat-math"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
+ "bharat-xml",
  "proptest",
  "serde",
  "serde_json",
 ]
 
 [[package]]
-name = "craft-media"
+name = "bharat-media"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "craft-media-testkit",
+ "bharat-media-testkit",
  "proptest",
  "serde",
  "serde_json",
@@ -1983,15 +1983,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-media-testkit"
+name = "bharat-media-testkit"
 version = "0.1.0"
 
 [[package]]
-name = "craft-menu"
+name = "bharat-menu"
 version = "0.1.0"
 dependencies = [
- "craft-keymap",
- "craft-quit",
+ "bharat-keymap",
+ "bharat-quit",
  "egui",
  "muda",
  "objc2 0.6.5",
@@ -1999,23 +1999,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-mesh"
+name = "bharat-mesh"
 version = "0.1.0"
 dependencies = [
- "craft-opc",
- "craft-xml",
+ "bharat-opc",
+ "bharat-xml",
  "miniz_oxide 0.9.1",
  "serde_json",
 ]
 
 [[package]]
-name = "craft-metadata"
+name = "bharat-metadata"
 version = "0.1.0"
 dependencies = [
  "brotli 9.1.1",
  "brotli-decompressor 6.3.1",
  "chrono",
- "craft-tiff",
+ "bharat-tiff",
  "proptest",
  "quick-xml 0.41.0",
  "serde",
@@ -2023,7 +2023,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-metafile"
+name = "bharat-metafile"
 version = "0.1.0"
 dependencies = [
  "encoding_rs",
@@ -2033,7 +2033,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-midi"
+name = "bharat-midi"
 version = "0.1.0"
 dependencies = [
  "proptest",
@@ -2043,29 +2043,29 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-mime"
+name = "bharat-mime"
 version = "0.1.0"
 dependencies = [
  "chardetng",
  "chrono",
- "craft-codepage",
+ "bharat-codepage",
  "encoding_rs",
  "proptest",
 ]
 
 [[package]]
-name = "craft-odf"
+name = "bharat-odf"
 version = "0.1.0"
 dependencies = [
  "aes 0.9.4",
  "base64 0.23.1",
  "chrono",
- "craft-flow",
- "craft-math",
- "craft-metafile",
- "craft-wordmodel",
- "craft-xml",
- "craft-zip",
+ "bharat-flow",
+ "bharat-math",
+ "bharat-metafile",
+ "bharat-wordmodel",
+ "bharat-xml",
+ "bharat-zip",
  "flate2",
  "getrandom 0.3.4",
  "hmac 0.13.0",
@@ -2080,23 +2080,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-ods"
+name = "bharat-ods"
 version = "0.1.0"
 dependencies = [
- "craft-odf",
- "craft-sheet",
- "craft-xml",
+ "bharat-odf",
+ "bharat-sheet",
+ "bharat-xml",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-offcrypto"
+name = "bharat-offcrypto"
 version = "0.1.0"
 dependencies = [
  "aes 0.9.4",
  "base64 0.23.1",
- "craft-cfb",
- "craft-xml",
+ "bharat-cfb",
+ "bharat-xml",
  "getrandom 0.3.4",
  "hmac 0.13.0",
  "sha1 0.11.0",
@@ -2106,18 +2106,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-opc"
+name = "bharat-opc"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
- "craft-zip",
+ "bharat-xml",
+ "bharat-zip",
  "log",
  "thiserror 2.0.21",
  "zip",
 ]
 
 [[package]]
-name = "craft-openpgp"
+name = "bharat-openpgp"
 version = "0.1.0"
 dependencies = [
  "ed25519-dalek 2.2.0",
@@ -2132,29 +2132,29 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-ora"
+name = "bharat-ora"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
- "craft-zip",
+ "bharat-xml",
+ "bharat-zip",
  "thiserror 2.0.21",
  "zip",
 ]
 
 [[package]]
-name = "craft-pcraft-bundle"
+name = "bharat-pcraft-bundle"
 version = "0.1.0"
 dependencies = [
  "blake3",
- "craft-atomic",
- "craft-pcraft-format",
- "craft-zip",
+ "bharat-atomic",
+ "bharat-pcraft-format",
+ "bharat-zip",
  "ruzstd",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-pcraft-format"
+name = "bharat-pcraft-format"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -2163,13 +2163,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-pdf"
+name = "bharat-pdf"
 version = "0.1.0"
 dependencies = [
  "aes 0.9.4",
  "bytemuck",
  "chrono",
- "craft-stream-codecs",
+ "bharat-stream-codecs",
  "flate2",
  "hayro",
  "hayro-cmap",
@@ -2192,9 +2192,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-pdf"
+name = "bharat-pdf"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0#92d392cff132eaf53e13afff77f38b5c11b73aa0"
+source = "git+https://github.com/obone32/bharat-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0#92d392cff132eaf53e13afff77f38b5c11b73aa0"
 dependencies = [
  "hayro-interpret",
  "hayro-syntax",
@@ -2203,7 +2203,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-pdn"
+name = "bharat-pdn"
 version = "0.1.0"
 dependencies = [
  "flate2",
@@ -2212,10 +2212,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-penpot"
+name = "bharat-penpot"
 version = "0.1.0"
 dependencies = [
- "craft-zip",
+ "bharat-zip",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -2223,7 +2223,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-pkcs7"
+name = "bharat-pkcs7"
 version = "0.1.0"
 dependencies = [
  "aes 0.9.4",
@@ -2254,11 +2254,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-plate-test"
+name = "bharat-plate-test"
 version = "0.1.0"
 dependencies = [
- "craft-cms",
- "craft-pdf 0.1.0",
+ "bharat-cms",
+ "bharat-pdf 0.1.0",
  "hayro-syntax",
  "serde",
  "serde_json",
@@ -2267,7 +2267,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-platform"
+name = "bharat-platform"
 version = "0.1.0"
 dependencies = [
  "async-channel",
@@ -2284,7 +2284,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-plotter"
+name = "bharat-plotter"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -2292,12 +2292,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-pptx"
+name = "bharat-pptx"
 version = "0.1.0"
 dependencies = [
- "craft-drawingml",
- "craft-opc",
- "craft-xml",
+ "bharat-drawingml",
+ "bharat-opc",
+ "bharat-xml",
  "kurbo 0.13.1",
  "log",
  "serde",
@@ -2306,7 +2306,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-prc"
+name = "bharat-prc"
 version = "0.1.0"
 dependencies = [
  "flate2",
@@ -2315,12 +2315,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-prepress"
+name = "bharat-prepress"
 version = "0.1.0"
 dependencies = [
- "craft-cms",
- "craft-pdf 0.1.0",
- "craft-plate-test",
+ "bharat-cms",
+ "bharat-pdf 0.1.0",
+ "bharat-plate-test",
  "kurbo 0.13.1",
  "linesweeper",
  "thiserror 2.0.21",
@@ -2328,10 +2328,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-print"
+name = "bharat-print"
 version = "0.1.0"
 dependencies = [
- "craft-winprint-gdi",
+ "bharat-winprint-gdi",
  "log",
  "miniz_oxide 0.9.1",
  "roxmltree 0.21.2",
@@ -2341,7 +2341,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-proof"
+name = "bharat-proof"
 version = "0.1.0"
 dependencies = [
  "log",
@@ -2352,10 +2352,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-psd"
+name = "bharat-psd"
 version = "0.1.0"
 dependencies = [
- "craft-psd",
+ "bharat-psd",
  "encoding_rs",
  "flate2",
  "proptest",
@@ -2365,14 +2365,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-pst"
+name = "bharat-pst"
 version = "0.1.0"
 dependencies = [
  "proptest",
 ]
 
 [[package]]
-name = "craft-quit"
+name = "bharat-quit"
 version = "0.1.0"
 dependencies = [
  "dispatch2",
@@ -2383,24 +2383,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-raster-codecs"
+name = "bharat-raster-codecs"
 version = "0.1.0"
 dependencies = [
  "base64 0.23.1",
- "craft-image-codecs",
+ "bharat-image-codecs",
  "image",
  "rayon",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-raw"
+name = "bharat-raw"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "craft-crw",
- "craft-metadata",
- "craft-tiff",
+ "bharat-crw",
+ "bharat-metadata",
+ "bharat-tiff",
  "jpeg-encoder 0.7.1",
  "jxl-oxide",
  "miniz_oxide 0.9.1",
@@ -2415,27 +2415,27 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-rtf"
+name = "bharat-rtf"
 version = "0.1.0"
 dependencies = [
- "craft-codepage",
- "craft-flow",
- "craft-metafile",
- "craft-mime",
- "craft-wordmodel",
+ "bharat-codepage",
+ "bharat-flow",
+ "bharat-metafile",
+ "bharat-mime",
+ "bharat-wordmodel",
  "encoding_rs",
  "image",
  "proptest",
 ]
 
 [[package]]
-name = "craft-scraft-format"
+name = "bharat-scraft-format"
 version = "0.1.0"
 dependencies = [
- "craft-audio",
- "craft-midi",
- "craft-time",
- "craft-zip",
+ "bharat-audio",
+ "bharat-midi",
+ "bharat-time",
+ "bharat-zip",
  "proptest",
  "serde",
  "serde_json",
@@ -2443,10 +2443,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-settings"
+name = "bharat-settings"
 version = "0.1.0"
 dependencies = [
- "craft-atomic",
+ "bharat-atomic",
  "dirs",
  "serde",
  "tempfile",
@@ -2454,19 +2454,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-sf2"
+name = "bharat-sf2"
 version = "0.1.0"
 dependencies = [
- "craft-sf2",
+ "bharat-sf2",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-sheet"
+name = "bharat-sheet"
 version = "0.1.0"
 
 [[package]]
-name = "craft-silhouette-studio"
+name = "bharat-silhouette-studio"
 version = "0.1.0"
 dependencies = [
  "kurbo 0.13.1",
@@ -2474,11 +2474,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-sketch"
+name = "bharat-sketch"
 version = "0.1.0"
 dependencies = [
- "craft-figma-rest",
- "craft-zip",
+ "bharat-figma-rest",
+ "bharat-zip",
  "kurbo 0.13.1",
  "serde_json",
  "thiserror 2.0.21",
@@ -2486,12 +2486,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-stencilcraft-document"
+name = "bharat-stencilcraft-document"
 version = "0.1.0"
 dependencies = [
- "craft-atomic",
- "craft-stencilcraft-format",
- "craft-svg",
+ "bharat-atomic",
+ "bharat-stencilcraft-format",
+ "bharat-svg",
  "kurbo 0.13.1",
  "serde",
  "serde_json",
@@ -2499,7 +2499,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-stencilcraft-format"
+name = "bharat-stencilcraft-format"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -2508,7 +2508,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-stream-codecs"
+name = "bharat-stream-codecs"
 version = "0.1.0"
 dependencies = [
  "fax",
@@ -2520,11 +2520,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-svg"
+name = "bharat-svg"
 version = "0.1.0"
 dependencies = [
- "craft-image-codecs",
- "craft-xml",
+ "bharat-image-codecs",
+ "bharat-xml",
  "flate2",
  "kurbo 0.13.1",
  "resvg 0.48.1",
@@ -2536,15 +2536,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-svg-paths"
+name = "bharat-svg-paths"
 version = "0.1.0"
 dependencies = [
- "craft-svg",
+ "bharat-svg",
  "kurbo 0.13.1",
 ]
 
 [[package]]
-name = "craft-text"
+name = "bharat-text"
 version = "0.1.0"
 dependencies = [
  "hypher",
@@ -2558,14 +2558,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-tga"
+name = "bharat-tga"
 version = "0.1.0"
 dependencies = [
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-tiff"
+name = "bharat-tiff"
 version = "0.1.0"
 dependencies = [
  "proptest",
@@ -2574,32 +2574,32 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-time"
+name = "bharat-time"
 version = "0.1.0"
 dependencies = [
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "craft-timeline"
-version = "0.1.0"
-dependencies = [
- "craft-time",
- "craft-xml",
  "proptest",
  "serde",
  "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-ui"
+name = "bharat-timeline"
 version = "0.1.0"
 dependencies = [
- "craft-fonts-build",
- "craft-i18n",
+ "bharat-time",
+ "bharat-xml",
+ "proptest",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "bharat-ui"
+version = "0.1.0"
+dependencies = [
+ "bharat-fonts-build",
+ "bharat-i18n",
  "eframe",
  "egui",
  "egui_extras",
@@ -2623,7 +2623,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-update"
+name = "bharat-update"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -2651,16 +2651,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-vcard"
+name = "bharat-vcard"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "craft-mime",
+ "bharat-mime",
  "proptest",
 ]
 
 [[package]]
-name = "craft-vectorcraft-format"
+name = "bharat-vectorcraft-format"
 version = "0.1.0"
 dependencies = [
  "flate2",
@@ -2670,25 +2670,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-vectordrawable"
+name = "bharat-vectordrawable"
 version = "0.1.0"
 dependencies = [
- "craft-xml",
+ "bharat-xml",
  "kurbo 0.13.1",
 ]
 
 [[package]]
-name = "craft-video"
+name = "bharat-video"
 version = "0.1.0"
 dependencies = [
- "craft-media",
- "craft-media-testkit",
+ "bharat-media",
+ "bharat-media-testkit",
  "rayon",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-web-api"
+name = "bharat-web-api"
 version = "0.1.0"
 dependencies = [
  "js-sys",
@@ -2699,7 +2699,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-web-host"
+name = "bharat-web-host"
 version = "0.1.0"
 dependencies = [
  "wasm-bindgen",
@@ -2708,20 +2708,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-webp"
+name = "bharat-webp"
 version = "0.1.0"
 dependencies = [
- "craft-video",
+ "bharat-video",
  "image",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-window"
+name = "bharat-window"
 version = "0.1.0"
 dependencies = [
- "craft-atomic",
- "craft-settings",
+ "bharat-atomic",
+ "bharat-settings",
  "egui",
  "objc2 0.6.5",
  "objc2-app-kit 0.3.2",
@@ -2732,19 +2732,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-winprint-gdi"
+name = "bharat-winprint-gdi"
 version = "0.1.0"
-source = "git+https://github.com/storytold/winprint.rs?rev=64e7afd4d1483512385012c340ecaaaf0f3beb7f#64e7afd4d1483512385012c340ecaaaf0f3beb7f"
+source = "git+https://github.com/obone32/bharat-winprint?rev=bbc2899849f4deb204a1fe7e8188843ea1059fd6#bbc2899849f4deb204a1fe7e8188843ea1059fd6"
 dependencies = [
  "windows-sys 0.61.2",
 ]
 
 [[package]]
-name = "craft-wordmodel"
+name = "bharat-wordmodel"
 version = "0.1.0"
 dependencies = [
  "base64 0.23.1",
- "craft-math",
+ "bharat-math",
  "log",
  "proptest",
  "serde",
@@ -2754,7 +2754,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-xcf"
+name = "bharat-xcf"
 version = "0.1.0"
 dependencies = [
  "flate2",
@@ -2762,7 +2762,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-xfl"
+name = "bharat-xfl"
 version = "0.1.0"
 dependencies = [
  "miniz_oxide 0.8.9",
@@ -2770,11 +2770,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-xls"
+name = "bharat-xls"
 version = "0.1.0"
 dependencies = [
- "craft-cfb",
- "craft-sheet",
+ "bharat-cfb",
+ "bharat-sheet",
  "md-5 0.10.6",
  "miniz_oxide 0.9.1",
  "sha1 0.10.7",
@@ -2782,18 +2782,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-xlsx"
+name = "bharat-xlsx"
 version = "0.1.0"
 dependencies = [
- "craft-drawingml",
- "craft-opc",
- "craft-sheet",
- "craft-xml",
+ "bharat-drawingml",
+ "bharat-opc",
+ "bharat-sheet",
+ "bharat-xml",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-xml"
+name = "bharat-xml"
 version = "0.1.0"
 dependencies = [
  "quick-xml 0.41.0",
@@ -2801,17 +2801,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-y4m"
+name = "bharat-y4m"
 version = "0.1.0"
 dependencies = [
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "craft-zip"
+name = "bharat-zip"
 version = "0.1.0"
 dependencies = [
- "craft-zip",
+ "bharat-zip",
  "flate2",
  "thiserror 2.0.21",
  "zip",
@@ -3377,7 +3377,7 @@ dependencies = [
 [[package]]
 name = "ecolor"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "emath",
@@ -3434,7 +3434,7 @@ dependencies = [
 [[package]]
 name = "eframe"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -3469,7 +3469,7 @@ dependencies = [
 [[package]]
 name = "egui"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "accesskit",
  "ahash",
@@ -3489,7 +3489,7 @@ dependencies = [
 [[package]]
 name = "egui-wgpu"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -3508,7 +3508,7 @@ dependencies = [
 [[package]]
 name = "egui-winit"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "block2 0.6.2",
  "bytemuck",
@@ -3528,7 +3528,7 @@ dependencies = [
 [[package]]
 name = "egui_extras"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "egui",
@@ -3542,7 +3542,7 @@ dependencies = [
 [[package]]
 name = "egui_glow"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "egui",
@@ -3555,7 +3555,7 @@ dependencies = [
 [[package]]
 name = "egui_kittest"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "dify",
  "eframe",
@@ -3575,7 +3575,7 @@ dependencies = [
 [[package]]
 name = "egui_system_font_provider"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "epaint",
  "fontique",
@@ -3640,7 +3640,7 @@ dependencies = [
 [[package]]
 name = "emath"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "serde",
@@ -3733,7 +3733,7 @@ dependencies = [
 [[package]]
 name = "epaint"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -3760,7 +3760,7 @@ dependencies = [
 [[package]]
 name = "epaint_default_fonts"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[package]]
 name = "equator"
@@ -10061,7 +10061,7 @@ source = "git+https://github.com/storytold/vectorcraft.git?rev=6b3a6b8788ebcb420
 dependencies = [
  "aes 0.8.4",
  "chrono",
- "craft-pdf 0.1.0 (git+https://github.com/storytold/craft-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0)",
+ "bharat-pdf 0.1.0 (git+https://github.com/obone32/bharat-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0)",
  "flate2",
  "getrandom 0.4.3",
  "image",
@@ -10940,7 +10940,7 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 [[package]]
 name = "winit"
 version = "0.30.13"
-source = "git+https://github.com/storytold/winit.git?rev=a517b3846ee8457d84ee4975110bfda6797c44dc#a517b3846ee8457d84ee4975110bfda6797c44dc"
+source = "git+https://github.com/obone32/bharat-winit?rev=a517b3846ee8457d84ee4975110bfda6797c44dc#a517b3846ee8457d84ee4975110bfda6797c44dc"
 dependencies = [
  "android-activity",
  "atomic-waker",
@@ -10992,7 +10992,7 @@ dependencies = [
 [[package]]
 name = "winprint"
 version = "0.2.1"
-source = "git+https://github.com/storytold/winprint.rs?rev=72951d7455ebcab569fbd9386c513d3d9f53fb02#72951d7455ebcab569fbd9386c513d3d9f53fb02"
+source = "git+https://github.com/obone32/bharat-winprint?rev=72951d7455ebcab569fbd9386c513d3d9f53fb02#72951d7455ebcab569fbd9386c513d3d9f53fb02"
 dependencies = [
  "flate2",
  "fmt-derive",
@@ -11540,9 +11540,9 @@ dependencies = [
 [[patch.unused]]
 name = "egui_demo_lib"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[patch.unused]]
 name = "egui_inspection"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/obone32/bharat-egui?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"

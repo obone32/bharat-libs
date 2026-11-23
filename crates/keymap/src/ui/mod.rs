@@ -44,7 +44,7 @@ pub enum Outcome {
     /// The user asked to import: the app opens a file of one of these formats and calls
     /// [`ShortcutsDialog::import_json`] or [`ShortcutsDialog::review_import`].
     Import { formats: Vec<&'static str> },
-    /// A set as craft-keymap JSON, for the app to write.
+    /// A set as bharat-keymap JSON, for the app to write.
     Export { name: String, json: String },
     /// A set in one of [`Options::export_formats`], for the app to write.
     ExportAs { format: &'static str, name: String, keymap: Box<Keymap> },
@@ -181,8 +181,8 @@ impl Options {
     }
 }
 
-/// The format id of craft-keymap's own JSON in [`Outcome::Import`].
-pub const JSON_FORMAT: &str = "craft-keymap";
+/// The format id of bharat-keymap's own JSON in [`Outcome::Import`].
+pub const JSON_FORMAT: &str = "bharat-keymap";
 
 /// The dialog for one frame: what it edits, borrowed, and how it looks.
 pub struct ShortcutsDialog<'a> {
@@ -235,7 +235,7 @@ impl<'a> ShortcutsDialog<'a> {
             let mut open = true;
             let mut out = None;
             egui::Window::new(title)
-                .id(egui::Id::unique("craft_keymap.shortcuts"))
+                .id(egui::Id::unique("bharat_keymap.shortcuts"))
                 .collapsible(false)
                 .resizable(true)
                 .open(&mut open)
@@ -276,7 +276,7 @@ impl<'a> ShortcutsDialog<'a> {
         });
     }
 
-    /// Reads a craft-keymap JSON set the app loaded after [`Outcome::Import`]. With sets it becomes
+    /// Reads a bharat-keymap JSON set the app loaded after [`Outcome::Import`]. With sets it becomes
     /// a new set, which is loaded; without, its overrides replace the keymap's as one undo step.
     /// Returns the set's name.
     pub fn import_json(self, state: &mut DialogState, text: &str) -> Result<String, ProfileError> {

@@ -1,7 +1,7 @@
 use super::{Deserialize, Serialize};
 
-/// An sRGB colour: craft-math's, which equations and text share.
-pub use craft_math::Rgb;
+/// An sRGB colour: bharat-math's, which equations and text share.
+pub use bharat_math::Rgb;
 
 /// A text colour: automatic (black on light backgrounds, white on dark) or a fixed colour.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Default)]

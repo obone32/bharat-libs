@@ -64,7 +64,7 @@ fn legacy_protection_hash_is_verified() {
 const KNOWN_LEGACY_SHA1: &str = "pEWelKoH6SVpvMmyPAJ8bHA/g/s=";
 
 fn zip_package() -> Vec<u8> {
-    craft_opc::zip_entries(&[("word/document.xml".to_string(), b"<w:document/>".to_vec())]).unwrap()
+    bharat_opc::zip_entries(&[("word/document.xml".to_string(), b"<w:document/>".to_vec())]).unwrap()
 }
 
 /// The error mapping: what the reader and the app tell the user.

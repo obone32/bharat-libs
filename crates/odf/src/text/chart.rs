@@ -9,7 +9,7 @@
 
 use std::collections::HashMap;
 
-use craft_wordmodel::chart::{ChartSeries, ChartSpec, ChartType, LegendPos, MAX_CELLS, MAX_POINTS, MAX_SERIES, MAX_TEXT};
+use bharat_wordmodel::chart::{ChartSeries, ChartSpec, ChartType, LegendPos, MAX_CELLS, MAX_POINTS, MAX_SERIES, MAX_TEXT};
 
 use super::xml::Attrs;
 use super::{Ev, events, get};

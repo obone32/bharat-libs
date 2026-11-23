@@ -2,7 +2,7 @@
 
 use std::cell::Cell;
 
-use craft_zip::Compression;
+use bharat_zip::Compression;
 
 use crate::canvas::MAX_CANVAS;
 use crate::images::MAX_IMAGE_HASH;
@@ -50,7 +50,7 @@ pub struct Archive<'b> {
     /// `meta.json`'s `file_name`.
     pub file_name: Option<String>,
     /// `images/<hash>` members (or nothing for a bare canvas).
-    zip: Option<craft_zip::Archive<'b>>,
+    zip: Option<bharat_zip::Archive<'b>>,
     max_image: u64,
     /// Bytes left for image reads. A reader that caches what it resolved, failures included,
     /// reads or counts each referenced member only once.
@@ -135,16 +135,16 @@ impl<'b> Archive<'b> {
 
 /// The archive, its declared entry count checked before it is indexed. The image budget is this
 /// crate's own ([`Limits`]), so the archive's total is not used.
-fn open_zip(bytes: &[u8]) -> Result<craft_zip::Archive<'_>, craft_zip::Error> {
-    craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes: u64::MAX })
+fn open_zip(bytes: &[u8]) -> Result<bharat_zip::Archive<'_>, bharat_zip::Error> {
+    bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes: u64::MAX })
 }
 
 /// Member `name` of `z`, refused when it is (or unpacks to) more than `limit` bytes.
-fn read_member(z: &mut craft_zip::Archive<'_>, name: &str, limit: u64) -> Result<Vec<u8>, Error> {
+fn read_member(z: &mut bharat_zip::Archive<'_>, name: &str, limit: u64) -> Result<Vec<u8>, Error> {
     match z.read(name, limit) {
         Ok(Some(data)) => Ok(data),
         Ok(None) => Err(corrupt(format!("{name}: not in the archive"))),
-        Err(craft_zip::Error::EntryTooLarge { .. }) => Err(corrupt(format!("{name} is too large"))),
+        Err(bharat_zip::Error::EntryTooLarge { .. }) => Err(corrupt(format!("{name} is too large"))),
         Err(e) => Err(corrupt(e.to_string())),
     }
 }
@@ -168,7 +168,7 @@ pub struct Package<'a> {
 /// (stored, as they are compressed already; `meta.json` deflated).
 pub fn write_archive(package: &Package) -> Result<Vec<u8>, Error> {
     let io = |e: &dyn std::fmt::Display| Error::Io(e.to_string());
-    let mut z = craft_zip::Writer::new();
+    let mut z = bharat_zip::Writer::new();
     let (stored, deflated) = (Compression::Stored, Compression::Level(3));
     {
         let mut put =

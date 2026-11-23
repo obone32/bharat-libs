@@ -279,7 +279,7 @@ impl El {
 /// Names are written as given: they are the caller's own constants, not checked.
 ///
 /// ```
-/// let mut w = craft_xml::Writer::document();
+/// let mut w = bharat_xml::Writer::document();
 /// w.tag("w:p").attr("w:id", 7).open();
 /// w.leaf("w:t", &[("xml:space", "preserve")], " a < b ");
 /// w.empty("w:br", &[]);

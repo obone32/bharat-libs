@@ -6,7 +6,7 @@
 //! Asian code page) escapes, which [`crate::parse`] decodes after the bytes.
 //!
 //! The Windows, ISO and East Asian code pages are decoded with `encoding_rs`; the DOS pages with
-//! `craft-codepage`'s tables (the upper halves of the IBM PC code pages; the lower halves are
+//! `bharat-codepage`'s tables (the upper halves of the IBM PC code pages; the lower halves are
 //! ASCII); Korean Johab (`ANSI_1361`) by its definition in KS X 1001 annex 3. Decoding never
 //! fails: a byte sequence that is invalid in the code page (a truncated double-byte character, an
 //! unassigned byte) becomes U+FFFD and the bytes after it decode normally, so line ends and the
@@ -17,7 +17,7 @@ use std::borrow::Cow;
 use encoding_rs::Encoding;
 
 use crate::Version;
-use craft_codepage::dos;
+use bharat_codepage::dos;
 
 /// How the bytes of a code page become text.
 #[derive(Clone, Copy, Debug)]

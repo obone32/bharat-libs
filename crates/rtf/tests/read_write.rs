@@ -2,7 +2,7 @@
 //! text import, DeckCraft's outline import and export, PdfCraft's export, and WordCraft's
 //! reader for code pages and `\u`.
 
-use craft_rtf::{
+use bharat_rtf::{
     Align, Block, COLUMN_BREAK, Cell, CharFmt, Document, LINE_BREAK, MAX_COLORS, MAX_FONT_NAME, MAX_FONTS, MAX_GROUPS, NotRtf, PAGE_BREAK, Para, Run,
     Table, VertAlign, read, write,
 };
@@ -414,12 +414,12 @@ fn the_written_file() {
 
 #[test]
 fn escaping() {
-    assert_eq!(craft_rtf::esc("a\\b{c}d\te\nf\u{B}g\u{2028}h"), "a\\\\b\\{c\\}d\\tab e\\line f\\line g\\line h");
-    assert_eq!(craft_rtf::esc("\u{A0}\u{AD}\u{2011}\u{C}\u{E}\u{1}\r"), "\\~\\-\\_\\page \\column ");
-    assert_eq!(craft_rtf::esc("é€😀"), "\\u233?\\u8364?\\u-10179?\\u-8704?");
-    assert_eq!(craft_rtf::esc_font("A;B\n{C}"), "A\\'3bB\\{C\\}");
+    assert_eq!(bharat_rtf::esc("a\\b{c}d\te\nf\u{B}g\u{2028}h"), "a\\\\b\\{c\\}d\\tab e\\line f\\line g\\line h");
+    assert_eq!(bharat_rtf::esc("\u{A0}\u{AD}\u{2011}\u{C}\u{E}\u{1}\r"), "\\~\\-\\_\\page \\column ");
+    assert_eq!(bharat_rtf::esc("é€😀"), "\\u233?\\u8364?\\u-10179?\\u-8704?");
+    assert_eq!(bharat_rtf::esc_font("A;B\n{C}"), "A\\'3bB\\{C\\}");
     let mut s = String::from("x");
-    craft_rtf::push_esc(&mut s, "{");
+    bharat_rtf::push_esc(&mut s, "{");
     assert_eq!(s, "x\\{");
 }
 

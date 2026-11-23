@@ -1,4 +1,4 @@
-# craft-midi
+# bharat-midi
 
 MIDI file formats. Bytes in, a neutral model out, and back. No file access: callers pass bytes,
 so the crate builds for wasm32.

@@ -1,4 +1,4 @@
-use craft_midi::{CtrlEvent, CtrlKind, MAX_EVENTS, MAX_TRACKS, MidiError, Note, Sequence, Smf, SmfTrack, read_smf, write_smf};
+use bharat_midi::{CtrlEvent, CtrlKind, MAX_EVENTS, MAX_TRACKS, MidiError, Note, Sequence, Smf, SmfTrack, read_smf, write_smf};
 use proptest::prelude::*;
 
 fn vlq(mut v: u32) -> Vec<u8> {

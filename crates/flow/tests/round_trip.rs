@@ -1,8 +1,8 @@
 //! A flow made into a document and read back keeps what the text formats express: kinds,
 //! lists, alignment, character formatting, links, tables, pictures and the metadata.
 
-use craft_flow::{Cell, FBlock, FTable, Flow, Fmt, Inline, Kind, ListInfo, Meta, Para, from_doc, make_img, to_doc};
-use craft_wordmodel::Align;
+use bharat_flow::{Cell, FBlock, FTable, Flow, Fmt, Inline, Kind, ListInfo, Meta, Para, from_doc, make_img, to_doc};
+use bharat_wordmodel::Align;
 
 /// A 1×1 PNG.
 const PNG: &[u8] = &[
@@ -91,9 +91,9 @@ fn a_flow_survives_a_document() {
 
 #[test]
 fn pictures_are_sniffed_and_sized_from_their_headers() {
-    assert_eq!(craft_flow::sniff_image(PNG), Some("png"));
-    assert_eq!(craft_flow::image_px(PNG), Some((1, 1)));
-    assert_eq!(craft_flow::sniff_image(b"not a picture"), None);
+    assert_eq!(bharat_flow::sniff_image(PNG), Some("png"));
+    assert_eq!(bharat_flow::image_px(PNG), Some((1, 1)));
+    assert_eq!(bharat_flow::sniff_image(b"not a picture"), None);
     assert!(make_img(b"not a picture".to_vec(), None, None, "").is_none());
     // A picture wider than the column is shrunk to it, keeping its proportions.
     let wide = make_img(PNG.to_vec(), Some(1000.0), Some(500.0), "").unwrap();

@@ -40,12 +40,12 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-web-host
+          key: bharat-web-host
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo fmt -p craft-web-host --check
-      - run: cargo clippy -p craft-web-host --all-targets --locked -- -D warnings
-      - run: cargo clippy -p craft-web-host --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
-      - run: cargo test -p craft-web-host --locked
+      - run: cargo fmt -p bharat-web-host --check
+      - run: cargo clippy -p bharat-web-host --all-targets --locked -- -D warnings
+      - run: cargo clippy -p bharat-web-host --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
+      - run: cargo test -p bharat-web-host --locked
       - name: Read the wasm-bindgen version from Cargo.lock
         id: wasm-bindgen
         shell: bash
@@ -59,4 +59,4 @@ jobs:
         with:
           tool: wasm-bindgen@${{ steps.wasm-bindgen.outputs.version }}
           fallback: cargo-install
-      - run: cargo test -p craft-web-host --locked --target wasm32-unknown-unknown
+      - run: cargo test -p bharat-web-host --locked --target wasm32-unknown-unknown

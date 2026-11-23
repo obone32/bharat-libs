@@ -7,7 +7,7 @@
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
-use craft_audio::mp3::{Config, DELAY, Encoder, StereoMode};
+use bharat_audio::mp3::{Config, DELAY, Encoder, StereoMode};
 
 fn fixtures() -> PathBuf {
     crate::testkit::fixtures_dir("mp3enc")

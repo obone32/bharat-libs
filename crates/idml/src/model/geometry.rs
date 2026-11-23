@@ -1,7 +1,7 @@
 //! `PathGeometry`: the outline of a page item, as subpaths of anchor points with their
 //! direction (Bézier control) points, in the item's inner coordinates.
 
-use craft_xml::{El, Local};
+use bharat_xml::{El, Local};
 
 use crate::value::{nums, point_str};
 

@@ -3,13 +3,13 @@
 // The docs link items of every feature; built with fewer features, those links have no target.
 // CI and docs.rs build the docs with all features, where every link must resolve.
 #![cfg_attr(not(all(feature = "decode", feature = "encode", feature = "peaks")), allow(rustdoc::broken_intra_doc_links))]
-//! Audio file I/O and codecs for the Craft apps. Input and output are byte slices or a
-//! [`craft_media::ByteSource`] (no filesystem access of its own); builds for
+//! Audio file I/O and codecs for the Bharat apps. Input and output are byte slices or a
+//! [`bharat_media::ByteSource`] (no filesystem access of its own); builds for
 //! `wasm32-unknown-unknown`.
 //!
 //! - [`decode`], [`probe`], [`Decoder`] (streaming, seekable), [`tracks`], [`detect_container`]
 //!   (feature `decode`): WAV and AIFF are read natively; AAC, ALAC, Opus, AC-3/E-AC-3,
-//!   MP1/MP2/MP3 and PCM in MP4/MOV, Matroska/WebM, Ogg or raw streams go through craft-media's
+//!   MP1/MP2/MP3 and PCM in MP4/MOV, Matroska/WebM, Ogg or raw streams go through bharat-media's
 //!   demuxers and [`TrackDecoder`]; everything else (FLAC, Vorbis, CAF, ADPCM, A-law, µ-law) through
 //!   `symphonia`, which is to be replaced by native decoders. Feature `decode-native` is the
 //!   same without symphonia.
@@ -62,7 +62,7 @@ mod write;
 /// at the end. [`FileEncoder`] and [`encode`] write whole `.flac` files from `f32` instead.
 ///
 /// ```
-/// use craft_audio::flac::{Encoder, EncoderConfig, STREAMINFO_OFFSET};
+/// use bharat_audio::flac::{Encoder, EncoderConfig, STREAMINFO_OFFSET};
 ///
 /// let left: Vec<i32> = (0..48_000).map(|i| ((i as f64 * 0.05).sin() * 20_000.0) as i32).collect();
 /// let right = left.clone();
@@ -74,7 +74,7 @@ mod write;
 /// file[at..at + 34].copy_from_slice(&enc.streaminfo());
 /// assert_eq!(&file[..4], b"fLaC");
 /// assert!(file.len() < 48_000 * 2 * 2 / 2); // well under half of 16-bit PCM
-/// # Ok::<(), craft_audio::flac::Error>(())
+/// # Ok::<(), bharat_audio::flac::Error>(())
 /// ```
 #[cfg(feature = "flac-encode")]
 pub mod flac {
@@ -82,10 +82,10 @@ pub mod flac {
 }
 
 pub use buffer::AudioBuffer;
-/// The craft-media this crate is built with, for its containers: using it rather than a separate
+/// The bharat-media this crate is built with, for its containers: using it rather than a separate
 /// dependency keeps the types the two crates share identical.
-pub use craft_media;
-pub use craft_media::{ByteSource, CodecId, CodecParams, Container, PcmFormat, ReadSeekSource};
+pub use bharat_media;
+pub use bharat_media::{ByteSource, CodecId, CodecParams, Container, PcmFormat, ReadSeekSource};
 pub use layout::{ChannelLayout, Speaker};
 #[cfg(feature = "decode-native")]
 pub use read::SharedSource;
@@ -407,7 +407,7 @@ pub enum BitDepth {
 /// `#[non_exhaustive]`: build it with [`EncodeOptions::new`] and the `with_*` methods.
 ///
 /// ```
-/// use craft_audio::{BitDepth, EncodeFormat, EncodeOptions};
+/// use bharat_audio::{BitDepth, EncodeFormat, EncodeOptions};
 ///
 /// let opts = EncodeOptions::new(EncodeFormat::Flac).with_bit_depth(BitDepth::Int16).with_dither(true);
 /// assert_eq!(opts.format, EncodeFormat::Flac);

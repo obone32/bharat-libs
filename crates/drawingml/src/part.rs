@@ -1,7 +1,7 @@
 //! What a reader or writer needs from the package around the part it works on. The caller
 //! implements these over its package layer, so nothing here opens or writes a package.
 
-use craft_xml::El;
+use bharat_xml::El;
 
 use crate::{MediaId, SlideId};
 
@@ -151,13 +151,13 @@ mod tests {
         let Some(Fill::Picture(pf)) = crate::read::fill_el(&mut part, &el) else { panic!("no picture fill") };
         assert_eq!(pf.media, MediaId(7));
         assert_eq!(part.asked, [("ppt/media/image1.png".to_string(), false)]);
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         crate::write::blip_fill(&mut w, &mut part, "a:blipFill", &pf);
         assert!(w.finish().contains(r#"<a:blip r:embed="rId1""#));
         assert_eq!(part.written, [("image".to_string(), "../media/image1.png".to_string(), false)]);
         // A missing picture gets the stand-in.
         let mut part = Part::new();
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         crate::write::blip_fill(&mut w, &mut part, "a:blipFill", &PictureFill { media: MediaId(99), ..pf });
         assert_eq!(part.written[0].1, "../media/missing.png");
     }
@@ -174,7 +174,7 @@ mod tests {
         assert_eq!(s.action, Action::Slide { slide: SlideId(2) });
         assert!(crate::read::hyperlink(&mut part, &none).is_none());
         assert!(crate::read::hyperlink(&mut NoSource, &slide).is_none());
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         crate::write::hyperlink(&mut w, &mut part, "a:hlinkClick", &Hyperlink { action: Action::Slide { slide: SlideId(2) }, ..h });
         assert_eq!(w.finish(), r#"<a:hlinkClick r:id="rId1" action="ppaction://hlinksldjump"/>"#);
     }

@@ -38,31 +38,31 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-audio-lint
+          key: bharat-audio-lint
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo fmt -p craft-audio --check
+      - run: cargo fmt -p bharat-audio --check
       # Each feature on its own, so code that needs another feature fails here.
       - name: Clippy, each feature alone
         run: |
           for f in "" decode decode-native symphonia encode lossless-encode pcm-encode flac-encode peaks aac-decode aac-encode "aac-encode,rayon" opus-decode opus-encode ac3-decode mpa-decode serde; do
             echo "::group::features: ${f:-none}"
-            cargo clippy -p craft-audio --all-targets --locked --no-default-features ${f:+--features "$f"} -- -D warnings
+            cargo clippy -p bharat-audio --all-targets --locked --no-default-features ${f:+--features "$f"} -- -D warnings
             echo "::endgroup::"
           done
-      - run: cargo clippy -p craft-audio --all-targets --locked --all-features -- -D warnings
+      - run: cargo clippy -p bharat-audio --all-targets --locked --all-features -- -D warnings
       # missing_docs is a warning in the crate; -D warnings makes it (and broken links) fail here.
-      - run: cargo doc -p craft-audio --all-features --no-deps --locked
+      - run: cargo doc -p bharat-audio --all-features --no-deps --locked
         env:
           RUSTDOCFLAGS: "-D warnings"
       # Partial feature sets must document too (their links to other features are allowed to dangle).
-      - run: cargo doc -p craft-audio --no-default-features --features decode-native --no-deps --locked
+      - run: cargo doc -p bharat-audio --no-default-features --features decode-native --no-deps --locked
         env:
           RUSTDOCFLAGS: "-D warnings"
-      - run: cargo doc -p craft-audio --no-default-features --features lossless-encode --no-deps --locked
+      - run: cargo doc -p bharat-audio --no-default-features --features lossless-encode --no-deps --locked
         env:
           RUSTDOCFLAGS: "-D warnings"
-      - run: cargo check -p craft-audio --all-features --locked --target wasm32-unknown-unknown
-      - run: cargo check -p craft-audio --no-default-features --features lossless-encode --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-audio --all-features --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-audio --no-default-features --features lossless-encode --locked --target wasm32-unknown-unknown
   msrv:
     timeout-minutes: 10
     name: Audio on the minimum Rust version
@@ -79,9 +79,9 @@ jobs:
       - run: rustup toolchain install 1.95.0 --profile minimal
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-audio-msrv
+          key: bharat-audio-msrv
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo +1.95.0 check -p craft-audio -p craft-media --all-features --locked
+      - run: cargo +1.95.0 check -p bharat-audio -p bharat-media --all-features --locked
   features:
     timeout-minutes: 10
     name: Audio tests without symphonia and lossless-encode only
@@ -99,12 +99,12 @@ jobs:
           toolchain: stable
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-audio-features
+          key: bharat-audio-features
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo test -p craft-audio --no-default-features --features lossless-encode --locked
-      - run: cargo test -p craft-audio --no-default-features --features pcm-encode --locked --lib
-      - run: cargo test -p craft-audio --no-default-features --features flac-encode --locked --lib
-      - run: cargo test -p craft-audio --no-default-features --features decode-native --locked
+      - run: cargo test -p bharat-audio --no-default-features --features lossless-encode --locked
+      - run: cargo test -p bharat-audio --no-default-features --features pcm-encode --locked --lib
+      - run: cargo test -p bharat-audio --no-default-features --features flac-encode --locked --lib
+      - run: cargo test -p bharat-audio --no-default-features --features decode-native --locked
   test:
     timeout-minutes: 20
     name: Audio tests with ffmpeg oracles and the Opus conformance vectors
@@ -124,7 +124,7 @@ jobs:
           toolchain: stable
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-audio-test
+          key: bharat-audio-test
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -151,13 +151,13 @@ jobs:
             scripts/fetch-opus-vectors.sh "$RUNNER_TEMP/media-fixtures/opus/vectors" > "$RUNNER_TEMP/vectors.log" 2>&1 || exit 2
           } &
           fetch=$!
-          cargo test -p craft-audio --all-features --locked --no-run
+          cargo test -p bharat-audio --all-features --locked --no-run
           wait "$fetch" || case $? in
             1) cat "$RUNNER_TEMP/apt.log"; exit 1 ;;
             *) cat "$RUNNER_TEMP/vectors.log"; exit 1 ;;
           esac
           ffmpeg -hide_banner -version | sed -n 1p
-      - run: cargo test -p craft-audio --all-features --locked
+      - run: cargo test -p bharat-audio --all-features --locked
         env:
-          CRAFT_MEDIA_REQUIRE_ORACLES: "1"
-          CRAFT_MEDIA_FIXTURES_DIR: ${{ runner.temp }}/media-fixtures
+          BHARAT_MEDIA_REQUIRE_ORACLES: "1"
+          BHARAT_MEDIA_FIXTURES_DIR: ${{ runner.temp }}/media-fixtures

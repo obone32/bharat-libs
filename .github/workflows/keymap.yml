@@ -24,7 +24,7 @@ jobs:
     name: Keymap (Linux)
     runs-on: ubuntu-latest
     env:
-      CRAFT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/craft-fonts
+      BHARAT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/bharat-fonts
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
@@ -36,9 +36,9 @@ jobs:
       - name: Checkout test fonts
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: storytold/craft-fonts
+          repository: obone32/bharat-fonts
           ref: b076417b5880bd4154bd22f00695b1d28c6bea83
-          path: .test-inputs/craft-fonts
+          path: .test-inputs/bharat-fonts
           persist-credentials: false
       - uses: step-security/dtolnay-rust-toolchain@8dd607977d06adf4ed49b190381e74c17a9dd25f # v1.0.0
         with:
@@ -46,18 +46,18 @@ jobs:
           components: rustfmt, clippy
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-keymap-linux
+          key: bharat-keymap-linux
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo fmt -p craft-keymap --check
-      - run: cargo clippy -p craft-keymap --all-targets --no-default-features --locked -- -D warnings
+      - run: cargo fmt -p bharat-keymap --check
+      - run: cargo clippy -p bharat-keymap --all-targets --no-default-features --locked -- -D warnings
       # `snapshot` covers `ui` and `egui` and compiles the dialog screenshots, which need a GPU
       # to run, so the test steps leave them out.
-      - run: cargo clippy -p craft-keymap --all-targets --features snapshot --locked -- -D warnings
+      - run: cargo clippy -p bharat-keymap --all-targets --features snapshot --locked -- -D warnings
       # Doctests run once, in the `ui` step.
       - name: Test core
-        run: cargo test -p craft-keymap --no-default-features --lib --tests --locked
+        run: cargo test -p bharat-keymap --no-default-features --lib --tests --locked
       - name: Test egui dispatch and the shortcuts dialog
-        run: cargo test -p craft-keymap --features ui --locked
+        run: cargo test -p bharat-keymap --features ui --locked
   native:
     timeout-minutes: 15
     name: Keymap (${{ matrix.os }})
@@ -68,7 +68,7 @@ jobs:
         os: ${{ github.event_name == 'workflow_dispatch' && fromJSON('["macos-latest","windows-latest"]') || fromJSON('["windows-latest"]') }}
     runs-on: ${{ matrix.os }}
     env:
-      CRAFT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/craft-fonts
+      BHARAT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/bharat-fonts
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
@@ -80,18 +80,18 @@ jobs:
       - name: Checkout test fonts
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: storytold/craft-fonts
+          repository: obone32/bharat-fonts
           ref: b076417b5880bd4154bd22f00695b1d28c6bea83
-          path: .test-inputs/craft-fonts
+          path: .test-inputs/bharat-fonts
           persist-credentials: false
       - uses: step-security/dtolnay-rust-toolchain@8dd607977d06adf4ed49b190381e74c17a9dd25f # v1.0.0
         with:
           toolchain: stable
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-keymap-${{ matrix.os }}
+          key: bharat-keymap-${{ matrix.os }}
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo test -p craft-keymap --features ui --locked
+      - run: cargo test -p bharat-keymap --features ui --locked
   wasm:
     timeout-minutes: 10
     name: Keymap WASM
@@ -110,6 +110,6 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: step-security/rust-cache@8871c8ba063416da7c32246932ea6ae08700453e # v2.9.2
         with:
-          key: craft-keymap-wasm
+          key: bharat-keymap-wasm
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo check -p craft-keymap --features ui --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-keymap --features ui --locked --target wasm32-unknown-unknown

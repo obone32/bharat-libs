@@ -6,7 +6,7 @@
 use std::sync::Arc;
 
 use crate::testkit::Pdf;
-use craft_pdf::cos::{Algorithm, Document, NewEncryption, Object, PdfString, SaveOptions, write_full, write_incremental};
+use bharat_pdf::cos::{Algorithm, Document, NewEncryption, Object, PdfString, SaveOptions, write_full, write_incremental};
 
 const ID_HEX: &str = "/ID [<00112233445566778899AABBCCDDEEFF> <00112233445566778899AABBCCDDEEFF>]";
 const ID_BYTES: [u8; 16] = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF];
@@ -235,7 +235,7 @@ fn the_identifier_depends_on_the_whole_rewritten_file() {
 }
 
 /// Where [`stand_in_for_a_fresh_process`] writes its rewrite.
-const ID_PROBE: &str = "CRAFT_PDF_TEST_ID_PROBE";
+const ID_PROBE: &str = "BHARAT_PDF_TEST_ID_PROBE";
 
 /// The child half of [`separate_fresh_processes_get_different_identifiers`]: it runs alone, in its
 /// own process, and writes a default-path rewrite of the standard fixture to the file the parent
@@ -257,7 +257,7 @@ fn separate_fresh_processes_get_different_identifiers() {
     // browser's `crypto.getRandomValues` stands in for this seeding, and this test cannot see it.
     let exe = std::env::current_exe().unwrap();
     let probe = |name: &str| {
-        let path = std::env::temp_dir().join(format!("craft-pdf-id-probe-{}-{name}.pdf", std::process::id()));
+        let path = std::env::temp_dir().join(format!("bharat-pdf-id-probe-{}-{name}.pdf", std::process::id()));
         let out = std::process::Command::new(&exe)
             // The test binary holds every `cos` test module, so the child test is named by its path.
             .args(["--exact", "file_identifier::stand_in_for_a_fresh_process", "--nocapture", "--"])

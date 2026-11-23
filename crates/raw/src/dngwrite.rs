@@ -3,9 +3,9 @@
 //! image, so the develop pipeline builds those on top of this writer. The raw image is stored in IFD0 (allowed by DNG 1.7 §"File Structure").
 
 use crate::{Matrix3, RawData, RawError, RawImage, Result, ljpeg, opcodes};
-use craft_tiff::tags::{self as t, compression, photometric};
-use craft_tiff::writer::{rational, srational};
-use craft_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
+use bharat_tiff::tags::{self as t, compression, photometric};
+use bharat_tiff::writer::{rational, srational};
+use bharat_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
 use rayon::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -101,7 +101,7 @@ pub struct DngWriteOptions {
 
 impl Default for DngWriteOptions {
     fn default() -> Self {
-        Self { compression: DngCompression::Lj92 { tile: 256 }, order: ByteOrder::Little, xmp: None, software: "craft-raw".into() }
+        Self { compression: DngCompression::Lj92 { tile: 256 }, order: ByteOrder::Little, xmp: None, software: "bharat-raw".into() }
     }
 }
 

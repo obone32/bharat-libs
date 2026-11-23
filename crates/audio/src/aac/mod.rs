@@ -18,7 +18,7 @@
 //!
 //! ```
 //! # #[cfg(all(feature = "aac-encode", feature = "aac-decode"))] {
-//! use craft_audio::aac::{Decoder, Encoder, EncoderConfig};
+//! use bharat_audio::aac::{Decoder, Encoder, EncoderConfig};
 //!
 //! let mut enc = Encoder::new(EncoderConfig::cbr(48_000, 2, 128_000)).unwrap();
 //! let left: Vec<f32> = (0..4800).map(|i| (i as f32 * 0.05).sin() * 0.5).collect();
@@ -101,8 +101,8 @@ pub enum Error {
     Eof,
 }
 
-impl From<craft_media::bitstream::BitError> for Error {
-    fn from(_: craft_media::bitstream::BitError) -> Self {
+impl From<bharat_media::bitstream::BitError> for Error {
+    fn from(_: bharat_media::bitstream::BitError) -> Self {
         Error::Eof
     }
 }
@@ -112,7 +112,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 /// Channel order for AAC surround (ISO/IEC 14496-3 Table 1.19, the decoder's element order: C, L R,
 /// surrounds, LFE): output channel → decoded channel, giving the WAV/SMPTE order (L R C LFE Ls Rs)
-/// the rest of craft-audio uses. Only the unambiguous channel configurations 3–6, 11 (6.1: … LFE,
+/// the rest of bharat-audio uses. Only the unambiguous channel configurations 3–6, 11 (6.1: … LFE,
 /// back centre, sides) and 12 (7.1: … LFE, backs, sides); 1, 2, 7 and PCE layouts keep the decoded
 /// order. From FilmCraft's `filmcraft-codecs`.
 pub fn wav_order(channel_config: u8) -> Option<&'static [usize]> {
@@ -154,7 +154,7 @@ pub fn speaker_config(asc: &AudioSpecificConfig) -> u8 {
 ///
 /// ```
 /// let wav: Vec<Vec<f32>> = vec![vec![0.0; 1024]; 6]; // L R C LFE Ls Rs
-/// let order = craft_audio::aac::aac_order(6).unwrap();
+/// let order = bharat_audio::aac::aac_order(6).unwrap();
 /// let input: Vec<&[f32]> = order.iter().map(|&c| wav[c].as_slice()).collect(); // C L R Ls Rs LFE
 /// assert_eq!(order, &[2, 0, 1, 4, 5, 3]);
 /// ```

@@ -9,7 +9,7 @@
 
 use std::collections::HashMap;
 
-use craft_xml::{Doctype, El, Error as XmlError, Limits, Options, UnknownEntity};
+use bharat_xml::{Doctype, El, Error as XmlError, Limits, Options, UnknownEntity};
 
 /// Maximum source document size accepted by the parser.
 pub const MAX_BYTES: usize = 16 * 1024 * 1024;
@@ -195,7 +195,7 @@ impl Document {
             doctype: Doctype::Reject,
             unknown_entity: UnknownEntity::Error,
             drop_blank_text: true,
-            names: craft_xml::Names::Local,
+            names: bharat_xml::Names::Local,
             ns_decls: false,
             ..Options::default()
         }
@@ -228,7 +228,7 @@ impl Document {
 
     /// Serializes the document as XML, preserving element and attribute order.
     pub fn to_xml(&self) -> String {
-        format!("{}{}", craft_xml::DECL, self.root.to_xml_pretty("  "))
+        format!("{}{}", bharat_xml::DECL, self.root.to_xml_pretty("  "))
     }
 
     /// Nodegraphs in document order.
@@ -498,7 +498,7 @@ pub fn write_open_pbr(name: &str, textures: &[Texture], physical_size_cm: Option
         );
     }
     root.push(material);
-    format!("{}{}", craft_xml::DECL, root.to_xml_pretty("  "))
+    format!("{}{}", bharat_xml::DECL, root.to_xml_pretty("  "))
 }
 
 fn image_node_name(input: &str) -> String {

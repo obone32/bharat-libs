@@ -4,7 +4,7 @@
 
 use std::sync::Arc;
 
-use craft_cms::{Builtin, ColorSpace, Intent, Profile, Transform, TransformOptions, cached};
+use bharat_cms::{Builtin, ColorSpace, Intent, Profile, Transform, TransformOptions, cached};
 
 use crate::cms::encode_lab;
 use crate::composite::{cmyk_ramp, lab_ramp, on};
@@ -22,7 +22,7 @@ pub enum OutputError {
     PressNotCmyk,
     #[error("the output profile is not gray, RGB or CMYK")]
     UnsupportedOutput,
-    #[error("craft-cms can't convert into the output profile: {0}")]
+    #[error("bharat-cms can't convert into the output profile: {0}")]
     Transform(String),
 }
 
@@ -37,7 +37,7 @@ pub struct Output {
 
 impl Output {
     /// Press CMYK into `output` (gray, RGB or CMYK) at `intent`, with black point compensation
-    /// when `bpc` (craft-cms ignores it for absolute colorimetric). Relative colorimetric with
+    /// when `bpc` (bharat-cms ignores it for absolute colorimetric). Relative colorimetric with
     /// `bpc` maps the press's paper and black onto the output's; absolute colorimetric keeps
     /// the press paper's tint.
     pub fn new(press: &Profile, output: &Profile, intent: Intent, bpc: bool) -> Result<Self, OutputError> {
@@ -51,7 +51,7 @@ impl Output {
         };
         // The fast path's tables: a composite converts every pixel of a page.
         let opts = TransformOptions { intent, bpc, precise_float: false };
-        let failed = |e: craft_cms::CmsError| OutputError::Transform(format!("{e:?}"));
+        let failed = |e: bharat_cms::CmsError| OutputError::Transform(format!("{e:?}"));
         let process = cached(press, output, opts).map_err(failed)?;
         let from_lab = cached(Builtin::LabD50.profile(), output, opts).map_err(failed)?;
         Ok(Self { process, from_lab, channels: output.channels(), subtractive })
@@ -99,7 +99,7 @@ impl Plates {
     /// Each spot plate then combines over them with the spot's appearance at its tint, from its
     /// alternate, converted into the output; spots whose alternate can't convert are left out.
     /// The overprint decisions are the plates'. Empty when the buffer overflows, can't be
-    /// allocated, or craft-cms can't convert the process inks.
+    /// allocated, or bharat-cms can't convert the process inks.
     pub fn composite_to(&self, enabled: &[bool], output: &Output) -> Vec<u8> {
         let n = output.channels;
         let Some(mut out) = self.pixels().and_then(|p| p.checked_mul(n)).and_then(|len| filled(len, 0_u8)) else {
@@ -140,14 +140,14 @@ impl Plates {
 
 #[cfg(test)]
 mod tests {
-    use craft_cms::{Builtin, Intent, builtin};
+    use bharat_cms::{Builtin, Intent, builtin};
 
     use super::{Output, OutputError};
     use crate::cms::srgb8_to_lab;
     use crate::coverage::tests::synthetic;
     use crate::{Alternate, CmsConversion, Conversion, Ink, InkSet, Plates, Spot};
 
-    fn fogra39() -> &'static craft_cms::Profile {
+    fn fogra39() -> &'static bharat_cms::Profile {
         Builtin::CoatedFogra39.profile()
     }
 

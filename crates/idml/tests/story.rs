@@ -1,8 +1,8 @@
 //! The story model.
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_idml::model::{Ace, ContentPart, ItemKind, Story, TextNode, stories};
-use craft_idml::{parse_part, part_root, part_xml};
+use bharat_idml::model::{Ace, ContentPart, ItemKind, Story, TextNode, stories};
+use bharat_idml::{parse_part, part_root, part_xml};
 
 /// A story as InDesign writes one: two paragraphs; overrides; a page number and a tab in the
 /// content; a hyperlink and a tracked change around text; a footnote; a table; an anchored

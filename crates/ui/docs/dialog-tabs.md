@@ -2,7 +2,7 @@
 
 `Tab::show_dialog_at` adds the page-joining appearance proposed in
 [WordCraft #4029](https://github.com/storytold/wordcraft/pull/4029), using the library's existing
-accessible tab interaction. It suits settings and property dialogs across Craft apps.
+accessible tab interaction. It suits settings and property dialogs across Bharat apps.
 
 Provide a `DialogTabStyle` with the application's colors, border, font and top corner radius.
 Allocate rectangles using the application's layout and optionally `tabs::fit`; draw a baseline
@@ -12,7 +12,7 @@ half its width below the interaction rectangle. Other sides and text retain thei
 The page should start at the tabs' bottom edge and use the same fill.
 
 ```rust
-let response = craft_ui::tabs::Tab::new(stable_id, localized_label, selected)
+let response = bharat_ui::tabs::Tab::new(stable_id, localized_label, selected)
     .show_dialog_at(ui, rect, &style);
 if response.clicked() {
     // Update the application's selected page.

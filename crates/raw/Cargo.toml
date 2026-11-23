@@ -1,5 +1,5 @@
 [package]
-name = "craft-raw"
+name = "bharat-raw"
 description = "Camera raw files, the file-format layer: container parsing, decompression and the sensor data out as a neutral raw image with its levels, crop, orientation, colour tags and embedded previews. DNG (read and write), Hasselblad 3FR/FFF, MRW, ERF, MEF, Kodak DCS, Pentax PEF, Samsung SRW, Canon CR2, Nikon NEF/NRW, Panasonic RW2, Fujifilm RAF, Olympus ORF (uncompressed), Sony ARW, Canon CR3 and Canon CRW so far."
 version.workspace = true
 edition.workspace = true
@@ -42,16 +42,16 @@ raf = []
 orf = []
 ## Sony ARW, SR2 and SRF: uncompressed, ARW2 (cRAW), lossless JPEG tiles, ARW6 (Compressed RAW 2, RDD 34 LLVC), the encrypted SR2SubIFD, in-file lens corrections.
 arw = []
-## Canon CR3: CRX lossless Bayer and C-RAW, through craft-metadata's CR3 container parser.
-cr3 = ["dep:craft-metadata"]
-## Canon CRW (CIFF) through craft-crw, the one CRW decoder.
-crw = ["dep:craft-crw", "dep:chrono"]
+## Canon CR3: CRX lossless Bayer and C-RAW, through bharat-metadata's CR3 container parser.
+cr3 = ["dep:bharat-metadata"]
+## Canon CRW (CIFF) through bharat-crw, the one CRW decoder.
+crw = ["dep:bharat-crw", "dep:chrono"]
 
 [dependencies]
-craft-tiff = { workspace = true }
-craft-crw = { workspace = true, optional = true }
+bharat-tiff = { workspace = true }
+bharat-crw = { workspace = true, optional = true }
 # The CR3 container (ISO base media boxes, CMT1-4, tracks, CMP1 / CDI1): the one CR3 parser.
-craft-metadata = { workspace = true, optional = true }
+bharat-metadata = { workspace = true, optional = true }
 serde = { workspace = true }
 thiserror = { workspace = true }
 rayon = { workspace = true }
@@ -59,7 +59,7 @@ rayon = { workspace = true }
 chrono = { workspace = true, optional = true }
 # Deflate DNG tiles (Adobe compression 8).
 miniz_oxide = { version = "0.9", optional = true }
-# Lossy DNG tiles (compression 34892): 8-bit baseline JPEG. craft-jpeg covers the JPEG processes baseline
+# Lossy DNG tiles (compression 34892): 8-bit baseline JPEG. bharat-jpeg covers the JPEG processes baseline
 # decoders do not, and sends baseline frames to one; this is that one.
 zune-jpeg = { version = "0.5", default-features = false, features = ["std", "x86", "neon"], optional = true }
 zune-core = { version = "0.5", default-features = false, features = ["std"], optional = true }

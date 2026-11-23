@@ -6,7 +6,7 @@ mod common;
 use std::sync::Arc;
 
 use common::{add_slide, export, import, part, rewrite};
-use craft_pptx::{Comment, Presentation};
+use bharat_pptx::{Comment, Presentation};
 
 fn deck() -> Presentation {
     let mut p = common::deck();
@@ -200,7 +200,7 @@ fn modern_only_package_imports() {
 #[test]
 fn every_written_xml_part_binds_its_prefixes() {
     let bytes = export(&deck());
-    let pkg = craft_opc::Package::open(&bytes, &craft_pptx::LIMITS).unwrap();
+    let pkg = bharat_opc::Package::open(&bytes, &bharat_pptx::LIMITS).unwrap();
     let mut modern = 0;
     for name in pkg.names().filter(|n| n.ends_with(".xml") || n.ends_with(".rels")) {
         modern += usize::from(name.contains("modernComment"));

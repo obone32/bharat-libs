@@ -4,7 +4,7 @@
 mod common;
 
 use common::{at, bof, compound, eof, read_xls, rec, u16s, v};
-use craft_xls::{BorderLine, BorderStyle, CellFormat, Color, DEFAULT_PALETTE, Fill, HAlign, Pattern, Script, Underline, VAlign, Value, Workbook};
+use bharat_xls::{BorderLine, BorderStyle, CellFormat, Color, DEFAULT_PALETTE, Fill, HAlign, Pattern, Script, Underline, VAlign, Value, Workbook};
 
 /// The format of an unformatted cell: the Normal font, everything else at its default.
 fn normal(wb: &Workbook) -> CellFormat {

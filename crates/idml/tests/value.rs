@@ -1,7 +1,7 @@
 //! Attribute value codecs.
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_idml::value::*;
+use bharat_idml::value::*;
 
 #[test]
 fn numbers() {

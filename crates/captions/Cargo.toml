@@ -1,5 +1,5 @@
 [package]
-name = "craft-captions"
+name = "bharat-captions"
 description = "Caption and subtitle files behind one neutral model: SubRip, WebVTT, Scenarist SCC, MacCaption MCC, EBU STL and TTML/IMSC1/DFXP readers and writers with exact time, and CEA-608/708 coding"
 version.workspace = true
 edition.workspace = true
@@ -11,8 +11,8 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-timeline = { workspace = true }
-craft-xml = { workspace = true }
+bharat-timeline = { workspace = true }
+bharat-xml = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]

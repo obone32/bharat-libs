@@ -5,10 +5,10 @@
 //! These go through `SignedData::parse`, the way a PDF's signature reaches it. Each CMS is built
 //! here as the signer builds it, so a case differs from a valid one only where it says.
 
-use craft_pkcs7::cms::SignedData;
-use craft_pkcs7::der::{self, tag};
-use craft_pkcs7::keys::DigestAlg;
-use craft_pkcs7::{Error, pkcs12};
+use bharat_pkcs7::cms::SignedData;
+use bharat_pkcs7::der::{self, tag};
+use bharat_pkcs7::keys::DigestAlg;
+use bharat_pkcs7::{Error, pkcs12};
 
 const SIGNED_DATA: &str = "1.2.840.113549.1.7.2";
 const DATA: &str = "1.2.840.113549.1.7.1";

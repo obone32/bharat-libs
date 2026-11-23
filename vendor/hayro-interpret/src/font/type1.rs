@@ -105,7 +105,7 @@ impl Type1Font {
         }
     }
 
-    /// Craft patch (flatten): the bare CFF bytes of a `FontFile3/Type1C` font, which the glyph
+    /// Bharat patch (flatten): the bare CFF bytes of a `FontFile3/Type1C` font, which the glyph
     /// ids index. Type 1 and standard fonts have none.
     pub(crate) fn font_data(&self) -> Option<crate::font::FontData> {
         match &self.1 {

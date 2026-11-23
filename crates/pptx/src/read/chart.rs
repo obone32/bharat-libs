@@ -1,11 +1,11 @@
 //! Charts in graphic frames: the chart part, read within the presentation's budgets, and the parts
 //! it points at (workbook, styles, colours) kept to be written back.
 
-use craft_drawingml::chart::chartex::read_chartex_xml;
-use craft_drawingml::chart::read::{MAX_CHART_DECODE_BYTES, point_count, read_chart_xml};
-use craft_drawingml::chart::write::sidecar_part;
+use bharat_drawingml::chart::chartex::read_chartex_xml;
+use bharat_drawingml::chart::read::{MAX_CHART_DECODE_BYTES, point_count, read_chart_xml};
+use bharat_drawingml::chart::write::sidecar_part;
 
-pub(crate) use craft_drawingml::chart::read::MAX_PRESENTATION_CHART_POINTS;
+pub(crate) use bharat_drawingml::chart::read::MAX_PRESENTATION_CHART_POINTS;
 
 use crate::chart::Chart;
 
@@ -59,7 +59,7 @@ pub const MAX_KEPT_TOTAL_BYTES: usize = 32 * 1024 * 1024;
 pub(crate) fn capture_kept(imp: &mut super::Imp, chart_part: &str) -> crate::chart::ChartKept {
     use crate::chart::{ChartKept, ChartRel};
 
-    let key = craft_opc::normalize(chart_part);
+    let key = bharat_opc::normalize(chart_part);
     if let Some(cached) = imp.kept_charts.get(&key) {
         // Every frame that shows this chart gets its own copy, so each copy is charged like the first.
         let bytes: usize = cached.parts.iter().map(part_bytes).sum::<usize>() + cached.rels.iter().map(rel_bytes).sum::<usize>();
@@ -126,7 +126,7 @@ fn copy_part(
         log::warn!("pptx: chart part closure stopped at {part}");
         return false;
     }
-    let key = craft_opc::normalize(part);
+    let key = bharat_opc::normalize(part);
     if let Some(ok) = seen.get(&key) {
         return *ok;
     }
@@ -156,12 +156,12 @@ fn copy_part(
     };
     out.push(ChartPart { name, content_type, bytes: stored_bytes, native_entry: None });
     seen.insert(key, true);
-    let rels_name = craft_opc::rels_path(part);
+    let rels_name = bharat_opc::rels_path(part);
     if sidecar_part(&rels_name)
-        && seen.get(&craft_opc::normalize(&rels_name)).is_none()
+        && seen.get(&bharat_opc::normalize(&rels_name)).is_none()
         && let Some(rels_bytes) = pkg.get(&rels_name)
     {
-        seen.insert(craft_opc::normalize(&rels_name), true);
+        seen.insert(bharat_opc::normalize(&rels_name), true);
         let name = pkg.original_name(&rels_name).unwrap_or(&rels_name).trim_start_matches('/').to_string();
         let stored_rels = if *retained_bytes + rels_bytes.len() <= MAX_KEPT_TOTAL_BYTES {
             *retained_bytes += rels_bytes.len();

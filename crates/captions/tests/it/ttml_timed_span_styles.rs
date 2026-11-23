@@ -1,7 +1,7 @@
 //! Timed spans emitted as cues must keep their own resolved text styles.
 
-use craft_captions::{Format, WriteOptions, parse, write};
-use craft_captions::{TICKS_PER_SECOND, Tick};
+use bharat_captions::{Format, WriteOptions, parse, write};
+use bharat_captions::{TICKS_PER_SECOND, Tick};
 
 fn caption(xml: &str, format: Format) -> String {
     let doc = parse(xml.as_bytes(), format).unwrap();

@@ -25,7 +25,7 @@
 //! input.
 //!
 //! ```
-//! use craft_math::{math, math_latex, mathml, omml};
+//! use bharat_math::{math, math_latex, mathml, omml};
 //!
 //! let tree = math::parse_linear("x=(-b±√(b^2-4ac))/2a");
 //! assert_eq!(math::to_linear(&tree), "x=(-b±√(b^2-4ac))/2a");

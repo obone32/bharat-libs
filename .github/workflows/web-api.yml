@@ -51,7 +51,7 @@ jobs:
           tool: wasm-bindgen@${{ steps.wasm-bindgen.outputs.version }}
           fallback: cargo-install
       - run: cargo fmt --check
-      - run: cargo clippy -p craft-web-api --all-targets --locked -- -D warnings
-      - run: cargo clippy -p craft-web-api --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
-      - run: cargo test -p craft-web-api --locked
-      - run: cargo test -p craft-web-api --locked --target wasm32-unknown-unknown
+      - run: cargo clippy -p bharat-web-api --all-targets --locked -- -D warnings
+      - run: cargo clippy -p bharat-web-api --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
+      - run: cargo test -p bharat-web-api --locked
+      - run: cargo test -p bharat-web-api --locked --target wasm32-unknown-unknown

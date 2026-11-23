@@ -25,7 +25,7 @@ pub use resources::{
 pub use spread::{Graphic, GraphicChild, GraphicKind, Guide, ItemChild, ItemKind, Link, Page, PageChild, PageItem, Spread, SpreadChild, spreads};
 pub use story::{Ace, CONTAINERS, Cell, Container, ContentPart, Range, Story, Table, TableChild, TextNode, stories};
 
-use craft_xml::{El, Local, Node};
+use bharat_xml::{El, Local, Node};
 
 use crate::value::{matrix, nums};
 

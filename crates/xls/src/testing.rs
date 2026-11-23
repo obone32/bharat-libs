@@ -32,7 +32,7 @@ fn bof(dt: u16) -> Vec<u8> {
 
 /// A compound file whose root holds one stream.
 pub fn compound(stream: &str, data: &[u8]) -> Vec<u8> {
-    craft_cfb::write_streams(craft_cfb::Version::V3, &[(stream, data)]).unwrap_or_default()
+    bharat_cfb::write_streams(bharat_cfb::Version::V3, &[(stream, data)]).unwrap_or_default()
 }
 
 /// A minimal BIFF8 workbook: one worksheet per `(name, rows)`. Cells that read as numbers are

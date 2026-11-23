@@ -1,6 +1,6 @@
 [package]
-name = "craft-designcraft-format"
-description = "Versioned DesignCraft document JSON codec and legacy migrations over craft-document-bundle"
+name = "bharat-designcraft-format"
+description = "Versioned DesignCraft document JSON codec and legacy migrations over bharat-document-bundle"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,8 +11,8 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-document-bundle = { workspace = true }
-craft-eps = { workspace = true }
+bharat-document-bundle = { workspace = true }
+bharat-eps = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

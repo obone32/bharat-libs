@@ -1,6 +1,6 @@
 [package]
-name = "craft-pdf"
-description = "Shared PDF reading, rendering and optional writing for Craft apps"
+name = "bharat-pdf"
+description = "Shared PDF reading, rendering and optional writing for Bharat apps"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -20,7 +20,7 @@ write = ["dep:krilla", "dep:thiserror"]
 write-pdf = ["write", "krilla/pdf"]
 write-raster = ["dep:flate2", "dep:roxmltree"]
 write-simple-text = ["write", "krilla/simple-text"]
-filters = ["dep:craft-stream-codecs", "dep:flate2", "dep:thiserror"]
+filters = ["dep:bharat-stream-codecs", "dep:flate2", "dep:thiserror"]
 cos = ["crypt", "filters", "dep:chrono", "dep:js-sys", "dep:wasm-bindgen"]
 crypt = ["dep:aes", "dep:md-5", "dep:sha2", "dep:stringprep", "dep:zeroize", "dep:thiserror"]
 
@@ -34,7 +34,7 @@ thiserror = { workspace = true, optional = true }
 flate2 = { version = "1.1", default-features = false, features = ["zlib-rs"], optional = true }
 roxmltree = { version = "0.21", optional = true }
 # The filter chain (`filters`). flate2 with zlib-rs, the backend the chain's Flate prices were measured on.
-craft-stream-codecs = { workspace = true, optional = true }
+bharat-stream-codecs = { workspace = true, optional = true }
 # The standard security handler (`crypt`): pure Rust, MIT OR Apache-2.0, builds for wasm.
 aes = { version = "0.9", optional = true }
 md-5 = { version = "0.11", optional = true }

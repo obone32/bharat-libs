@@ -379,7 +379,7 @@ fn the_mimetype_is_read_from_a_leading_stored_entry_only() {
 /// before the archive is indexed.
 #[test]
 fn an_archive_declaring_too_many_entries_is_refused_before_it_is_indexed() {
-    let bomb = craft_zip::zip64_entry_count_sample(MAX_ENTRIES + 1);
+    let bomb = bharat_zip::zip64_entry_count_sample(MAX_ENTRIES + 1);
     assert_eq!(
         Archive::open(&bomb).err(),
         Some(Error::Invalid(format!("the archive declares {} entries, more than {MAX_ENTRIES}", MAX_ENTRIES + 1)))

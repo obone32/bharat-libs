@@ -1,5 +1,5 @@
 [package]
-name = "craft-opc"
+name = "bharat-opc"
 description = "Open Packaging Conventions (ECMA-376 Part 2): the ZIP container of DOCX, XLSX and PPTX files, with bounded reads, part names, relationships and content types, and a package writer."
 version.workspace = true
 edition.workspace = true
@@ -12,15 +12,15 @@ workspace = true
 
 [features]
 # `zip64_entry_count_sample`, the regression input for a reader's own entry-count test.
-test-support = ["craft-zip/test-support"]
+test-support = ["bharat-zip/test-support"]
 
 [dependencies]
-craft-xml = { workspace = true }
+bharat-xml = { workspace = true }
 log = "0.4"
 thiserror = { workspace = true }
-craft-zip = { workspace = true }
+bharat-zip = { workspace = true }
 
 [dev-dependencies]
-craft-zip = { workspace = true, features = ["test-support"] }
+bharat-zip = { workspace = true, features = ["test-support"] }
 # The tests build hostile archives by hand.
 zip = { version = "9", default-features = false, features = ["deflate-flate2"] }

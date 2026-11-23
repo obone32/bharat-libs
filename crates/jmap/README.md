@@ -1,4 +1,4 @@
-# craft-jmap
+# bharat-jmap
 
 The JMAP protocol core (RFC 8620) without sockets: a program brings an HTTP implementation
 (`HttpExchange`), this crate describes each request and judges each answer.

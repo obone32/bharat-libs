@@ -315,7 +315,7 @@ pub(crate) fn submit_with_progress(pdf: &[u8], job: &Job, progress: &mut dyn FnM
     }
     let device = select_device(PrinterDevice::all().map_err(spool_error)?, job.printer.as_deref(), default_printer().as_deref())?;
     let written = |e: std::io::Error| spool_error(format!("the print job could not be written: {e}"));
-    let dir = tempfile::Builder::new().prefix("craft-print-").tempdir().map_err(written)?;
+    let dir = tempfile::Builder::new().prefix("bharat-print-").tempdir().map_err(written)?;
     let path = dir.path().join(ticket::job_filename(&job.title));
     let read = &read;
     // The worker is joined before `dir` is dropped: the spooler reads the file.
@@ -512,12 +512,12 @@ mod tests {
 
     /// What a real driver makes of a job's ticket: Letter, portrait, two copies. Checks explicit
     /// option retention separately; unsupported options must fail before submission. Sends no job.
-    /// `CRAFT_PRINT_TEST_PRINTER` names the queue;
-    /// `CRAFT_PRINT_TEST_TICKET_OUTPUT` keeps the validated ticket, to see which options it kept.
+    /// `BHARAT_PRINT_TEST_PRINTER` names the queue;
+    /// `BHARAT_PRINT_TEST_TICKET_OUTPUT` keeps the validated ticket, to see which options it kept.
     #[test]
-    #[ignore = "needs CRAFT_PRINT_TEST_PRINTER naming an installed printer; sends no job"]
+    #[ignore = "needs BHARAT_PRINT_TEST_PRINTER naming an installed printer; sends no job"]
     fn an_installed_driver_validates_the_ticket() {
-        let name = std::env::var("CRAFT_PRINT_TEST_PRINTER").unwrap();
+        let name = std::env::var("BHARAT_PRINT_TEST_PRINTER").unwrap();
         let device = select_device(PrinterDevice::all().unwrap(), Some(&name), None).unwrap();
         let job = Job { copies: 2, ..Job::default() };
         let (ticket, paper) = driver_ticket(&device, &job, (612.0, 792.0), false).unwrap();
@@ -535,7 +535,7 @@ mod tests {
             ticket::prefixes_unlike_the_drivers(std::str::from_utf8(ticket.get_xml()).unwrap(), std::str::from_utf8(own.get_xml()).unwrap()).unwrap();
         assert!(unlike.is_empty(), "vendor namespaces under another prefix than the driver's (namespace, ticket, driver): {unlike:?}");
         eprintln!("unprintable margin: {} pt", imageable_margin(&device, &ticket));
-        if let Ok(path) = std::env::var("CRAFT_PRINT_TEST_TICKET_OUTPUT") {
+        if let Ok(path) = std::env::var("BHARAT_PRINT_TEST_TICKET_OUTPUT") {
             std::fs::write(path, ticket.get_xml()).unwrap();
         }
         let capabilities = {
@@ -571,11 +571,11 @@ mod tests {
     /// settings chosen for another printer leave the job's ticket as it is without them; and
     /// earlier settings with no fields set, which a driver either refuses or reads without an
     /// error, open the dialog as if the job had none.
-    /// `CRAFT_PRINT_TEST_PRINTER` names the queue. Sends no job and opens no dialog.
+    /// `BHARAT_PRINT_TEST_PRINTER` names the queue. Sends no job and opens no dialog.
     #[test]
-    #[ignore = "needs CRAFT_PRINT_TEST_PRINTER naming an installed printer; sends no job"]
+    #[ignore = "needs BHARAT_PRINT_TEST_PRINTER naming an installed printer; sends no job"]
     fn the_driver_dialogs_settings_leave_the_jobs_own_options() {
-        let name = std::env::var("CRAFT_PRINT_TEST_PRINTER").unwrap();
+        let name = std::env::var("BHARAT_PRINT_TEST_PRINTER").unwrap();
         let device = select_device(PrinterDevice::all().unwrap(), Some(&name), None).unwrap();
         let chosen = format!(
             r#"<psf:PrintTicket version="1" xmlns:psf="{}" xmlns:psk="{NS_PSK}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -608,7 +608,7 @@ mod tests {
         assert_eq!(ticket::verify_ticket(xml, Some(paper), false).unwrap(), paper, "the job's portrait sheet keeps its orientation");
 
         let plain = Job { copies: 2, ..Job::default() };
-        let other = Job { driver_settings: Some(crate::DriverSettings::new("Craft Test Print: no such queue", dev_mode)), ..plain.clone() };
+        let other = Job { driver_settings: Some(crate::DriverSettings::new("Bharat Test Print: no such queue", dev_mode)), ..plain.clone() };
         let xml_of = |job: &Job| driver_ticket(&device, job, (612.0, 792.0), false).unwrap().0.get_xml().to_vec();
         assert_eq!(xml_of(&other), xml_of(&plain), "settings for another printer are left out");
 
@@ -625,18 +625,18 @@ mod tests {
     }
 
     /// A real job, for checking a printer by hand (paper, or a paused queue's spool file):
-    /// `CRAFT_PRINT_TEST_FILE` printed on `CRAFT_PRINT_TEST_PRINTER`, shrink-to-fit when
-    /// `CRAFT_PRINT_TEST_SCALING=shrink`, two-sided on the long edge when
-    /// `CRAFT_PRINT_TEST_DUPLEX=long`.
+    /// `BHARAT_PRINT_TEST_FILE` printed on `BHARAT_PRINT_TEST_PRINTER`, shrink-to-fit when
+    /// `BHARAT_PRINT_TEST_SCALING=shrink`, two-sided on the long edge when
+    /// `BHARAT_PRINT_TEST_DUPLEX=long`.
     #[test]
-    #[ignore = "sends a real job: needs CRAFT_PRINT_TEST_PRINTER and CRAFT_PRINT_TEST_FILE"]
+    #[ignore = "sends a real job: needs BHARAT_PRINT_TEST_PRINTER and BHARAT_PRINT_TEST_FILE"]
     fn an_installed_printer_prints_a_file() {
-        let pdf = std::fs::read(std::env::var("CRAFT_PRINT_TEST_FILE").unwrap()).unwrap();
+        let pdf = std::fs::read(std::env::var("BHARAT_PRINT_TEST_FILE").unwrap()).unwrap();
         let job = Job {
-            printer: Some(std::env::var("CRAFT_PRINT_TEST_PRINTER").unwrap()),
-            scaling: if std::env::var("CRAFT_PRINT_TEST_SCALING").as_deref() == Ok("shrink") { Scaling::ShrinkToFit } else { Scaling::Exact },
-            duplex: (std::env::var("CRAFT_PRINT_TEST_DUPLEX").as_deref() == Ok("long")).then_some(crate::Duplex::LongEdge),
-            title: "craft-print test".into(),
+            printer: Some(std::env::var("BHARAT_PRINT_TEST_PRINTER").unwrap()),
+            scaling: if std::env::var("BHARAT_PRINT_TEST_SCALING").as_deref() == Ok("shrink") { Scaling::ShrinkToFit } else { Scaling::Exact },
+            duplex: (std::env::var("BHARAT_PRINT_TEST_DUPLEX").as_deref() == Ok("long")).then_some(crate::Duplex::LongEdge),
+            title: "bharat-print test".into(),
             ..Job::default()
         };
         let sent = crate::submit(&pdf, &job);
@@ -649,7 +649,7 @@ mod tests {
     /// whatever they are (storytold/pdfcraft#2422; it was always Color before). Set the queue to
     /// black and white in its preferences to see the case that failed. Sends no job.
     #[test]
-    #[ignore = "needs CRAFT_PRINT_TEST_PRINTER naming an installed printer; sends no job"]
+    #[ignore = "needs BHARAT_PRINT_TEST_PRINTER naming an installed printer; sends no job"]
     fn the_preferences_colour_reaches_a_job_without_grayscale() {
         fn colour(ticket: &PrintTicket) -> Option<String> {
             let xml = std::str::from_utf8(ticket.get_xml()).ok()?;
@@ -660,7 +660,7 @@ mod tests {
                 .find(|n| n.has_tag_name((ticket::NS_PSF, "Feature")) && n.attribute("name").is_some_and(|a| a.ends_with(":PageOutputColor")))?;
             feature.children().find(|n| n.has_tag_name((ticket::NS_PSF, "Option")))?.attribute("name").map(str::to_owned)
         }
-        let name = std::env::var("CRAFT_PRINT_TEST_PRINTER").unwrap();
+        let name = std::env::var("BHARAT_PRINT_TEST_PRINTER").unwrap();
         let device = select_device(PrinterDevice::all().unwrap(), Some(&name), None).unwrap();
         let preferences = {
             let _provider = print_ticket_provider();

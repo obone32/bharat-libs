@@ -3,7 +3,7 @@ use super::limits::{MAX_ANCHOR_RUN, MAX_NEST, MAX_SOURCE, MAX_SPEC};
 use super::table::{raw_text, source_text, table};
 use super::units::{length_pt, parse_color, size_of};
 use super::{Align, Document, FBlock, Flow, Fmt, Inline, Kind, ListInfo, Para, model};
-use craft_math::latex_text::latex_to_linear;
+use bharat_math::latex_text::latex_to_linear;
 
 // =============================================================================================
 // Import
@@ -11,7 +11,7 @@ use craft_math::latex_text::latex_to_linear;
 /// Import a LaTeX source file.
 pub fn import(bytes: &[u8]) -> Document {
     model::begin_import();
-    let mut d = model::to_doc(&parse(&craft_mime::detect::decode(bytes.get(..MAX_SOURCE).unwrap_or(bytes))));
+    let mut d = model::to_doc(&parse(&bharat_mime::detect::decode(bytes.get(..MAX_SOURCE).unwrap_or(bytes))));
     d.ensure_nonempty();
     d
 }
