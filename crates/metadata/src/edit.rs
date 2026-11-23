@@ -7,7 +7,7 @@
 //! [`export_exif`] and [`export_xmp`] also set the resolution and drop a thumbnail of the
 //! source image. [`exif_color_space`] reads the Exif ColorSpace tag.
 //!
-//! These work on the raw entry tables rather than on a parsed [`craft_tiff::Tiff`], because they
+//! These work on the raw entry tables rather than on a parsed [`bharat_tiff::Tiff`], because they
 //! rewrite values in place and keep duplicate and unknown entries exactly as stored.
 //!
 //! ## Orientation (tag 274)

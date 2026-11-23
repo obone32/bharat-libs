@@ -25,7 +25,7 @@ impl Fetcher for Browser {
         wasm_bindgen_futures::spawn_local(async move {
             let result = fetch_file(url, integrity).await;
             if let Err(error) = &result {
-                web_sys::console::warn_1(&format!("craft-ui: cannot fetch the font {url}: {error}").into());
+                web_sys::console::warn_1(&format!("bharat-ui: cannot fetch the font {url}: {error}").into());
             }
             done(result);
         });

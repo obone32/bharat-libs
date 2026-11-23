@@ -5,7 +5,7 @@
 //! that accepted calls before initialization and initialize in a batch; strict mode enforces the
 //! initialization ordering and batch prohibition. Create one session per connection.
 
-use craft_jsonrpc::{Request, RpcError};
+use bharat_jsonrpc::{Request, RpcError};
 use serde_json::{Value, json};
 
 pub const PROTOCOL_VERSION: &str = "2025-03-26";
@@ -166,7 +166,7 @@ pub fn tool_list(tools: Value) -> Value {
     json!({"tools": tools})
 }
 
-/// Construct the text result currently used by Craft's MCP tools.
+/// Construct the text result currently used by Bharat's MCP tools.
 pub fn text_tool_result(text: &str, is_error: bool) -> Value {
     json!({"content": [{"type": "text", "text": text}], "isError": is_error})
 }
@@ -258,9 +258,9 @@ mod tests {
             {"jsonrpc":"2.0", "method":"notifications/initialized"},
             {"jsonrpc":"2.0", "id":"tools", "method":"tools/list"}
         ]);
-        let reply = craft_jsonrpc::process(
+        let reply = bharat_jsonrpc::process(
             &input,
-            craft_jsonrpc::Limits::default(),
+            bharat_jsonrpc::Limits::default(),
             |r| session.borrow_mut().request(r, true).unwrap_or_else(|| Ok(tool_list(json!([])))),
             |r| session.borrow_mut().notification(r),
         )

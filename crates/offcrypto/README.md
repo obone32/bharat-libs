@@ -1,4 +1,4 @@
-# craft-offcrypto
+# bharat-offcrypto
 
 Clean-room Office document cryptography: password-encrypted OOXML packages and the password
 hashes of document and sheet protection. No `unsafe`. No third-party implementation was
@@ -9,20 +9,20 @@ hashlib as independent checks.
 |---|---|
 | [MS-OFFCRYPTO] Office Document Cryptography Structure (Microsoft Open Specifications) | §2.1 data spaces; §2.3.2, §2.3.3, §2.3.4.5-§2.3.4.9 standard encryption; §2.3.4.10-§2.3.4.15 agile encryption; §2.4.2.4 the ISO write-protection hash |
 | ECMA-376 Part 1 §17.15.1.29, §18.2.29; Part 4 §14.8.1 | where protection hashes are stored; the legacy 32-bit password key |
-| [MS-CFB] | the compound file, through `craft-cfb` |
+| [MS-CFB] | the compound file, through `bharat-cfb` |
 
 ## Encrypted packages
 
 A password-protected `.docx`, `.xlsx` or `.pptx` is a compound file with an `EncryptionInfo`
 stream and an `EncryptedPackage` stream. The crate turns that file into the zip package and
-back. It does not look inside the package: `craft-opc` reads what `decrypt` returns.
+back. It does not look inside the package: `bharat-opc` reads what `decrypt` returns.
 
 ```rust
-if craft_offcrypto::is_encrypted(&bytes) {
-    craft_offcrypto::check(&bytes)?;                       // Unsupported("RC4"), ... before asking
-    let package = craft_offcrypto::decrypt(&bytes, Some(password))?;   // WrongPassword, Malformed
+if bharat_offcrypto::is_encrypted(&bytes) {
+    bharat_offcrypto::check(&bytes)?;                       // Unsupported("RC4"), ... before asking
+    let package = bharat_offcrypto::decrypt(&bytes, Some(password))?;   // WrongPassword, Malformed
 }
-let file = craft_offcrypto::encrypt(&package, password)?;
+let file = bharat_offcrypto::encrypt(&package, password)?;
 ```
 
 | | Read | Written |
@@ -45,7 +45,7 @@ that cannot be checked is `PasswordCheck::Unsupported`, never a match.
 ## Hostile input
 
 Stream reads are capped (`EncryptionInfo` at 1 MiB, the package at the file's size), the XML
-descriptor is parsed with `craft-xml` under the same cap, every length is checked before
+descriptor is parsed with `bharat-xml` under the same cap, every length is checked before
 slicing, a stated package size larger than the data is damage and never drives an allocation,
 and spin counts above 10,000,000 are refused. Verifier and integrity values are compared
 without stopping at the first difference. Passwords, keys and derived hashes are wiped when

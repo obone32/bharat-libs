@@ -1,4 +1,4 @@
-//! `craft-image-codecs`: symmetric, depth- and metadata-preserving codecs for
+//! `bharat-image-codecs`: symmetric, depth- and metadata-preserving codecs for
 //! flat raster image formats.
 //!
 //! * Every format we **write** we can also **read** (see

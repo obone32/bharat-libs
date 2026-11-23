@@ -1,8 +1,8 @@
 //! The drawing model's entities: common properties, geometry, text, hatches, dimensions.
 
-use craft_dxf::model::text::{MTextColumns, decode_contents, decode_line, encode_contents, encode_line, map_text_groups};
-use craft_dxf::model::{Color, Document, Entity, EntityKind, HatchEdge, HatchPath, Lineweight, Transparency, entity_records, records};
-use craft_dxf::{Tag, parse};
+use bharat_dxf::model::text::{MTextColumns, decode_contents, decode_line, encode_contents, encode_line, map_text_groups};
+use bharat_dxf::model::{Color, Document, Entity, EntityKind, HatchEdge, HatchPath, Lineweight, Transparency, entity_records, records};
+use bharat_dxf::{Tag, parse};
 
 fn tags(text: &str) -> Vec<Tag> {
     let lines: Vec<&str> = text.split(['\n', '|']).map(str::trim).filter(|l| !l.is_empty()).map(|l| if l == "~" { "" } else { l }).collect();

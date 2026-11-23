@@ -1,6 +1,6 @@
 //! Small workbooks built in code, for tests and examples.
 
-use craft_opc::{PackageOut, RelsOut};
+use bharat_opc::{PackageOut, RelsOut};
 
 const MAIN_NS: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 const R_NS: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
@@ -8,7 +8,7 @@ const R_NS: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relati
 /// An `.xlsx` with the given sheets, each `(name, the rows inside <sheetData>)`, and shared
 /// strings. Names and strings are written as given: escape them first if they need it. An
 /// archive that cannot be written returns the writer's error.
-pub fn workbook(sheets: &[(&str, &str)], strings: &[&str]) -> Result<Vec<u8>, craft_opc::Error> {
+pub fn workbook(sheets: &[(&str, &str)], strings: &[&str]) -> Result<Vec<u8>, bharat_opc::Error> {
     let mut out = PackageOut::default();
     let mut root = RelsOut::default();
     root.add("officeDocument", "xl/workbook.xml", false);
@@ -47,7 +47,7 @@ pub fn workbook(sheets: &[(&str, &str)], strings: &[&str]) -> Result<Vec<u8>, cr
 /// A ZIP archive of the given entries, stored as named (no content types are added). An entry
 /// the archive cannot hold, such as a second entry under the same name, returns the writer's
 /// error.
-pub fn zip(entries: &[(&str, &[u8])]) -> Result<Vec<u8>, craft_opc::Error> {
+pub fn zip(entries: &[(&str, &[u8])]) -> Result<Vec<u8>, bharat_opc::Error> {
     let entries: Vec<(String, Vec<u8>)> = entries.iter().map(|(n, b)| (n.to_string(), b.to_vec())).collect();
-    craft_opc::zip_entries(&entries)
+    bharat_opc::zip_entries(&entries)
 }

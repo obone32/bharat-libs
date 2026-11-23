@@ -2,7 +2,7 @@
 //!
 //! Written from the public AMWA specifications: *AAF Object Specification v1.1*, *AAF Low-Level
 //! Container Specification v1.0.1* (structured storage mapping, see [`store`]) and *AAF Edit
-//! Protocol v1.0*; the container is Microsoft's Compound File Binary format ([`craft_cfb`]).
+//! Protocol v1.0*; the container is Microsoft's Compound File Binary format ([`bharat_cfb`]).
 //!
 //! A written file holds one top-level **CompositionMob** (Edit Protocol usage code
 //! "top level") with
@@ -56,7 +56,7 @@ pub struct WriteOptions<'a> {
 /// composition and every source it uses. Times that are not on whole edit units are rounded and
 /// reported.
 pub fn write(doc: &Document, opts: &WriteOptions<'_>, report: &mut Report) -> Result<Vec<u8>> {
-    let version = if opts.small_sectors { craft_cfb::Version::V3 } else { craft_cfb::Version::V4 };
+    let version = if opts.small_sectors { bharat_cfb::Version::V3 } else { bharat_cfb::Version::V4 };
     write::write(doc, version, &opts.identity, &ReferenceOptions::default(), report)
 }
 
@@ -99,7 +99,7 @@ impl Default for ReferenceOptions {
 }
 /// Write with explicitly selected reference and locator conventions.
 pub fn write_with_references(doc: &Document, opts: &WriteOptions<'_>, references: &ReferenceOptions, report: &mut Report) -> Result<Vec<u8>> {
-    let version = if opts.small_sectors { craft_cfb::Version::V3 } else { craft_cfb::Version::V4 };
+    let version = if opts.small_sectors { bharat_cfb::Version::V3 } else { bharat_cfb::Version::V4 };
     write::write(doc, version, &opts.identity, references, report)
 }
 
@@ -112,10 +112,10 @@ pub fn read(bytes: &[u8], report: &mut Report) -> Result<Document> {
 /// Whether `bytes` look like an AAF file (a compound file whose root has the AAF root class or a
 /// `Header-2` storage).
 pub fn sniff(bytes: &[u8]) -> bool {
-    if !craft_cfb::sniff(bytes) {
+    if !bharat_cfb::sniff(bytes) {
         return false;
     }
-    match craft_cfb::CompoundFile::open(bytes) {
+    match bharat_cfb::CompoundFile::open(bytes) {
         Ok(cf) => cf.root().clsid == ids::ROOT || cf.find("Header-2").is_ok(),
         Err(_) => false,
     }

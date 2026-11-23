@@ -339,7 +339,7 @@ pub fn turkish_capitalize(s: &str) -> String {
 mod tests {
     use super::*;
 
-    /// CodeRabbit on craft-libs#484/#489: emoticons, decimals and scores aren't stray spaces;
+    /// CodeRabbit on bharat-libs#484/#489: emoticons, decimals and scores aren't stray spaces;
     /// ordinals and file or web names don't end a sentence.
     #[test]
     fn emoticons_numbers_ordinals_and_names_are_left_alone() {
@@ -404,7 +404,7 @@ mod tests {
     }
 
     /// `de`/`da`, `ne` and `ya` often take a comma after them in correct Turkish, so no mark
-    /// (craft-libs#488 review).
+    /// (bharat-libs#488 review).
     #[test]
     fn a_comma_after_de_ne_or_ya_is_fine() {
         for text in [
@@ -420,7 +420,7 @@ mod tests {
         }
     }
 
-    /// craft-libs#495 review: initials (`A.Ş.`, `T.C.`) and `İst.` end no sentence, and Turkish
+    /// bharat-libs#495 review: initials (`A.Ş.`, `T.C.`) and `İst.` end no sentence, and Turkish
     /// case folding finds `Işık ışık`; a word with an apostrophe is still a repeat.
     #[test]
     fn turkish_case_and_initials() {
@@ -432,7 +432,7 @@ mod tests {
         }
     }
 
-    /// Repeated numbers are not repeated words (craft-libs#488 review).
+    /// Repeated numbers are not repeated words (bharat-libs#488 review).
     #[test]
     fn repeated_numbers_are_not_flagged() {
         for text in ["Skor 1 1 bitti.", "Toplam 100 100 değil.", "Oda A1 A1 değil."] {

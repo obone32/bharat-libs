@@ -1,6 +1,6 @@
 //! Hostile inputs must produce `Err` (or a best-effort `Ok`), never a panic.
 
-use craft_audio::{
+use bharat_audio::{
     AudioBuffer, AudioError, BitDepth, CodecId, Container, EncodeFormat, EncodeOptions, SampleFormat, decode, detect_container, encode, probe,
 };
 use proptest::prelude::*;
@@ -373,7 +373,7 @@ fn packets_longer_than_any_codec_uses_are_refused() {
     let alac = |frames: u32| sample_entry(b"alac", 0, &[], &atom(b"alac", &config(frames)));
     let (_, buf) = decode(&mp4(480, &lpcm(1), |_, a| a), None).unwrap();
     assert_eq!(buf.frames(), 480);
-    // PCM is read by craft-media's own demuxer, which reads version-2 sound description fields only
+    // PCM is read by bharat-media's own demuxer, which reads version-2 sound description fields only
     // in QuickTime files (ISO BMFF has no such version): the bogus frame count of this MP4 is never
     // read, and nothing is allocated from it. symphonia read it, so SoundCraft refused the file.
     let (_, buf) = decode(&mp4(480, &lpcm(1 << 21), |_, a| a), None).unwrap();
@@ -850,7 +850,7 @@ fn aiff_frames_without_sound_data_are_malformed() {
 
 #[test]
 fn an_empty_flac_has_one_track() {
-    use craft_audio::{DecodeOptions, decode_with};
+    use bharat_audio::{DecodeOptions, decode_with};
     // STREAMINFO: 4096-frame blocks, 44.1 kHz, 2 channels, 16 bits, no samples
     let mut f = b"fLaC".to_vec();
     f.extend_from_slice(&[0x80, 0, 0, 34]);
@@ -873,7 +873,7 @@ fn damaged_mp4_and_matroska_are_malformed() {
     for f in [mp4, mkv] {
         assert!(matches!(decode(&f, None), Err(AudioError::Malformed(_))), "{:?}", decode(&f, None));
         assert!(matches!(probe(&f, None), Err(AudioError::Malformed(_))));
-        assert!(matches!(craft_audio::tracks(&f, None), Err(AudioError::Malformed(_))));
+        assert!(matches!(bharat_audio::tracks(&f, None), Err(AudioError::Malformed(_))));
     }
 }
 

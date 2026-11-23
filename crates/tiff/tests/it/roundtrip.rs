@@ -1,6 +1,6 @@
-use craft_tiff::image::{Layout, chunk_bytes};
-use craft_tiff::writer::{rational, srational};
-use craft_tiff::{ByteOrder, FieldType, IfdBuilder, ImageData, ParseOptions, Tiff, TiffError, TiffWriter, Value, parse_ifd_at, tags};
+use bharat_tiff::image::{Layout, chunk_bytes};
+use bharat_tiff::writer::{rational, srational};
+use bharat_tiff::{ByteOrder, FieldType, IfdBuilder, ImageData, ParseOptions, Tiff, TiffError, TiffWriter, Value, parse_ifd_at, tags};
 use proptest::prelude::*;
 
 const ORDERS: [ByteOrder; 2] = [ByteOrder::Little, ByteOrder::Big];
@@ -350,7 +350,7 @@ fn exercise(t: &Tiff, data: &[u8]) {
         }
     }
     if let Some(e) = t.exif().and_then(|x| x.get(tags::MAKER_NOTE)) {
-        let _ = craft_tiff::makernote::parse_makernote(data, e.offset, e.count() as u64, t.order, "NIKON");
+        let _ = bharat_tiff::makernote::parse_makernote(data, e.offset, e.count() as u64, t.order, "NIKON");
     }
 }
 

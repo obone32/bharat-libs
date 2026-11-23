@@ -33,7 +33,7 @@ pub(crate) fn prefix(s: &str, max: usize) -> &str {
 /// UTF-16 throughout.
 pub(crate) fn text_from_bytes(bytes: &[u8]) -> String {
     if bytes.starts_with(&[0xFF, 0xFE]) || bytes.starts_with(&[0xFE, 0xFF]) {
-        return craft_mime::charset::decode(bytes, "utf-16");
+        return bharat_mime::charset::decode(bytes, "utf-16");
     }
     let bytes = bytes.strip_prefix(&[0xEF, 0xBB, 0xBF]).unwrap_or(bytes);
     if bytes.is_ascii() {
@@ -98,9 +98,9 @@ fn charset_of(head: &[u8]) -> String {
 fn value_text(value: &[u8], charset: &str) -> String {
     let label = charset.to_ascii_lowercase();
     if value.is_ascii() || label.starts_with("utf-16") || label.contains("2022") {
-        return craft_mime::charset::guess(value);
+        return bharat_mime::charset::guess(value);
     }
-    craft_mime::charset::decode(value, &label)
+    bharat_mime::charset::decode(value, &label)
 }
 
 /// A cursor over the lines of a text. Lines end at CRLF, LF or CR.

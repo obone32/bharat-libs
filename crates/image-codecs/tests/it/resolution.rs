@@ -5,8 +5,8 @@
 
 use std::borrow::Cow;
 
-use craft_image_codecs::resolution::{exif_with_resolution, xmp_with_resolution};
-use craft_image_codecs::*;
+use bharat_image_codecs::resolution::{exif_with_resolution, xmp_with_resolution};
+use bharat_image_codecs::*;
 use proptest::prelude::{any, proptest};
 
 const X: u16 = 282;

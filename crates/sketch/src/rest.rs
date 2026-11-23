@@ -1,5 +1,5 @@
 //! A `.sketch` file's pages and layers mapped onto the REST API file JSON
-//! ([`craft_figma_rest`]), the shape an application's importer takes.
+//! ([`bharat_figma_rest`]), the shape an application's importer takes.
 //!
 //! Every Sketch object carries its kind in `_class`. Pages become `CANVAS` nodes; artboards and
 //! frames, groups, shape paths and shape groups (with boolean operations), text, bitmaps, symbol
@@ -9,9 +9,9 @@
 //! export options and layout grids come along. Anything not understood is skipped with a
 //! warning; malformed input never panics.
 //!
-//! Paths are handed over as vector networks ([`craft_figma_rest::ext::VectorNetwork`]) beside the
+//! Paths are handed over as vector networks ([`bharat_figma_rest::ext::VectorNetwork`]) beside the
 //! JSON, which names each by `vectorNetworkRef`. Stars and polygons whose points are still the
-//! generated ones carry `pointCount` and `innerRadius` (the extensions craft-figma-rest documents).
+//! generated ones carry `pointCount` and `innerRadius` (the extensions bharat-figma-rest documents).
 
 mod path;
 mod proto;
@@ -27,7 +27,7 @@ mod fixture;
 #[cfg(test)]
 mod tests;
 
-use craft_figma_rest::ext::VectorNetwork;
+use bharat_figma_rest::ext::VectorNetwork;
 use serde_json::Value;
 
 use crate::Archive;
@@ -56,7 +56,7 @@ impl Default for Options {
 /// What [`to_rest`] makes of a file.
 #[derive(Debug)]
 pub struct Mapped {
-    /// The file JSON, in the shape [`craft_figma_rest::File`] reads.
+    /// The file JSON, in the shape [`bharat_figma_rest::File`] reads.
     pub json: Value,
     /// What was skipped or approximated, each once.
     pub warnings: Vec<String>,

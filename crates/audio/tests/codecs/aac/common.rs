@@ -3,7 +3,7 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use craft_audio::aac::{Decoder, Encoder, EncoderConfig, EncoderStats, split_adts};
+use bharat_audio::aac::{Decoder, Encoder, EncoderConfig, EncoderStats, split_adts};
 
 /// ffmpeg (see `crate::testkit::oracle`); `None` after printing `SKIPPED`.
 pub fn ffmpeg() -> Option<PathBuf> {

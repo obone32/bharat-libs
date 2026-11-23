@@ -343,7 +343,7 @@ impl Type0Font {
         }
     }
 
-    /// Craft patch (flatten): the face index of `font_data`.
+    /// Bharat patch (flatten): the face index of `font_data`.
     pub(crate) fn font_index(&self) -> u32 {
         match &self.font_type {
             FontType::OpenType(t) => t.index(),
@@ -351,7 +351,7 @@ impl Type0Font {
         }
     }
 
-    /// Craft patch (flatten): whether `font_data` comes from the file rather than the font
+    /// Bharat patch (flatten): whether `font_data` comes from the file rather than the font
     /// resolver.
     pub(crate) fn is_embedded(&self) -> bool {
         !self.fallback

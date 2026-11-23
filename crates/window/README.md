@@ -1,7 +1,7 @@
-craft-window
+bharat-window
 ============
 
-Decide who draws the window frame — the desktop or the app — so every Craft app shows the same
+Decide who draws the window frame — the desktop or the app — so every Bharat app shows the same
 titlebar and borders on a given desktop, make the app's own top strip act as the title bar
 when it draws one, and keep the window list, cascade placement and Window menu for apps with one
 window per document.
@@ -9,7 +9,7 @@ window per document.
 ## Why
 
 egui apps either keep the desktop's window frame (title bar, borders, window buttons) or turn it
-off and draw their own. This crate makes that decision in one place, so every Craft app wears the
+off and draw their own. This crate makes that decision in one place, so every Bharat app wears the
 same title bar on a given desktop.
 
 ## The rule
@@ -38,16 +38,16 @@ reads the platform once and calls it.
 
 ### Override
 
-`<PREFIX>_TITLEBAR` wins over the setting. With the default prefix `CRAFT`: `CRAFT_TITLEBAR=app`
+`<PREFIX>_TITLEBAR` wins over the setting. With the default prefix `BHARAT`: `BHARAT_TITLEBAR=app`
 forces the app's bar (also on tiling compositors), `=system` or `=desktop` forces the native frame.
 Apps pass their own prefix (`Prefix::new("PDFCRAFT")` reads `PDFCRAFT_TITLEBAR`).
-When `<PREFIX>_TITLEBAR` is unset, `CRAFT_TITLEBAR` applies, so one variable covers every app. `Decision::overridden` reports `Some(true)` or `Some(false)` when the variable decided.
+When `<PREFIX>_TITLEBAR` is unset, `BHARAT_TITLEBAR` applies, so one variable covers every app. `Decision::overridden` reports `Some(true)` or `Some(false)` when the variable decided.
 
 ## Use
 
 ```rust,ignore
-use craft_window::Prefix;
-use craft_window::policy::{Backend, Frame, TitleBarPref, apply, decide_for};
+use bharat_window::Prefix;
+use bharat_window::policy::{Backend, Frame, TitleBarPref, apply, decide_for};
 
 // Once at startup, before the window is created:
 let pref = if settings.system_title_bar { TitleBarPref::System } else { TitleBarPref::Integrated };
@@ -74,7 +74,7 @@ The `egui` feature adds [`decorate`], the [`title_bar`](#the-apps-own-title-bar)
 ## The app's own title bar
 
 An app that draws over the title bar — a hidden macOS title bar with a full-size content view, or
-`Frame::App` — makes its top strip act as one with `craft_window::title_bar` (`egui` feature):
+`Frame::App` — makes its top strip act as one with `bharat_window::title_bar` (`egui` feature):
 
 | Where the drag or double-click starts | What happens |
 | --- | --- |
@@ -87,12 +87,12 @@ An app that draws over the title bar — a hidden macOS title bar with a full-si
 ```rust,ignore
 egui::Panel::top("app_bar").show(ui, |ui| {
     // Before the bar's controls, so they sit on top and take their own clicks.
-    craft_window::title_bar::empty_area(ui, ui.max_rect());
+    bharat_window::title_bar::empty_area(ui, ui.max_rect());
     // ... the bar's controls ...
 });
 // macOS, once per frame after the UI: `applied` is app state, starting at `None`.
 #[cfg(target_os = "macos")]
-craft_window::title_bar::sync_movable(ui.ctx(), &mut self.applied);
+bharat_window::title_bar::sync_movable(ui.ctx(), &mut self.applied);
 ```
 
 On macOS, AppKit moves a full-size-content window from a drag anywhere in the title-bar band, the
@@ -136,7 +136,7 @@ With the `egui` feature, `Viewports` shows the windows as egui immediate viewpor
   to the root in the same frame unless the app should quit.
 
 ```rust,ignore
-use craft_window::{Document, Viewports, WindowEvent, WindowList, WindowMenu};
+use bharat_window::{Document, Viewports, WindowEvent, WindowList, WindowMenu};
 
 let menu = WindowMenu::new(&windows, |_, w| Document { key: w.doc, name: name_of(w.doc), dirty: is_dirty(w.doc) });
 let base = egui::ViewportBuilder::default().with_inner_size([1000.0, 700.0]);
@@ -157,7 +157,7 @@ Immediate viewports repaint every window when one repaints, so cache expensive p
 
 ## Window restore
 
-Feature `restore` (no egui): `craft_window::restore`.
+Feature `restore` (no egui): `bharat_window::restore`.
 
 - `place(saved, monitors, home, &Defaults) -> Placement` is pure. First launch: the default size fitted
   to the home monitor, maximized when it does not fit. Saved sizes are points at interface zoom 1.
@@ -166,7 +166,7 @@ Feature `restore` (no egui): `craft_window::restore`.
   are physical pixels (negative left of or above the primary). `Defaults::no_position` (Wayland)
   neither reads nor returns a position. Full screen returns only with `Defaults::restore_fullscreen`.
 - `Store::open(app_id)` keeps `window.json` beside `config.toml` (same folder rules as
-  `craft-settings`), `Store::in_memory()` keeps nothing. `get`, `set`, `save`.
+  `bharat-settings`), `Store::in_memory()` keeps nothing. `get`, `set`, `save`.
   Format: `{ "schema_version": 1, "windows": { "main": Placement, "<key>": Placement } }`.
   Writes are atomic and private; a damaged file is moved aside as `window.broken-<ts>.json`; a newer
   `schema_version` is read-only; unknown keys are written back unchanged.

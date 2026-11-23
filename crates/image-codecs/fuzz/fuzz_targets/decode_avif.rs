@@ -1,9 +1,9 @@
 #![no_main]
 
 use libfuzzer_sys::fuzz_target;
-use craft_image_codecs::{decode_as_with, probe_size, DecodeOptions, Format, Limits};
+use bharat_image_codecs::{decode_as_with, probe_size, DecodeOptions, Format, Limits};
 
-// The AVIF box reader and craft-video's AV1 decoder parse untrusted files: run with `-timeout=10`
+// The AVIF box reader and bharat-video's AV1 decoder parse untrusted files: run with `-timeout=10`
 // so a hang is reported, not just a panic. The codec turns an AV1 decoder panic into an error, so
 // only the box reader's own panics would reach the fuzzer. Both orientation paths are covered.
 fuzz_target!(|data: &[u8]| {

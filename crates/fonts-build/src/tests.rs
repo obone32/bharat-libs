@@ -7,7 +7,7 @@ use crate::embed::Env;
 use crate::{Embed, EmbeddedFace, Error, parse_manifest};
 
 fn fixture() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixture/craft-fonts")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixture/bharat-fonts")
 }
 
 /// A fresh scratch directory under the system temp dir.
@@ -15,7 +15,7 @@ struct Scratch(PathBuf);
 
 impl Scratch {
     fn new(name: &str) -> Self {
-        let dir = std::env::temp_dir().join(format!("craft-fonts-build-{}-{name}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("bharat-fonts-build-{}-{name}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         Self(dir)
@@ -37,15 +37,15 @@ struct Run {
     out: Scratch,
 }
 
-/// Run `embed` with `CRAFT_FONTS_DIR` and `CRAFT_FONTS_REQUIRED` as given; returns the embedded
+/// Run `embed` with `BHARAT_FONTS_DIR` and `BHARAT_FONTS_REQUIRED` as given; returns the embedded
 /// face names, the cargo lines and the generated table.
 fn run(embed: Embed, dir: Option<&Path>, required: Option<&str>) -> Run {
     static RUNS: AtomicUsize = AtomicUsize::new(0);
     let scratch = Scratch::new(&format!("run-{}", RUNS.fetch_add(1, Ordering::Relaxed)));
     let env = Env { dir: dir.map(OsString::from), required: required.map(OsString::from), out_dir: Some(scratch.0.clone().into()) };
     let mut cargo = Vec::new();
-    let result = embed.run(&env, Path::new("craft_fonts.rs"), &mut cargo);
-    let table = std::fs::read_to_string(scratch.0.join("craft_fonts.rs")).unwrap();
+    let result = embed.run(&env, Path::new("bharat_fonts.rs"), &mut cargo);
+    let table = std::fs::read_to_string(scratch.0.join("bharat_fonts.rs")).unwrap();
     Run { result: result.map(|faces| faces.iter().map(|f| format!("{} {}", f.family, f.style)).collect()), cargo, table, out: scratch }
 }
 
@@ -81,8 +81,8 @@ fn unset_dir_writes_an_empty_table() {
     let r = run(Embed::new(), None, None);
     assert_eq!(r.result.unwrap(), Vec::<String>::new());
     assert_eq!(r.table.trim(), "&[]");
-    assert!(r.cargo.contains(&"cargo::rerun-if-env-changed=CRAFT_FONTS_DIR".to_owned()));
-    assert!(r.cargo.contains(&"cargo::rerun-if-env-changed=CRAFT_FONTS_REQUIRED".to_owned()));
+    assert!(r.cargo.contains(&"cargo::rerun-if-env-changed=BHARAT_FONTS_DIR".to_owned()));
+    assert!(r.cargo.contains(&"cargo::rerun-if-env-changed=BHARAT_FONTS_REQUIRED".to_owned()));
     assert!(!r.cargo.iter().any(|l| l.starts_with("cargo::warning")));
     // Only `1` means required.
     for value in ["0", "true", "yes", " 1"] {
@@ -99,15 +99,15 @@ fn required_fails_without_a_usable_checkout() {
         assert_eq!(r.table.trim(), "&[]");
     }
     let err = run(Embed::new(), None, Some("1")).result.unwrap_err().to_string();
-    assert!(err.contains("CRAFT_FONTS_DIR") && err.contains("CRAFT_FONTS_REQUIRED"), "{err}");
+    assert!(err.contains("BHARAT_FONTS_DIR") && err.contains("BHARAT_FONTS_REQUIRED"), "{err}");
 
-    let missing = Path::new("/nonexistent/craft-fonts");
+    let missing = Path::new("/nonexistent/bharat-fonts");
     assert!(matches!(run(Embed::new(), Some(missing), Some("1")).result, Err(Error::Read { .. })));
     let r = run(Embed::new(), Some(missing), None);
     assert!(r.result.unwrap().is_empty());
     // Watching a missing manifest would rerun the build script on every build.
     assert!(!r.cargo.iter().any(|l| l.starts_with("cargo::rerun-if-changed")), "{:?}", r.cargo);
-    assert!(r.cargo.iter().any(|l| l.starts_with("cargo::warning=building without craft-fonts")), "{:?}", r.cargo);
+    assert!(r.cargo.iter().any(|l| l.starts_with("cargo::warning=building without bharat-fonts")), "{:?}", r.cargo);
 
     let scratch = Scratch::new("missing-file");
     std::fs::create_dir_all(scratch.0.join("fonts")).unwrap();
@@ -122,7 +122,7 @@ fn required_fails_without_a_usable_checkout() {
 fn rejects_a_checkout_under_a_non_utf8_path() {
     use std::os::unix::ffi::OsStrExt;
     let scratch = Scratch::new("non-utf8");
-    let dir = scratch.0.join(std::ffi::OsStr::from_bytes(b"craft-fonts-\xff"));
+    let dir = scratch.0.join(std::ffi::OsStr::from_bytes(b"bharat-fonts-\xff"));
     // macOS refuses a name that is not UTF-8 (EILSEQ, 92), so no such checkout can exist there.
     if let Err(e) = std::fs::create_dir_all(dir.join("fonts")) {
         assert!(cfg!(target_os = "macos") && e.raw_os_error() == Some(92), "{e}");
@@ -192,7 +192,7 @@ fn documents_embeds_only_the_named_families() {
     // Not required: a warning and an empty table, as for any checkout that can't be used.
     let r = run(Embed::documents(&["Serif"]), Some(&fixture()), None);
     assert!(r.result.as_ref().unwrap().is_empty());
-    assert!(warnings(&r).iter().any(|w| w.contains("building without craft-fonts") && w.contains("no family Serif")), "{:?}", r.cargo);
+    assert!(warnings(&r).iter().any(|w| w.contains("building without bharat-fonts") && w.contains("no family Serif")), "{:?}", r.cargo);
 }
 
 #[test]
@@ -203,7 +203,7 @@ fn serve_copies_the_selected_faces_and_writes_urls() {
     let embed = Embed::new().scripts(&["Jpan", "Hant"]).filter(|f| f.style == "Regular").serve(&served, "fonts/");
     let mut cargo = Vec::new();
     let names: Vec<String> =
-        embed.run(&env, Path::new("craft_fonts.rs"), &mut cargo).unwrap().iter().map(|f| format!("{} {}", f.family, f.style)).collect();
+        embed.run(&env, Path::new("bharat_fonts.rs"), &mut cargo).unwrap().iter().map(|f| format!("{} {}", f.family, f.style)).collect();
     assert_eq!(names, ["Sans JP Regular", "Sans CJK TC Regular", "Sans CJK HK Regular"]);
 
     let read = |path: &str| std::fs::read(served.join(path)).unwrap();
@@ -217,7 +217,7 @@ fn serve_copies_the_selected_faces_and_writes_urls() {
     let modified = |path: &Path| std::fs::metadata(path).unwrap().modified().unwrap();
     assert_eq!(modified(&served.join("sans-jp/SansJP-Regular.ttf")), modified(&fixture().join("fonts/sans-jp/SansJP-Regular.ttf")));
 
-    let table = std::fs::read_to_string(scratch.0.join("craft_fonts.rs")).unwrap();
+    let table = std::fs::read_to_string(scratch.0.join("bharat_fonts.rs")).unwrap();
     assert!(!table.contains("include_bytes!"), "{table}");
     assert!(
         table.contains(
@@ -231,8 +231,8 @@ fn serve_copies_the_selected_faces_and_writes_urls() {
     // Without a checkout the table is empty and nothing is copied.
     let env = Env { dir: None, required: None, out_dir: Some(scratch.0.clone().into()) };
     let empty = scratch.0.join("empty");
-    assert!(Embed::new().serve(&empty, "fonts/").run(&env, Path::new("craft_fonts.rs"), &mut cargo).unwrap().is_empty());
-    assert_eq!(std::fs::read_to_string(scratch.0.join("craft_fonts.rs")).unwrap().trim(), "&[]");
+    assert!(Embed::new().serve(&empty, "fonts/").run(&env, Path::new("bharat_fonts.rs"), &mut cargo).unwrap().is_empty());
+    assert_eq!(std::fs::read_to_string(scratch.0.join("bharat_fonts.rs")).unwrap().trim(), "&[]");
     assert!(!empty.exists());
 }
 
@@ -449,10 +449,10 @@ fn cmap_reads_a_shared_subtable_once() {
     assert_eq!(Cmap::read(&font, 0).unwrap().ranges(), [(0x4E00, 0x4E00), (0x5000, 0x5000)]);
 }
 
-/// A craft-fonts checkout in `scratch` with these `(family, scripts, role, font)` faces, all
+/// A bharat-fonts checkout in `scratch` with these `(family, scripts, role, font)` faces, all
 /// Regular.
 fn checkout(scratch: &Scratch, faces: &[(&str, &str, &str, Vec<u8>)]) -> PathBuf {
-    let dir = scratch.0.join("craft-fonts");
+    let dir = scratch.0.join("bharat-fonts");
     std::fs::create_dir_all(dir.join("fonts")).unwrap();
     let mut manifest = String::new();
     for (i, (family, scripts, role, font)) in faces.iter().enumerate() {
@@ -606,7 +606,7 @@ mod subset {
     }
 
     fn cut_file(r: &Run, family: &str) -> PathBuf {
-        r.out.0.join("craft-fonts-ui").join(format!("{}-Regular.ttf", family.replace(' ', "-")))
+        r.out.0.join("bharat-fonts-ui").join(format!("{}-Regular.ttf", family.replace(' ', "-")))
     }
 
     #[test]
@@ -653,7 +653,7 @@ mod subset {
         assert_eq!(mapped(&std::fs::read(cut_file(&r, "Noto Sans TC UI")).unwrap()), [0x3001, 0x300C, 0x3042, 0x4E00, 0x4E01, 0xFF01]);
         assert_eq!(warnings(&r).len(), 1, "{:#?}", warnings(&r));
 
-        // No catalogs (an app whose CRAFT_I18N_DIR is unset) leaves the faces out, not cut to kana.
+        // No catalogs (an app whose BHARAT_I18N_DIR is unset) leaves the faces out, not cut to kana.
         let r = run(Embed::new().subset_to(Vec::<PathBuf>::new()), Some(&dir), None);
         assert_eq!(r.result.as_ref().unwrap(), &["Noto Sans Arabic Regular"]);
         let w = warnings(&r);
@@ -705,10 +705,10 @@ mod subset {
         assert_eq!(hex(&vec![b'a'; 1_000_000]), "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0");
     }
 
-    /// With `CRAFT_FONTS_DIR` set to a craft-fonts checkout, cut its BIZ UDPGothic Regular.
+    /// With `BHARAT_FONTS_DIR` set to a bharat-fonts checkout, cut its BIZ UDPGothic Regular.
     #[test]
     fn cuts_biz_udpgothic() {
-        let Some(dir) = std::env::var_os("CRAFT_FONTS_DIR").filter(|dir| !dir.is_empty()) else { return };
+        let Some(dir) = std::env::var_os("BHARAT_FONTS_DIR").filter(|dir| !dir.is_empty()) else { return };
         let Ok(source) = std::fs::read(Path::new(&dir).join("fonts/biz-ud-pgothic/BIZUDPGothic-Regular.ttf")) else { return };
         let chars: BTreeSet<char> = "ファイルを開く「新規」、保存。編集表示".chars().collect();
         let cut = crate::subset::subset(&source, 0, &chars).unwrap();
@@ -764,7 +764,7 @@ fn served_faces_carry_the_characters_their_cmap_maps() {
 #[test]
 fn manifest_paths_stay_inside_the_checkout() {
     let scratch = Scratch::new("outside");
-    let dir = scratch.0.join("craft-fonts");
+    let dir = scratch.0.join("bharat-fonts");
     std::fs::create_dir_all(dir.join("fonts")).unwrap();
     std::fs::write(dir.join("fonts/a.ttf"), b"a").unwrap();
     std::fs::write(dir.join("fonts/OFL.txt"), b"licence").unwrap();
@@ -834,7 +834,7 @@ fn manifest_paths_stay_inside_the_checkout() {
 #[test]
 fn a_served_licence_is_always_plain_text() {
     let scratch = Scratch::new("licence-name");
-    let dir = scratch.0.join("craft-fonts");
+    let dir = scratch.0.join("bharat-fonts");
     std::fs::create_dir_all(dir.join("fonts/a")).unwrap();
     std::fs::write(dir.join("fonts/a/a.ttf"), b"a").unwrap();
     let served = scratch.0.join("served");
@@ -857,7 +857,7 @@ fn a_served_licence_is_always_plain_text() {
 fn a_path_with_a_line_break_is_refused_before_cargo_is_told_to_watch_it() {
     let scratch = Scratch::new("line-break");
     let served = scratch.0.join("served");
-    let dir = scratch.0.join("craft-fonts");
+    let dir = scratch.0.join("bharat-fonts");
     std::fs::create_dir_all(dir.join("fonts")).unwrap();
     std::fs::write(dir.join("fonts/OFL.txt"), b"licence").unwrap();
     // A font whose name has a carriage return (the manifest is read by lines, so a line feed can't be in it).
@@ -907,7 +907,7 @@ fn reads_are_bounded_and_refuse_what_is_not_a_regular_file() {
 #[test]
 fn an_oversized_manifest_and_a_directory_face_are_errors() {
     let scratch = Scratch::new("manifest-cap");
-    let dir = scratch.0.join("craft-fonts");
+    let dir = scratch.0.join("bharat-fonts");
     std::fs::create_dir_all(dir.join("fonts/a.ttf")).unwrap();
     std::fs::write(dir.join("fonts/OFL.txt"), b"licence").unwrap();
     let valid = "Sans | Regular | fonts/a.ttf | Latn | OFL-1.1 | fonts/OFL.txt | 00 | src\n";

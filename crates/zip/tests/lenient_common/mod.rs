@@ -1,8 +1,8 @@
-//! The stored-only ZIP writer the integration tests share, as in Craft Anything's testkit.
+//! The stored-only ZIP writer the integration tests share, as in Bharat Anything's testkit.
 
 #![allow(dead_code, clippy::cast_possible_truncation)]
 
-use craft_zip::lenient::crc32;
+use bharat_zip::lenient::crc32;
 
 /// A stored-only ZIP of `files`.
 pub fn zip_stored(files: &[(&str, &[u8])]) -> Vec<u8> {

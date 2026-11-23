@@ -201,9 +201,9 @@ fn type_text_reaches_the_focused_field() {
         String::new(),
     );
     harness.run();
-    type_text(&mut harness, "Craft");
+    type_text(&mut harness, "Bharat");
     type_text(&mut harness, "");
-    assert_eq!(harness.state(), "Craft");
+    assert_eq!(harness.state(), "Bharat");
 }
 
 #[test]

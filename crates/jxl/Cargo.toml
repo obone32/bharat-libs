@@ -1,5 +1,5 @@
 [package]
-name = "craft-jxl"
+name = "bharat-jxl"
 description = "JPEG XL image decoding and encoding with bounded input and allocation tracking."
 version.workspace = true
 edition.workspace = true
@@ -20,7 +20,7 @@ jxl-oxide = { workspace = true, optional = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-craft-cms = { workspace = true }
+bharat-cms = { workspace = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 jixel = { workspace = true, optional = true }

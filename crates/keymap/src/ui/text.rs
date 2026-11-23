@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::chord::{Key, Platform, Trigger};
 use crate::keymap::Bindable;
 
-/// Where the dialog gets its words. Apps on craft-i18n pass [`I18nText`]; others implement the two
+/// Where the dialog gets its words. Apps on bharat-i18n pass [`I18nText`]; others implement the two
 /// required methods with their own lookup.
 pub trait Text {
     /// The dialog's own strings, by English source text (listed in [`STRINGS`]). Placeholders
@@ -41,10 +41,10 @@ pub trait Text {
     }
 }
 
-/// [`Text`] over a craft-i18n catalog.
+/// [`Text`] over a bharat-i18n catalog.
 pub struct I18nText<'a> {
-    pub i18n: &'a craft_i18n::I18n,
-    pub lang: craft_i18n::Lang,
+    pub i18n: &'a bharat_i18n::I18n,
+    pub lang: bharat_i18n::Lang,
 }
 
 impl Text for I18nText<'_> {
@@ -86,7 +86,7 @@ impl Text for English {
     }
 
     fn plural(&self, n: u64, one: &str, other: &str) -> String {
-        craft_i18n::fmt(if n == 1 { one } else { other }, &[("n", &n.to_string())])
+        bharat_i18n::fmt(if n == 1 { one } else { other }, &[("n", &n.to_string())])
     }
 }
 
@@ -113,7 +113,7 @@ pub(crate) fn visual_around(text: &dyn Text, s: &str, chord: &str) -> String {
     if text.rtl() { format!("{after}{chord}{before}") } else { format!("{before}{chord}{after}") }
 }
 
-/// Plural forms the dialog looks up, as `one|other`, the key of craft-i18n's `@plural` rows.
+/// Plural forms the dialog looks up, as `one|other`, the key of bharat-i18n's `@plural` rows.
 pub const PLURALS: &[(&str, &str)] = &[
     ("{n} shortcut is assigned more than once", "{n} shortcuts are assigned more than once"),
     ("{n} saved shortcut could not be used", "{n} saved shortcuts could not be used"),
@@ -272,7 +272,7 @@ pub const STRINGS: &[&str] = &[
     "Built-in sets cannot be changed",
     "There are too many sets",
     "This is not a shortcut set file",
-    "This is not a craft-keymap file",
+    "This is not a bharat-keymap file",
     "This file is from a newer version (format {n})",
     "The file is too large",
     // Import review.

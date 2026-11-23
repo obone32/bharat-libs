@@ -1,6 +1,6 @@
-# craft-font-catalog
+# bharat-font-catalog
 
-The installed fonts for the Craft apps: discovery on every platform, lookup by family and style or by any other name, and loading shared between threads.
+The installed fonts for the Bharat apps: discovery on every platform, lookup by family and style or by any other name, and loading shared between threads.
 
 ## What it finds
 
@@ -28,7 +28,7 @@ The font service covers fonts outside those folders:
 - Windows: DirectWrite's system font collection, which includes per-user fonts and the fonts that font services such as Adobe Fonts load at run time. The registry adds fonts that programs register by full path.
 - Linux and FreeBSD: fontconfig, loaded at run time (`fontconfig-dlopen`), so a system without it still runs.
 
-`FontEnv` holds the environment all of this depends on (`HOME`, the XDG variables, `FONTCONFIG_FILE`, `WINDIR`, `LOCALAPPDATA`, `CRAFT_FONT_STORE`, a file system root), so tests can describe any system without touching the process environment.
+`FontEnv` holds the environment all of this depends on (`HOME`, the XDG variables, `FONTCONFIG_FILE`, `WINDIR`, `LOCALAPPDATA`, `BHARAT_FONT_STORE`, a file system root), so tests can describe any system without touching the process environment.
 
 ## The font store
 
@@ -36,11 +36,11 @@ The font service covers fonts outside those folders:
 
 | Platform | Folder |
 |---|---|
-| macOS | `~/Library/Application Support/Craft Fonts` |
-| Windows | `%LOCALAPPDATA%\Craft Fonts` |
-| Linux, BSDs, Haiku | `$XDG_DATA_HOME/craft-fonts` (`~/.local/share/craft-fonts`) |
+| macOS | `~/Library/Application Support/Bharat Fonts` |
+| Windows | `%LOCALAPPDATA%\Bharat Fonts` |
+| Linux, BSDs, Haiku | `$XDG_DATA_HOME/bharat-fonts` (`~/.local/share/bharat-fonts`) |
 
-`CRAFT_FONT_STORE` replaces it, for portable installs and tests.
+`BHARAT_FONT_STORE` replaces it, for portable installs and tests.
 
 ## Scanning
 
@@ -72,12 +72,12 @@ Each face (`FaceInfo`) has its family and style, legacy family and style, family
 
 ## One enumeration for the UI and documents
 
-With the `system` feature, `system::collection()` returns the process's fontique `Collection`: the system's fonts and the font store's. The catalog lists its files, and craft-ui's font fallback can query the same collection instead of building its own, so the system's fonts are enumerated once per process. A rescan builds a new collection; `system::generation()` tells holders of an older clone to take a new one.
+With the `system` feature, `system::collection()` returns the process's fontique `Collection`: the system's fonts and the font store's. The catalog lists its files, and bharat-ui's font fallback can query the same collection instead of building its own, so the system's fonts are enumerated once per process. A rescan builds a new collection; `system::generation()` tells holders of an older clone to take a new one.
 
 ## Try it
 
 ```sh
-cargo run -p craft-font-catalog --example fonts             # counts, folders, faces outside them
-cargo run -p craft-font-catalog --example fonts -- Arial     # a family's faces
-cargo run -p craft-font-catalog --example fonts -- --watch   # report fonts installed or removed
+cargo run -p bharat-font-catalog --example fonts             # counts, folders, faces outside them
+cargo run -p bharat-font-catalog --example fonts -- Arial     # a family's faces
+cargo run -p bharat-font-catalog --example fonts -- --watch   # report fonts installed or removed
 ```

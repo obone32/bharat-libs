@@ -1,5 +1,5 @@
 //! Motion JPEG (MJPEG): every picture of the stream is a JPEG image (ITU-T T.81 | ISO/IEC 10918-1),
-//! so this module is a frame-level wrapper over `craft-jpeg`, which does the decoding and the
+//! so this module is a frame-level wrapper over `bharat-jpeg`, which does the decoding and the
 //! baseline encoding. There is no second JPEG implementation here.
 //!
 //! - [`Decoder`] decodes one packet to a [`Frame`]: baseline, extended-sequential (8 and 12 bit)
@@ -13,10 +13,10 @@
 //!
 //! Not here: the two-field packets of interlaced MJPEG (QuickTime MJPEG-A and -B, AVI field
 //! pairs), lossless JPEG (SOF3), arithmetic coding and the hierarchical process, which
-//! `craft-jpeg` does not decode. Such packets are errors, never panics.
+//! `bharat-jpeg` does not decode. Such packets are errors, never panics.
 
-use craft_jpeg::Limits;
-pub use craft_jpeg::{ChromaSubsampling, Samples};
+use bharat_jpeg::Limits;
+pub use bharat_jpeg::{ChromaSubsampling, Samples};
 
 use crate::budget::DECODE_MEMORY_BUDGET;
 
@@ -40,12 +40,12 @@ pub enum Error {
 /// `Result` of this module.
 pub type Result<T> = std::result::Result<T, Error>;
 
-impl From<craft_jpeg::Error> for Error {
-    fn from(e: craft_jpeg::Error) -> Self {
+impl From<bharat_jpeg::Error> for Error {
+    fn from(e: bharat_jpeg::Error) -> Self {
         match e {
-            craft_jpeg::Error::Malformed(m) => Error::Invalid(m),
-            craft_jpeg::Error::Unsupported(m) => Error::Unsupported(m),
-            craft_jpeg::Error::LimitExceeded(m) => Error::Limit(m),
+            bharat_jpeg::Error::Malformed(m) => Error::Invalid(m),
+            bharat_jpeg::Error::Unsupported(m) => Error::Unsupported(m),
+            bharat_jpeg::Error::LimitExceeded(m) => Error::Limit(m),
             _ => Error::Invalid("undecodable JPEG".to_string()),
         }
     }
@@ -104,10 +104,10 @@ impl Decoder {
         }
         // An Adobe APP14 segment decides whether 3 and 4 components are YCbCr/YCCK or RGB/CMYK:
         // RGB packets with numeric component ids are only told apart from YCbCr by it.
-        let adobe = craft_jpeg::adobe_transform(packet);
+        let adobe = bharat_jpeg::adobe_transform(packet);
         // AVI `MJPG` packets may leave out the Huffman tables; every other packet keeps its own
-        let packet = craft_jpeg::with_avi1_default_huffman(packet);
-        let d = craft_jpeg::decode(&packet, &self.limits, adobe)?;
+        let packet = bharat_jpeg::with_avi1_default_huffman(packet);
+        let d = bharat_jpeg::decode(&packet, &self.limits, adobe)?;
         Ok(Frame { width: d.width, height: d.height, channels: d.components, samples: d.samples, damaged: d.damaged })
     }
 }
@@ -145,7 +145,7 @@ impl Encoder {
     /// Encode `width × height` interleaved 8-bit pixels of `channels` samples (1 gray, 3 RGB, or 4
     /// RGBA with the alpha dropped).
     pub fn encode(&self, width: u32, height: u32, channels: u8, pixels: &[u8]) -> Result<Vec<u8>> {
-        craft_jpeg::encode_baseline(pixels, width as usize, height as usize, usize::from(channels), self.cfg.quality, self.cfg.subsampling, &[])
+        bharat_jpeg::encode_baseline(pixels, width as usize, height as usize, usize::from(channels), self.cfg.quality, self.cfg.subsampling, &[])
             .map_err(|e| Error::Input(e.to_string()))
     }
 

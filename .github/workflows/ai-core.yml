@@ -34,4 +34,4 @@ jobs:
           toolchain: stable
           targets: wasm32-unknown-unknown
       # The model promises to compile for the web.
-      - run: cargo check -p craft-ai-core --target wasm32-unknown-unknown --locked
+      - run: cargo check -p bharat-ai-core --target wasm32-unknown-unknown --locked

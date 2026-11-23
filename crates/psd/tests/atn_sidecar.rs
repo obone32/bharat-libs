@@ -1,5 +1,5 @@
 //! Independently specified version16 wire streams: one header, consecutive set bodies.
-use craft_psd::{atn, descriptor::Value, error::PsdError};
+use bharat_psd::{atn, descriptor::Value, error::PsdError};
 use proptest::prelude::*;
 
 fn u32be(out: &mut Vec<u8>, value: u32) {

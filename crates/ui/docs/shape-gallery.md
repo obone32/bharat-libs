@@ -1,6 +1,6 @@
 # Shared Insert Shapes choices and previews
 
-`craft_ui::shapes` shares the shape/connector menu and original procedural previews contributed in
+`bharat_ui::shapes` shares the shape/connector menu and original procedural previews contributed in
 [WordCraft #2142](https://github.com/storytold/wordcraft/pull/2142). It provides semantic preset
 identities, default ordering, connector/arrow classification, capability filtering and a menu built
 on the existing accessible `IconButton`. This is reusable menu logic as well as painting.
@@ -11,7 +11,7 @@ offers diamond, star, heart and connectors. Each host must filter by what its en
 a preview does not imply import/export or rendering support in that app.
 
 ```rust
-let chosen = craft_ui::shapes::menu(ui, 220.0, font, &button_style,
+let chosen = bharat_ui::shapes::menu(ui, 220.0, font, &button_style,
     |preset| supported_by_this_app(preset),
     |preset| localize(preset.source_label()),
 );

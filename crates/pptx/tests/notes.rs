@@ -6,7 +6,7 @@ mod common;
 use std::sync::Arc;
 
 use common::{export, import, part, rewrite};
-use craft_pptx::text::{Bullet, ParaProps, TextBody};
+use bharat_pptx::text::{Bullet, ParaProps, TextBody};
 
 const NOTES: &str = "ppt/notesSlides/notesSlide1.xml";
 

@@ -1,4 +1,4 @@
-//! An sRGB colour, the one type of colour every Craft document model and this crate share.
+//! An sRGB colour, the one type of colour every Bharat document model and this crate share.
 
 use serde::{Deserialize, Serialize};
 

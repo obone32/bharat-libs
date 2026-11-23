@@ -1,6 +1,6 @@
-# craft-video
+# bharat-video
 
-Clean-room pure-Rust video codecs for the Craft apps, one feature per codec: DNxHD/DNxHR, VP8,
+Clean-room pure-Rust video codecs for the Bharat apps, one feature per codec: DNxHD/DNxHR, VP8,
 ProRes and H.264.
 
 - Input and output are byte slices and planar sample buffers; the crate opens no files itself
@@ -9,8 +9,8 @@ ProRes and H.264.
   ITU-T H.264).
 - Tested against ffmpeg as an external oracle with roundtrips, hostile fuzzing, and conformance vectors.
   No `unsafe`, no panics on corrupt streams. Builds for `wasm32-unknown-unknown`.
-- Containers (MP4/MOV, Matroska/WebM), bit-level I/O (`craft_media::bitstream`) and shared
-  identifiers (`CodecId`, `CodecParams`) come from [`craft-media`](../media/README.md).
+- Containers (MP4/MOV, Matroska/WebM), bit-level I/O (`bharat_media::bitstream`) and shared
+  identifiers (`CodecId`, `CodecParams`) come from [`bharat-media`](../media/README.md).
 
 ## Cargo features
 
@@ -24,7 +24,7 @@ No codec feature is on by default.
 | `mpeg2` | [`mpeg2`](src/mpeg2/README.md) | MPEG-2 video (ITU-T H.262) and MPEG-1 video (ISO/IEC 11172-2): decoder (`mpeg2-decode` alone); MPEG-2 encoder with I, P and B pictures and constant or variable bitrate within the VBV buffer (`mpeg2-encode`, which also turns on the decoder) |
 | `mpeg4` | [`mpeg4`](src/mpeg4/README.md) | MPEG-4 Part 2 video (ISO/IEC 14496-2, the Xvid/DivX format): Simple profile encoder (`mpeg4-encode`) |
 | `hap` | `hap` | Vidvox Hap: Hap, Hap Alpha, Hap Q, Hap Q Alpha and Hap Alpha-Only, decoder and encoder, with the Snappy and chunked second stages. DXT1, DXT5, scaled YCoCg-DXT5 and BC4 pictures decode in software; BC7 (Hap R) and BC6 (Hap HDR) frames are read and their blocks returned but not decoded to pictures. |
-| `mjpeg` | `mjpeg` | Motion JPEG: a decoder (baseline, extended and progressive Huffman JPEG; the Annex K tables for AVI `MJPG` packets that have none) and a baseline encoder, both over `craft-jpeg`. No two-field (MJPEG-A/B) packets and no lossless JPEG. |
+| `mjpeg` | `mjpeg` | Motion JPEG: a decoder (baseline, extended and progressive Huffman JPEG; the Annex K tables for AVI `MJPG` packets that have none) and a baseline encoder, both over `bharat-jpeg`. No two-field (MJPEG-A/B) packets and no lossless JPEG. |
 | `prores` | `prores` | Apple ProRes (SMPTE RDD 36): decoder and encoder |
 | `h264` | [`h264`](src/h264/decode/README.md) | ITU-T H.264 / AVC: decoder (`h264-decode` alone) and encoder (`h264-encode` alone) |
 | `hevc` | [`hevc`](src/hevc/decode/README.md) | ITU-T H.265 / HEVC: decoder (`hevc-decode` alone) and encoder (`hevc-encode` alone) |

@@ -6,15 +6,15 @@ use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use craft_media::avi::{AudioSpec, AviWriter, MuxOptions, StreamSpec, VideoSpec};
+use bharat_media::avi::{AudioSpec, AviWriter, MuxOptions, StreamSpec, VideoSpec};
 
 const FRAMES: usize = 50;
 /// 25 frames a second of 48 kHz stereo 16-bit PCM: bytes of audio a frame.
 const AUDIO_PER_FRAME: usize = 48_000 / 25 * 4;
 
 fn tools() -> Option<(PathBuf, PathBuf)> {
-    let ff = craft_media_testkit::ffmpeg_or_skip("avi muxer oracle")?;
-    let probe = craft_media_testkit::ffprobe()?;
+    let ff = bharat_media_testkit::ffmpeg_or_skip("avi muxer oracle")?;
+    let probe = bharat_media_testkit::ffprobe()?;
     Some((ff, probe))
 }
 
@@ -80,7 +80,7 @@ fn decode(ff: &Path, input: &Path, format: Option<&str>, map: &str, out: &[&str]
 #[test]
 fn ffmpeg_decodes_muxed_files_like_their_sources() {
     let Some((ff, probe)) = tools() else { return };
-    let dir = craft_media_testkit::private_dir("avi-mux");
+    let dir = bharat_media_testkit::private_dir("avi-mux");
     let (es, pcm) = sources(&ff, &dir);
     let video = vops(&es);
     assert_eq!(video.len(), FRAMES);

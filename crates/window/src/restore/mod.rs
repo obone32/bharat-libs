@@ -12,7 +12,7 @@
 //! overwrite each other.
 //!
 //! ```
-//! use craft_window::restore::{Defaults, Monitor, MonitorKey, Store, place};
+//! use bharat_window::restore::{Defaults, Monitor, MonitorKey, Store, place};
 //!
 //! let mut store = Store::in_memory();
 //! let monitors = [Monitor::new(MonitorKey::new("DP-1", [1920, 1080]), [0, 0], [1920, 1080], 1.0)];

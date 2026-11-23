@@ -233,7 +233,7 @@ pub(crate) struct Paper<'a> {
 /// keyword, then the closest; on a tie the driver's own order. Its index in `papers`.
 ///
 /// An entry the driver keeps only one side of (the other reads zero, a legacy host-based driver's
-/// DEVMODE metric, storytold/craft-libs#7230) is a candidate of last resort (INV-4): only when no
+/// DEVMODE metric, obone32/bharat-libs#7230) is a candidate of last resort (INV-4): only when no
 /// full entry matched, only a Print Schema keyword entry, and only while its known side agrees
 /// with the sheet, either way round. A single such entry is still refused when its own name is
 /// known and contradicts the requested standard sheet (INV-4): a known conflicting name is
@@ -360,7 +360,7 @@ fn integer(document: &roxmltree::Document<'_>, node: roxmltree::Node<'_, '_>, ta
 ///
 /// A zero or unreadable side (`MediaSizeWidth` gone) is roll-like only while the request itself
 /// names no sheet (INV-2): a legacy host-based driver keeps the paper metric in its DEVMODE
-/// extension and reads back a zero side for a real sheet (HP LaserJet P1102, storytold/craft-libs#7230), so
+/// extension and reads back a zero side for a real sheet (HP LaserJet P1102, obone32/bharat-libs#7230), so
 /// with a sheet named the job falls back to the size the request asked for (INV-1,
 /// fail-closed: every refusal here is before anything reaches the spooler). A side the driver
 /// did report must agree with the sheet asked for, either way round (INV-3); both sides gone is
@@ -1140,7 +1140,7 @@ mod tests {
     }
 
     /// A validated ticket that keeps only the sides its DEVMODE extension could read, as a legacy
-    /// host-based driver (HP LaserJet P1102, storytold/craft-libs#7230) returns one.
+    /// host-based driver (HP LaserJet P1102, obone32/bharat-libs#7230) returns one.
     fn validated_partial(width: Option<u32>, height: Option<u32>) -> String {
         let side = |name: &str, value: Option<u32>| {
             value.map_or(String::new(), |v| {
@@ -1158,7 +1158,7 @@ mod tests {
         )
     }
 
-    /// storytold/craft-libs#7230: the driver reports one side of the paper as zero for a real
+    /// obone32/bharat-libs#7230: the driver reports one side of the paper as zero for a real
     /// sheet. With the sheet the request names, the job goes on with the size it asked for; a
     /// side the driver did report must still agree with it, and a request that names no sheet is
     /// refused as before.
@@ -1189,7 +1189,7 @@ mod tests {
     }
 
     /// A validated ticket whose width the option refers to a parameter the ticket sets
-    /// (`MediaSizeWidth` a `ParameterRef`, storytold/craft-libs#1225), as a driver writes one.
+    /// (`MediaSizeWidth` a `ParameterRef`, obone32/bharat-libs#1225), as a driver writes one.
     fn validated_referenced(width: u32, height: u32) -> String {
         format!(
             r#"<psf:PrintTicket version="1" xmlns:psf="{NS_PSF}" xmlns:psk="{NS_PSK}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -1708,7 +1708,7 @@ mod tests {
         assert!(!names_paper(Some("ANSI D"), "ARCH D"));
         assert!(!names_paper(Some("ARCH E1"), "ARCH E"));
         assert!(!names_paper(Some("A4Extra"), "A4"));
-        // storytold/craft-libs#1225: a word after a separator is a modifier, not dimensions.
+        // obone32/bharat-libs#1225: a word after a separator is a modifier, not dimensions.
         assert!(!names_paper(Some("A4 Extra"), "A4"));
         assert!(!names_paper(Some("A4 (Extra)"), "A4"));
         assert!(names_paper(Some("A4 210 x 297 mm"), "A4"));
@@ -1716,7 +1716,7 @@ mod tests {
         assert!(!names_paper(None, "A4"));
     }
 
-    /// A paper the driver keeps one side of (storytold/craft-libs#7230) is a candidate of last
+    /// A paper the driver keeps one side of (obone32/bharat-libs#7230) is a candidate of last
     /// resort only: no full entry matched, a Print Schema keyword entry, and its known side
     /// agrees with the sheet.
     #[test]
@@ -1748,7 +1748,7 @@ mod tests {
         assert_eq!(matching_paper(&[paper(0, 297_251, None, true)], 595.28, 841.89), None, "one µm past the tolerance");
     }
 
-    /// storytold/craft-libs#1225 (Code Rabbit, second round): a single partial paper whose known
+    /// obone32/bharat-libs#1225 (Code Rabbit, second round): a single partial paper whose known
     /// side agrees is still refused when its own name is known and contradicts the requested
     /// standard sheet — the width the driver kept is shared by Letter and Legal, and a known
     /// Letter name is evidence against choosing it for a Legal sheet (INV-4). "Extra" is a
@@ -1770,7 +1770,7 @@ mod tests {
         assert_eq!(matching_paper(&[paper(215_900, 0, None, true)], 612.0, 1008.0), Some(0), "an unnamed twin stands, the agreement alone");
     }
 
-    /// storytold/craft-libs#1225: two partial papers that both agree (Letter and Legal share a
+    /// obone32/bharat-libs#1225: two partial papers that both agree (Letter and Legal share a
     /// width) are told apart by name, as full candidates are; when nothing tells them apart,
     /// none is chosen, not the first one that agrees.
     #[test]

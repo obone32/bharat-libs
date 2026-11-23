@@ -2,7 +2,7 @@
 //! iterative — `resolve` and `classify` reach `parse_share` at a fixed depth — so these come
 //! back; a refusal is fine, a crash is not.
 
-use craft_docpath::{classify, resolve};
+use bharat_docpath::{classify, resolve};
 
 /// Half a megabyte of components under a UNC share: one component per level for a parser that
 /// recursed on each separator.

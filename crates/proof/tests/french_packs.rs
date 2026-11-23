@@ -1,8 +1,8 @@
 //! French uses ordinary Language packs and keeps each regional locale at the public API.
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
-use craft_proof::affix;
-use craft_proof::{IssueKind, Options, ProofLang, check_text_with, is_correct_in_with, suggest_in};
+use bharat_proof::affix;
+use bharat_proof::{IssueKind, Options, ProofLang, check_text_with, is_correct_in_with, suggest_in};
 use std::path::{Path, PathBuf};
 
 #[path = "../src/fr/test_dict.rs"]
@@ -11,9 +11,9 @@ mod fixture;
 struct Tools(PathBuf);
 impl Drop for Tools {
     fn drop(&mut self) {
-        craft_proof::set_dictionaries_folder(None);
-        craft_proof::packs::set_packs_dir(None);
-        craft_proof::remove_word("zxqrechargefr");
+        bharat_proof::set_dictionaries_folder(None);
+        bharat_proof::packs::set_packs_dir(None);
+        bharat_proof::remove_word("zxqrechargefr");
         let _ = std::fs::remove_dir_all(&self.0);
     }
 }
@@ -27,7 +27,7 @@ fn pair(dir: &Path, name: &str, aff: &str, dic: &str) {
 #[test]
 fn french_packs_regions_reload_and_original_ranges() {
     assert!(!fixture::dictionary().is_empty());
-    let root = std::env::temp_dir().join(format!("craft-fr-packs-{}", std::process::id()));
+    let root = std::env::temp_dir().join(format!("bharat-fr-packs-{}", std::process::id()));
     let _tools = Tools(root.clone());
     let pack = root.join("packs/fr");
     pair(&pack, "spelling", fixture::AFF, fixture::DIC);
@@ -35,8 +35,8 @@ fn french_packs_regions_reload_and_original_ranges() {
     std::fs::write(pack.join("hyphenation.pat"), "ma1ison\n").unwrap();
     let folder = root.join("dictionaries");
     std::fs::create_dir_all(&folder).unwrap();
-    craft_proof::packs::set_packs_dir(Some(root.join("packs")));
-    craft_proof::set_dictionaries_folder(Some(folder.clone()));
+    bharat_proof::packs::set_packs_dir(Some(root.join("packs")));
+    bharat_proof::set_dictionaries_folder(Some(folder.clone()));
     let defaults = Options::default();
     let strict = Options { ignore_uppercase: false, ignore_numbers: false, ..defaults };
     check_locales(defaults, strict);
@@ -51,8 +51,8 @@ fn check_locales(defaults: Options, strict: Options) {
     for tag in ["fr", "fr-FR", "fr-CA", "fr-BE", "fr-CA-u-nu-latn", "fr-u-ca-gregory"] {
         let lang = ProofLang::from_tag(Some(tag));
         assert!(matches!(lang, ProofLang::Pack(_)), "{tag}");
-        assert!(craft_proof::has_dictionary(Some(tag)), "{tag}");
-        assert!(craft_proof::pack_dictionary_file(lang).unwrap().ends_with("fr/spelling.dic"), "{tag}");
+        assert!(bharat_proof::has_dictionary(Some(tag)), "{tag}");
+        assert!(bharat_proof::pack_dictionary_file(lang).unwrap().ends_with("fr/spelling.dic"), "{tag}");
         for word in ["école", "e\u{301}cole", "l'arbre", "l’arbre", "maison-école"] {
             assert!(is_correct_in_with(word, lang, &strict), "{tag}: {word}");
         }
@@ -77,17 +77,17 @@ fn check_typography(strict: Options) {
     let fr = ProofLang::from_tag(Some("fr-FR"));
     let ca = ProofLang::from_tag(Some("fr-CA"));
     for lang in [fr, ca] {
-        assert_eq!(craft_proof::hyphen::hyphen_points_in("maison", &craft_proof::hyphen::Limits::default(), lang), [2]);
+        assert_eq!(bharat_proof::hyphen::hyphen_points_in("maison", &bharat_proof::hyphen::Limits::default(), lang), [2]);
     }
     for tag in ["fr-FR", "fr-BE", "fr-u-ca-gregory", "fr-FR-u-rg-cazzzz"] {
-        let issues = craft_proof::check_grammar_in("Bonjour!", ProofLang::from_tag(Some(tag)));
+        let issues = bharat_proof::check_grammar_in("Bonjour!", ProofLang::from_tag(Some(tag)));
         assert_eq!(issues.len(), 1, "{tag}: {issues:?}");
         assert_eq!(issues[0].suggestions, ["\u{202f}!"]);
     }
-    assert!(craft_proof::check_grammar_in("Bonjour!", ca).is_empty());
-    assert!(craft_proof::check_grammar_in("Bonjour!", ProofLang::from_tag(Some("fr-Latn-CA"))).is_empty());
-    assert!(craft_proof::check_grammar_in("Bonjour!", ProofLang::from_tag(Some("nl-NL"))).is_empty());
-    assert!(craft_proof::fr::grammar::check_in("Bonjour!", ProofLang::En).is_empty());
+    assert!(bharat_proof::check_grammar_in("Bonjour!", ca).is_empty());
+    assert!(bharat_proof::check_grammar_in("Bonjour!", ProofLang::from_tag(Some("fr-Latn-CA"))).is_empty());
+    assert!(bharat_proof::check_grammar_in("Bonjour!", ProofLang::from_tag(Some("nl-NL"))).is_empty());
+    assert!(bharat_proof::fr::grammar::check_in("Bonjour!", ProofLang::En).is_empty());
     let text = "Bonjour! Salut!";
     let issues = check_text_with(text, &[(0..8, fr), (8..text.len(), ca)], &strict, true, false);
     let spacing: Vec<_> = issues.iter().filter(|i| i.kind == IssueKind::Grammar && i.message.contains("fine insécable")).collect();
@@ -96,11 +96,11 @@ fn check_typography(strict: Options) {
 }
 
 fn check_user_word(fr: ProofLang, ca: ProofLang, strict: Options) {
-    craft_proof::add_word("zxqrechargefr");
+    bharat_proof::add_word("zxqrechargefr");
     for lang in [fr, ca] {
         assert!(is_correct_in_with("l’zxqrechargefr", lang, &strict));
     }
-    craft_proof::remove_word("zxqrechargefr");
+    bharat_proof::remove_word("zxqrechargefr");
     assert!(!is_correct_in_with("l’zxqrechargefr", ca, &strict));
 }
 
@@ -108,17 +108,17 @@ fn check_overrides(folder: PathBuf, fr: ProofLang, ca: ProofLang, strict: Option
     // Regional overrides keep the generic pack fallback and the shared reload generation.
     pair(&folder, "fr_FR", "SET UTF-8\n", "1\nhexagonefixture\n");
     pair(&folder, "fr_CA", "SET UTF-8\n", "1\nquebecfixture\n");
-    let generation = craft_proof::dictionary_generation();
-    craft_proof::set_dictionaries_folder(Some(folder.clone()));
-    assert!(craft_proof::dictionary_generation() > generation);
+    let generation = bharat_proof::dictionary_generation();
+    bharat_proof::set_dictionaries_folder(Some(folder.clone()));
+    assert!(bharat_proof::dictionary_generation() > generation);
     assert!(is_correct_in_with("hexagonefixture", fr, &strict));
     assert!(!is_correct_in_with("hexagonefixture", ca, &strict));
     assert!(is_correct_in_with("quebecfixture", ca, &strict));
     assert!(!is_correct_in_with("quebecfixture", fr, &strict));
-    assert!(craft_proof::pack_dictionary_file(ca).unwrap().ends_with("fr_CA.dic"));
+    assert!(bharat_proof::pack_dictionary_file(ca).unwrap().ends_with("fr_CA.dic"));
     std::fs::remove_file(folder.join("fr_CA.dic")).unwrap();
     std::fs::remove_file(folder.join("fr_CA.aff")).unwrap();
-    craft_proof::set_dictionaries_folder(Some(folder));
+    bharat_proof::set_dictionaries_folder(Some(folder));
     assert!(is_correct_in_with("école", ca, &strict), "removed regional override falls back to fr pack");
-    assert!(craft_proof::pack_dictionary_file(ca).unwrap().ends_with("fr/spelling.dic"));
+    assert!(bharat_proof::pack_dictionary_file(ca).unwrap().ends_with("fr/spelling.dic"));
 }

@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Shared text processing for the Craft apps. It sits below the composer: layout code calls it on
+//! Shared text processing for the Bharat apps. It sits below the composer: layout code calls it on
 //! plain text and a language before it shapes and places glyphs.
 //!
 //! Modules, each behind the cargo feature of the same name:

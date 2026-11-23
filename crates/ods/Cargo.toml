@@ -1,6 +1,6 @@
 [package]
-name = "craft-ods"
-description = "OpenDocument spreadsheets (.ods): the tables of content.xml with typed cell values, displayed text, formulas, repeats and merged cells, on craft-odf."
+name = "bharat-ods"
+description = "OpenDocument spreadsheets (.ods): the tables of content.xml with typed cell values, displayed text, formulas, repeats and merged cells, on bharat-odf."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,10 +11,10 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-odf = { workspace = true }
-craft-sheet = { workspace = true }
-craft-xml = { workspace = true }
+bharat-odf = { workspace = true }
+bharat-sheet = { workspace = true }
+bharat-xml = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-craft-odf = { workspace = true }
+bharat-odf = { workspace = true }

@@ -17,13 +17,13 @@
 //! and `duration_ms` is `null` for a step that did not start. Machine, GPU and other app-specific
 //! details stay in the app's own report.
 //!
-//! The file is replaced atomically with `craft_atomic`: a reader sees the previous complete report or
+//! The file is replaced atomically with `bharat_atomic`: a reader sees the previous complete report or
 //! the new one, never a partial file, and a failed write leaves the previous report in place.
 
 use std::io;
 use std::path::Path;
 
-use craft_atomic::{AtomicFs, RealFs, RenameRetry};
+use bharat_atomic::{AtomicFs, RealFs, RenameRetry};
 use serde_json::{Value, json};
 
 use crate::runner::StepRecord;
@@ -55,14 +55,14 @@ pub fn write(path: &Path, records: &[StepRecord]) -> io::Result<()> {
 fn write_custom(fs: &dyn AtomicFs, retry: RenameRetry, path: &Path, records: &[StepRecord]) -> io::Result<()> {
     let mut bytes = serde_json::to_vec_pretty(&to_json(records)).map_err(io::Error::other)?;
     bytes.push(b'\n');
-    craft_atomic::atomic_write_custom(fs, retry, path, &bytes)
+    bharat_atomic::atomic_write_custom(fs, retry, path, &bytes)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::runner::{Error, RunOptions, Step, run_steps_to};
-    use craft_atomic::NewFilePermissions;
+    use bharat_atomic::NewFilePermissions;
     use std::fs::{File, Permissions};
 
     /// The real file system with every rename failing.

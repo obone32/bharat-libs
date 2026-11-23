@@ -100,7 +100,7 @@ pub fn supported_vector_write_extensions() -> Vec<&'static str> {
 pub fn write_vector(extension: &str, scene: &OutputScene) -> Result<Vec<u8>, Error> {
     match writer_format_for_extension(extension).ok_or_else(|| Error::Write(format!("no writer for .{extension}")))? {
         WriteFormat::Svg => write_svg(scene).map(String::into_bytes),
-        WriteFormat::Svgz => write_svg(scene).map(|svg| craft_svg::svgz::compress(svg.as_bytes())),
+        WriteFormat::Svgz => write_svg(scene).map(|svg| bharat_svg::svgz::compress(svg.as_bytes())),
         WriteFormat::Dxf => write_dxf(scene).map(String::into_bytes),
         WriteFormat::Pdf => write_pdf(scene),
         WriteFormat::Png | WriteFormat::Jpeg => Err(Error::Write("raster output requires pixels".into())),
@@ -109,10 +109,10 @@ pub fn write_vector(extension: &str, scene: &OutputScene) -> Result<Vec<u8>, Err
 
 /// Encode an RGBA image using the writer selected by its extension.
 pub fn write_raster(extension: &str, width: u32, height: u32, rgba: &[u8], jpeg_quality: u8) -> Result<Vec<u8>, Error> {
-    let pixels = craft_raster_codecs::common::Pixels::from_raw(width, height, rgba.to_vec()).ok_or(Error::InvalidGeometry)?;
+    let pixels = bharat_raster_codecs::common::Pixels::from_raw(width, height, rgba.to_vec()).ok_or(Error::InvalidGeometry)?;
     match writer_format_for_extension(extension).ok_or_else(|| Error::Write(format!("no writer for .{extension}")))? {
-        WriteFormat::Png => craft_raster_codecs::common::encode_png(&pixels).map_err(|error| Error::Write(error.to_string())),
-        WriteFormat::Jpeg => craft_raster_codecs::common::encode_jpeg(&pixels, jpeg_quality).map_err(|error| Error::Write(error.to_string())),
+        WriteFormat::Png => bharat_raster_codecs::common::encode_png(&pixels).map_err(|error| Error::Write(error.to_string())),
+        WriteFormat::Jpeg => bharat_raster_codecs::common::encode_jpeg(&pixels, jpeg_quality).map_err(|error| Error::Write(error.to_string())),
         _ => Err(Error::Write("vector output requires paths".into())),
     }
 }
@@ -134,33 +134,33 @@ fn write_svg(scene: &OutputScene) -> Result<String, Error> {
                 .map(|path| {
                     let color = path.color_rgb;
                     let mut attributes = vec![
-                        craft_svg::write::Attribute::text("fill", "none"),
-                        craft_svg::write::Attribute::text("stroke", format!("#{:02x}{:02x}{:02x}", color[0], color[1], color[2])),
-                        craft_svg::write::Attribute::text("stroke-width", format_float(path.stroke_width_mm / view_scale)),
+                        bharat_svg::write::Attribute::text("fill", "none"),
+                        bharat_svg::write::Attribute::text("stroke", format!("#{:02x}{:02x}{:02x}", color[0], color[1], color[2])),
+                        bharat_svg::write::Attribute::text("stroke-width", format_float(path.stroke_width_mm / view_scale)),
                     ];
                     if let Some(class) = &path.class {
-                        attributes.push(craft_svg::write::Attribute::text("class", class.clone()));
+                        attributes.push(bharat_svg::write::Attribute::text("class", class.clone()));
                     }
                     if let Some(data_kind) = &path.data_kind {
-                        attributes.push(craft_svg::write::Attribute::text("data-kind", data_kind.clone()));
+                        attributes.push(bharat_svg::write::Attribute::text("data-kind", data_kind.clone()));
                     }
-                    craft_svg::write::Element::Path { attributes, path: path.path.clone() }
+                    bharat_svg::write::Element::Path { attributes, path: path.path.clone() }
                 })
                 .collect::<Vec<_>>();
             let mut attributes = vec![
-                craft_svg::write::Attribute::text("data-layer", layer.name.clone()),
-                craft_svg::write::Attribute::text("style", if layer.visible { "display:inline" } else { "display:none" }),
+                bharat_svg::write::Attribute::text("data-layer", layer.name.clone()),
+                bharat_svg::write::Attribute::text("style", if layer.visible { "display:inline" } else { "display:none" }),
             ];
             if let Some(class) = &layer.class {
-                attributes.push(craft_svg::write::Attribute::text("class", class.clone()));
+                attributes.push(bharat_svg::write::Attribute::text("class", class.clone()));
             }
             if let Some(data_kind) = &layer.data_kind {
-                attributes.push(craft_svg::write::Attribute::text("data-kind", data_kind.clone()));
+                attributes.push(bharat_svg::write::Attribute::text("data-kind", data_kind.clone()));
             }
-            craft_svg::write::Element::Group { attributes, children: paths }
+            bharat_svg::write::Element::Group { attributes, children: paths }
         })
         .collect();
-    Ok(craft_svg::write::Scene { width_mm: scene.width_mm, height_mm: scene.height_mm, view_box: scene.view_box, elements }.write())
+    Ok(bharat_svg::write::Scene { width_mm: scene.width_mm, height_mm: scene.height_mm, view_box: scene.view_box, elements }.write())
 }
 
 fn write_pdf(scene: &OutputScene) -> Result<Vec<u8>, Error> {
@@ -191,11 +191,11 @@ fn paths_by_layer(scene: &OutputScene) -> Vec<Vec<&OutputPath>> {
 
 /// Encode a neutral list of laid-out pages with vector paths as PDF.
 pub fn write_pdf_pages(pages: &[PdfPage]) -> Result<Vec<u8>, Error> {
-    use craft_pdf::write::{Metadata, Writer, backend};
+    use bharat_pdf::write::{Metadata, Writer, backend};
     const PT_PER_MM: f64 = 72.0 / 25.4;
-    craft_pdf::write::guard(|| {
+    bharat_pdf::write::guard(|| {
         let settings = backend::SerializeSettings {
-            configuration: craft_pdf::write::configuration(backend::configure::PdfVersion::Pdf14, None)?,
+            configuration: bharat_pdf::write::configuration(backend::configure::PdfVersion::Pdf14, None)?,
             ..Default::default()
         };
         let mut writer = Writer::new(settings, Metadata::default());
@@ -303,26 +303,26 @@ pub fn write_pdf_pages(pages: &[PdfPage]) -> Result<Vec<u8>, Error> {
 
 fn write_dxf(scene: &OutputScene) -> Result<String, Error> {
     validate_scene(scene)?;
-    let mut drawing = craft_dxf::model::write::Drawing::default();
-    drawing.format = craft_dxf::model::write::Format::R14;
+    let mut drawing = bharat_dxf::model::write::Drawing::default();
+    drawing.format = bharat_dxf::model::write::Format::R14;
     drawing.insunits = 4;
     drawing.metric = true;
     drawing.extents = [0.0, 0.0, scene.width_mm, scene.height_mm];
     drawing.limits = drawing.extents;
     for layer in &scene.layers {
-        drawing.layers.push(craft_dxf::model::Layer {
+        drawing.layers.push(bharat_dxf::model::Layer {
             handle: None,
             name: layer.dxf_name.clone(),
-            color: craft_dxf::model::Color::Index(layer.dxf_color_index),
+            color: bharat_dxf::model::Color::Index(layer.dxf_color_index),
             on: layer.visible,
             frozen: false,
             vp_freeze_new: false,
             locked: false,
             plot: true,
             linetype: "Continuous".into(),
-            lineweight: craft_dxf::model::Lineweight::Default,
+            lineweight: bharat_dxf::model::Lineweight::Default,
             plot_style: None,
-            transparency: craft_dxf::model::Transparency::ByLayer,
+            transparency: bharat_dxf::model::Transparency::ByLayer,
             description: None,
         });
     }
@@ -351,25 +351,25 @@ fn write_dxf(scene: &OutputScene) -> Result<String, Error> {
                 if !(point.x.is_finite() && point.y.is_finite()) {
                     return Err(Error::InvalidGeometry);
                 }
-                vertices.push(craft_dxf::model::LwVertex { x: point.x, y: scene.height_mm - point.y, ..Default::default() });
+                vertices.push(bharat_dxf::model::LwVertex { x: point.x, y: scene.height_mm - point.y, ..Default::default() });
             }
-            drawing.entities.push(craft_dxf::model::Entity {
-                common: craft_dxf::model::Common {
+            drawing.entities.push(bharat_dxf::model::Entity {
+                common: bharat_dxf::model::Common {
                     handle: None,
                     owner: None,
                     layer: layer.dxf_name.clone(),
                     linetype: None,
-                    color: craft_dxf::model::Color::ByLayer,
-                    lineweight: craft_dxf::model::Lineweight::ByLayer,
+                    color: bharat_dxf::model::Color::ByLayer,
+                    lineweight: bharat_dxf::model::Lineweight::ByLayer,
                     ltscale: 1.0,
                     visible: true,
                     paper_space: false,
-                    transparency: craft_dxf::model::Transparency::ByLayer,
+                    transparency: bharat_dxf::model::Transparency::ByLayer,
                     thickness: 0.0,
                     extrusion: [0.0, 0.0, 1.0],
                     plot_style: None,
                 },
-                kind: craft_dxf::model::EntityKind::LwPolyline(craft_dxf::model::LwPolyline {
+                kind: bharat_dxf::model::EntityKind::LwPolyline(bharat_dxf::model::LwPolyline {
                     vertices,
                     closed: closed || output.close_open_contours,
                     plinegen: false,
@@ -383,7 +383,7 @@ fn write_dxf(scene: &OutputScene) -> Result<String, Error> {
     if skipped > 0 {
         return Err(Error::Write(format!("DXF writer skipped {skipped} entities")));
     }
-    Ok(craft_dxf::write_ascii(&tags))
+    Ok(bharat_dxf::write_ascii(&tags))
 }
 
 fn flatten(path: &BezPath) -> Result<Vec<(Vec<Point>, bool)>, Error> {

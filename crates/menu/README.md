@@ -1,12 +1,12 @@
-# craft-menu
+# bharat-menu
 
-A Craft app's menus, laid out for macOS, Windows, Linux and the web. The app supplies its menu
+A Bharat app's menus, laid out for macOS, Windows, Linux and the web. The app supplies its menu
 tree and runs its commands; this crate lays the menus out the way each platform's apps do, takes
-shortcuts from craft-keymap, drives a platform `Backend`, and turns the menu's key
+shortcuts from bharat-keymap, drives a platform `Backend`, and turns the menu's key
 equivalents back into the input egui would have had without it. It depends on egui,
-[`craft-keymap`](../keymap/src/lib.rs) (commands and chords) and [`craft-quit`](../quit/src/lib.rs),
+[`bharat-keymap`](../keymap/src/lib.rs) (commands and chords) and [`bharat-quit`](../quit/src/lib.rs),
 and on no app. Everything but the macOS backend
-(`craft_menu::mac`, built on muda) is platform-free and also builds for `wasm32`. The layout and driver come from PhotoCraft's `native_menu.rs`, the egui bar from its `menu_nav.rs` and in-window menu bar.
+(`bharat_menu::mac`, built on muda) is platform-free and also builds for `wasm32`. The layout and driver come from PhotoCraft's `native_menu.rs`, the egui bar from its `menu_nav.rs` and in-window menu bar.
 
 ## The menus
 
@@ -16,7 +16,7 @@ its role (`MenuRole::{App, File, Edit, View, Window, Help, Other}`), then tag wh
 fixed places:
 
 ```rust
-let mut bar = craft_menu::from_items(&["File", "Edit", "View", "Window", "Help"], &rows);
+let mut bar = bharat_menu::from_items(&["File", "Edit", "View", "Window", "Help"], &rows);
 bar.tag_menu("File", MenuRole::File);
 bar.tag_menu("Edit", MenuRole::Edit);
 bar.tag_menu("View", MenuRole::View);
@@ -28,13 +28,13 @@ bar.tag_submenu(MenuRole::Edit, "Preferences", ItemRole::Settings);
 bar.tag_submenu(MenuRole::View, "Theme", ItemRole::Appearance);
 ```
 
-Each item runs a `craft_keymap::CommandRef`, and a click reports it. A command that takes a
+Each item runs a `bharat_keymap::CommandRef`, and a click reports it. A command that takes a
 parameter carries it in the `CommandRef`:
 `CommandRef::with_params("file.open_recent", json!({"index": 3}))`. Items built directly use
 `Item::new(command, label)` with `.shortcut(chord)`, `.enabled(..)`, `.check(..)` or
 `.radio(..)` (the item's `ItemKind`), `.role(..)` and `.platforms(..)`; submenus use
 `Node::submenu(label, children)`, with `.role(..)` for a tagged one. A shortcut is a
-`craft_keymap::Chord`: `cmd` is ⌘ and `ctrl` the Control key. macOS shows radio items as check
+`bharat_keymap::Chord`: `cmd` is ⌘ and `ctrl` the Control key. macOS shows radio items as check
 items. The app's open documents go in `MenuBar::documents` (`Document::new(command, name)`,
 `.active(..)` for the one in front, `hidden` for one kept open but not listed), and the layouts
 list them in the Window menu. The items the
@@ -68,7 +68,7 @@ it resolved:
 
 - **App menu:** About, Settings (⌘,), Language, Appearance, Services, Hide (⌘H), Hide Others
   (⌥⌘H), Show All, Quit (⌘Q). The tagged items leave their old menus. Without a tagged Quit item
-  the layout adds one with `craft_quit::QUIT_MENU_ID`. A menu the app tagged `MenuRole::App` is
+  the layout adds one with `bharat_quit::QUIT_MENU_ID`. A menu the app tagged `MenuRole::App` is
   merged in: its other items follow Appearance.
 - **Window:** Minimize, Zoom, the app's own Window items, Bring All to Front, then the open
   documents. A Window menu is added if the app has none. **File** gets Close Window (⌘W).
@@ -85,7 +85,7 @@ substitutes `{app}`.
 ## Keymap
 
 `apply_keymap(&mut bar, &keymap)` gives each item the shortcut its command has in the app's
-`craft_keymap::Keymap`, the user's overrides included: the first single-press binding, one in
+`bharat_keymap::Keymap`, the user's overrides included: the first single-press binding, one in
 the command's home scope first. A command the keymap knows but binds to nothing loses its
 shortcut; an item whose command the keymap doesn't know keeps its own. Items of toggle commands
 (`Bindable::toggle`) become check items, keeping their checked state; radio items stay radio
@@ -102,7 +102,7 @@ are left alone. Both run on the app's bar, before the layout.
 frame:
 
 ```rust
-let laid_out = craft_menu::layout(&menu_bar, Target::current(), &LayoutOptions::new("PhotoCraft")).bar;
+let laid_out = bharat_menu::layout(&menu_bar, Target::current(), &LayoutOptions::new("PhotoCraft")).bar;
 egui::Panel::top("menu-bar").show(ui, |ui| {
     let gate = Gate { modal: dialog_open, recording_shortcut, text_editing: ui.ctx().text_edit_focused() };
     for command in MenuBarUi::new(&laid_out).gate(gate).label(&tr).show(ui) {
@@ -118,7 +118,7 @@ egui::Panel::top("menu-bar").show(ui, |ui| {
   ▲ and ▼ arrows.
 - **Keys, while a menu is open:** ↑ and ↓ move the highlight, → opens a submenu or the next
   menu, ← closes the submenu or opens the previous menu, ↩ and Space run the item, Esc closes.
-  `craft_menu::bar::is_open(ctx)` tells the app's shortcut handling to wait meanwhile.
+  `bharat_menu::bar::is_open(ctx)` tells the app's shortcut handling to wait meanwhile.
 - **Keyboard access (Windows, Linux, web):** a tap on Alt alone, or F10, puts the keyboard on
   the bar: the first title is lit, ← and → move along the titles, ↓, ↩ and Space open the lit
   menu, Esc, a second tap or a click leaves. Alt+letter opens the menu with that mnemonic, and
@@ -130,8 +130,8 @@ egui::Panel::top("menu-bar").show(ui, |ui| {
   without an ASCII letter or digit shows its English label's letter after it, "文件(F)", before a
   trailing ellipsis ("開く(O)…"), when `.english(&hook)` returns that English label for the
   `Labeled::Command` or `Labeled::Title`; without one it has no mnemonic. While the bar has the keyboard the app's shortcuts wait, as
-  for an open menu (`craft_menu::bar::is_focused(ctx)`); call
-  `craft_menu::bar::leave_for_shortcut(ctx)` before them so that a command shortcut (Ctrl+S,
+  for an open menu (`bharat_menu::bar::is_focused(ctx)`); call
+  `bharat_menu::bar::leave_for_shortcut(ctx)` before them so that a command shortcut (Ctrl+S,
   F7) leaves the bar and runs. While a dialog is open or a shortcut is being recorded (`Gate`),
   Alt, F10 and the letters leave the bar alone. While a text field has the keys, a tap on Alt
   still focuses the bar, as on Windows, but a letter without Alt goes on to the field (and takes
@@ -149,7 +149,7 @@ egui::Panel::top("menu-bar").show(ui, |ui| {
   `.shrink_to_fit(max_width)` makes it take only the width its titles need, up to `max_width`,
   so other controls can share the row, and the menus past that overflow.
 - **Quit:** without an app Quit item, the Windows and Linux layouts add `Builtin::Quit`
-  (`craft_quit::QUIT_MENU_ID`). The bar runs it itself through `craft_quit::on_menu_event`,
+  (`bharat_quit::QUIT_MENU_ID`). The bar runs it itself through `bharat_quit::on_menu_event`,
   which asks the window to close so the unsaved-changes check runs, and doesn't return it; the
   same goes for `Builtin::Minimize`.
 - **Accessibility:** AccessKit sees a menu bar of menu items, the open menus, check and radio
@@ -164,7 +164,7 @@ menu doesn't stay up). `None` means AppKit refused the menus: keep the in-window
 
 ```rust
 #[cfg(target_os = "macos")]
-let native_menu = craft_menu::mac::install(&cc.egui_ctx, &craft_menu::mac_layout(&menu_bar, &LayoutOptions::new("PhotoCraft")).bar);
+let native_menu = bharat_menu::mac::install(&cc.egui_ctx, &bharat_menu::mac_layout(&menu_bar, &LayoutOptions::new("PhotoCraft")).bar);
 ```
 
 An app without a `MenuBar` yet installs the minimal app menu instead: About, Services, Hide,
@@ -172,17 +172,17 @@ Hide Others, Show All and Quit, where Quit asks the app first.
 
 ```rust
 #[cfg(target_os = "macos")]
-craft_menu::mac::install_app_menu(&cc.egui_ctx, "WordCraft")?;
+bharat_menu::mac::install_app_menu(&cc.egui_ctx, "WordCraft")?;
 ```
 
-craft-menu owns muda's menu event handler. muda keeps the first one set per process, so the
+bharat-menu owns muda's menu event handler. muda keeps the first one set per process, so the
 crate sets it once and both `mac::install` and `mac::install_app_menu` use it; a later
 `mac::install` replaces the minimal app menu, and a second `mac::install` returns `None`.
-`craft_quit::install_app_menu` is deprecated in favor of `mac::install_app_menu`: it sets its own
-handler, so an app calls it or craft-menu's installers, never both. Called first, it leaves
-craft-menu's menus without events; called after, it replaces their menu bar. Quit is
+`bharat_quit::install_app_menu` is deprecated in favor of `mac::install_app_menu`: it sets its own
+handler, so an app calls it or bharat-menu's installers, never both. Called first, it leaves
+bharat-menu's menus without events; called after, it replaces their menu bar. Quit is
 never AppKit's predefined Quit: it is the app's item tagged `ItemRole::Quit`, or the item with
-`craft_quit::QUIT_MENU_ID`, which runs `craft_quit::on_menu_event` (the window is asked to close,
+`bharat_quit::QUIT_MENU_ID`, which runs `bharat_quit::on_menu_event` (the window is asked to close,
 so the app's unsaved-changes prompt runs). Each menu event wakes egui, so a chosen item runs at
 once rather than with the next input event.
 
@@ -224,7 +224,7 @@ The app tells the menu what may run with a `Gate`, every frame (`set_gate`):
 | --- | --- |
 | `modal` | The app's items are greyed (updated in place) and their clicks dropped, also clicks that arrived before the dialog opened. Hide, Hide Others, Minimize and Quit stay, and so do the items whose shortcut a text field handles (Undo, Copy, Select All): AppKit doesn't pass a disabled item's key equivalent on, so ⌘C and ⌘Z would die in the dialog's fields. |
 | `recording_shortcut` | As `modal`, and every key equivalent reaches egui as the plain key press (⌘Q, ⌘H, ⌘C included), so the recorder sees it. |
-| `text_editing` | A key equivalent comes back as a click (⌘S saves while typing), except the keys the field handles itself: ⌘C, ⌘X and ⌘V (as `ClipboardKeys` says) and `craft_keymap::text_editing_chords` (⌘A, ⌘Z, ⇧⌘Z, ⌘←, …). A mouse click on one of those items (Edit › Copy, Undo) is a press and release of its shortcut, so it acts on the field. |
+| `text_editing` | A key equivalent comes back as a click (⌘S saves while typing), except the keys the field handles itself: ⌘C, ⌘X and ⌘V (as `ClipboardKeys` says) and `bharat_keymap::text_editing_chords` (⌘A, ⌘Z, ⇧⌘Z, ⌘←, …). A mouse click on one of those items (Edit › Copy, Undo) is a press and release of its shortcut, so it acts on the field. |
 
 Each frame, in this order:
 
@@ -252,8 +252,8 @@ if let Some(menu) = &mut self.native_menu {
     for command in menu.take_clicks(ctx) {
         self.run_command(ctx, &command);
     }
-    let state = self.menu_state_hash(craft_menu::had_input(ctx).then_some(ctx.cumulative_frame_nr()));
-    for c in menu.sync_with(state, || craft_menu::mac_layout(&self.menu_bar(), &LayoutOptions::new("PhotoCraft"))) {
+    let state = self.menu_state_hash(bharat_menu::had_input(ctx).then_some(ctx.cumulative_frame_nr()));
+    for c in menu.sync_with(state, || bharat_menu::mac_layout(&self.menu_bar(), &LayoutOptions::new("PhotoCraft"))) {
         log::info!("menu: {} is {} on macOS and {} in the app; {}", c.shortcut, c.system, c.command, c.resolution);
     }
 }

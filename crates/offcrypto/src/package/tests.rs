@@ -16,7 +16,7 @@ fn round_trip_with_a_password() {
     assert!(is_encrypted(&enc));
     assert!(!is_encrypted(&pkg));
     // The compound file carries the data spaces Word expects.
-    let comp = craft_cfb::CompoundFile::open(&enc).unwrap();
+    let comp = bharat_cfb::CompoundFile::open(&enc).unwrap();
     for stream in [
         "\u{6}DataSpaces/Version",
         "\u{6}DataSpaces/DataSpaceMap",
@@ -84,7 +84,7 @@ fn tampered_package_fails_the_integrity_check() {
 
 /// A compound file with the given EncryptionInfo and EncryptedPackage streams.
 fn cfb_with(info: &[u8], package: &[u8]) -> Vec<u8> {
-    craft_cfb::write_streams(craft_cfb::Version::V3, &[("EncryptionInfo", info), ("EncryptedPackage", package)]).unwrap()
+    bharat_cfb::write_streams(bharat_cfb::Version::V3, &[("EncryptionInfo", info), ("EncryptedPackage", package)]).unwrap()
 }
 
 #[test]
@@ -130,7 +130,7 @@ fn hostile_encryption_info_errors_without_panicking() {
         let _ = check(&file);
     }
     // A file that only looks like a compound file.
-    let mut fake = craft_cfb::SIGNATURE.to_vec();
+    let mut fake = bharat_cfb::SIGNATURE.to_vec();
     fake.extend_from_slice(&[0u8; 600]);
     assert!(!is_encrypted(&fake));
     assert!(decrypt(&fake, Some("pw")).is_err());
@@ -171,12 +171,12 @@ fn unsupported_schemes_are_named() {
     );
     // Rights management keeps the package but has no EncryptionInfo.
     let irm =
-        craft_cfb::write_streams(craft_cfb::Version::V3, &[("EncryptedPackage", &package[..]), ("\u{6}DataSpaces/Version", &[0u8; 8][..])]).unwrap();
+        bharat_cfb::write_streams(bharat_cfb::Version::V3, &[("EncryptedPackage", &package[..]), ("\u{6}DataSpaces/Version", &[0u8; 8][..])]).unwrap();
     assert!(is_encrypted(&irm));
     assert_eq!(check(&irm), Err(Error::Unsupported("rights-management".into())));
     assert_eq!(decrypt(&irm, Some("pw")), Err(Error::Unsupported("rights-management".into())));
     // Another compound file is not an encrypted package at all.
-    let other = craft_cfb::write_streams(craft_cfb::Version::V3, &[("Workbook", &[0u8; 8][..])]).unwrap();
+    let other = bharat_cfb::write_streams(bharat_cfb::Version::V3, &[("Workbook", &[0u8; 8][..])]).unwrap();
     assert!(!is_encrypted(&other));
     assert!(matches!(check(&other), Err(Error::Malformed(_))));
 }
@@ -330,7 +330,7 @@ fn standard_package_built_by_hand_from_the_spec_opens() {
 
 /// The two streams of an encrypted package.
 fn streams(file: &[u8]) -> (Vec<u8>, Vec<u8>) {
-    let comp = craft_cfb::CompoundFile::open(file).unwrap();
+    let comp = bharat_cfb::CompoundFile::open(file).unwrap();
     (comp.read_path("EncryptionInfo").unwrap(), comp.read_path("EncryptedPackage").unwrap())
 }
 

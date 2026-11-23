@@ -19,8 +19,8 @@
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
-use craft_audio::mp3::{Config, Decoder, Encoder, InfoTag, StereoMode};
-use craft_audio::mpa::{Mode, parse_header};
+use bharat_audio::mp3::{Config, Decoder, Encoder, InfoTag, StereoMode};
+use bharat_audio::mpa::{Mode, parse_header};
 
 const TONES: &str = "aevalsrc=exprs=0.3*sin(2*PI*441*t)+0.1*sin(2*PI*3100*t)|0.25*sin(2*PI*660*t)+0.1*sin(2*PI*(500+4000*t)*t)";
 /// Clicks over a quiet tone: an encoder switches to short blocks around each click.
@@ -72,7 +72,7 @@ fn generate(out: &Path, cmd: impl FnOnce(&Path) -> Command) -> Option<PathBuf> {
 }
 
 /// The LAME stream for `s`, or `None` (after saying so) when this ffmpeg has no `libmp3lame`; a
-/// failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`.
+/// failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`.
 fn lame_stream(ff: &Path, s: &Lame) -> Option<PathBuf> {
     let out = crate::testkit::fixtures_dir("mp3dec").join(format!("{}.mp3", s.name));
     generate(&out, |tmp| {
@@ -86,7 +86,7 @@ fn lame_stream(ff: &Path, s: &Lame) -> Option<PathBuf> {
         c
     })
     .or_else(|| {
-        assert!(!craft_media_testkit::oracles_required(), "could not generate {} (ffmpeg without libmp3lame?)", s.name);
+        assert!(!bharat_media_testkit::oracles_required(), "could not generate {} (ffmpeg without libmp3lame?)", s.name);
         eprintln!("SKIPPED {}: ffmpeg could not encode it (no libmp3lame?)", s.name);
         None
     })
@@ -379,7 +379,7 @@ fn info_tag_of_a_lame_stream() {
         c
     })
     .or_else(|| {
-        assert!(!craft_media_testkit::oracles_required(), "could not write a LAME-tagged stream (ffmpeg without libmp3lame?)");
+        assert!(!bharat_media_testkit::oracles_required(), "could not write a LAME-tagged stream (ffmpeg without libmp3lame?)");
         None
     });
     let Some(f) = f else {

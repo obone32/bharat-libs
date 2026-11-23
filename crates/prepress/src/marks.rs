@@ -1,6 +1,6 @@
 //! Printer's marks (ISO 32000-2 §14.11.3): crop and bleed marks, registration targets and color
 //! bars in the slug outside the trim box (§14.11.2). [`Marks::new`] is pure geometry;
-//! [`Marks::draw`] paints it with craft-pdf's writer, the lines in the registration color so
+//! [`Marks::draw`] paints it with bharat-pdf's writer, the lines in the registration color so
 //! they print on every plate.
 //!
 //! Coordinates are points, y down, in the caller's space: the space `trim` and `bleed` are given
@@ -8,11 +8,11 @@
 //! `-sheet.x0, -sheet.y0`, so the sheet's top left lands on the page origin; anything an app adds
 //! to the slug, such as the information line, takes the same shift.
 
-use craft_pdf::write::backend::color::cmyk;
-use craft_pdf::write::backend::geom::{Path, PathBuilder, Rect as PdfRect};
-use craft_pdf::write::backend::num::NormalizedF32;
-use craft_pdf::write::backend::paint::{Fill, LineCap, LineJoin, Stroke};
-use craft_pdf::write::backend::surface::Surface;
+use bharat_pdf::write::backend::color::cmyk;
+use bharat_pdf::write::backend::geom::{Path, PathBuilder, Rect as PdfRect};
+use bharat_pdf::write::backend::num::NormalizedF32;
+use bharat_pdf::write::backend::paint::{Fill, LineCap, LineJoin, Stroke};
+use bharat_pdf::write::backend::surface::Surface;
 
 use crate::ink::registration;
 

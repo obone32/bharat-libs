@@ -1,4 +1,4 @@
-//! Failures a Craft Link caller can show or turn into a protocol error object.
+//! Failures a Bharat Link caller can show or turn into a protocol error object.
 
 use serde::Serialize;
 use serde_json::{Map, Value};

@@ -481,12 +481,12 @@ pub struct ArchiveLimits {
 
 /// A bounded reader for a native `.figcraft` ZIP package.
 pub struct Archive<'a> {
-    inner: craft_zip::Archive<'a>,
+    inner: bharat_zip::Archive<'a>,
 }
 
 impl<'a> Archive<'a> {
-    pub fn open(bytes: &'a [u8], limits: ArchiveLimits) -> Result<Self, craft_zip::Error> {
-        let inner = craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })?;
+    pub fn open(bytes: &'a [u8], limits: ArchiveLimits) -> Result<Self, bharat_zip::Error> {
+        let inner = bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })?;
         Ok(Self { inner })
     }
 
@@ -510,7 +510,7 @@ impl<'a> Archive<'a> {
         self.inner.compressed_size(name)
     }
 
-    pub fn read(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, craft_zip::Error> {
+    pub fn read(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, bharat_zip::Error> {
         self.inner.read(name, max_bytes)
     }
 
@@ -524,12 +524,12 @@ impl<'a> Archive<'a> {
 pub struct Member<'a> {
     pub name: &'a str,
     pub bytes: &'a [u8],
-    pub compression: craft_zip::Compression,
+    pub compression: bharat_zip::Compression,
 }
 
 /// Write a deterministic native ZIP package using the shared ZIP writer.
-pub fn write_archive<'a>(members: impl IntoIterator<Item = Member<'a>>) -> Result<Vec<u8>, craft_zip::Error> {
-    let mut writer = craft_zip::Writer::new();
+pub fn write_archive<'a>(members: impl IntoIterator<Item = Member<'a>>) -> Result<Vec<u8>, bharat_zip::Error> {
+    let mut writer = bharat_zip::Writer::new();
     for member in members {
         writer.add(member.name, member.bytes, member.compression)?;
     }
@@ -543,7 +543,7 @@ mod archive_tests {
     #[test]
     fn bounded_archive_reader_and_writer_round_trip_members() {
         let bytes =
-            write_archive([Member { name: "document.json", bytes: br#"{"version":1}"#, compression: craft_zip::Compression::Deflated }]).unwrap();
+            write_archive([Member { name: "document.json", bytes: br#"{"version":1}"#, compression: bharat_zip::Compression::Deflated }]).unwrap();
         let mut archive = Archive::open(&bytes, ArchiveLimits { max_entries: 4, max_total_bytes: 128 }).unwrap();
         assert!(archive.contains("document.json"));
         assert_eq!(archive.read("document.json", 32).unwrap(), Some(br#"{"version":1}"#.to_vec()));
@@ -552,7 +552,7 @@ mod archive_tests {
 
     #[test]
     fn archive_reader_enforces_entry_and_total_limits() {
-        let bytes = write_archive([Member { name: "document.json", bytes: b"123456789", compression: craft_zip::Compression::Deflated }]).unwrap();
+        let bytes = write_archive([Member { name: "document.json", bytes: b"123456789", compression: bharat_zip::Compression::Deflated }]).unwrap();
         let mut small_entry = Archive::open(&bytes, ArchiveLimits { max_entries: 4, max_total_bytes: 100 }).unwrap();
         assert!(small_entry.read("document.json", 8).is_err());
         let mut small_total = Archive::open(&bytes, ArchiveLimits { max_entries: 4, max_total_bytes: 8 }).unwrap();
@@ -562,25 +562,25 @@ mod archive_tests {
 
 /// A native archive writer that keeps the streaming document serializer out of the consumer.
 pub struct ArchiveWriter {
-    inner: craft_zip::Writer,
+    inner: bharat_zip::Writer,
 }
 
 impl ArchiveWriter {
     pub fn new() -> Self {
-        Self { inner: craft_zip::Writer::new() }
+        Self { inner: bharat_zip::Writer::new() }
     }
 
-    pub fn add(&mut self, name: &str, bytes: &[u8], compression: craft_zip::Compression) -> Result<(), craft_zip::Error> {
+    pub fn add(&mut self, name: &str, bytes: &[u8], compression: bharat_zip::Compression) -> Result<(), bharat_zip::Error> {
         self.inner.add(name, bytes, compression)
     }
 
     pub fn add_document_json<D: Serialize>(&mut self, name: &str, document: &D, images: &[ImageIndexEntry]) -> Result<(), ArchiveWriteError> {
         self.inner
-            .add_with(name, craft_zip::Compression::Level(3), |w| write_document_json(document, images, w).map_err(std::io::Error::other))
+            .add_with(name, bharat_zip::Compression::Level(3), |w| write_document_json(document, images, w).map_err(std::io::Error::other))
             .map_err(ArchiveWriteError::Archive)
     }
 
-    pub fn finish(self) -> Result<Vec<u8>, craft_zip::Error> {
+    pub fn finish(self) -> Result<Vec<u8>, bharat_zip::Error> {
         self.inner.finish()
     }
 }
@@ -596,7 +596,7 @@ pub enum ArchiveWriteError {
     #[error("could not serialize native document JSON: {0}")]
     Json(#[from] serde_json::Error),
     #[error("could not write native archive: {0}")]
-    Archive(#[from] craft_zip::Error),
+    Archive(#[from] bharat_zip::Error),
 }
 
 #[cfg(test)]
@@ -618,7 +618,7 @@ mod streaming_writer_tests {
 }
 
 /// ZIP compression modes for native archive members.
-pub use craft_zip::Compression;
+pub use bharat_zip::Compression;
 
 /// A native ZIP reader for seekable sources that should not be copied into memory first.
 pub struct SeekArchive<R: std::io::Read + std::io::Seek> {
@@ -626,11 +626,11 @@ pub struct SeekArchive<R: std::io::Read + std::io::Seek> {
 }
 
 impl<R: std::io::Read + std::io::Seek> SeekArchive<R> {
-    pub fn open(reader: R, max_entries: u64) -> Result<Self, craft_zip::Error> {
-        let inner = zip::ZipArchive::new(reader).map_err(|e| craft_zip::Error::NotZip(e.to_string()))?;
+    pub fn open(reader: R, max_entries: u64) -> Result<Self, bharat_zip::Error> {
+        let inner = zip::ZipArchive::new(reader).map_err(|e| bharat_zip::Error::NotZip(e.to_string()))?;
         let count = inner.len() as u64;
         if count > max_entries {
-            return Err(craft_zip::Error::TooManyEntries { declared: count, limit: max_entries });
+            return Err(bharat_zip::Error::TooManyEntries { declared: count, limit: max_entries });
         }
         Ok(Self { inner })
     }
@@ -647,20 +647,20 @@ impl<R: std::io::Read + std::io::Seek> SeekArchive<R> {
         self.inner.index_for_name(name).and_then(|i| self.inner.by_index_raw(i).ok().map(|f| f.size()))
     }
 
-    pub fn read(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, craft_zip::Error> {
+    pub fn read(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, bharat_zip::Error> {
         let Some(index) = self.inner.index_for_name(name) else { return Ok(None) };
-        let mut file = self.inner.by_index(index).map_err(|e| craft_zip::Error::Entry { name: name.to_owned(), msg: e.to_string() })?;
+        let mut file = self.inner.by_index(index).map_err(|e| bharat_zip::Error::Entry { name: name.to_owned(), msg: e.to_string() })?;
         if file.size() > max_bytes {
-            return Err(craft_zip::Error::EntryTooLarge { name: name.to_owned(), limit: max_bytes });
+            return Err(bharat_zip::Error::EntryTooLarge { name: name.to_owned(), limit: max_bytes });
         }
         let mut bytes = Vec::new();
         let mut limited = std::io::Read::take(&mut file, max_bytes.saturating_add(1));
         let read = std::io::Read::read_to_end(&mut limited, &mut bytes);
         if let Err(error) = read {
-            return Err(craft_zip::Error::Entry { name: name.to_owned(), msg: error.to_string() });
+            return Err(bharat_zip::Error::Entry { name: name.to_owned(), msg: error.to_string() });
         }
         if bytes.len() as u64 > max_bytes {
-            return Err(craft_zip::Error::EntryTooLarge { name: name.to_owned(), limit: max_bytes });
+            return Err(bharat_zip::Error::EntryTooLarge { name: name.to_owned(), limit: max_bytes });
         }
         Ok(Some(bytes))
     }
@@ -672,7 +672,7 @@ pub trait NativeArchive {
     fn names(&self) -> Vec<String>;
     fn declared_size(&mut self, name: &str) -> Option<u64>;
     fn compressed_size(&mut self, name: &str) -> Option<u64>;
-    fn read_member(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, craft_zip::Error>;
+    fn read_member(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, bharat_zip::Error>;
 }
 
 impl NativeArchive for Archive<'_> {
@@ -688,7 +688,7 @@ impl NativeArchive for Archive<'_> {
     fn compressed_size(&mut self, name: &str) -> Option<u64> {
         Archive::compressed_size(self, name)
     }
-    fn read_member(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, craft_zip::Error> {
+    fn read_member(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, bharat_zip::Error> {
         Archive::read(self, name, max_bytes)
     }
 }
@@ -706,7 +706,7 @@ impl<R: std::io::Read + std::io::Seek> NativeArchive for SeekArchive<R> {
     fn compressed_size(&mut self, name: &str) -> Option<u64> {
         self.inner.index_for_name(name).and_then(|i| self.inner.by_index_raw(i).ok().map(|f| f.compressed_size()))
     }
-    fn read_member(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, craft_zip::Error> {
+    fn read_member(&mut self, name: &str, max_bytes: u64) -> Result<Option<Vec<u8>>, bharat_zip::Error> {
         SeekArchive::read(self, name, max_bytes)
     }
 }

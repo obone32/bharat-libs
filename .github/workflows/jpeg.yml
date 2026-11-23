@@ -36,4 +36,4 @@ jobs:
         with:
           toolchain: stable
           targets: wasm32-unknown-unknown
-      - run: cargo check -p craft-jpeg --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-jpeg --locked --target wasm32-unknown-unknown

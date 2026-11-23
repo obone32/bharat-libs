@@ -6,7 +6,7 @@ use crate::common;
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
-use craft_video::mpeg2::{Decoder, access_units, probe, scan_access_unit};
+use bharat_video::mpeg2::{Decoder, access_units, probe, scan_access_unit};
 
 struct Rng(u64);
 impl Rng {
@@ -59,7 +59,7 @@ fn count_panics() {
 }
 
 fn run_all(d: &[u8], label: &str) {
-    craft_media_testkit::set_progress(label);
+    bharat_media_testkit::set_progress(label);
     count_panics();
     let before = PANICS.load(std::sync::atomic::Ordering::SeqCst);
     let res = catch_unwind(AssertUnwindSafe(|| {
@@ -79,21 +79,21 @@ fn run_all(d: &[u8], label: &str) {
     assert!(res.is_ok() && PANICS.load(std::sync::atomic::Ordering::SeqCst) == before, "panic: {label}");
 }
 
-/// Seconds the whole sweep may take before it counts as a hang (override: CRAFT_TEST_TIMEOUT_SECS).
+/// Seconds the whole sweep may take before it counts as a hang (override: BHARAT_TEST_TIMEOUT_SECS).
 const DEADLINE_SECS: u64 = 600;
 
 /// CI runs a rotating share of every part of the sweep; `FILMCRAFT_FUZZ_ITERS=2500` runs all of it (see [`Depth`]).
 #[test]
 fn hostile_streams_never_panic() {
-    craft_media_testkit::with_deadline(DEADLINE_SECS, sweep);
+    bharat_media_testkit::with_deadline(DEADLINE_SECS, sweep);
 }
 
 fn sweep() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("mpeg2v fuzz") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("mpeg2v fuzz") else { return };
     let depth = Depth::from_env();
     for spec in &SPECS {
-        if !craft_media_testkit::ffmpeg_has_encoder(&ff, "mpeg2video") {
-            craft_media_testkit::skip_test("mpeg2v fuzz", &format!("this ffmpeg has no mpeg2video encoder (seed {})", spec.name));
+        if !bharat_media_testkit::ffmpeg_has_encoder(&ff, "mpeg2video") {
+            bharat_media_testkit::skip_test("mpeg2v fuzz", &format!("this ffmpeg has no mpeg2video encoder (seed {})", spec.name));
             continue;
         }
         let Some(path) = common::make(&ff, spec) else {

@@ -1,5 +1,5 @@
 [package]
-name = "craft-control-protocol"
+name = "bharat-control-protocol"
 description = "Authenticated bounded JSON-lines control protocol"
 version.workspace = true
 edition.workspace = true

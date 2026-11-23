@@ -5,7 +5,7 @@
 use rayon::prelude::*;
 
 use crate::ljpeg_lines as ljpeg;
-use craft_tiff::classic::{Ifd, Tiff, tags};
+use bharat_tiff::classic::{Ifd, Tiff, tags};
 
 /// Why DNG raw layout or sample data could not be read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -28,11 +28,11 @@ pub enum Error {
 }
 /// Result of the bounded raw reader.
 pub type Result<T> = std::result::Result<T, Error>;
-impl From<craft_tiff::classic::Error> for Error {
-    fn from(e: craft_tiff::classic::Error) -> Self {
+impl From<bharat_tiff::classic::Error> for Error {
+    fn from(e: bharat_tiff::classic::Error) -> Self {
         match e {
-            craft_tiff::classic::Error::NotTiff => Self::NotTiff,
-            craft_tiff::classic::Error::Malformed(s) => Self::Malformed(s),
+            bharat_tiff::classic::Error::NotTiff => Self::NotTiff,
+            bharat_tiff::classic::Error::Malformed(s) => Self::Malformed(s),
         }
     }
 }
@@ -235,7 +235,7 @@ pub fn unpack(bytes: &[u8], w: usize, h: usize, spp: usize, bits: u32, big_endia
         return Err(Error::Truncated);
     }
     let mut out = vec![0u16; samples];
-    let order = if big_endian { craft_tiff::ByteOrder::Big } else { craft_tiff::ByteOrder::Little };
+    let order = if big_endian { bharat_tiff::ByteOrder::Big } else { bharat_tiff::ByteOrder::Little };
     // the same unpackers the full DNG reader uses (`crate::unpack`)
     for (row, dst) in bytes.chunks_exact(row_bytes.max(1)).zip(out.chunks_exact_mut(per_row.max(1))) {
         match bits {

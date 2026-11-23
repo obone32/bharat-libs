@@ -191,7 +191,7 @@ mod tests {
             .collect()
     }
 
-    /// craft-libs#496 review: a run of spaces is one issue over the whole run.
+    /// bharat-libs#496 review: a run of spaces is one issue over the whole run.
     #[test]
     fn a_run_of_spaces_is_reported_whole() {
         for (text, run) in [("casa  roja", "  "), ("casa   roja", "   "), ("casa    roja", "    "), ("casa     roja", "     ")] {
@@ -342,10 +342,10 @@ mod tests {
     /// checked in quadratic time (every character before the question scanned every address).
     /// About 99 KB (under the 100,000-byte paragraph cap) took hundreds of milliseconds; it is now
     /// O(n log m): about 1 to 5 ms in a debug build, against about 300 ms for the scan at
-    /// `opt-level = 1`. craft-libs builds tests at `opt-level = 0`, where the fixed lookup took up
+    /// `opt-level = 1`. bharat-libs builds tests at `opt-level = 0`, where the fixed lookup took up
     /// to ~80 ms under a parallel test run and more on a busy machine. The test guards against a
     /// return to the quadratic blowup, not machine load, so the bound is 1 s.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn many_addresses_before_a_question_are_checked_quickly() {
         for (unit, ending, whole_paragraph) in

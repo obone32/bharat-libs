@@ -12,7 +12,7 @@
 pub(crate) mod keys;
 pub(crate) mod nav;
 
-use craft_keymap::{CommandRef, Platform};
+use bharat_keymap::{CommandRef, Platform};
 use egui::accesskit::{HasPopup, Role, Toggled};
 use egui::containers::menu::{MenuConfig, MenuState, SubMenu, SubMenuButton};
 use egui::text::LayoutJob;
@@ -121,7 +121,7 @@ impl<'a> MenuBarUi<'a> {
             label: &english,
             english: None,
             preferred: &[],
-            id: Id::unique("craft-menu-bar"),
+            id: Id::unique("bharat-menu-bar"),
             fit: None,
         }
     }
@@ -133,7 +133,7 @@ impl<'a> MenuBarUi<'a> {
         self
     }
 
-    /// The platform the bar is on, for the shortcut column ([`craft_keymap::Chord::display`]): ⌘
+    /// The platform the bar is on, for the shortcut column ([`bharat_keymap::Chord::display`]): ⌘
     /// glyphs on [`Target::Mac`] and in a browser on a Mac ([`egui::Context::os`]), Ctrl names
     /// everywhere else. Where the names are a Mac's, the bar has no mnemonics.
     pub fn target(mut self, target: Target) -> MenuBarUi<'a> {
@@ -189,7 +189,7 @@ impl<'a> MenuBarUi<'a> {
 
     /// Draw the bar and its open menu; returns the commands chosen this frame (at most one),
     /// clicked or run with ↩ or Space. Disabled items, and items the gate forbids, never run.
-    /// [`Builtin::Quit`] (asks the window to close, see [`craft_quit::on_menu_event`]) and
+    /// [`Builtin::Quit`] (asks the window to close, see [`bharat_quit::on_menu_event`]) and
     /// [`Builtin::Minimize`] run here and are left out.
     pub fn show(self, ui: &mut Ui) -> Vec<CommandRef> {
         let ctx = ui.ctx().clone();
@@ -304,7 +304,7 @@ impl<'a> MenuBarUi<'a> {
         draw.clicked
             .into_iter()
             .filter(|command| match Builtin::of(command) {
-                Some(Builtin::Quit) => !craft_quit::on_menu_event(&ctx, Builtin::Quit.id()),
+                Some(Builtin::Quit) => !bharat_quit::on_menu_event(&ctx, Builtin::Quit.id()),
                 Some(Builtin::Minimize) => {
                     ctx.send_viewport_cmd(egui::ViewportCommand::Minimized(true));
                     false

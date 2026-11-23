@@ -5,7 +5,7 @@ use super::{Align, Border, BorderStyle, Borders, Fmt, Kind, LineSpacing, Rgb, mo
 
 /// `style:text-properties` attributes for what only [`Fmt::extra`] holds (underline and strike
 /// are written with the rest); `size` is the text's size, which a raised position is a share of.
-pub(in crate::text) fn extra_props(x: &craft_wordmodel::props::CharProps, size: Option<f32>) -> String {
+pub(in crate::text) fn extra_props(x: &bharat_wordmodel::props::CharProps, size: Option<f32>) -> String {
     let mut p = String::new();
     let on = |v: Option<bool>| v == Some(true);
     if on(x.caps) {
@@ -31,7 +31,7 @@ pub(in crate::text) fn extra_props(x: &craft_wordmodel::props::CharProps, size: 
         p.push_str(&format!(" style:text-scale=\"{}%\"", s.round()));
     }
     if let Some(m) = x.emphasis {
-        use craft_wordmodel::props::EmphasisMark as E;
+        use bharat_wordmodel::props::EmphasisMark as E;
         p.push_str(match m {
             E::None => " style:text-emphasize=\"none\"",
             E::Dot => " style:text-emphasize=\"dot above\"",
@@ -64,8 +64,8 @@ pub(in crate::text) fn extra_props(x: &craft_wordmodel::props::CharProps, size: 
 }
 
 /// `style:text-properties` attributes for character properties `cp` (a style's look).
-pub(in crate::text) fn props_text(cp: &craft_wordmodel::props::CharProps) -> String {
-    use craft_wordmodel::props::{TextColor, Underline, VertAlign};
+pub(in crate::text) fn props_text(cp: &bharat_wordmodel::props::CharProps) -> String {
+    use bharat_wordmodel::props::{TextColor, Underline, VertAlign};
     let f = Fmt {
         bold: cp.bold == Some(true),
         italic: cp.italic == Some(true),
@@ -124,7 +124,7 @@ pub(in crate::text) fn is_script(subtag: &str) -> bool {
 
 /// The Asian and complex-script attributes of `x`: fonts, complex size, weight, posture and the
 /// two languages.
-pub(in crate::text) fn script_attrs(x: &craft_wordmodel::props::CharProps) -> String {
+pub(in crate::text) fn script_attrs(x: &bharat_wordmodel::props::CharProps) -> String {
     let mut p = String::new();
     if let Some(f) = x.font_ea.as_deref() {
         p.push_str(&format!(" style:font-family-asian=\"'{}'\"", crate::text::writer::x(&f.replace('\'', ""))));
@@ -153,11 +153,11 @@ pub(in crate::text) fn script_attrs(x: &craft_wordmodel::props::CharProps) -> St
 pub(in crate::text) fn text_props(f: &Fmt) -> String {
     let mut p = String::new();
     // Complex-script weight and posture of their own are written with the other script extras.
-    let own_cs = |pick: fn(&craft_wordmodel::props::CharProps) -> Option<bool>| f.extra.as_deref().and_then(pick).is_some();
+    let own_cs = |pick: fn(&bharat_wordmodel::props::CharProps) -> Option<bool>| f.extra.as_deref().and_then(pick).is_some();
     let extra = f.extra.as_deref();
     // What it turns off that its style, or the style that is based on, may turn on: said so, or
     // that bold, italic, underline or strike-through would show through.
-    let off = |pick: fn(&craft_wordmodel::props::CharProps) -> Option<bool>| extra.and_then(pick) == Some(false);
+    let off = |pick: fn(&bharat_wordmodel::props::CharProps) -> Option<bool>| extra.and_then(pick) == Some(false);
     if f.bold {
         p.push_str(" fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"");
         if !own_cs(|x| x.bold_cs) {
@@ -181,7 +181,7 @@ pub(in crate::text) fn text_props(f: &Fmt) -> String {
         }
     }
     if f.underline {
-        use craft_wordmodel::props::Underline as U;
+        use bharat_wordmodel::props::Underline as U;
         let (style, kind, width, mode) = match extra.and_then(|e| e.underline) {
             Some(U::Double) => ("solid", "double", "auto", ""),
             Some(U::Thick) => ("solid", "single", "bold", ""),
@@ -200,7 +200,7 @@ pub(in crate::text) fn text_props(f: &Fmt) -> String {
             " style:text-underline-style=\"{style}\" style:text-underline-type=\"{kind}\" style:text-underline-width=\"{width}\" style:text-underline-color=\"{color}\"{mode}"
         ));
     }
-    if !f.underline && extra.is_some_and(|e| e.underline == Some(craft_wordmodel::props::Underline::None)) {
+    if !f.underline && extra.is_some_and(|e| e.underline == Some(bharat_wordmodel::props::Underline::None)) {
         p.push_str(" style:text-underline-style=\"none\"");
     }
     if f.strike || extra.is_some_and(|e| e.double_strike == Some(true)) {
@@ -215,7 +215,7 @@ pub(in crate::text) fn text_props(f: &Fmt) -> String {
         if (f.sup || f.sub) && e.position.is_some() {
             // One `style:text-position` only (a repeated attribute isn't well-formed XML):
             // superscript or subscript, written below, wins over a raised or lowered position.
-            let e = craft_wordmodel::props::CharProps { position: None, ..e.clone() };
+            let e = bharat_wordmodel::props::CharProps { position: None, ..e.clone() };
             p.push_str(&extra_props(&e, f.size));
         } else {
             p.push_str(&extra_props(e, f.size));
@@ -279,8 +279,8 @@ pub(in crate::text) fn spacing_props(sp: &model::Spacing) -> String {
 
 /// `style:tab-stops` (ODF 1.3 §17.7) for `tabs`, measured from the margin (the package's
 /// settings say so); bar and clearing stops have no ODF form and are left out.
-pub(in crate::text) fn tab_stops(tabs: &[craft_wordmodel::props::TabStop]) -> String {
-    use craft_wordmodel::props::{TabAlign, TabLeader};
+pub(in crate::text) fn tab_stops(tabs: &[bharat_wordmodel::props::TabStop]) -> String {
+    use bharat_wordmodel::props::{TabAlign, TabLeader};
     let mut s = String::from("<style:tab-stops>");
     for t in tabs.iter().filter(|t| t.pos.is_finite()) {
         let kind = match t.align {
@@ -405,7 +405,7 @@ mod tests {
                 sup,
                 sub,
                 size: Some(12.0),
-                extra: Some(Box::new(craft_wordmodel::props::CharProps { position: Some(3.0), ..Default::default() })),
+                extra: Some(Box::new(bharat_wordmodel::props::CharProps { position: Some(3.0), ..Default::default() })),
                 ..Default::default()
             };
             let p = text_props(&f);
@@ -414,7 +414,7 @@ mod tests {
         // Without superscript or subscript the position is still written.
         let f = Fmt {
             size: Some(12.0),
-            extra: Some(Box::new(craft_wordmodel::props::CharProps { position: Some(3.0), ..Default::default() })),
+            extra: Some(Box::new(bharat_wordmodel::props::CharProps { position: Some(3.0), ..Default::default() })),
             ..Default::default()
         };
         assert!(text_props(&f).contains("style:text-position=\"25% 100%\""), "{}", text_props(&f));

@@ -1,9 +1,9 @@
 //! Decode speed (ignored by default; run with
-//! `cargo test --release -p craft-video --features hevc-decode,threads --test hevc_decode perf:: -- --ignored --nocapture`).
+//! `cargo test --release -p bharat-video --features hevc-decode,threads --test hevc_decode perf:: -- --ignored --nocapture`).
 
 use crate::common;
 
-use craft_video::hevc::decode::Decoder;
+use bharat_video::hevc::decode::Decoder;
 use std::time::Instant;
 
 fn bench(data: &[u8], threads: usize, iters: usize) -> (usize, f64) {

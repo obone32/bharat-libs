@@ -326,7 +326,7 @@ fn an_encrypted_file_is_turned_but_not_reframed() {
 fn two_sided_is_unknown_for_a_printer_that_is_not_there() {
     // A name no queue has, as when a printer was removed after the list was read: unknown, at
     // once, never an error or a guess.
-    assert_eq!(spool::two_sided("craft-print: no such printer \u{1F5A8}"), None);
+    assert_eq!(spool::two_sided("bharat-print: no such printer \u{1F5A8}"), None);
     assert_eq!(spool::two_sided(""), None);
 }
 
@@ -438,8 +438,8 @@ fn windows_powershell(script: &str, printer: &str) -> Result<String, String> {
     let root = std::env::var_os("SystemRoot").unwrap_or_else(|| "C:\\Windows".into());
     let exe = std::path::Path::new(&root).join("System32").join("WindowsPowerShell").join("v1.0").join("powershell.exe");
     let mut c = std::process::Command::new(exe);
-    c.args(["-NoProfile", "-NonInteractive", "-Command", &format!("$ErrorActionPreference = 'Stop'; $name = $env:CRAFT_TEST_PRINTER; {script}")]);
-    c.env("CRAFT_TEST_PRINTER", printer);
+    c.args(["-NoProfile", "-NonInteractive", "-Command", &format!("$ErrorActionPreference = 'Stop'; $name = $env:BHARAT_TEST_PRINTER; {script}")]);
+    c.env("BHARAT_TEST_PRINTER", printer);
     match c.output() {
         Ok(o) if o.status.success() => Ok(String::from_utf8_lossy(&o.stdout).into_owned()),
         Ok(o) => Err(format!("{} {}", String::from_utf8_lossy(&o.stderr).trim(), String::from_utf8_lossy(&o.stdout).trim())),
@@ -450,22 +450,22 @@ fn windows_powershell(script: &str, printer: &str) -> Result<String, String> {
 /// Windows, end to end: two jobs reach a paused test printer's queue, each as one job under its
 /// title. One mixes portrait and landscape Letter sheets at exact size (the landscape sheet is
 /// turned); the other is shrink-to-fit with a Tabloid sheet (reframed onto the driver's paper),
-/// so both kinds of update pass through Windows.Data.Pdf. craft-print starts no program to print
+/// so both kinds of update pass through Windows.Data.Pdf. bharat-print starts no program to print
 /// them; the test uses PowerShell only to add, inspect and remove the printer. Its driver is the
 /// inbox "Generic / Text Only"; a machine that cannot add one (no rights, no driver) skips the
-/// test, unless `CRAFT_PRINT_REQUIRE_QUEUE=1` (CI) makes it mandatory.
+/// test, unless `BHARAT_PRINT_REQUIRE_QUEUE=1` (CI) makes it mandatory.
 /// "Generic / Text Only" is a GDI (v3) driver: the XPS print API reaches it through Windows'
 /// XPS-to-GDI conversion, where an app may flatten transparency first (storytold/pdfcraft#6155).
 #[cfg(windows)]
 fn assert_gdi_driver(name: &str) {
     assert_eq!(spool::xps_driver(name), Some(false), "the test queue's driver is a GDI driver");
-    assert_eq!(spool::xps_driver("Craft Test Print: no such queue"), None);
+    assert_eq!(spool::xps_driver("Bharat Test Print: no such queue"), None);
 }
 
 #[cfg(windows)]
 #[test]
 fn windows_jobs_reach_the_spooler() {
-    let name = format!("Craft Test Print {}", std::process::id());
+    let name = format!("Bharat Test Print {}", std::process::id());
     let name = name.as_str();
     // The printer goes on LPT1:, one of the ports every Windows install has, so the test adds no
     // port: Remove-PrinterPort can't remove a local port again (it reports an invalid name). Not
@@ -477,7 +477,7 @@ fn windows_jobs_reach_the_spooler() {
         name,
     );
     if let Err(why) = added {
-        assert_ne!(std::env::var("CRAFT_PRINT_REQUIRE_QUEUE").as_deref(), Ok("1"), "CI requires a prepared paused printer: {why}");
+        assert_ne!(std::env::var("BHARAT_PRINT_REQUIRE_QUEUE").as_deref(), Ok("1"), "CI requires a prepared paused printer: {why}");
         eprintln!("skipping the real print: the test printer could not be prepared: {why}");
         return;
     }

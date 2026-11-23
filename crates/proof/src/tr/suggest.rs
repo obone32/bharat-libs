@@ -305,7 +305,7 @@ fn match_casing(orig: &str, cand: &str) -> String {
 mod tests {
     use super::*;
 
-    /// CodeRabbit on craft-libs#484/#489: a suggestion in capitals uses Turkish capitals
+    /// CodeRabbit on bharat-libs#484/#489: a suggestion in capitals uses Turkish capitals
     /// (`İ`, not `I`), and no table entry suggests the word itself.
     #[test]
     fn capitals_are_turkish_and_no_entry_suggests_itself() {
@@ -333,7 +333,7 @@ mod tests {
         assert!(sugs.contains(&"geldin mi".to_string()));
     }
 
-    /// craft-libs#496 review: the particle is `de`/`da` whatever consonant comes before it. `te`
+    /// bharat-libs#496 review: the particle is `de`/`da` whatever consonant comes before it. `te`
     /// and `ta` are only the locative suffix after a voiceless consonant (`kitapta`), written
     /// attached, so `kitapte` is never offered as `kitap te`.
     #[test]
@@ -360,7 +360,7 @@ mod tests {
         assert!(t.elapsed().as_secs_f64() < 10.0, "{:?}", t.elapsed());
     }
 
-    /// craft-libs#495 review: a name in the dictionary (`İstanbul`, `Ankara`) is found by the
+    /// bharat-libs#495 review: a name in the dictionary (`İstanbul`, `Ankara`) is found by the
     /// diacritic and typo steps from a lower-case slip, in its dictionary case.
     #[test]
     fn capitalized_stems_are_suggested() {
@@ -374,7 +374,7 @@ mod tests {
     fn two_words_get_only_the_tables_replacement() {
         let d = TrDict::from_hunspell("SET UTF-8\n", "2\nbirkaç\nsonra\n").unwrap();
         assert_eq!(suggest_with(&d, "bir kaç", 3), vec!["birkaç".to_string()]);
-        // craft-libs#487 review: the table keeps the word's case.
+        // bharat-libs#487 review: the table keeps the word's case.
         assert_eq!(suggest_with(&d, "Bir kaç", 3), vec!["Birkaç".to_string()]);
         assert_eq!(suggest_with(&d, "BİR KAÇ", 3), vec!["BİRKAÇ".to_string()]);
         assert_eq!(suggest_with(&d, "Herşey", 3), vec!["Her şey".to_string()]);

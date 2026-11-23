@@ -1,4 +1,4 @@
-# craft-epub
+# bharat-epub
 
 EPUB packages, written and read. No `unsafe`.
 
@@ -18,12 +18,12 @@ into XHTML or XHTML into a document model: that is the application's side.
 ## Writing
 
 ```rust
-use craft_epub::{Book, Metadata, Nav, NavItem, Resource};
+use bharat_epub::{Book, Metadata, Nav, NavItem, Resource};
 
-let chapter = craft_epub::xhtml("en", "A Book", "", "", "<h1 id=\"c1\">One</h1>\n");
+let chapter = bharat_epub::xhtml("en", "A Book", "", "", "<h1 id=\"c1\">One</h1>\n");
 let book = Book {
     metadata: Metadata {
-        identifier: craft_epub::urn_uuid("A Book\n1760000000"),
+        identifier: bharat_epub::urn_uuid("A Book\n1760000000"),
         title: "A Book".into(),
         language: "en".into(),
         creators: vec!["An Author".into()],
@@ -33,15 +33,15 @@ let book = Book {
     resources: vec![Resource::new("content", "content.xhtml", "application/xhtml+xml", chapter.into_bytes())],
     spine: vec!["content".into()],
     nav: Nav {
-        heading: craft_epub::contents_title("en").into(),
+        heading: bharat_epub::contents_title("en").into(),
         items: vec![NavItem { href: "content.xhtml#c1".into(), label: "One".into(), level: 1 }],
         ..Nav::default()
     },
     ..Book::default()
 };
-let bytes = craft_epub::write(&book)?;
-assert!(craft_epub::is_epub(&bytes));
-# Ok::<(), craft_epub::Error>(())
+let bytes = bharat_epub::write(&book)?;
+assert!(bharat_epub::is_epub(&bytes));
+# Ok::<(), bharat_epub::Error>(())
 ```
 
 - The archive holds `mimetype` (stored), `META-INF/container.xml`, then under `OEBPS/` the package
@@ -62,10 +62,10 @@ assert!(craft_epub::is_epub(&bytes));
 ## Reading
 
 ```rust
-# fn main() -> Result<(), craft_epub::Error> {
+# fn main() -> Result<(), bharat_epub::Error> {
 # let bytes: Vec<u8> = Vec::new();
 # if bytes.is_empty() { return Ok(()); }
-let mut epub = craft_epub::Epub::open(&bytes)?;
+let mut epub = bharat_epub::Epub::open(&bytes)?;
 let title = epub.package.title.clone();
 let spine: Vec<String> = epub.package.spine_paths().map(str::to_string).collect();
 for path in &spine {
@@ -100,14 +100,14 @@ for path in &spine {
 | `max_total_bytes` (all entries read from one package) | 256 MiB | `Error::TooLarge` |
 | `max_manifest`, `max_spine` | 10,000 each | further items are ignored |
 
-The ZIP layer is craft-zip: the declared entry count is checked before the archive is indexed, and
+The ZIP layer is bharat-zip: the declared entry count is checked before the archive is indexed, and
 sizes are checked against what an entry really expands to, not what the archive declares. The two
-XML documents are read with craft-xml's limits (depth 256, 2,000,000 nodes) and `max_entry_bytes`.
+XML documents are read with bharat-xml's limits (depth 256, 2,000,000 nodes) and `max_entry_bytes`.
 
 ## Where it came from
 
 The writer is DesignCraft's EPUB export packaging (`crates/epub/src/package.rs`: container,
 package document, nested navigation, fixed layout, identifier), with the metadata, date and
 language checks of WordCraft's EPUB export. The reader is WordCraft's EPUB import container layer
-(container, package document, href resolution, entry budgets), moved onto craft-xml and extended
+(container, package document, href resolution, entry budgets), moved onto bharat-xml and extended
 to EPUB 2 packages.

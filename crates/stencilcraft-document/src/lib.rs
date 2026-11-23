@@ -18,7 +18,7 @@ pub use metadata::{LibraryIndex, LibraryTrashEntry, MAX_RECENT_FILES, RecentFile
 pub use production::{CombineOp, GroupKind, Operation, SendAssign, ShapeProduction, SourceGroup};
 
 /// Native format identity and supported version, defined by the shared wire-format crate.
-pub use craft_stencilcraft_format::{FORMAT_NAME, FORMAT_VERSION};
+pub use bharat_stencilcraft_format::{FORMAT_NAME, FORMAT_VERSION};
 
 #[derive(Debug, thiserror::Error)]
 pub enum DocError {
@@ -410,8 +410,8 @@ pub struct Document {
 }
 
 /// Typed fields in the native wire format. Field names and version-1 defaults are owned by
-/// `craft-stencilcraft-format`; this alias supplies only StencilCraft's domain types.
-type NativeFileFields = craft_stencilcraft_format::DocumentFields<
+/// `bharat-stencilcraft-format`; this alias supplies only StencilCraft's domain types.
+type NativeFileFields = bharat_stencilcraft_format::DocumentFields<
     Board,
     KerfSettings,
     Vec<Layer>,
@@ -532,7 +532,7 @@ impl Document {
             groups: self.pruned_groups(),
             meta: self.meta.clone(),
         };
-        craft_stencilcraft_format::File::<NativeFileFields>::new(fields)
+        bharat_stencilcraft_format::File::<NativeFileFields>::new(fields)
             .to_json_pretty()
             .map_err(|e| DocError::Structure { path: "output".to_string(), message: e.to_string() })
     }
@@ -544,13 +544,13 @@ impl Document {
 }
 
 fn load_json_named(json: &str, path: &str) -> Result<Document, DocError> {
-    let file = craft_stencilcraft_format::File::<NativeFileFields>::read_typed(json).map_err(|e| match e {
-        craft_stencilcraft_format::Error::Json(source) => DocError::Parse { path: path.to_string(), source },
-        craft_stencilcraft_format::Error::NotStencilCraft => DocError::NotAStencilcraftFile { path: path.to_string() },
-        craft_stencilcraft_format::Error::Version { found, supported } => {
+    let file = bharat_stencilcraft_format::File::<NativeFileFields>::read_typed(json).map_err(|e| match e {
+        bharat_stencilcraft_format::Error::Json(source) => DocError::Parse { path: path.to_string(), source },
+        bharat_stencilcraft_format::Error::NotStencilCraft => DocError::NotAStencilcraftFile { path: path.to_string() },
+        bharat_stencilcraft_format::Error::Version { found, supported } => {
             DocError::FormatVersion { path: path.to_string(), found, expected: supported }
         }
-        craft_stencilcraft_format::Error::Document { source } => structure_err(path, &source),
+        bharat_stencilcraft_format::Error::Document { source } => structure_err(path, &source),
         _ => DocError::NotAStencilcraftFile { path: path.to_string() },
     })?;
     let fields = file.document;
@@ -580,7 +580,7 @@ fn structure_err(path: &str, e: &serde_json::Error) -> DocError {
 /// File helpers: errors keep the path so the message names the file.
 pub fn save_to(doc: &Document, path: &str) -> Result<(), DocError> {
     let json = doc.save_json()?;
-    craft_atomic::atomic_write(std::path::Path::new(path), json.as_bytes()).map_err(|source| DocError::Io { path: path.to_string(), source })
+    bharat_atomic::atomic_write(std::path::Path::new(path), json.as_bytes()).map_err(|source| DocError::Io { path: path.to_string(), source })
 }
 
 pub fn load_from(path: &str) -> Result<Document, DocError> {

@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::{Decoded, decode};
+use bharat_pcap::{Decoded, decode};
 use support::{ipv4_pkt, tcp};
 
 fn decoded(segment: &[u8]) -> Decoded {

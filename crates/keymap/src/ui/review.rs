@@ -2,7 +2,7 @@
 //! detail pane: what the set will change, what did not match and why, suggestions to pick from,
 //! and after the import the report of what was skipped, taken or failed.
 
-use craft_ui::ComboBox;
+use bharat_ui::ComboBox;
 use egui::text::{LayoutJob, TextFormat};
 use egui::{Label, Rect, RichText, ScrollArea, TextEdit, TextStyle, Ui};
 

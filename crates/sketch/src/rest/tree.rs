@@ -1,6 +1,6 @@
 //! Sketch pages and layers → REST API file JSON nodes.
 
-use craft_figma_rest::ext::VectorNetwork;
+use bharat_figma_rest::ext::VectorNetwork;
 use std::borrow::Cow;
 
 use kurbo::{Affine, Rect};

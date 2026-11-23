@@ -26,13 +26,13 @@ const MAX_RUNS: usize = 1 << 20;
 const MAX_SYMBOLS: usize = 1 << 16;
 const MAX_SYMBOL_PIXELS: usize = 1 << 24;
 
-/// The most symbols one plan codes. `hayro-jbig2`, the decoder the Craft apps render JBIG2 with,
+/// The most symbols one plan codes. `hayro-jbig2`, the decoder the Bharat apps render JBIG2 with,
 /// refuses a dictionary whose new and exported symbols pass 65,535 together, and a plan exports
 /// every symbol it codes, so it refuses 32,768 or more; others may too, so a plan with more isn't
 /// made.
 const MAX_CODED_SYMBOLS: usize = (1 << 15) - 1;
 
-/// The most symbol instances one text region places. `hayro-jbig2`, the decoder the Craft apps render JBIG2 with,
+/// The most symbol instances one text region places. `hayro-jbig2`, the decoder the Bharat apps render JBIG2 with,
 /// refuses a text region of more than 10,000 (a page it then draws blank), so a page with more is
 /// placed by several regions, each over a band of rows, all referring to the one dictionary.
 const MAX_REGION_INSTANCES: usize = 10_000;

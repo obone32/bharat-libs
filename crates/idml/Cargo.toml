@@ -1,5 +1,5 @@
 [package]
-name = "craft-idml"
+name = "bharat-idml"
 description = "IDML (InDesign Markup Language) packages: the ZIP container read with bounded part sizes and written, designmap includes, the Properties form of IDML's XML, value codecs, and InDesign Tagged Text."
 version.workspace = true
 edition.workspace = true
@@ -11,11 +11,11 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-xml = { workspace = true }
+bharat-xml = { workspace = true }
 thiserror = { workspace = true }
-craft-zip = { workspace = true }
+bharat-zip = { workspace = true }
 
 [dev-dependencies]
 # The tests build hostile archives by hand.
 zip = { version = "9", default-features = false, features = ["deflate-flate2"] }
-craft-zip = { workspace = true, features = ["test-support"] }
+bharat-zip = { workspace = true, features = ["test-support"] }

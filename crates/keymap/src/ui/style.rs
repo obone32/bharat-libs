@@ -1,7 +1,7 @@
 //! The dialog's colors and the icon-button style built from them.
 
-use craft_ui::buttons::{ButtonVisuals, IconButtonStyle};
-use craft_ui::layout::ResizeHandleStyle;
+use bharat_ui::buttons::{ButtonVisuals, IconButtonStyle};
+use bharat_ui::layout::ResizeHandleStyle;
 use egui::{Color32, Stroke, Visuals};
 
 /// The dialog's colors.

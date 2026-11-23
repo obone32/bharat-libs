@@ -1,7 +1,7 @@
-# craft-mcp
+# bharat-mcp
 
 Transport-independent MCP 2025-03-26 server initialization and tool result helpers.
-Use one `Session` per client connection with `craft-jsonrpc` for message parsing and
+Use one `Session` per client connection with `bharat-jsonrpc` for message parsing and
 batch dispatch. The caller owns transport, tool definitions and execution, response
 size limits, and shutdown. Pass the outer envelope's batch status to `Session::request`.
 

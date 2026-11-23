@@ -1,7 +1,7 @@
 //! Frame and picture headers (RDD 36 §5).
 
 use crate::prores::{AlphaType, ChromaFormat, ColorInfo, Error, Interlace, Result};
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 /// `'icpf'`: the frame identifier following the 32-bit frame size.
 pub const FRAME_ID: [u8; 4] = *b"icpf";

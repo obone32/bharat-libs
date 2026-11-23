@@ -1202,10 +1202,10 @@ mod tests {
     }
 
     /// Every `.aepx` of the fixture directory gives the same tree through both readers (skipped
-    /// without `CRAFT_AEP_FIXTURES`).
+    /// without `BHARAT_AEP_FIXTURES`).
     #[test]
     fn every_fixture_aepx_gives_the_same_tree_through_both_readers() {
-        let Some(dir) = std::env::var_os("CRAFT_AEP_FIXTURES").filter(|d| !d.is_empty()) else { return };
+        let Some(dir) = std::env::var_os("BHARAT_AEP_FIXTURES").filter(|d| !d.is_empty()) else { return };
         let Ok(entries) = std::fs::read_dir(dir) else { return };
         let mut paths: Vec<std::path::PathBuf> =
             entries.filter_map(Result::ok).map(|e| e.path()).filter(|p| p.extension().is_some_and(|x| x == "aepx")).collect();

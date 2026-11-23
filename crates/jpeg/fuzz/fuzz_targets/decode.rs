@@ -1,6 +1,6 @@
 #![no_main]
 
-use craft_jpeg::{Limits, Samples, decode, frame};
+use bharat_jpeg::{Limits, Samples, decode, frame};
 use libfuzzer_sys::fuzz_target;
 
 fn fuzz_limits() -> Limits {

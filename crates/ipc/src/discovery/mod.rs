@@ -1,4 +1,4 @@
-//! Discovery records for Craft apps on this machine.
+//! Discovery records for Bharat apps on this machine.
 
 mod dir;
 mod record;

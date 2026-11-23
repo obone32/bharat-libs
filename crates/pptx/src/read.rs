@@ -8,12 +8,12 @@ use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use craft_drawingml::emu_to_pt;
-use craft_drawingml::part::{self, Source};
-use craft_drawingml::read as dml;
-use craft_drawingml::xmlx::{self, has_rel_refs, keep_with};
-use craft_opc::Rels;
-use craft_xml::{El, Local, value};
+use bharat_drawingml::emu_to_pt;
+use bharat_drawingml::part::{self, Source};
+use bharat_drawingml::read as dml;
+use bharat_drawingml::xmlx::{self, has_rel_refs, keep_with};
+use bharat_opc::Rels;
+use bharat_xml::{El, Local, value};
 
 use crate::package::{Doc, Package};
 use crate::placeholder::{Owner, parents};
@@ -90,12 +90,12 @@ impl<'a> Imp<'a> {
     }
     /// Media item for an internal part, read once.
     pub fn media_for(&mut self, part: &str) -> Option<MediaId> {
-        let key = craft_opc::normalize(part);
+        let key = bharat_opc::normalize(part);
         if let Some(m) = self.media_by_part.get(&key) {
             return Some(*m);
         }
         let data = self.pkg.get_shared(part)?.clone();
-        let name = craft_opc::file_of(self.pkg.original_name(part).unwrap_or(part)).to_string();
+        let name = bharat_opc::file_of(self.pkg.original_name(part).unwrap_or(part)).to_string();
         let content_type = self.pkg.content_type(part).filter(|c| !c.is_empty()).unwrap_or_else(|| crate::mime_for(&name).to_string());
         let id = MediaId(self.alloc());
         self.media.push(MediaItem { id, name, content_type, data, link: None });
@@ -158,7 +158,7 @@ impl Source for Src<'_, '_> {
         if external { Some(self.0.media_link(target)) } else { self.0.media_for(target) }
     }
     fn slide(&self, target: &str) -> Option<SlideId> {
-        self.0.slide_by_part.get(&craft_opc::normalize(target)).copied()
+        self.0.slide_by_part.get(&bharat_opc::normalize(target)).copied()
     }
     fn custom_show(&self, id: &str) -> Option<String> {
         self.0.custom_show_names.get(id).cloned()
@@ -172,7 +172,7 @@ impl Source for Src<'_, '_> {
 }
 
 /// A relationship to an embedded 3-D model (`.glb`).
-pub(crate) fn is_model3d(rel: &craft_opc::Rel) -> bool {
+pub(crate) fn is_model3d(rel: &bharat_opc::Rel) -> bool {
     !rel.external && (rel.kind() == "model3d" || rel.target.to_ascii_lowercase().ends_with(".glb"))
 }
 
@@ -214,7 +214,7 @@ pub fn tags(imp: &mut Imp, part: &Part, holder: &El) -> Vec<(String, String)> {
         if imp.tags_capped {
             return out;
         }
-        let Some(target) = t.attr_local("r:id").and_then(|id| part.rels.by_id(id)).map(|r| craft_opc::normalize(&r.target)) else { continue };
+        let Some(target) = t.attr_local("r:id").and_then(|id| part.rels.by_id(id)).map(|r| bharat_opc::normalize(&r.target)) else { continue };
         if !seen.insert(target.clone()) {
             continue;
         }
@@ -280,8 +280,8 @@ fn kept_parts(pkg: &Package, pres_path: &str) -> Vec<crate::KeptPart> {
     let mut out: Vec<KeptPart> = Vec::new();
     let text = |name: &str| pkg.get(name).and_then(|b| std::str::from_utf8(b).ok()).map(str::to_string);
     for (holder, from_root) in [("", true), (pres_path, false)] {
-        let Some(doc) = pkg.xml(&craft_opc::rels_path(holder)) else { continue };
-        let base = craft_opc::dir_of(holder);
+        let Some(doc) = pkg.xml(&bharat_opc::rels_path(holder)) else { continue };
+        let base = bharat_opc::dir_of(holder);
         for r in doc.root.children(Local("Relationship")) {
             let (Some(ty), Some(target)) = (r.attr_local("Type"), r.attr_local("Target")) else { continue };
             if r.attr_local("TargetMode").is_some_and(|m| m.eq_ignore_ascii_case("external"))
@@ -289,7 +289,7 @@ fn kept_parts(pkg: &Package, pres_path: &str) -> Vec<crate::KeptPart> {
             {
                 continue;
             }
-            let name = craft_opc::resolve(base, target);
+            let name = bharat_opc::resolve(base, target);
             if !keepable(&name) || out.iter().any(|k| k.name.eq_ignore_ascii_case(&name)) || out.len() >= 400 {
                 continue;
             }
@@ -302,7 +302,7 @@ fn kept_parts(pkg: &Package, pres_path: &str) -> Vec<crate::KeptPart> {
                 from_root,
             });
             // The part's own relationships (customXml item → itemProps) and their targets.
-            let rp = craft_opc::rels_path(&name);
+            let rp = bharat_opc::rels_path(&name);
             if let Some(rels_xml) = text(&rp) {
                 let mut capped = false;
                 for sub in pkg.rels(&name).list.iter().filter(|s| !s.external && keepable(&s.target)) {
@@ -381,7 +381,7 @@ pub fn import_theme(bytes: &[u8]) -> Result<(crate::theme::Theme, Vec<MediaItem>
     }
     let mut imp = Imp::new(&pkg, &crate::Plain, 0, chart::MAX_PRESENTATION_CHART_POINTS);
     let part = Part::new(&pkg, &theme_path, &doc);
-    let theme = craft_drawingml::theme::read_theme(&mut Src(&mut imp, &part), &doc.root);
+    let theme = bharat_drawingml::theme::read_theme(&mut Src(&mut imp, &part), &doc.root);
     Ok((theme, imp.media))
 }
 
@@ -467,9 +467,9 @@ fn master_and_slide_paths(pres_el: &El, pres_part: &Part) -> (Vec<String>, Vec<(
         })
         .unwrap_or_default();
     let mut seen_masters = HashSet::new();
-    master_paths.retain(|m| seen_masters.insert(craft_opc::normalize(m)));
+    master_paths.retain(|m| seen_masters.insert(bharat_opc::normalize(m)));
     let mut seen_slides = HashSet::new();
-    slide_entries.retain(|(_, p)| seen_slides.insert(craft_opc::normalize(p)));
+    slide_entries.retain(|(_, p)| seen_slides.insert(bharat_opc::normalize(p)));
     (master_paths, slide_entries)
 }
 
@@ -480,7 +480,7 @@ fn load_part_docs(pkg: &Package, master_paths: &[String], slide_entries: &[(u32,
     let mut seen_layouts = HashSet::new();
     for m in master_paths {
         for r in pkg.rels(m).all("slideLayout") {
-            let key = craft_opc::normalize(&r.target);
+            let key = bharat_opc::normalize(&r.target);
             if seen_layouts.insert(key) {
                 all_parts.push(r.target.clone());
             }
@@ -490,7 +490,7 @@ fn load_part_docs(pkg: &Package, master_paths: &[String], slide_entries: &[(u32,
     let mut docs: HashMap<String, Doc> = HashMap::new();
     let mut max_id = 0u32;
     for p in &all_parts {
-        let key = craft_opc::normalize(p);
+        let key = bharat_opc::normalize(p);
         if docs.contains_key(&key) {
             continue;
         }
@@ -512,13 +512,13 @@ fn register_slides(
 ) -> Vec<(u32, String, SlideId)> {
     let mut slide_ids: Vec<(u32, String, SlideId)> = vec![];
     for (file_id, path) in slide_entries {
-        if !docs.contains_key(&craft_opc::normalize(path)) {
+        if !docs.contains_key(&bharat_opc::normalize(path)) {
             log::warn!("pptx: slide {path} is missing or unreadable; skipped");
             lost_slides.push(path.clone());
             continue;
         }
         let id = SlideId(imp.alloc());
-        imp.slide_by_part.insert(craft_opc::normalize(path), id);
+        imp.slide_by_part.insert(bharat_opc::normalize(path), id);
         slide_ids.push((*file_id, path.clone(), id));
     }
     slide_ids
@@ -563,7 +563,7 @@ fn read_presentation_settings(imp: &mut Imp, p: &mut Presentation, pres_part: &P
 fn read_masters(imp: &mut Imp, p: &mut Presentation, master_paths: &[String], docs: &HashMap<String, Doc>) -> HashMap<String, LayoutId> {
     let mut layout_by_part: HashMap<String, LayoutId> = HashMap::new();
     for mp in master_paths {
-        let Some(doc) = docs.get(&craft_opc::normalize(mp)) else {
+        let Some(doc) = docs.get(&bharat_opc::normalize(mp)) else {
             log::warn!("pptx: master {mp} missing; skipped");
             continue;
         };
@@ -595,10 +595,10 @@ fn read_slides(
     // copied) once per slide that names it.
     let mut owned_parts: HashSet<String> = HashSet::new();
     for (file_id, path, id) in slide_ids {
-        let Some(doc) = docs.get(&craft_opc::normalize(path)) else { continue };
+        let Some(doc) = docs.get(&bharat_opc::normalize(path)) else { continue };
         let part = Part::new(pkg, path, doc);
         let layout =
-            part.rels.first("slideLayout").and_then(|r| layout_by_part.get(&craft_opc::normalize(&r.target)).copied()).unwrap_or(fallback_layout);
+            part.rels.first("slideLayout").and_then(|r| layout_by_part.get(&bharat_opc::normalize(&r.target)).copied()).unwrap_or(fallback_layout);
         let mut slide = read_slide(imp, &part, doc, *id, layout);
         if let Some(notes) = slide_notes(imp, &part, &mut owned_parts) {
             slide.notes = notes;
@@ -613,7 +613,7 @@ fn read_slides(
 /// The slide's notes text. A notes part is the notes of the first slide that names it.
 fn slide_notes(imp: &mut Imp, part: &Part, owned: &mut HashSet<String>) -> Option<TextBody> {
     let n = part.rels.first("notesSlide")?;
-    if !owned.insert(craft_opc::normalize(&n.target)) {
+    if !owned.insert(bharat_opc::normalize(&n.target)) {
         log::warn!("pptx: notes part {} is named by more than one slide; kept on the first", n.target);
         return None;
     }
@@ -630,7 +630,7 @@ fn read_slide_comments(pkg: &Package, pres_part: &Part, part: &Part, slide: &mut
     let mut parts: Vec<(Doc, bool, bool)> = vec![];
     for c in part.rels.all("comments") {
         // An already-owned part is not re-read, but its kind still decides modern precedence.
-        let fresh = owned.insert(craft_opc::normalize(&c.target));
+        let fresh = owned.insert(bharat_opc::normalize(&c.target));
         if let Some(cd) = pkg.xml(&c.target) {
             // The content type names the modern part; a package that types it only through a
             // Default entry instead of an Override is still modern when its root is p188.
@@ -681,7 +681,7 @@ fn read_custom_shows(p: &mut Presentation, imp: &Imp, pres_part: &Part, pres_el:
             .map(|l| {
                 l.children(Local("sld"))
                     .filter_map(|s| pres_part.rels.target(s.attr_local("r:id").unwrap_or("")))
-                    .filter_map(|t| imp.slide_by_part.get(&craft_opc::normalize(t)).copied())
+                    .filter_map(|t| imp.slide_by_part.get(&bharat_opc::normalize(t)).copied())
                     .collect()
             })
             .unwrap_or_default();
@@ -734,7 +734,7 @@ fn read_master_theme(imp: &mut Imp, part: &Part, m: &mut Master) -> bool {
         && let Some(td) = pkg.xml(&t.target)
     {
         let tp = Part::new(pkg, &t.target, &td);
-        m.theme = craft_drawingml::theme::read_theme(&mut Src(imp, &tp), &td.root);
+        m.theme = bharat_drawingml::theme::read_theme(&mut Src(imp, &tp), &td.root);
         return true;
     }
     false
@@ -982,7 +982,7 @@ fn table_styles(imp: &mut Imp, part: &Part, root: &El) -> Vec<crate::table::Tabl
                 if let Some(fr) = bg.child(Local("fillRef")) {
                     ps.fill_ref = Some((
                         fr.attr_local("idx").and_then(value::to_u32_lossy).unwrap_or(0),
-                        dml::color(fr).unwrap_or(crate::ColorRef::scheme(craft_drawingml::color::SchemeSlot::Accent1)),
+                        dml::color(fr).unwrap_or(crate::ColorRef::scheme(bharat_drawingml::color::SchemeSlot::Accent1)),
                     ));
                 }
                 def.background = Some(ps);
@@ -1002,7 +1002,7 @@ fn table_styles(imp: &mut Imp, part: &Part, root: &El) -> Vec<crate::table::Tabl
                     if let Some(fr) = tc.child(Local("fillRef")) {
                         ps.fill_ref = Some((
                             fr.attr_local("idx").and_then(value::to_u32_lossy).unwrap_or(0),
-                            dml::color(fr).unwrap_or(crate::ColorRef::scheme(craft_drawingml::color::SchemeSlot::Accent1)),
+                            dml::color(fr).unwrap_or(crate::ColorRef::scheme(bharat_drawingml::color::SchemeSlot::Accent1)),
                         ));
                     }
                     if let Some(bd) = tc.child(Local("tcBdr")) {
@@ -1013,7 +1013,7 @@ fn table_styles(imp: &mut Imp, part: &Part, root: &El) -> Vec<crate::table::Tabl
                             } else {
                                 b.child(Local("lnRef")).map(|r| TableBorder::Ref {
                                     idx: r.attr_local("idx").and_then(value::to_u32_lossy).unwrap_or(0),
-                                    color: dml::color(r).unwrap_or(crate::ColorRef::scheme(craft_drawingml::color::SchemeSlot::Accent1)),
+                                    color: dml::color(r).unwrap_or(crate::ColorRef::scheme(bharat_drawingml::color::SchemeSlot::Accent1)),
                                 })
                             };
                             if let Some(slot) = ps.borders.get_mut(i) {
@@ -1037,7 +1037,7 @@ fn background(imp: &mut Imp, part: &Part, csld: &El) -> Option<Background> {
     let r = bg.child(Local("bgRef"))?;
     Some(Background::Ref {
         idx: r.attr_local("idx").and_then(value::to_u32_lossy).unwrap_or(1001),
-        color: dml::color(r).unwrap_or(crate::ColorRef::scheme(craft_drawingml::color::SchemeSlot::Bg1)),
+        color: dml::color(r).unwrap_or(crate::ColorRef::scheme(bharat_drawingml::color::SchemeSlot::Bg1)),
     })
 }
 
@@ -1055,7 +1055,7 @@ fn read_master(imp: &mut Imp, path: &str, doc: &Doc, docs: &HashMap<String, Doc>
         && let Some(td) = pkg.xml(&t.target)
     {
         let tp = Part::new(pkg, &t.target, &td);
-        m.theme = craft_drawingml::theme::read_theme(&mut Src(imp, &tp), &td.root);
+        m.theme = bharat_drawingml::theme::read_theme(&mut Src(imp, &tp), &td.root);
     }
     m.id = MasterId(imp.alloc());
     if let Some(cm) = root.child(Local("clrMap")) {
@@ -1089,12 +1089,12 @@ fn read_master(imp: &mut Imp, path: &str, doc: &Doc, docs: &HashMap<String, Doc>
         .map(|l| l.children(Local("sldLayoutId")).filter_map(|x| part.rels.target(x.attr_local("r:id").unwrap_or(""))).map(String::from).collect())
         .unwrap_or_default();
     for r in part.rels.all("slideLayout") {
-        if !lpaths.iter().any(|x| craft_opc::normalize(x) == craft_opc::normalize(&r.target)) {
+        if !lpaths.iter().any(|x| bharat_opc::normalize(x) == bharat_opc::normalize(&r.target)) {
             lpaths.push(r.target.clone());
         }
     }
     for lp in lpaths.iter().take(1000) {
-        let key = craft_opc::normalize(lp);
+        let key = bharat_opc::normalize(lp);
         if layout_by_part.contains_key(&key) {
             continue;
         }

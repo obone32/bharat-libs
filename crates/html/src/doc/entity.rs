@@ -17,7 +17,7 @@ pub fn decode(b: &[u8]) -> String {
 /// are decoded as such, other labels by their WHATWG decoders.
 pub fn decode_as(b: &[u8], charset: Option<&str>) -> String {
     if b.starts_with(&[0xFF, 0xFE]) || b.starts_with(&[0xFE, 0xFF]) || b.starts_with(&[0xEF, 0xBB, 0xBF]) {
-        return craft_mime::detect::decode(b);
+        return bharat_mime::detect::decode(b);
     }
     let named = charset.map(str::to_ascii_lowercase).or_else(|| crate::declared_charset(b));
     let code_page = match named.as_deref().map(str::trim) {
@@ -26,7 +26,7 @@ pub fn decode_as(b: &[u8], charset: Option<&str>) -> String {
             .strip_prefix("windows-")
             .or_else(|| cs.strip_prefix("cp"))
             .and_then(|n| n.parse::<u16>().ok())
-            .filter(|cp| craft_codepage::SINGLE_BYTE_CODE_PAGES.contains(cp)),
+            .filter(|cp| bharat_codepage::SINGLE_BYTE_CODE_PAGES.contains(cp)),
         None => None,
     };
     // Other labels (ISO 8859, KOI8, Shift_JIS, GBK, Big5, EUC-KR…) by their WHATWG decoders; a
@@ -36,11 +36,11 @@ pub fn decode_as(b: &[u8], charset: Option<&str>) -> String {
         .and_then(|l| encoding_rs::Encoding::for_label(l.trim().as_bytes()))
         .filter(|e| ![encoding_rs::UTF_8, encoding_rs::UTF_16LE, encoding_rs::UTF_16BE].contains(e));
     match (code_page, other) {
-        (Some(cp), _) => b.iter().map(|&c| craft_codepage::windows_byte(cp, c)).collect(),
+        (Some(cp), _) => b.iter().map(|&c| bharat_codepage::windows_byte(cp, c)).collect(),
         (None, Some(enc)) => enc.decode_without_bom_handling(b).0.into_owned(),
         (None, None) => match std::str::from_utf8(b) {
             Ok(s) => s.to_string(),
-            Err(_) => craft_mime::detect::decode(b),
+            Err(_) => bharat_mime::detect::decode(b),
         },
     }
 }

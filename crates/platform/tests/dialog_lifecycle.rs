@@ -1,5 +1,5 @@
 #![cfg(all(feature = "dialogs", not(target_arch = "wasm32")))]
-use craft_platform::{
+use bharat_platform::{
     dialog_outcome::{DialogError, ErrorKind, Outcome},
     dialogs::{NativeDialogs, wait_prepared},
 };
@@ -11,7 +11,7 @@ use std::sync::{
 use std::time::{Duration, Instant};
 fn pump_until<R, T: Send + 'static>(
     service: &mut NativeDialogs<R, T>,
-    mut create: impl FnMut(R) -> craft_platform::dialogs::DialogFuture<T>,
+    mut create: impl FnMut(R) -> bharat_platform::dialogs::DialogFuture<T>,
     until: impl Fn() -> bool,
 ) {
     let deadline = Instant::now() + Duration::from_secs(3);
@@ -126,7 +126,7 @@ fn missing_backend_answer_is_ambiguous() {
 #[test]
 fn held_close_retries_policy_without_granting_discard() {
     let ctx = egui::Context::default();
-    let mut close = craft_platform::dialogs::DeferredClose::default();
+    let mut close = bharat_platform::dialogs::DeferredClose::default();
     let mut input = egui::RawInput::default();
     input.viewports.entry(egui::ViewportId::ROOT).or_default().events.push(egui::ViewportEvent::Close);
     let mut output = ctx.run_ui(input, |ui| assert!(!close.update(ui.ctx(), true)));
@@ -209,7 +209,7 @@ fn completion_between_pumps_cannot_reject_a_chained_request() -> Result<(), Box<
 #[test]
 fn pending_dialog_without_close_intent_does_not_schedule_viewport_work() {
     let ctx = egui::Context::default();
-    let mut close = craft_platform::dialogs::DeferredClose::default();
+    let mut close = bharat_platform::dialogs::DeferredClose::default();
     // Let egui settle its own initial font/style passes before testing the idle host.
     for _ in 0..4 {
         let mut output = ctx.run_ui(egui::RawInput::default(), |_| {});
@@ -232,7 +232,7 @@ fn pending_dialog_without_close_intent_does_not_schedule_viewport_work() {
 #[test]
 fn programmatic_close_is_held_until_the_pending_dialog_settles() {
     let ctx = egui::Context::default();
-    let mut close = craft_platform::dialogs::DeferredClose::default();
+    let mut close = bharat_platform::dialogs::DeferredClose::default();
     let mut output = ctx.run_ui(egui::RawInput::default(), |ui| {
         ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
         assert!(!close.update(ui.ctx(), true));

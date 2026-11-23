@@ -695,7 +695,7 @@ mod tests {
     #[test]
     fn missing_tools_and_output_bytes() {
         let _guard = crate::spawn_guard();
-        let missing = "craft-xtask-test-no-such-program";
+        let missing = "bharat-xtask-test-no-such-program";
         let Err(e) = run(Command::new(missing), "missing tool") else { panic!("a missing program ran") };
         assert!(e.starts_with("missing tool: failed to spawn: "), "{e}");
         assert!(!nextest_available(Command::new(missing)));
@@ -741,9 +741,9 @@ mod tests {
         assert!(out.contains("  FAIL  cargo: cargo: failed to spawn: ") && out.ends_with("\n  skip  after\n"), "{out}");
     }
 
-    const TREE_CHILD: &str = "CRAFT_XTASK_TREE_CHILD";
-    const BLOCKED_CHILD: &str = "CRAFT_XTASK_BLOCKED_CHILD";
-    const BYTES_CHILD: &str = "CRAFT_XTASK_BYTES_CHILD";
+    const TREE_CHILD: &str = "BHARAT_XTASK_TREE_CHILD";
+    const BLOCKED_CHILD: &str = "BHARAT_XTASK_BLOCKED_CHILD";
+    const BYTES_CHILD: &str = "BHARAT_XTASK_BYTES_CHILD";
     const RAW_BYTES: &[u8] = b"\xff\xfe\x00 not UTF-8 \x80\xc3\n";
 
     /// This test binary, run as a child that runs only the ignored test `name`.

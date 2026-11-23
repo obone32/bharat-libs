@@ -1,4 +1,4 @@
-//! DirectDraw Surface (DDS) textures through [`craft_dds`]: its errors and pixel layouts mapped
+//! DirectDraw Surface (DDS) textures through [`bharat_dds`]: its errors and pixel layouts mapped
 //! onto this crate's, and the decoder's size checked against [`Limits`] before it allocates.
 
 use crate::SampleType;
@@ -7,7 +7,7 @@ use crate::fidelity::Plan;
 use crate::format::Format;
 use crate::image::{ChannelLayout, Image};
 use crate::options::{EncodeOptions, Limits};
-use craft_dds::{DdsError, Layout, Texture};
+use bharat_dds::{DdsError, Layout, Texture};
 
 fn error(e: DdsError) -> CodecError {
     match e {
@@ -33,7 +33,7 @@ pub(crate) fn channel_layout(layout: Layout) -> ChannelLayout {
 
 /// Header-declared extra subresources cannot survive a single-image rewrite, even without presence flags.
 pub(crate) fn has_additional_images(bytes: &[u8]) -> Result<bool, CodecError> {
-    craft_dds::has_additional_images(bytes).map_err(error)
+    bharat_dds::has_additional_images(bytes).map_err(error)
 }
 
 pub(crate) fn decode(b: &[u8], limits: &Limits) -> Result<Image, CodecError> {
@@ -56,5 +56,5 @@ pub(crate) fn encode(image: &Image, plan: Plan, opts: &EncodeOptions) -> Result<
         other => return Err(CodecError::encode(Format::Dds, format!("{other:?} pixels can't be written as `{}`", opts.dds.compression.name()))),
     };
     let (width, height) = img.dimensions();
-    craft_dds::encode(width, height, layout, pixels, opts.dds).map_err(error)
+    bharat_dds::encode(width, height, layout, pixels, opts.dds).map_err(error)
 }

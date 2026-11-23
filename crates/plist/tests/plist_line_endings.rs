@@ -1,4 +1,4 @@
-use craft_plist::{self as plist, Value};
+use bharat_plist::{self as plist, Value};
 
 /// Literal line endings normalize before entities, including keys and CDATA.
 #[test]

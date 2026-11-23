@@ -5,7 +5,7 @@ mod common;
 #[path = "common/matroska.rs"]
 mod mkv;
 
-use craft_media::matroska::*;
+use bharat_media::matroska::*;
 use mkv::*;
 use serde_json::Value;
 use std::path::Path;
@@ -289,7 +289,7 @@ fn prores_pcm() {
 #[test]
 fn mjpeg_ac3() {
     let Some((_, f, _)) = run("mjpeg_ac3.mkv") else { return };
-    assert_eq!(f.info.title.as_deref(), Some("craft-media test"));
+    assert_eq!(f.info.title.as_deref(), Some("bharat-media test"));
     assert!(f.info.muxing_app.starts_with("Lavf"));
     assert!(f.tags.iter().flat_map(|t| &t.simple).any(|s| s.name == "ENCODER"));
 }
@@ -408,7 +408,7 @@ fn not_matroska() {
     let _ = Value::Null;
 }
 
-/// Pre-generate every fixture (`cargo test -p craft-media --all-features -- --ignored generate_fixtures`).
+/// Pre-generate every fixture (`cargo test -p bharat-media --all-features -- --ignored generate_fixtures`).
 #[test]
 #[ignore]
 fn generate_fixtures() {

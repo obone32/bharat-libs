@@ -1,8 +1,8 @@
 //! OpenType ligatures (`w14:ligatures`, [MS-DOCX]) in document defaults, styles and runs.
 //! Synthetic packages, written here; no external documents are needed.
 
-use craft_wordmodel::props::Ligatures;
-use craft_wordmodel::{Document, Paragraph};
+use bharat_wordmodel::props::Ligatures;
+use bharat_wordmodel::{Document, Paragraph};
 use std::io::Write;
 
 fn package(defaults: &str, style: &str, run: &str) -> Vec<u8> {
@@ -42,23 +42,23 @@ fn lig(name: &str) -> Option<Ligatures> {
 fn ligatures_in_defaults_styles_and_runs_survive_saving() {
     let el = |v: &str| format!(r#"<w14:ligatures w14:val="{v}"/>"#);
     let bytes = package(&el("standardContextual"), &el("none"), &el("historicalDiscretional"));
-    let mut d = craft_docx::read(&bytes).unwrap();
+    let mut d = bharat_docx::read(&bytes).unwrap();
     for generation in 0..3 {
         assert_eq!(d.styles.default_chr.ligatures, lig("standardContextual"), "defaults, generation {generation}");
         assert_eq!(d.styles.get("Fancy").and_then(|s| s.chr.ligatures), lig("none"), "style, generation {generation}");
         let run = &paragraph(&d).runs[0].props;
         assert_eq!(run.ligatures, lig("historicalDiscretional"), "run, generation {generation}");
         assert_eq!(run.text_effects, None, "not read as a WordArt effect");
-        d = craft_docx::read(&craft_docx::write(&d).unwrap()).unwrap();
+        d = bharat_docx::read(&bharat_docx::write(&d).unwrap()).unwrap();
     }
 }
 
 /// A value [MS-DOCX] doesn't define is ignored, the run keeps inheriting.
 #[test]
 fn unknown_ligature_values_are_ignored() {
-    let d = craft_docx::read(&package("", "", r#"<w14:ligatures w14:val="fancy"/>"#)).unwrap();
+    let d = bharat_docx::read(&package("", "", r#"<w14:ligatures w14:val="fancy"/>"#)).unwrap();
     assert_eq!(paragraph(&d).runs[0].props.ligatures, None);
-    let d = craft_docx::read(&package("", "", "<w14:ligatures/>")).unwrap();
+    let d = bharat_docx::read(&package("", "", "<w14:ligatures/>")).unwrap();
     assert_eq!(paragraph(&d).runs[0].props.ligatures, None);
 }
 
@@ -66,8 +66,8 @@ fn unknown_ligature_values_are_ignored() {
 /// were.
 #[test]
 fn no_ligatures_element_without_a_value() {
-    let d = craft_docx::read(&package("", "", "")).unwrap();
-    let out = craft_docx::write(&d).unwrap();
+    let d = bharat_docx::read(&package("", "", "")).unwrap();
+    let out = bharat_docx::write(&d).unwrap();
     let mut z = zip::ZipArchive::new(std::io::Cursor::new(out)).unwrap();
     for name in ["word/document.xml", "word/styles.xml"] {
         let mut xml = String::new();

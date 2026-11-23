@@ -59,13 +59,13 @@ impl Report {
 }
 
 /// The root-level stream called `name` (compared as compound files compare names).
-fn root_stream(cf: &craft_cfb::CompoundFile<'_>, name: &str) -> Option<usize> {
-    cf.child(0, name).filter(|&id| cf.entry(id).is_some_and(|e| e.kind == craft_cfb::EntryKind::Stream))
+fn root_stream(cf: &bharat_cfb::CompoundFile<'_>, name: &str) -> Option<usize> {
+    cf.child(0, name).filter(|&id| cf.entry(id).is_some_and(|e| e.kind == bharat_cfb::EntryKind::Stream))
 }
 
 /// The Workbook stream of a compound file, or why there is none.
 fn workbook_stream(bytes: &[u8]) -> Result<Vec<u8>, Error> {
-    let cf = craft_cfb::CompoundFile::open(bytes).map_err(|e| invalid(e.to_string()))?;
+    let cf = bharat_cfb::CompoundFile::open(bytes).map_err(|e| invalid(e.to_string()))?;
     let Some(id) = root_stream(&cf, "Workbook") else {
         return Err(if root_stream(&cf, "Book").is_some() {
             Error::Biff5
@@ -74,7 +74,7 @@ fn workbook_stream(bytes: &[u8]) -> Result<Vec<u8>, Error> {
         });
     };
     cf.read_capped(id, MAX_STREAM).map_err(|e| match e {
-        craft_cfb::Error::LimitExceeded(_) => Error::TooLarge("the Workbook stream is larger than 1 GiB".into()),
+        bharat_cfb::Error::LimitExceeded(_) => Error::TooLarge("the Workbook stream is larger than 1 GiB".into()),
         e => invalid(e.to_string()),
     })
 }
@@ -82,7 +82,7 @@ fn workbook_stream(bytes: &[u8]) -> Result<Vec<u8>, Error> {
 /// Whether the bytes are a compound file holding an Excel workbook stream (BIFF8 `Workbook`
 /// or BIFF5 `Book`). The stream itself is not read.
 pub fn is_xls(bytes: &[u8]) -> bool {
-    craft_cfb::CompoundFile::open(bytes).is_ok_and(|cf| root_stream(&cf, "Workbook").or_else(|| root_stream(&cf, "Book")).is_some())
+    bharat_cfb::CompoundFile::open(bytes).is_ok_and(|cf| root_stream(&cf, "Workbook").or_else(|| root_stream(&cf, "Book")).is_some())
 }
 
 /// Most shared formulas one sheet expands, and the longest template text one attach may

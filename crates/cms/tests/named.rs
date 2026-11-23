@@ -1,6 +1,6 @@
 //! Named-colour (`ncl2`) profiles, on synthetic profiles built here.
 
-use craft_cms::{Builtin, CmsError, Intent, NamedColors, Pcs, Profile, Transform, math};
+use bharat_cms::{Builtin, CmsError, Intent, NamedColors, Pcs, Profile, Transform, math};
 
 /// One entry: root name, three PCS codes, device codes.
 type Entry<'a> = (&'a str, [u16; 3], &'a [u16]);

@@ -15,7 +15,7 @@ use x509_cert::ext::pkix::{
 };
 
 use crate::algorithms::{self, Fault};
-use craft_ber as ber;
+use bharat_ber as ber;
 
 /// The largest certificate read.
 pub const MAX_CERT_BYTES: usize = 64 * 1024;

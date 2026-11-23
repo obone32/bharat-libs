@@ -230,7 +230,7 @@ impl Reader {
             | "brdrtnthlg" | "brdrtnthtnlg" | "brdrwavy" | "brdrwavydb" | "brdrnone" | "brdrnil" | "brdrtbl"
                 if self.cell_side.is_some() || self.st.border_side.is_some() =>
             {
-                use craft_wordmodel::props::{Border, BorderStyle};
+                use bharat_wordmodel::props::{Border, BorderStyle};
                 let style = match w {
                     "brdrnone" | "brdrnil" | "brdrtbl" => BorderStyle::None,
                     "brdrth" => BorderStyle::Thick,
@@ -608,5 +608,5 @@ impl Reader {
 
 /// The target of a `HYPERLINK` field instruction; `%22` is a quote, as the writer stores one.
 pub(super) fn hyperlink(instr: &str) -> Option<String> {
-    craft_wordmodel::link::hyperlink_target(instr).map(|t| t.replace("%22", "\""))
+    bharat_wordmodel::link::hyperlink_target(instr).map(|t| t.replace("%22", "\""))
 }

@@ -16,7 +16,7 @@ struct Recorded {
 }
 
 fn key(viewport: ViewportId) -> Id {
-    Id::unique(("craft_ui::ime::window", viewport))
+    Id::unique(("bharat_ui::ime::window", viewport))
 }
 
 /// The recording for the current pass of the current viewport, if docking began one.

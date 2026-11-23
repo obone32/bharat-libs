@@ -4,7 +4,7 @@
 use std::io::{Cursor, Seek, SeekFrom, Write};
 use std::process::Command;
 
-use craft_audio::{
+use bharat_audio::{
     AudioBuffer, AudioError, BitDepth, ChannelLayout, CodecId, Container, ENCODE_EXTENSIONS, EncodeFormat, EncodeOptions, FileEncoder, RateControl,
     decode, encode, encode_format_for,
 };
@@ -54,7 +54,7 @@ fn aac_decodes_to_the_frames_written() {
 /// priming and lasts as long as the audio, in a movie timescale that is the sample rate.
 #[test]
 fn aac_timing_is_in_the_sample_table_and_the_edit_list() {
-    use craft_audio::craft_media::isobmff;
+    use bharat_audio::bharat_media::isobmff;
     let file = encode(&tones(44_100, 1, 3000), &EncodeOptions::new(EncodeFormat::Aac)).unwrap();
     let mp4 = isobmff::open(file.as_slice()).unwrap();
     let track = &mp4.tracks[0];
@@ -72,7 +72,7 @@ fn aac_timing_is_in_the_sample_table_and_the_edit_list() {
 /// and average bit rate in ALAC's cookie.
 #[test]
 fn the_sample_entry_describes_the_finished_stream() {
-    use craft_audio::craft_media::isobmff::{self, CodecConfig};
+    use bharat_audio::bharat_media::isobmff::{self, CodecConfig};
     let buf = tones(48_000, 2, 48_000);
     let file = encode(&buf, &EncodeOptions::new(EncodeFormat::Aac).with_bitrate(96_000)).unwrap();
     let mp4 = isobmff::open(file.as_slice()).unwrap();
@@ -82,7 +82,7 @@ fn the_sample_entry_describes_the_finished_stream() {
     let file = encode(&buf, &EncodeOptions::new(EncodeFormat::Alac).with_bit_depth(BitDepth::Int16)).unwrap();
     let mp4 = isobmff::open(file.as_slice()).unwrap();
     let CodecConfig::Alac { cookie } = &mp4.tracks[0].entries[0].codec else { panic!("not ALAC") };
-    let config = craft_audio::alac::SpecificConfig::parse(cookie).unwrap();
+    let config = bharat_audio::alac::SpecificConfig::parse(cookie).unwrap();
     let largest = mp4.tracks[0].samples.iter().map(|s| s.size).max().unwrap();
     assert_eq!((config.max_frame_bytes, config.bit_depth, config.frame_length), (largest, 16, 4096));
     assert!(config.avg_bit_rate > 0);
@@ -104,7 +104,7 @@ fn alac_dithers_when_asked() {
 #[test]
 fn alac_is_lossless_in_every_layout() {
     for channels in 1..=8u8 {
-        let layout = ChannelLayout::from_mask(craft_audio::alac::channel_mask(channels));
+        let layout = ChannelLayout::from_mask(bharat_audio::alac::channel_mask(channels));
         let buf = tones(44_100, usize::from(channels), 10_000);
         let opts = EncodeOptions::new(EncodeFormat::Alac).with_bit_depth(BitDepth::Int16).with_layout(layout);
         let file = encode(&buf, &opts).unwrap();
@@ -156,7 +156,7 @@ fn channels_reach_their_speakers() {
 fn raw_streams_decode_behind_the_codec_delay() {
     let buf = tones(48_000, 2, 48_000);
     for (format, codec, container, delay, floor) in [
-        (EncodeFormat::Mp3, CodecId::Mp3, Container::MpegAudio, craft_audio::mp3::DELAY as usize, 25.0),
+        (EncodeFormat::Mp3, CodecId::Mp3, Container::MpegAudio, bharat_audio::mp3::DELAY as usize, 25.0),
         (EncodeFormat::Ac3, CodecId::Ac3, Container::Ac3, 256, 15.0),
         (EncodeFormat::Eac3, CodecId::Eac3, Container::Ac3, 256, 15.0),
     ] {
@@ -238,7 +238,7 @@ fn no_audio_gives_an_empty_file() {
     for format in CODED {
         let file = encode(&buf, &EncodeOptions::new(format)).unwrap();
         if format.container() == Container::Mp4 {
-            let mp4 = craft_audio::craft_media::isobmff::open(file.as_slice()).unwrap();
+            let mp4 = bharat_audio::bharat_media::isobmff::open(file.as_slice()).unwrap();
             assert_eq!((mp4.tracks.len(), mp4.tracks[0].samples.len(), mp4.tracks[0].edits.len()), (1, 0, 0), "{format:?}");
         } else {
             assert!(file.is_empty(), "{format:?}");
@@ -447,7 +447,7 @@ fn ffmpeg_reads_the_files() {
     }
     let buf = tones(44_100, 2, 20_000);
     for (format, delay, floor) in
-        [(EncodeFormat::Mp3, craft_audio::mp3::DELAY as usize, 25.0), (EncodeFormat::Ac3, 256, 15.0), (EncodeFormat::Eac3, 256, 15.0)]
+        [(EncodeFormat::Mp3, bharat_audio::mp3::DELAY as usize, 25.0), (EncodeFormat::Ac3, 256, 15.0), (EncodeFormat::Eac3, 256, 15.0)]
     {
         let name = format!("stream.{}", format.extension());
         let out = ffmpeg_decode(&ff, &encode(&buf, &EncodeOptions::new(format)).unwrap(), &name, 2);
@@ -583,9 +583,9 @@ fn vorbis_is_whole_buffer_only_and_validates_layouts() {
     assert!(opts.check(48_000, 2).is_ok());
     assert_eq!(opts.bitrate(48_000, 2).unwrap(), None);
     assert!(FileEncoder::new(Cursor::new(Vec::new()), &opts, 48_000, 2).is_err());
-    let buf = craft_audio::AudioBuffer::new(48_000, 2, 512);
-    assert!(craft_audio::encode(&buf, &opts).unwrap().starts_with(b"OggS"));
+    let buf = bharat_audio::AudioBuffer::new(48_000, 2, 512);
+    assert!(bharat_audio::encode(&buf, &opts).unwrap().starts_with(b"OggS"));
     let wrong = opts.with_layout(ChannelLayout::from_mask(0xC));
     assert!(wrong.check(48_000, 2).is_err());
-    assert!(craft_audio::encode(&buf, &wrong).is_err());
+    assert!(bharat_audio::encode(&buf, &wrong).is_err());
 }

@@ -1,6 +1,6 @@
 [package]
-name = "craft-font-catalog"
-description = "Installed fonts for the Craft apps: discovery on every platform, family, style and PostScript lookup, and loading shared between threads."
+name = "bharat-font-catalog"
+description = "Installed fonts for the Bharat apps: discovery on every platform, family, style and PostScript lookup, and loading shared between threads."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,7 +10,7 @@ repository.workspace = true
 [features]
 default = ["system"]
 # The platform's font service through fontique: CoreText on macOS, DirectWrite on Windows,
-# fontconfig on Linux and FreeBSD. The same version and features craft-ui's system fonts use, so
+# fontconfig on Linux and FreeBSD. The same version and features bharat-ui's system fonts use, so
 # the apps build fontique once.
 system = ["dep:fontique"]
 

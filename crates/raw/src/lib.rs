@@ -26,7 +26,7 @@
 //! |---|---|
 //! | `dng` | Adobe DNG: uncompressed (any depth, packed), lossless JPEG, lossy JPEG, Deflate (integer and floating point), strips and tiles, CFA and LinearRaw, DNG 1.7 interleaved storage; reading and writing |
 //! | `jxl` | JPEG XL compressed DNG (DNG 1.7, compression 52546) through `jxl-oxide`; implies `dng` |
-//! | `crw` | Canon CRW (CIFF), decoded by `craft-crw` and returned through this crate's types |
+//! | `crw` | Canon CRW (CIFF), decoded by `bharat-crw` and returned through this crate's types |
 //! | `cr2` | Canon CR2: the sliced lossless-JPEG mosaic, and sRAW / mRAW (subsampled YCbCr) as linear RGB |
 //! | `mrw` | Minolta / Konica Minolta MRW: 12-bit packed and 16-bit word mosaics in the `\0MRM` block container |
 //! | `erf` | Epson ERF (R-D1 family): 12-bit samples in 16-byte blocks |
@@ -37,7 +37,7 @@
 //! | `raf` | Fujifilm RAF: uncompressed Bayer and X-Trans, Fujifilm's lossless and lossy compression, lens corrections |
 //! | `orf` | Olympus / OM System ORF: uncompressed 16-bit, 12-bit packed and two-field layouts, 16-byte blocks; compressed refused |
 //! | `arw` | Sony ARW (and SR2 / SRF containers): uncompressed, ARW2, lossless JPEG tiles, ARW6, the encrypted SR2SubIFD, lens corrections |
-//! | `cr3` | Canon CR3: CRX lossless Bayer and C-RAW (lossy), through craft-metadata's CR3 container |
+//! | `cr3` | Canon CR3: CRX lossless Bayer and C-RAW (lossy), through bharat-metadata's CR3 container |
 //! | `pef` | Pentax PEF: uncompressed (packed or 16-bit words) and Pentax's Huffman coding (compression 65535) |
 //! | `srw` | Samsung SRW: the uncompressed variants (compression 32769 words, 32770 at 12 bits packed) |
 //! | `hasselblad` | Hasselblad 3FR and FFF (and other CFA TIFFs in the DNG layout without a DNG version): uncompressed and Hasselblad's lossless JPEG; implies `dng` |
@@ -168,7 +168,7 @@ pub use preview::{
 #[cfg(feature = "dng")]
 pub use semantic::{SemanticMask, semantic_masks};
 
-use craft_tiff::{Tiff, TiffError};
+use bharat_tiff::{Tiff, TiffError};
 use serde::{Deserialize, Serialize};
 
 /// A 3×3 matrix, row-major.
@@ -322,12 +322,12 @@ pub struct Camera {
 
 impl Camera {
     /// From IFD0's `Make`, `Model` and `UniqueCameraModel`; empty strings are `None`.
-    pub fn from_ifd0(ifd0: &craft_tiff::Ifd) -> Camera {
+    pub fn from_ifd0(ifd0: &bharat_tiff::Ifd) -> Camera {
         let text = |tag| ifd0.string(tag).map(|s| s.trim().to_owned()).filter(|s| !s.is_empty());
         Camera {
-            make: text(craft_tiff::tags::MAKE),
-            model: text(craft_tiff::tags::MODEL),
-            unique_model: text(craft_tiff::tags::UNIQUE_CAMERA_MODEL),
+            make: text(bharat_tiff::tags::MAKE),
+            model: text(bharat_tiff::tags::MODEL),
+            unique_model: text(bharat_tiff::tags::UNIQUE_CAMERA_MODEL),
             capture_unix: None,
         }
     }
@@ -427,7 +427,7 @@ pub fn probe(bytes: &[u8]) -> Option<RawFormat> {
     if bytes.starts_with(b"FOVb") {
         return Some(RawFormat::X3f);
     }
-    // (either byte order: the rule of craft-crw, the CRW decoder)
+    // (either byte order: the rule of bharat-crw, the CRW decoder)
     if bytes.len() >= 14 && (bytes.starts_with(b"II") || bytes.starts_with(b"MM")) && &bytes[6..14] == b"HEAPCCDR" {
         return Some(RawFormat::Crw);
     }
@@ -435,28 +435,28 @@ pub fn probe(bytes: &[u8]) -> Option<RawFormat> {
         return Some(RawFormat::Cr2);
     }
     let (_, _) = Tiff::sniff(bytes)?;
-    let opts = craft_tiff::ParseOptions { max_ifds: 256, ..Default::default() };
+    let opts = bharat_tiff::ParseOptions { max_ifds: 256, ..Default::default() };
     let t = Tiff::parse_with(bytes, &opts).ok()?;
     let ifd0 = t.ifds.first()?;
-    if ifd0.contains(craft_tiff::tags::DNG_VERSION) {
+    if ifd0.contains(bharat_tiff::tags::DNG_VERSION) {
         return Some(RawFormat::Dng);
     }
-    let make = t.find(craft_tiff::tags::MAKE).and_then(|e| e.value.as_str()).unwrap_or_default().to_ascii_uppercase();
+    let make = t.find(bharat_tiff::tags::MAKE).and_then(|e| e.value.as_str()).unwrap_or_default().to_ascii_uppercase();
     let has_cfa = has_raw_ifd(&t);
     // Pentax's reader takes the layout from the Exif `CFAPattern` when no IFD has a CFA photometric (uncompressed
     // and PackBits PEFs), so for the Pentax family that tag counts as raw evidence too
     let pentax_raw = has_cfa || t.exif().is_some_and(|e| e.contains(EXIF_CFA_PATTERN));
     // Samsung's raw IFD uses private compressions 32769..=32773 (`vendor::srw`), 32773 being PackBits elsewhere
-    let samsung_raw = has_cfa || t.all_ifds().iter().any(|i| i.u16(craft_tiff::tags::COMPRESSION).is_some_and(|c| (32769..=32773).contains(&c)));
+    let samsung_raw = has_cfa || t.all_ifds().iter().any(|i| i.u16(bharat_tiff::tags::COMPRESSION).is_some_and(|c| (32769..=32773).contains(&c)));
     // Sony raws without a CFA IFD (storytold/lightcraft#702): SRF (DSC-F828), whose IFD0 looks like RGB but holds 14-bit samples (12 or
     // 14 count: raw sensor depths; the raw is in Sony's SRF blocks), and the DSLR-A100, whose IFD0 is an old-style
     // JPEG thumbnail (compression 6, which today's TIFF writers don't produce) and whose `SubIFDs` tag addresses its
     // raw data. A camera-authored or exported TIFF has 8- or 16-bit samples, and its SubIFDs hold ordinary images
-    let model = t.find(craft_tiff::tags::MODEL).and_then(|e| e.value.as_str()).unwrap_or_default().trim().to_ascii_uppercase();
+    let model = t.find(bharat_tiff::tags::MODEL).and_then(|e| e.value.as_str()).unwrap_or_default().trim().to_ascii_uppercase();
     let sony_raw = has_cfa
-        || ifd0.u64s(craft_tiff::tags::BITS_PER_SAMPLE).is_some_and(|b| b.iter().any(|v| matches!(v, 12 | 14)))
-        || (model == "DSLR-A100" && ifd0.u16(craft_tiff::tags::COMPRESSION) == Some(6) && ifd0.contains(craft_tiff::tags::SUB_IFDS));
-    if make.starts_with("CANON") && t.ifds.len() >= 4 && t.ifds[3].u16(craft_tiff::tags::COMPRESSION) == Some(6) {
+        || ifd0.u64s(bharat_tiff::tags::BITS_PER_SAMPLE).is_some_and(|b| b.iter().any(|v| matches!(v, 12 | 14)))
+        || (model == "DSLR-A100" && ifd0.u16(bharat_tiff::tags::COMPRESSION) == Some(6) && ifd0.contains(bharat_tiff::tags::SUB_IFDS));
+    if make.starts_with("CANON") && t.ifds.len() >= 4 && t.ifds[3].u16(bharat_tiff::tags::COMPRESSION) == Some(6) {
         return Some(RawFormat::Cr2);
     }
     if make.starts_with("NIKON") && has_cfa {
@@ -464,7 +464,7 @@ pub fn probe(bytes: &[u8]) -> Option<RawFormat> {
     }
     // Hasselblad's Sony-built bodies (the Lunar is a NEX-7 inside) write a Sony ARW under their own Make. Sony's
     // raw coding gives them away: compression 32767 or the raw IFD's tone-curve tag 0x7010, which no 3FR / FFF has
-    let sony_coded = || t.all_ifds().iter().any(|i| i.u16(craft_tiff::tags::COMPRESSION) == Some(32767) || i.contains(0x7010));
+    let sony_coded = || t.all_ifds().iter().any(|i| i.u16(bharat_tiff::tags::COMPRESSION) == Some(32767) || i.contains(0x7010));
     if (make.starts_with("SONY") && sony_raw) || (make.starts_with("HASSELBLAD") && sony_coded()) {
         return Some(RawFormat::Arw);
     }
@@ -507,13 +507,13 @@ const LEAF_DATA: u16 = 0x8606;
 /// An uncompressed Leaf MOS: IFD0 is the 16-bit mosaic itself (compression 1, BlackIsZero, one sample per pixel),
 /// with no Make tag and no CFA photometric, so only Leaf's data block marks it as a raw (storytold/lightcraft#1275). A rendered
 /// RGB image that kept the block stays an ordinary image.
-fn is_leaf_mosaic(ifd0: &craft_tiff::Ifd) -> bool {
-    ifd0.contains(LEAF_DATA) && ifd0.u16(craft_tiff::tags::SAMPLES_PER_PIXEL).unwrap_or(1) == 1
+fn is_leaf_mosaic(ifd0: &bharat_tiff::Ifd) -> bool {
+    ifd0.contains(LEAF_DATA) && ifd0.u16(bharat_tiff::tags::SAMPLES_PER_PIXEL).unwrap_or(1) == 1
 }
 
 /// Whether the Exif maker note starts with the signature of the Pentax layouts (`AOC\0` or `PENTAX \0`).
 fn has_pentax_maker_note(t: &Tiff, bytes: &[u8]) -> bool {
-    let Some(e) = t.exif().and_then(|e| e.get(craft_tiff::tags::MAKER_NOTE)) else { return false };
+    let Some(e) = t.exif().and_then(|e| e.get(bharat_tiff::tags::MAKER_NOTE)) else { return false };
     bytes.get(e.offset as usize..).is_some_and(|n| n.starts_with(b"AOC\0") || n.starts_with(b"PENTAX \0"))
 }
 
@@ -522,19 +522,19 @@ fn has_pentax_maker_note(t: &Tiff, bytes: &[u8]) -> bool {
 /// or vendor-specific raw tags (Sony tone curve, CFA pattern, or Pentax compression 65535).
 fn has_raw_ifd(t: &Tiff) -> bool {
     t.all_ifds().iter().any(|i| {
-        i.u16(craft_tiff::tags::PHOTOMETRIC) == Some(craft_tiff::tags::photometric::CFA)
-            || i.u16(craft_tiff::tags::COMPRESSION).is_some_and(|c| matches!(c, 34713 | 32767 | 32769 | 32770 | 99 | 65535))
+        i.u16(bharat_tiff::tags::PHOTOMETRIC) == Some(bharat_tiff::tags::photometric::CFA)
+            || i.u16(bharat_tiff::tags::COMPRESSION).is_some_and(|c| matches!(c, 34713 | 32767 | 32769 | 32770 | 99 | 65535))
             || i.contains(0x7010)
-            || i.contains(craft_tiff::tags::CFA_PATTERN_EP)
-            || i.contains(craft_tiff::tags::CFA_REPEAT_PATTERN_DIM)
+            || i.contains(bharat_tiff::tags::CFA_PATTERN_EP)
+            || i.contains(bharat_tiff::tags::CFA_REPEAT_PATTERN_DIM)
     })
 }
 
 /// IFD0 that is not an image at all: no `ImageWidth` / `ImageLength`, but a JPEG preview pointer or
 /// `SubIFDs` (the layout of Kodak KDC files, whose pictures sit in private tags). A plain TIFF reader
 /// rejects such a file as malformed even though it carries a preview.
-fn is_preview_container(ifd0: &craft_tiff::Ifd) -> bool {
-    use craft_tiff::tags::{IMAGE_LENGTH, IMAGE_WIDTH, JPEG_INTERCHANGE_FORMAT, SUB_IFDS};
+fn is_preview_container(ifd0: &bharat_tiff::Ifd) -> bool {
+    use bharat_tiff::tags::{IMAGE_LENGTH, IMAGE_WIDTH, JPEG_INTERCHANGE_FORMAT, SUB_IFDS};
     !ifd0.contains(IMAGE_WIDTH) && !ifd0.contains(IMAGE_LENGTH) && (ifd0.contains(JPEG_INTERCHANGE_FORMAT) || ifd0.contains(SUB_IFDS))
 }
 
@@ -559,7 +559,7 @@ pub(crate) struct ThumbnailShell {
 /// A multi-page TIFF is not caught (its pages are the IFD chain, not `SubIFDs`), nor a pyramid whose
 /// IFD0 is the full image.
 fn thumbnail_shell(t: &Tiff, len: usize) -> Option<ThumbnailShell> {
-    use craft_tiff::tags::{IMAGE_LENGTH, IMAGE_WIDTH, PIXEL_X_DIMENSION, PIXEL_Y_DIMENSION};
+    use bharat_tiff::tags::{IMAGE_LENGTH, IMAGE_WIDTH, PIXEL_X_DIMENSION, PIXEL_Y_DIMENSION};
     let ifd0 = t.ifds.first()?;
     let (w0, h0) = (ifd0.u32(IMAGE_WIDTH)?, ifd0.u32(IMAGE_LENGTH)?);
     if w0 == 0 || h0 == 0 {
@@ -602,13 +602,13 @@ fn thumbnail_shell(t: &Tiff, len: usize) -> Option<ThumbnailShell> {
 
 /// Why [`decode`] gives up on a file [`probe`] called [`RawFormat::OtherTiff`].
 fn other_tiff_reason(bytes: &[u8]) -> String {
-    let t = Tiff::parse_with(bytes, &craft_tiff::ParseOptions { max_ifds: 256, ..Default::default() }).ok();
+    let t = Tiff::parse_with(bytes, &bharat_tiff::ParseOptions { max_ifds: 256, ..Default::default() }).ok();
     // a DNG-style CFA IFD whose lossless JPEG the lossless decoder rejects: say why
     #[cfg(feature = "dng")]
     if let Some(t) = &t
         && let Some(info) = dng::raw_ifd(t).and_then(|i| i.image().ok())
-        && info.compression == craft_tiff::tags::compression::JPEG
-        && let Some(src) = info.chunks(bytes.len() as u64).first().and_then(|c| craft_tiff::image::chunk_bytes(bytes, c))
+        && info.compression == bharat_tiff::tags::compression::JPEG
+        && let Some(src) = info.chunks(bytes.len() as u64).first().and_then(|c| bharat_tiff::image::chunk_bytes(bytes, c))
         && let Err(e) = ljpeg::frame_info(src)
     {
         return format!("raw image coded as lossless JPEG that is not decoded yet ({e})");
@@ -660,12 +660,12 @@ pub fn orientation(bytes: &[u8]) -> Option<u16> {
     // A damaged/unsupported pixel IFD must not hide usable orientation metadata from preview
     // fallback. CR3 keeps IFD0 in its CMT1 box; TIFF-based raws keep it at the file start.
     // The `cr3` module exists only with the `cr3` feature: this gate is required so
-    // `cargo check -p craft-raw --no-default-features --features dng` builds (E0433 otherwise).
+    // `cargo check -p bharat-raw --no-default-features --features dng` builds (E0433 otherwise).
     #[cfg(feature = "cr3")]
     if probe(bytes) == Some(RawFormat::Cr3) {
         return cr3::orientation(bytes);
     }
-    craft_tiff::Tiff::parse(bytes).ok()?.ifds.first()?.u16(craft_tiff::tags::ORIENTATION).or(Some(1))
+    bharat_tiff::Tiff::parse(bytes).ok()?.ifds.first()?.u16(bharat_tiff::tags::ORIENTATION).or(Some(1))
 }
 
 /// [`probe_info`] within `limits`: a file that declares more than they allow fails as [`decode_with`] would.

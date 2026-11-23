@@ -8,8 +8,8 @@
 //! carry OLAP member data does not read: it stays a kept part, so nothing is lost. A part is
 //! read as one tree, so [`crate::Limits::xml`] bounds every list in it; records are streamed.
 
-use craft_sheet::Range;
-use craft_xml::{El, Node};
+use bharat_sheet::Range;
+use bharat_xml::{El, Node};
 
 use crate::features::{Attr, kids, rest};
 use crate::write::num;
@@ -42,12 +42,12 @@ impl CacheValue {
         let v = e.attr("v");
         Some(match e.name.as_str() {
             "m" => CacheValue::Missing,
-            "n" => CacheValue::Number(craft_xml::value::to_f64(v?)?),
-            "b" => CacheValue::Bool(craft_xml::value::to_bool(v?)?),
+            "n" => CacheValue::Number(bharat_xml::value::to_f64(v?)?),
+            "b" => CacheValue::Bool(bharat_xml::value::to_bool(v?)?),
             "e" => CacheValue::Error(v?.to_string()),
             "s" => CacheValue::Text(v?.to_string()),
             "d" => CacheValue::Date(v?.to_string()),
-            "x" => CacheValue::Index(craft_xml::value::to_u32(v.unwrap_or("0"))?),
+            "x" => CacheValue::Index(bharat_xml::value::to_u32(v.unwrap_or("0"))?),
             _ => return None,
         })
     }
@@ -388,7 +388,7 @@ pub type CacheRecord = Vec<CacheValue>;
 
 /// A pivot cache records part (`<pivotCacheRecords>`) for `records`.
 pub fn records_xml(records: &[CacheRecord]) -> Vec<u8> {
-    let mut w = craft_xml::Writer::document();
+    let mut w = bharat_xml::Writer::document();
     w.tag("pivotCacheRecords").attr("xmlns", crate::ns::MAIN).attr("xmlns:r", crate::ns::R).attr("count", records.len()).open();
     for r in records {
         let mut e = El::new("r");
@@ -607,7 +607,7 @@ impl PivotTableDefinition {
         let loc = x.child("location")?;
         let location = Location { range: Range::parse(&loc.attr("ref")?.replace('$', ""))?, ..Location::read_attrs(loc) };
         let list = |name: &str| -> Vec<i32> {
-            x.child(name).map(|e| e.children("field").filter_map(|f| f.attr("x").and_then(craft_xml::value::to_i32)).collect()).unwrap_or_default()
+            x.child(name).map(|e| e.children("field").filter_map(|f| f.attr("x").and_then(bharat_xml::value::to_i32)).collect()).unwrap_or_default()
         };
         let fields = x
             .child("pivotFields")
@@ -709,7 +709,7 @@ impl PivotTableDefinition {
 
 fn document(mut root: El) -> Vec<u8> {
     crate::ns::declare(&mut root);
-    let mut w = craft_xml::Writer::document();
+    let mut w = bharat_xml::Writer::document();
     w.tree(&root);
     w.into_bytes()
 }
@@ -750,20 +750,20 @@ mod tests {
 
     #[test]
     fn olap_items_do_not_read() {
-        let x = craft_xml::parse(
+        let x = bharat_xml::parse(
             br#"<pivotCacheDefinition><cacheSource type="external"/><cacheFields count="1"><cacheField name="a"><sharedItems><s v="x"><x v="0"/></s></sharedItems></cacheField></cacheFields></pivotCacheDefinition>"#,
         )
         .unwrap();
         assert!(PivotCacheDefinition::read(&x).is_none());
-        let bad = craft_xml::parse(br#"<pivotCacheDefinition><cacheFields><cacheField name="a"><sharedItems><n v="NaN-ish"/></sharedItems></cacheField></cacheFields></pivotCacheDefinition>"#).unwrap();
+        let bad = bharat_xml::parse(br#"<pivotCacheDefinition><cacheFields><cacheField name="a"><sharedItems><n v="NaN-ish"/></sharedItems></cacheField></cacheFields></pivotCacheDefinition>"#).unwrap();
         assert!(PivotCacheDefinition::read(&bad).is_none());
     }
 
     #[test]
     fn a_table_without_location_does_not_read() {
-        let x = craft_xml::parse(br#"<pivotTableDefinition name="P" cacheId="1"><pivotFields count="0"/></pivotTableDefinition>"#).unwrap();
+        let x = bharat_xml::parse(br#"<pivotTableDefinition name="P" cacheId="1"><pivotFields count="0"/></pivotTableDefinition>"#).unwrap();
         assert!(PivotTableDefinition::read(&x).is_none());
-        let x = craft_xml::parse(br#"<pivotTableDefinition name="P" cacheId="1"><location ref="nonsense"/></pivotTableDefinition>"#).unwrap();
+        let x = bharat_xml::parse(br#"<pivotTableDefinition name="P" cacheId="1"><location ref="nonsense"/></pivotTableDefinition>"#).unwrap();
         assert!(PivotTableDefinition::read(&x).is_none());
     }
 }

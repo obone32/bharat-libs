@@ -1,4 +1,4 @@
-//! craft-ai — AI provider abstraction for the Craft suite.
+//! bharat-ai — AI provider abstraction for the Bharat suite.
 //!
 //! See `README.md` for the design: BYO API provider (OpenAI-compatible) +
 //! one-click local models with capability detection.

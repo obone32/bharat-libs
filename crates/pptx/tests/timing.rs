@@ -2,8 +2,8 @@
 
 use std::sync::Arc;
 
-use craft_pptx::anim::{ANIMATIONS, AnimStart, Animation, TRANSITIONS, TextBuild, Transition};
-use craft_pptx::{Defaults, Plain, Presentation, Shape, ShapeId, Slide, SlideId, TextBody, Xfrm};
+use bharat_pptx::anim::{ANIMATIONS, AnimStart, Animation, TRANSITIONS, TextBuild, Transition};
+use bharat_pptx::{Defaults, Plain, Presentation, Shape, ShapeId, Slide, SlideId, TextBody, Xfrm};
 
 /// One slide per transition option, then one per animation option, each with a three-paragraph
 /// box the animation targets.
@@ -66,7 +66,7 @@ fn deck() -> Presentation {
 #[test]
 fn every_transition_and_animation_survives_writing_and_reading() {
     let p = deck();
-    let q = craft_pptx::import(&craft_pptx::export(&p, &Plain).unwrap(), &Plain).unwrap();
+    let q = bharat_pptx::import(&bharat_pptx::export(&p, &Plain).unwrap(), &Plain).unwrap();
     assert_eq!(q.slides.len(), p.slides.len());
     for (a, b) in p.slides.iter().zip(&q.slides) {
         let (ta, tb) = (a.transition.as_ref(), b.transition.as_ref());
@@ -76,7 +76,7 @@ fn every_transition_and_animation_survives_writing_and_reading() {
             // Effects and options are kept as far as PowerPoint's preset ids and subtypes tell
             // them apart (`circle` reads back as `shape`, `boxIn` as `circleIn`): compare the
             // preset.
-            let preset = |a: &Animation| craft_pptx::anim::animation_info(&a.effect, a.class).map(|i| i.3);
+            let preset = |a: &Animation| bharat_pptx::anim::animation_info(&a.effect, a.class).map(|i| i.3);
             assert_eq!(
                 (preset(x), x.class, x.start, x.text_build),
                 (preset(y), y.class, y.start, y.text_build),

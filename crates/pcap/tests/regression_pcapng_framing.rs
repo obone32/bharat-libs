@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::summarize;
+use bharat_pcap::summarize;
 use support::{block, pcapng, sample_frames};
 
 #[test]

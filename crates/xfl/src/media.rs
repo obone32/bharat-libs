@@ -135,8 +135,8 @@ fn number(element: &impl XflElement, name: &str) -> Option<f32> {
 mod tests {
     use super::*;
 
-    fn parse(source: &[u8]) -> craft_xml::El {
-        craft_xml::Options::default().parse(source).unwrap()
+    fn parse(source: &[u8]) -> bharat_xml::El {
+        bharat_xml::Options::default().parse(source).unwrap()
     }
 
     #[test]

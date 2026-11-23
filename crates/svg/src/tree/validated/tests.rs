@@ -24,8 +24,8 @@ fn on_test_stack<T: Send>(run: impl FnOnce() -> Result<T, Error> + Send) -> Resu
     std::thread::scope(|scope| std::thread::Builder::new().stack_size(16 << 20).spawn_scoped(scope, run).unwrap().join().unwrap())
 }
 fn png() -> Vec<u8> {
-    let image = craft_image_codecs::Image::from_u8(2, 2, craft_image_codecs::ChannelLayout::Rgb, [17, 83, 149].repeat(4)).unwrap();
-    craft_image_codecs::encode(&image, craft_image_codecs::Format::Png, &Default::default()).unwrap()
+    let image = bharat_image_codecs::Image::from_u8(2, 2, bharat_image_codecs::ChannelLayout::Rgb, [17, 83, 149].repeat(4)).unwrap();
+    bharat_image_codecs::encode(&image, bharat_image_codecs::Format::Png, &Default::default()).unwrap()
 }
 fn data_url(mime: &str, bytes: &[u8]) -> String {
     use std::fmt::Write;
@@ -180,7 +180,7 @@ fn failed_raster_callbacks_release_sources_and_keep_every_decode_charge() {
     let mut broken = png();
     let idat = broken.windows(4).position(|bytes| bytes == b"IDAT").unwrap();
     broken[idat + 4] ^= 1;
-    assert_eq!(craft_image_codecs::probe_allocation_size(&broken).unwrap(), (2, 2));
+    assert_eq!(bharat_image_codecs::probe_allocation_size(&broken).unwrap(), (2, 2));
     let (options, state, resolver) = wrapped_options(8);
     let encoded_before = state.lock().unwrap().encoded_left;
     for attempt in 1..=2 {

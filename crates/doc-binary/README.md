@@ -1,17 +1,17 @@
-# craft-doc-binary
+# bharat-doc-binary
 
 Reader and writer for the Word 97-2003 binary file format (`.doc`, [MS-DOC]) and the
-`craft-wordmodel` document model. It is WordCraft's reader and writer, on `craft-cfb` for the
-compound file and `craft-codepage` for 8-bit text.
+`bharat-wordmodel` document model. It is WordCraft's reader and writer, on `bharat-cfb` for the
+compound file and `bharat-codepage` for 8-bit text.
 
 ```rust
 // Not a compound file: an error, never a panic.
-assert!(craft_doc_binary::read(b"not a .doc").is_err());
-assert!(!craft_doc_binary::is_encrypted(b"not a .doc"));
+assert!(bharat_doc_binary::read(b"not a .doc").is_err());
+assert!(!bharat_doc_binary::is_encrypted(b"not a .doc"));
 
 // A document written as a .doc reads back.
-let bytes = craft_doc_binary::write(&craft_wordmodel::Document::from_text("Hello")).unwrap();
-let doc = craft_doc_binary::read(&bytes).unwrap();
+let bytes = bharat_doc_binary::write(&bharat_wordmodel::Document::from_text("Hello")).unwrap();
+let doc = bharat_doc_binary::read(&bytes).unwrap();
 assert_eq!(doc.body[0].as_para().map(|p| p.text.as_str()), Some("Hello"));
 ```
 
@@ -31,7 +31,7 @@ kind logged once per save. It never writes a password-protected file.
 
 ## Limits
 
-Streams (1 GiB each, refused by `craft-cfb` before anything is allocated), paragraphs, pieces,
+Streams (1 GiB each, refused by `bharat-cfb` before anything is allocated), paragraphs, pieces,
 property counts, table nesting and drawing records are capped; the constants are in the source
 next to what they bound, and each has a test. Hostile input gives an error or a best-effort
 document, never a panic.

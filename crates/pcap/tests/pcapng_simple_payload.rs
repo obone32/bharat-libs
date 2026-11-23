@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::Capture;
+use bharat_pcap::Capture;
 use support::{block, pcapng};
 
 fn capture(original: u32, snaplen: u32, payload: &[u8]) -> Vec<u8> {

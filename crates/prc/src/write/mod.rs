@@ -205,7 +205,7 @@ pub const MAX_NODE_DEPTH: usize = 64;
 /// # Example
 ///
 /// ```
-/// use craft_prc::{MeshScene, SceneMesh, SceneNode, ScenePrimitive, write_prc};
+/// use bharat_prc::{MeshScene, SceneMesh, SceneNode, ScenePrimitive, write_prc};
 ///
 /// let tri = ScenePrimitive {
 ///     positions: vec![[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
@@ -223,9 +223,9 @@ pub const MAX_NODE_DEPTH: usize = 64;
 /// let report = write_prc(&scene)?;
 /// assert_eq!(report.triangles, 1);
 /// assert_eq!(report.flat_normals, 1);
-/// let prc = craft_prc::PrcFile::parse(&report.prc).unwrap();
+/// let prc = bharat_prc::PrcFile::parse(&report.prc).unwrap();
 /// assert_eq!(prc.placements().unwrap().len(), 1);
-/// # Ok::<(), craft_prc::PrcWriteError>(())
+/// # Ok::<(), bharat_prc::PrcWriteError>(())
 /// ```
 pub fn write_prc(scene: &MeshScene) -> Result<PrcWriteReport, PrcWriteError> {
     let plan = validate::plan(scene)?;

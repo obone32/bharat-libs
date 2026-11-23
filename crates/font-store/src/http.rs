@@ -65,7 +65,7 @@ pub enum FetchError {
 }
 
 /// The User-Agent every request sends: the crate and its version, nothing about the user.
-pub const USER_AGENT: &str = concat!("craft-font-store/", env!("CARGO_PKG_VERSION"));
+pub const USER_AGENT: &str = concat!("bharat-font-store/", env!("CARGO_PKG_VERSION"));
 
 /// The HTTP client. HTTPS only; no cookies, no credentials.
 #[derive(Clone)]
@@ -112,7 +112,7 @@ impl Client {
     }
 
     /// A client that also allows plain `http://`, used only for the developer override of the
-    /// Language pack index (`CRAFT_LANGUAGE_PACK_INDEX`), which accepts only loopback hosts.
+    /// Language pack index (`BHARAT_LANGUAGE_PACK_INDEX`), which accepts only loopback hosts.
     pub(crate) fn allowing_http(t: Timeouts) -> Self {
         Self::build(t, false)
     }

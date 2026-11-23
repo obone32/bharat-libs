@@ -3,21 +3,21 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use craft_video::apv::{
+use bharat_video::apv::{
     ChromaFormat, ContentLightLevel, DecodeOptions, Encoder, EncoderConfig, Frame, MasteringDisplay, Profile, decode_frame, decode_frame_with, probe,
 };
 
 fn ffmpeg() -> Option<PathBuf> {
     // The APV demuxer is new in ffmpeg 8.0; older toolchains are found but cannot read the
     // fixtures, so they skip like a missing tool (a failure when oracles are required).
-    let ff = craft_media_testkit::ffmpeg_or_skip("apv oracle")?;
+    let ff = bharat_media_testkit::ffmpeg_or_skip("apv oracle")?;
     let formats = Command::new(&ff).args(["-hide_banner", "-formats"]).output().ok()?;
     let has_apv = String::from_utf8_lossy(&formats.stdout).lines().any(|l| l.split_whitespace().nth(1) == Some("apv"));
-    if has_apv { Some(ff) } else { craft_media_testkit::skip("apv oracle: this ffmpeg cannot read apv (needs 8.0+)") }
+    if has_apv { Some(ff) } else { bharat_media_testkit::skip("apv oracle: this ffmpeg cannot read apv (needs 8.0+)") }
 }
 
 fn fixture_dir() -> PathBuf {
-    craft_media_testkit::fixtures_dir("apv")
+    bharat_media_testkit::fixtures_dir("apv")
 }
 
 fn native_pix_fmt(profile: Profile) -> &'static str {

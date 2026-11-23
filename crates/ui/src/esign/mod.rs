@@ -1,15 +1,15 @@
-//! Request-signatures dialog, the same one in every Craft app that sends PDFs.
+//! Request-signatures dialog, the same one in every Bharat app that sends PDFs.
 //!
 //! Nothing here opens a socket. Every call goes through [`EsignBackend`].
 //! Nothing here blocks: answers arrive on a channel and are read once per
-//! frame. Signing is not sharing: recipients are never [`craft_cloud::ShareTarget`]s.
+//! frame. Signing is not sharing: recipients are never [`bharat_cloud::ShareTarget`]s.
 
 use std::collections::HashMap;
 use std::sync::mpsc::{Receiver, Sender};
 use std::time::Duration;
 
-use craft_cloud::{Contact, Identity};
-use craft_esign::{Envelope, EnvelopeDraft, EnvelopeStatus, EsignCapability, FieldPlacement, Recipient, RecipientStatus};
+use bharat_cloud::{Contact, Identity};
+use bharat_esign::{Envelope, EnvelopeDraft, EnvelopeStatus, EsignCapability, FieldPlacement, Recipient, RecipientStatus};
 use egui::{Context, RichText, Ui};
 
 mod backend;
@@ -592,7 +592,7 @@ impl EsignDialog {
 
     fn add_contact(&mut self, contact: Contact) {
         // `Contact::id` is the provider's share identifier, decided by
-        // `target`, and is not promised to be an address: `craft_cloud`
+        // `target`, and is not promised to be an address: `bharat_cloud`
         // documents the two as distinct and warns against treating one as
         // the other. Falling back to it here would hand the envelope create
         // request a recipient email that is not an email.
@@ -931,7 +931,7 @@ mod tests {
         let mut dialog = EsignDialog::default();
         let contact = Contact {
             id: "share-id-123".into(),
-            target: craft_cloud::ShareTarget::User("share-id-123".into()),
+            target: bharat_cloud::ShareTarget::User("share-id-123".into()),
             name: "Mallory".into(),
             email: None,
             avatar: None,

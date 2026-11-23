@@ -11,8 +11,8 @@ use std::time::Duration;
 
 use serde_json::{Value, json};
 
-use craft_ipc::server::{Activate, Activation, ControlSink, Extensions, FrameOpen, Frames, Limits, Server, ServerConfig};
-use craft_ipc::{LinkError, RuntimeDir};
+use bharat_ipc::server::{Activate, Activation, ControlSink, Extensions, FrameOpen, Frames, Limits, Server, ServerConfig};
+use bharat_ipc::{LinkError, RuntimeDir};
 
 struct Sink;
 impl ControlSink for Sink {
@@ -59,7 +59,7 @@ fn boot_with(label: &str, limits: Limits) -> (Server, PathBuf, String, PathBuf) 
     )
     .unwrap();
     let socket = match &server.record().endpoint {
-        craft_ipc::Endpoint::Unix { path } => PathBuf::from(path),
+        bharat_ipc::Endpoint::Unix { path } => PathBuf::from(path),
         other => panic!("unix endpoint expected, got {other:?}"),
     };
     let token = server.record().token.clone();

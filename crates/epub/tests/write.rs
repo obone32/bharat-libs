@@ -3,7 +3,7 @@
 
 use std::io::Read;
 
-use craft_epub::{Book, Epub, Error, Layout, MAX_TITLE_CHARS, Metadata, Nav, NavItem, NavKind, Resource, TocEntry, is_epub, write, xhtml};
+use bharat_epub::{Book, Epub, Error, Layout, MAX_TITLE_CHARS, Metadata, Nav, NavItem, NavKind, Resource, TocEntry, is_epub, write, xhtml};
 
 fn metadata() -> Metadata {
     Metadata {
@@ -99,7 +99,7 @@ fn the_package_document_carries_the_metadata_manifest_and_spine() {
         assert!(opf.contains(want), "missing {want}\n{opf}");
     }
     assert!(!opf.contains("rendition:"), "a reflowable book says nothing about rendition");
-    craft_xml::Options::default().strict().parse(opf.as_bytes()).expect("well formed");
+    bharat_xml::Options::default().strict().parse(opf.as_bytes()).expect("well formed");
 }
 
 #[test]
@@ -128,7 +128,7 @@ fn an_empty_navigation_points_at_the_first_spine_item() {
         ),
         "{nav}"
     );
-    craft_xml::Options::default().strict().parse(nav.as_bytes()).expect("well formed");
+    bharat_xml::Options::default().strict().parse(nav.as_bytes()).expect("well formed");
 }
 
 #[test]
@@ -147,7 +147,7 @@ fn navigation_nests_by_level() {
     let nav = text(&write(&b).unwrap(), "OEBPS/nav.xhtml");
     let want = "<ol><li><a href=\"content.xhtml#a\">One</a><ol><li><a href=\"content.xhtml#b\">One.one</a><ol><li><a href=\"content.xhtml#c\">One.one.one &lt;x&gt;</a></li></ol></li></ol></li><li><a href=\"content2.xhtml#d\">Two</a><ol><li><a href=\"content2.xhtml#e\">Two.deep</a></li><li><a href=\"content2.xhtml#f\">Two.next</a></li></ol></li></ol>";
     assert!(nav.contains(want), "{nav}");
-    craft_xml::Options::default().strict().parse(nav.as_bytes()).expect("well formed");
+    bharat_xml::Options::default().strict().parse(nav.as_bytes()).expect("well formed");
 }
 
 #[test]
@@ -227,7 +227,7 @@ fn books_that_cannot_be_packages_are_refused() {
 #[test]
 fn more_resources_than_the_limit_are_refused() {
     let mut b = book();
-    b.resources = (0..=craft_epub::MAX_RESOURCES).map(|i| Resource::new(format!("r{i}"), format!("r{i}"), "text/plain", Vec::new())).collect();
+    b.resources = (0..=bharat_epub::MAX_RESOURCES).map(|i| Resource::new(format!("r{i}"), format!("r{i}"), "text/plain", Vec::new())).collect();
     assert!(matches!(write(&b), Err(Error::Invalid(msg)) if msg.contains("at most")));
 }
 
@@ -283,10 +283,10 @@ fn an_ncx_is_written_on_request_and_reads_back() {
     ] {
         assert!(ncx.contains(want), "missing {want}\n{ncx}");
     }
-    craft_xml::Options::default().strict().parse(ncx.as_bytes()).expect("well formed");
+    bharat_xml::Options::default().strict().parse(ncx.as_bytes()).expect("well formed");
     let epub = Epub::open(&bytes).unwrap();
     assert_eq!(epub.package.ncx.as_deref(), Some("OEBPS/toc.ncx"));
-    assert_eq!(craft_epub::parse_ncx(ncx.as_bytes(), "OEBPS/toc.ncx").unwrap(), nested_toc());
+    assert_eq!(bharat_epub::parse_ncx(ncx.as_bytes(), "OEBPS/toc.ncx").unwrap(), nested_toc());
     // `ncx` and `toc.ncx` are the writer's own.
     let mut taken = book();
     taken.resources[0].id = "ncx".into();

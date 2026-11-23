@@ -27,4 +27,4 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       # Release: the FOGRA39 fit and ink-limit tests take about 35 s in debug and 4 s here. Tests that need
       # installed system profiles print "skipped:" when none are present.
-      - run: cargo test -p craft-cms --all-features --release --locked -- --nocapture
+      - run: cargo test -p bharat-cms --all-features --release --locked -- --nocapture

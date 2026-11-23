@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use craft_kiwi::Kv;
+use bharat_kiwi::Kv;
 
 /// Longest image hash (bytes) an image is found by: `images/` names and embedded images both
 /// stop at 64 bytes (128 hex digits).

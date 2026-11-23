@@ -1,5 +1,5 @@
 [package]
-name = "craft-gif"
+name = "bharat-gif"
 description = "GIF block reader, bounded frame decoder and animation writer."
 version.workspace = true
 edition.workspace = true

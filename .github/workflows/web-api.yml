@@ -51,5 +51,5 @@ jobs:
           tool: wasm-bindgen@${{ steps.wasm-bindgen.outputs.version }}
           fallback: cargo-install
       # fmt, native clippy and the native tests run in the Workspace gate.
-      - run: cargo clippy -p craft-web-api --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
-      - run: cargo test -p craft-web-api --locked --target wasm32-unknown-unknown
+      - run: cargo clippy -p bharat-web-api --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
+      - run: cargo test -p bharat-web-api --locked --target wasm32-unknown-unknown

@@ -3,7 +3,7 @@
 mod common;
 
 use common::*;
-use craft_media::isobmff::{CodecConfig, Mp4File, TrackKind, open};
+use bharat_media::isobmff::{CodecConfig, Mp4File, TrackKind, open};
 use serde_json::Value;
 
 fn pcm_name_matches(ff: &str, c: &CodecConfig) -> bool {
@@ -71,8 +71,8 @@ fn check_stream(file: &Mp4File, idx: usize, st: &Value) -> Result<(), String> {
                 && cp == "bt709"
             {
                 match &v.color {
-                    Some(craft_media::isobmff::ColorInfo::Nclx { primaries: 1, .. })
-                    | Some(craft_media::isobmff::ColorInfo::Nclc { primaries: 1, .. }) => {}
+                    Some(bharat_media::isobmff::ColorInfo::Nclx { primaries: 1, .. })
+                    | Some(bharat_media::isobmff::ColorInfo::Nclc { primaries: 1, .. }) => {}
                     other => return Err(format!("colr {other:?}")),
                 }
             }
@@ -270,7 +270,7 @@ fn specific_properties() {
     assert!(v.references.iter().any(|(k, ids)| k.to_string() == "tmcd" && ids == &vec![t.id]));
 }
 
-/// Pre-generate every fixture (`cargo test -p craft-media --all-features -- --ignored generate_fixtures`).
+/// Pre-generate every fixture (`cargo test -p bharat-media --all-features -- --ignored generate_fixtures`).
 #[test]
 #[ignore]
 fn generate_fixtures() {
@@ -298,7 +298,7 @@ fn required_oracles_fail_on_generator_failure() {
 fn optional_oracles_skip_on_generator_failure() {
     let out = fixture_dir().join("generator_failure_optional.mp4");
     assert_eq!(run_generator(&mut failing_generator(), &temp_path(&out), &out, false), None);
-    let mut missing = std::process::Command::new("craft-media-no-such-generator");
+    let mut missing = std::process::Command::new("bharat-media-no-such-generator");
     assert_eq!(run_generator(&mut missing, &temp_path(&out), &out, false), None);
     assert!(!out.exists());
 }

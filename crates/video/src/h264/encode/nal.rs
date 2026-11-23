@@ -1,6 +1,6 @@
 //! NAL unit and parameter-set/slice-header generation (§7.3), SEI and the AVCDecoderConfigurationRecord.
 
-use craft_media::bitstream::{BitWriter, escape_rbsp};
+use bharat_media::bitstream::{BitWriter, escape_rbsp};
 
 pub const NAL_SLICE: u8 = 1;
 pub const NAL_IDR: u8 = 5;
@@ -286,7 +286,7 @@ pub fn avcc(sps_nal: &[u8], pps_nal: &[u8], sps: &Sps) -> Vec<u8> {
     // High profiles: chroma_format 4:2:0, bit_depth_luma_minus8, bit_depth_chroma_minus8, no SPS extensions
     let bd = sps.bit_depth.saturating_sub(8) & 7;
     let ext = if matches!(profile_idc, 100 | 110 | 122 | 144) { vec![0xFC | 1, 0xF8 | bd, 0xF8 | bd, 0] } else { Vec::new() };
-    craft_media::isobmff::AvcConfig {
+    bharat_media::isobmff::AvcConfig {
         profile: profile_idc,
         compatibility: sps.constraint_flags,
         level: sps.level_idc,

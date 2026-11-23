@@ -23,7 +23,7 @@
 //! collection. That collection is locked with the login session.
 //!
 //! [`TokenStore`] is a trait so everything above it can be tested without a keychain. [`Memory`] is
-//! the stand-in, the way `craft-nextcloud` drives a canned transport.
+//! the stand-in, the way `bharat-nextcloud` drives a canned transport.
 
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
@@ -31,7 +31,7 @@ use std::sync::{Arc, Mutex, PoisonError};
 use crate::error::Error;
 use crate::secret::Secret;
 
-/// The keychain service name every Craft App uses. One namespace, one place to revoke.
+/// The keychain service name every Bharat App uses. One namespace, one place to revoke.
 pub const KEYCHAIN_SERVICE: &str = "ai.storyteller.artcraft.suite-account";
 
 /// Reading and writing one token per account handle.
