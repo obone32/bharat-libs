@@ -203,7 +203,7 @@ pub(crate) fn areas(keymap: &Keymap, options: &Options, text: &dyn Text) -> Vec<
         }
     }
     for m in menus {
-        let label = craft_i18n::fmt(&text.ui("{menu} Menu"), &[("menu", &text.segment(m))]);
+        let label = bharat_i18n::fmt(&text.ui("{menu} Menu"), &[("menu", &text.segment(m))]);
         out.push(AreaEntry { id: AreaId::Menu(m.to_string()), label });
     }
     if catalog.clone().any(is_tool) {
@@ -231,7 +231,7 @@ pub(crate) fn areas(keymap: &Keymap, options: &Options, text: &dyn Text) -> Vec<
 }
 
 fn panel_label(text: &dyn Text, panel: &str) -> String {
-    craft_i18n::fmt(&text.ui("{panel} Panel"), &[("panel", &text.segment(panel))])
+    bharat_i18n::fmt(&text.ui("{panel} Panel"), &[("panel", &text.segment(panel))])
 }
 
 fn in_area(area: &AreaId, b: &Bindable, options: &Options) -> bool {
@@ -383,7 +383,7 @@ fn build(keymap: &Keymap, options: &Options, text: &dyn Text, view: &View) -> Bu
                 let mut t = trigger_text(text, &x.trigger, platform);
                 if x.scope_or(&b.scope) != &b.scope {
                     let scope = text.segment(x.scope_or(&b.scope).as_str());
-                    let s = craft_i18n::fmt(&text.ui("{chord} ({scope})"), &[("chord", &t), ("scope", &scope)]);
+                    let s = bharat_i18n::fmt(&text.ui("{chord} ({scope})"), &[("chord", &t), ("scope", &scope)]);
                     t = visual_around(text, &s, &t);
                 }
                 Chip { binding: x.clone(), text: t, changed: !defaults.contains(x) }

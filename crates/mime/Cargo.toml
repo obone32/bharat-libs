@@ -1,5 +1,5 @@
 [package]
-name = "craft-mime"
+name = "bharat-mime"
 description = "Internet messages and MIME: RFC 5322 headers, RFC 2045-2049 parts, encoded words, RFC 2231 parameters, transfer encodings, mbox and multipart/related lookups, read and written."
 version.workspace = true
 edition.workspace = true
@@ -12,7 +12,7 @@ workspace = true
 
 [dependencies]
 # The DOS code pages (IBM437, IBM850…), which the WHATWG standard leaves out.
-craft-codepage = { workspace = true }
+bharat-codepage = { workspace = true }
 encoding_rs = { workspace = true }
 # Private: the weekday of a written date and whether a read date exists. Not in the public API.
 chrono = { workspace = true }

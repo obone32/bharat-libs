@@ -87,7 +87,7 @@ mod tests {
         assert_eq!(split("başöğretmen"), "ba-şöğ-ret-men");
     }
 
-    /// CodeRabbit on craft-libs#484: `â`, `î` and `û` are vowels, and the module doc's examples
+    /// CodeRabbit on bharat-libs#484: `â`, `î` and `û` are vowels, and the module doc's examples
     /// are the ones the rules give.
     #[test]
     fn circumflex_vowels_and_doc_examples() {

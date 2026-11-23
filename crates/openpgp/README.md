@@ -1,4 +1,4 @@
-# craft-openpgp
+# bharat-openpgp
 
 OpenPGP as mail carries it: Digital signatures checked and Public keys read. No I/O, no clock and
 no keys of its own. The caller hands in the message's bytes, the Public keys it keeps, the time,

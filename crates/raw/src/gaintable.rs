@@ -37,7 +37,7 @@
 //! `MapPointsV` / `MapPointsH` is below 256 (their product is at most `MAX_TABLES`, 4096), so swapped
 //! it is at least 2^24 and the size checks reject it. We write in the file's byte order.
 
-use craft_tiff::ByteOrder;
+use bharat_tiff::ByteOrder;
 use serde::{Deserialize, Serialize};
 
 /// Upper bound on `MapPointsV × MapPointsH` (Apple uses 6 × 8).

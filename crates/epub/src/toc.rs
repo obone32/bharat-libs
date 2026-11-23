@@ -1,6 +1,6 @@
 //! The table of contents (EPUB 3 navigation document, EPUB 2 NCX) and `encryption.xml`, read.
 
-use craft_xml::{El, Local, Options};
+use bharat_xml::{El, Local, Options};
 
 use crate::read::{dir_of, parse_xml, resolve};
 use crate::{Error, Limits};

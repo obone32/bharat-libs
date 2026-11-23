@@ -2,12 +2,12 @@
 //! movies video clips reference.
 
 use crate::SourceId;
-use craft_audio::{AudioBuffer, AudioInfo, CodecId, Container, peaks::Peaks};
+use bharat_audio::{AudioBuffer, AudioInfo, CodecId, Container, peaks::Peaks};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
 /// The kind of file a source came from, as session files store it in [`Source::format`]. The
-/// variant names are part of the session format: craft-audio's `Container` and `CodecId` name
+/// variant names are part of the session format: bharat-audio's `Container` and `CodecId` name
 /// more formats under other names, so this stays here and maps from them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum FileFormat {
@@ -156,9 +156,9 @@ impl PartialEq for SourcePool {
 #[cfg(test)]
 mod tests {
     use super::FileFormat;
-    use craft_audio::{AudioBuffer, EncodeFormat, EncodeOptions, encode, probe};
+    use bharat_audio::{AudioBuffer, EncodeFormat, EncodeOptions, encode, probe};
 
-    /// Sessions written before the format code moved to craft-audio name a source's format with
+    /// Sessions written before the format code moved to bharat-audio name a source's format with
     /// these words; they must keep reading, and new sessions must keep writing them.
     #[test]
     fn the_format_names_in_session_files_do_not_change() {
@@ -186,7 +186,7 @@ mod tests {
         ] {
             info["container"] = container.into();
             info["codec"] = codec.into();
-            let info: craft_audio::AudioInfo = serde_json::from_value(info.clone()).unwrap();
+            let info: bharat_audio::AudioInfo = serde_json::from_value(info.clone()).unwrap();
             assert_eq!(FileFormat::of(&info), format, "{codec} in {container}");
         }
     }

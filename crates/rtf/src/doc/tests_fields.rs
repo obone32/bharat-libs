@@ -4,16 +4,16 @@
 //! `\fldlock` and `\chpgn`.
 
 use super::*;
-use craft_wordmodel::para::InlineObject;
+use bharat_wordmodel::para::InlineObject;
 
 /// The fields of each paragraph of a story, with the paragraph's text.
 /// A paragraph's text with its fields (code, result, locked).
 type ParaFields = (String, Vec<(String, String, bool)>);
 
-fn fields_of(blocks: &craft_wordmodel::Blocks) -> Vec<ParaFields> {
+fn fields_of(blocks: &bharat_wordmodel::Blocks) -> Vec<ParaFields> {
     blocks
         .iter()
-        .filter_map(|b| if let craft_wordmodel::Block::Para(p) = &**b { Some(p) } else { None })
+        .filter_map(|b| if let bharat_wordmodel::Block::Para(p) = &**b { Some(p) } else { None })
         .map(|p| {
             let fields = p
                 .objects
@@ -28,7 +28,7 @@ fn fields_of(blocks: &craft_wordmodel::Blocks) -> Vec<ParaFields> {
         .collect()
 }
 
-fn footer(d: &craft_wordmodel::Document) -> Vec<ParaFields> {
+fn footer(d: &bharat_wordmodel::Document) -> Vec<ParaFields> {
     let id = d.last_section.footers.default.expect("a footer");
     fields_of(&d.parts[&id].blocks)
 }

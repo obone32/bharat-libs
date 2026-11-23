@@ -5,7 +5,7 @@
 use super::common;
 
 use common::*;
-use craft_audio::opus::encoder::{Application, Bandwidth, Error, Mode, OpusEncoder};
+use bharat_audio::opus::encoder::{Application, Bandwidth, Error, Mode, OpusEncoder};
 
 struct Run {
     snr: f64,
@@ -229,7 +229,7 @@ fn application_tables_and_pre_skip() {
     assert_eq!(OpusEncoder::new(1, 12_000).unwrap().application(), Application::Audio);
 }
 
-/// EffectCraft's encoder panicked here; craft-audio returns an error (never crash).
+/// EffectCraft's encoder panicked here; bharat-audio returns an error (never crash).
 #[test]
 fn invalid_mode_bandwidth_is_an_error() {
     assert_eq!(OpusEncoder::with_mode(1, 16_000, Mode::Silk, Bandwidth::Fullband).err(), Some(Error::ModeBandwidth(Mode::Silk, Bandwidth::Fullband)));

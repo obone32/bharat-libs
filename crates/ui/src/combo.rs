@@ -39,7 +39,7 @@ pub use egui::IconPainter;
 /// ```
 /// # egui::__run_test_ui(|ui| {
 /// let mut selected = 0;
-/// craft_ui::ComboBox::from_label("Size").show_index(ui, &mut selected, 3, |i| ["Small", "Medium", "Large"][i]);
+/// bharat_ui::ComboBox::from_label("Size").show_index(ui, &mut selected, 3, |i| ["Small", "Medium", "Large"][i]);
 /// # });
 /// ```
 #[must_use = "You should call .show*"]
@@ -404,7 +404,7 @@ fn paint_default_icon(painter: &Painter, rect: Rect, visuals: &WidgetVisuals) {
 /// ```
 /// # egui::__run_test_ui(|ui| {
 /// let field = ui.button("Font");
-/// craft_ui::combo::Menu::new(ui, &field).height(400.0).show_ui(|ui| ui.label("Arial"));
+/// bharat_ui::combo::Menu::new(ui, &field).height(400.0).show_ui(|ui| ui.label("Arial"));
 /// # });
 /// ```
 #[must_use = "You should call .show*"]
@@ -466,7 +466,7 @@ impl<'a> Menu<'a> {
     /// # let (mut text, mut open) = (String::new(), false);
     /// let field = ui.text_edit_singleline(&mut text);
     /// open |= field.gained_focus() || field.changed();
-    /// craft_ui::combo::Menu::new(ui, &field).open(&mut open).show_ui(|ui| ui.label("Arial"));
+    /// bharat_ui::combo::Menu::new(ui, &field).open(&mut open).show_ui(|ui| ui.label("Arial"));
     /// # });
     /// ```
     #[inline]
@@ -544,7 +544,7 @@ impl<'a> Menu<'a> {
         let id = popup.get_id();
         let popup = match open {
             Some(open) => {
-                let focus_key = id.with("craft-field-focus");
+                let focus_key = id.with("bharat-field-focus");
                 let focused = ctx.memory(|m| m.has_focus(field_id));
                 let had_focus = ctx.data_mut(|d| std::mem::replace(d.get_temp_mut_or_default::<bool>(focus_key), focused));
                 if had_focus && !focused && !moved_into(&ctx, id) {
@@ -558,13 +558,13 @@ impl<'a> Menu<'a> {
             }
             None => popup,
         };
-        let footer_id = id.with("craft-footer-height");
-        let remeasure_id = id.with("craft-remeasure");
+        let footer_id = id.with("bharat-footer-height");
+        let remeasure_id = id.with("bharat-remeasure");
         let remeasure = ctx.data_mut(|d| d.remove_temp::<bool>(remeasure_id)).unwrap_or(false);
         let (align, settled) = side(&popup, remeasure);
         // At most two remeasures in a row, so a footer that changes height on every pass settles.
         // A pass where the footer keeps its height clears the count.
-        let count_id = id.with("craft-remeasures");
+        let count_id = id.with("bharat-remeasures");
         if ctx.read_response(id).is_none() {
             ctx.data_mut(|d| d.remove::<u8>(count_id));
         }
@@ -663,7 +663,7 @@ fn moved_into(ctx: &Context, popup: Id) -> bool {
 /// menu stays open, so a menu that shrinks or grows while open doesn't jump to the other side.
 fn side(popup: &Popup<'_>, remeasure: bool) -> (RectAlign, bool) {
     let ctx = popup.ctx();
-    let key = popup.get_id().with("craft-side");
+    let key = popup.get_id().with("bharat-side");
     if !popup.is_open() || ctx.read_response(popup.get_id()).is_none() {
         ctx.data_mut(|d| d.remove::<RectAlign>(key));
         return (popup.get_best_align(), false);

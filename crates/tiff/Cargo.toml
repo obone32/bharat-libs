@@ -1,5 +1,5 @@
 [package]
-name = "craft-tiff"
+name = "bharat-tiff"
 description = "TIFF and BigTIFF IFD reader and writer: every field type, the Exif/GPS/Interop pointer IFDs, maker-note IFDs, strip and tile layout."
 version.workspace = true
 edition.workspace = true

@@ -1,6 +1,6 @@
-# craft-xtask
+# bharat-xtask
 
-A library for the Craft apps' `cargo xtask` binaries. Each app keeps its own `xtask` binary, command
+A library for the Bharat apps' `cargo xtask` binaries. Each app keeps its own `xtask` binary, command
 dispatch, step list, test targets and app-only commands, and calls this crate with its own policy.
 The crate is native only and is a dependency of an app's `xtask` package only.
 
@@ -9,15 +9,15 @@ The crate is native only and is a dependency of an app's `xtask` package only.
 | `runner` | always | `Step`, `run_steps` (steps in order, stop at the first failure, the `ok`, `FAIL` and `skip` summary), `root`, `cargo`, `run`, `run_cancelable`, `nextest_or_test`, `doctest`, `Cancel` |
 | `assets` | always | `Policy`, `RowMode`, `check`, `run`, `list_files`, `read_document`, `is_asset`, `ASSET_EXT`: the asset attribution check against the document, folders and extensions the app supplies |
 | `lock` | `lock` | `LockConfig`, `try_acquire`, `acquire`, `holders`: 1 to 64 slots held across processes through file locks in a directory the app chooses |
-| `report` | `report` | `write` and `to_json`: the per-step JSON report (schema 1), replaced atomically through `craft-atomic` |
+| `report` | `report` | `write` and `to_json`: the per-step JSON report (schema 1), replaced atomically through `bharat-atomic` |
 
-No feature is on by default. `report` adds `serde_json` and `craft-atomic`.
+No feature is on by default. `report` adds `serde_json` and `bharat-atomic`.
 
 ## Use
 
 ```rust,no_run
 use std::path::Path;
-use craft_xtask::runner::{self, RunOptions, Step, TestMode};
+use bharat_xtask::runner::{self, RunOptions, Step, TestMode};
 
 fn ci() -> Result<(), String> {
     let root = runner::root(Path::new(env!("CARGO_MANIFEST_DIR")))?;
@@ -42,7 +42,7 @@ fn ci() -> Result<(), String> {
 - `nextest_or_test` and `doctest` build `cargo test --workspace --exclude <xtask package>` (or
   `cargo nextest run` with the same arguments). The exclusion keeps the test build from rebuilding the
   running `xtask` executable, which Windows does not allow while it runs
-  ([storytold/craft-common-actions#185](https://github.com/storytold/craft-common-actions/issues/185)).
+  ([storytold/bharat-common-actions#185](https://github.com/storytold/bharat-common-actions/issues/185)).
   `TestMode::CargoTest` is the default and probes nothing. `TestMode::PreferNextest` runs nextest when
   `cargo nextest --version` succeeds and otherwise runs `cargo test` with a note; the label names the
   command that runs.
@@ -66,7 +66,7 @@ The app owns its `cargo xtask assets` command, the printing and the gate step. T
 repository's files, reads the attribution document and reports each asset without a row:
 
 ```rust,no_run
-use craft_xtask::assets::{self, FolderExtensions, Policy};
+use bharat_xtask::assets::{self, FolderExtensions, Policy};
 
 const POLICY: Policy<'static> = Policy {
     all_files_under: &["assets", "docs/images"],
@@ -200,5 +200,5 @@ No app uses this crate yet.
 | LightCraft | Planned: `ci_lock.rs` moves to `lock`, with `LIGHTCRAFT_CI_LOCK` and `LIGHTCRAFT_CI_SLOTS` read by the app. The machine, GPU, corpus and skip report stays in the app. |
 | VectorCraft, DesignCraft, CADCraft, DeckCraft, WordCraft, GridCraft, LightCraft | Planned: `xtask/src/assets.rs` moves to `assets`, each with its own document, folders and row mode; LightCraft with `RowMode::Patterns`, its forbidden extensions and names, and `license_column: Some(4)`. The `cargo xtask assets` output stays in the app. |
 
-Maintainers: the craft-libs maintainers, until a responsible maintainer or team is agreed in the
+Maintainers: the bharat-libs maintainers, until a responsible maintainer or team is agreed in the
 review of this crate's first pull request.

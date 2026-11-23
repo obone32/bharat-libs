@@ -3,12 +3,12 @@
 //! does not take are refused with a reason.
 
 use super::dng::{base_ifd, chunk_samples, dng, layout_image, pack_msb, pattern, synthetic, u16_bytes};
-use craft_raw::dng_lines::{self, Error};
-use craft_raw::dngwrite::{DngImage, write_lossy_dng};
-use craft_raw::{Cfa, DngCompression, DngWriteOptions, RawData, RawError, decode, write_dng};
-use craft_tiff::classic::Tiff;
-use craft_tiff::tags as t;
-use craft_tiff::{ByteOrder, ImageData, Value};
+use bharat_raw::dng_lines::{self, Error};
+use bharat_raw::dngwrite::{DngImage, write_lossy_dng};
+use bharat_raw::{Cfa, DngCompression, DngWriteOptions, RawData, RawError, decode, write_dng};
+use bharat_tiff::classic::Tiff;
+use bharat_tiff::tags as t;
+use bharat_tiff::{ByteOrder, ImageData, Value};
 
 fn lines(bytes: &[u8]) -> Result<dng_lines::RawImage, Error> {
     let (tiff, first) = Tiff::new(bytes)?;
@@ -80,7 +80,7 @@ fn lossy_jpeg_tiles_read_like_the_full_reader() {
     raw.bits = 8;
     raw.data = RawData::U16(pattern(w, h, 3, 8));
     raw.white = vec![255.0];
-    raw.black = craft_raw::BlackLevel::uniform(0.0);
+    raw.black = bharat_raw::BlackLevel::uniform(0.0);
     let linearization: Vec<u16> = (0..256).map(|v| v * 257).collect();
     let encode = |pixels: Vec<u8>, tile: u32, quality: u8| {
         let mut out = Vec::new();
@@ -105,7 +105,7 @@ fn lossy_jpeg_tiles_read_like_the_full_reader() {
     assert!(matches!(lines(&dng(bad, ByteOrder::Little)), Err(Error::Malformed(_) | Error::Unsupported(_))));
 }
 
-fn refused(edit: impl FnOnce(&mut craft_tiff::IfdBuilder), cpp: usize, cfa: bool) -> Error {
+fn refused(edit: impl FnOnce(&mut bharat_tiff::IfdBuilder), cpp: usize, cfa: bool) -> Error {
     let (w, h) = (8, 4);
     let mut raw = base_ifd(w, h, 16, cpp, cfa);
     raw.set(t::COMPRESSION, Value::Short(vec![1]));
@@ -215,16 +215,16 @@ fn unsupported_and_damaged_layouts_are_refused() {
         Error::Malformed(_)
     ));
     // a strip shorter than its rows, and fewer strips than the image needs
-    let short = |r: &mut craft_tiff::IfdBuilder| {
+    let short = |r: &mut bharat_tiff::IfdBuilder| {
         r.set_image(ImageData::Strips { rows_per_strip: 4, strips: vec![vec![0; 10]] });
     };
     assert_eq!(refused(short, 1, true), Error::Truncated);
-    let few = |r: &mut craft_tiff::IfdBuilder| {
+    let few = |r: &mut bharat_tiff::IfdBuilder| {
         r.set_image(ImageData::Strips { rows_per_strip: 1, strips: vec![vec![0; 16]] });
     };
     assert!(matches!(refused(few, 1, true), Error::Malformed(_)));
     // no full-resolution CFA or LinearRaw IFD at all
-    let none = |r: &mut craft_tiff::IfdBuilder| {
+    let none = |r: &mut bharat_tiff::IfdBuilder| {
         r.set(t::NEW_SUBFILE_TYPE, Value::Long(vec![1]));
     };
     assert!(unsupported(refused(none, 1, true)));
@@ -245,13 +245,13 @@ fn unpack_reads_every_depth_in_both_byte_orders() {
 fn a_lossless_jpeg_larger_than_its_tile_is_refused_before_decoding_it_all() {
     // 16 x 16 tiles each holding a 512 x 512 lossless JPEG: the decoder may allocate only the
     // tile's samples (and a little slack), not the frame the JPEG claims
-    let big = craft_raw::ljpeg::encode(&vec![7u16; 512 * 512], 512, 512, 1, 16, 1, 0);
+    let big = bharat_raw::ljpeg::encode(&vec![7u16; 512 * 512], 512, 512, 1, 16, 1, 0);
     let mut raw = base_ifd(32, 16, 16, 1, true);
     raw.set(t::COMPRESSION, Value::Short(vec![7]));
     raw.set_image(ImageData::Tiles { tile_width: 16, tile_height: 16, tiles: vec![big.clone(), big] });
     assert!(matches!(lines(&dng(raw, ByteOrder::Little)), Err(Error::TooLarge | Error::Malformed(_))));
     // the same tiles coded at their own size decode
-    let fit = craft_raw::ljpeg::encode(&vec![7u16; 16 * 16], 16, 16, 1, 16, 1, 0);
+    let fit = bharat_raw::ljpeg::encode(&vec![7u16; 16 * 16], 16, 16, 1, 16, 1, 0);
     let mut raw = base_ifd(32, 16, 16, 1, true);
     raw.set(t::COMPRESSION, Value::Short(vec![7]));
     raw.set_image(ImageData::Tiles { tile_width: 16, tile_height: 16, tiles: vec![fit.clone(), fit] });

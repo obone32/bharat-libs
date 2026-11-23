@@ -5,7 +5,7 @@
 use std::path::Path;
 use std::process::Command;
 
-use craft_audio::{AudioBuffer, ChannelLayout, EncodeFormat, EncodeOptions, OggVorbisOptions, encode, encode_ogg_vorbis};
+use bharat_audio::{AudioBuffer, ChannelLayout, EncodeFormat, EncodeOptions, OggVorbisOptions, encode, encode_ogg_vorbis};
 
 /// A different tone on every channel, so each output channel can be traced to its input.
 fn tones(rate: u32, channels: usize, frames: usize) -> AudioBuffer {
@@ -93,9 +93,9 @@ fn tags_reach_ffprobe() {
     let Some(probe) = crate::common::tool("ffprobe").or_else(|| crate::common::skip("ffprobe not found")) else { return };
     let opts = OggVorbisOptions::new(3.0)
         .with_tag("TITLE", "Smörgåsbord ✓")
-        .with_tag("ARTIST", "Craft")
+        .with_tag("ARTIST", "Bharat")
         .with_tag("bad=name", "dropped")
-        .with_vendor("craft-audio test");
+        .with_vendor("bharat-audio test");
     let file = encode_ogg_vorbis(&tones(44_100, 2, 44_100), &opts).unwrap();
     let path = crate::testkit::fixtures_dir("vorbis-encoder").join("tags.ogg");
     std::fs::write(&path, &file).unwrap();
@@ -105,7 +105,7 @@ fn tags_reach_ffprobe() {
     let s = &j["streams"][0];
     assert_eq!((s["codec_name"].as_str(), s["channels"].as_u64(), s["sample_rate"].as_str()), (Some("vorbis"), Some(2), Some("44100")));
     let tags = &s["tags"];
-    assert_eq!((tags["TITLE"].as_str(), tags["ARTIST"].as_str()), (Some("Smörgåsbord ✓"), Some("Craft")));
+    assert_eq!((tags["TITLE"].as_str(), tags["ARTIST"].as_str()), (Some("Smörgåsbord ✓"), Some("Bharat")));
     assert!(tags.as_object().unwrap().keys().all(|k| !k.contains("bad")), "{tags}");
     assert_eq!(j["format"]["duration"].as_str().map(|d| d.parse::<f64>().unwrap()), Some(1.0));
 }
@@ -125,7 +125,7 @@ fn quality_extremes_and_rates_decode_exactly() {
             assert!(r > 0.9, "q{quality} {rate} Hz {decoder}: correlation {r:.3}");
         }
     }
-    let low = craft_audio::encode_ogg(&tones(48_000, 2, 48_000), craft_audio::OGG_BITRATES.0).unwrap();
-    let high = craft_audio::encode_ogg(&tones(48_000, 2, 48_000), craft_audio::OGG_BITRATES.1).unwrap();
+    let low = bharat_audio::encode_ogg(&tones(48_000, 2, 48_000), bharat_audio::OGG_BITRATES.0).unwrap();
+    let high = bharat_audio::encode_ogg(&tones(48_000, 2, 48_000), bharat_audio::OGG_BITRATES.1).unwrap();
     assert!(low.len() < high.len(), "{} vs {} bytes", low.len(), high.len());
 }

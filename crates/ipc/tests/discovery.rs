@@ -1,6 +1,6 @@
 //! A record held by a child dies with the child.
 //!
-//! `hold_until_killed` returns at once unless `CRAFT_HOLD_DIR` is set.
+//! `hold_until_killed` returns at once unless `BHARAT_HOLD_DIR` is set.
 //! The parent test spawns that child, checks the live record, sends SIGKILL,
 //! and checks that `Discovery::scan` removed it. Drop does not run on SIGKILL.
 
@@ -8,11 +8,11 @@ use std::path::PathBuf;
 use std::process::{Child, Command};
 use std::time::{Duration, Instant};
 
-use craft_ipc::{Discovery, InstanceRecord, RuntimeDir};
+use bharat_ipc::{Discovery, InstanceRecord, RuntimeDir};
 
 #[test]
 fn hold_until_killed() {
-    let Ok(dir) = std::env::var("CRAFT_HOLD_DIR") else {
+    let Ok(dir) = std::env::var("BHARAT_HOLD_DIR") else {
         return;
     };
     let runtime = RuntimeDir::at(&dir).unwrap();
@@ -35,7 +35,7 @@ fn sigkill_drops_the_record() {
     let _ = std::fs::remove_dir_all(&path);
     let runtime = RuntimeDir::at(&path).unwrap();
     let exe = std::env::current_exe().unwrap();
-    let child = Command::new(exe).args(["--exact", "hold_until_killed", "--test-threads=1"]).env("CRAFT_HOLD_DIR", &path).spawn().unwrap();
+    let child = Command::new(exe).args(["--exact", "hold_until_killed", "--test-threads=1"]).env("BHARAT_HOLD_DIR", &path).spawn().unwrap();
     let mut guard = HoldCleanup { dir: path.clone(), child: Some(child) };
     let ready = runtime.path().join("ready");
     let deadline = Instant::now() + Duration::from_secs(10);

@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::{Decoded, decode};
+use bharat_pcap::{Decoded, decode};
 use support::{dns_query, dns_response, ipv4_pkt, tcp};
 
 fn decoded(payload: &[u8]) -> Decoded {

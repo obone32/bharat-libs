@@ -477,7 +477,7 @@ fn password_protected_files_are_refused() {
 }
 
 /// The first paragraph of `doc`'s body.
-fn first_para(doc: &craft_wordmodel::Document) -> &craft_wordmodel::para::Paragraph {
+fn first_para(doc: &bharat_wordmodel::Document) -> &bharat_wordmodel::para::Paragraph {
     doc.body.iter().find_map(|b| b.as_para()).expect("a paragraph")
 }
 
@@ -492,8 +492,8 @@ fn character_formatting_is_read() {
     let p = first_para(&doc);
     let c = &p.runs.first().expect("a run").props;
     assert_eq!((c.bold, c.italic, c.size), (Some(true), Some(true), Some(14.0)));
-    assert_eq!(c.color, Some(craft_wordmodel::props::TextColor::Rgb(craft_wordmodel::props::Rgb(0xFF, 0, 0))));
-    assert_eq!(c.underline, Some(craft_wordmodel::props::Underline::Single));
+    assert_eq!(c.color, Some(bharat_wordmodel::props::TextColor::Rgb(bharat_wordmodel::props::Rgb(0xFF, 0, 0))));
+    assert_eq!(c.underline, Some(bharat_wordmodel::props::Underline::Single));
     assert_eq!(c.font.as_deref(), Some("Arial"));
 }
 
@@ -528,10 +528,10 @@ fn paragraph_formatting_is_read() {
     let doc = read(&word6_file(&Doc6 { text: b"Hi\rHo\r", paras, ..Default::default() })).expect("opens");
     let ps: Vec<_> = doc.body.iter().filter_map(|b| b.as_para()).collect();
     let p = &ps[0].props;
-    assert_eq!(p.align, Some(craft_wordmodel::props::Align::Justify));
+    assert_eq!(p.align, Some(bharat_wordmodel::props::Align::Justify));
     assert_eq!((p.indent_left, p.indent_right, p.indent_first), (Some(36.0), Some(18.0), Some(-36.0)));
-    assert_eq!(p.line_spacing, Some(craft_wordmodel::props::LineSpacing::AtLeast(27.0)));
-    assert_eq!(ps[1].props.align, Some(craft_wordmodel::props::Align::Center));
+    assert_eq!(p.line_spacing, Some(bharat_wordmodel::props::LineSpacing::AtLeast(27.0)));
+    assert_eq!(ps[1].props.align, Some(bharat_wordmodel::props::Align::Center));
 }
 
 /// A Word 6 table definition sprm (0xBE): the cell edges, then a 10-byte descriptor per cell
@@ -552,9 +552,9 @@ fn def_table(edges: &[i16], rgfs: &[u16]) -> Vec<u8> {
 }
 
 /// The rows of the first table in `doc`'s body, each as its cells' texts.
-fn table_rows(doc: &craft_wordmodel::Document) -> Vec<Vec<String>> {
+fn table_rows(doc: &bharat_wordmodel::Document) -> Vec<Vec<String>> {
     let t = doc.body.iter().find_map(|b| match b.as_ref() {
-        craft_wordmodel::Block::Table(t) => Some(t),
+        bharat_wordmodel::Block::Table(t) => Some(t),
         _ => None,
     });
     let t = t.expect("a table");
@@ -595,7 +595,7 @@ fn several_merges_in_one_row_each_keep_their_cells() {
 #[test]
 fn a_field_shows_its_cached_result() {
     let d = Doc6 { text: b"Date \x13DATE \x1412/12/97\x15\r", ..Default::default() };
-    let text = read(&word6_file(&d)).expect("opens").plain_text(craft_wordmodel::StoryRef::Body);
+    let text = read(&word6_file(&d)).expect("opens").plain_text(bharat_wordmodel::StoryRef::Body);
     assert!(text.contains("Date 12/12/97"), "{text:?}");
     assert!(!text.contains("DATE"), "{text:?}");
 }
@@ -610,7 +610,7 @@ const STYLES: &[Option<Std>] = &[
 ];
 
 /// Each paragraph's style name, through the document's style sheet.
-fn style_names(doc: &craft_wordmodel::Document) -> Vec<String> {
+fn style_names(doc: &bharat_wordmodel::Document) -> Vec<String> {
     doc.body
         .iter()
         .filter_map(|b| b.as_para())
@@ -632,7 +632,7 @@ fn styles_carry_their_formatting_and_base() {
     let d = Doc6 { text: b"A\r", styles: STYLES, ..Default::default() };
     let doc = read(&word6_file(&d)).expect("opens");
     let mine = doc.styles.styles.iter().find(|s| s.name == "Mine").expect("Mine");
-    assert_eq!(mine.para.align, Some(craft_wordmodel::props::Align::Center));
+    assert_eq!(mine.para.align, Some(bharat_wordmodel::props::Align::Center));
     assert_eq!(mine.chr.bold, Some(true));
     assert_eq!(mine.based_on.as_deref().and_then(|id| doc.styles.get(id)).map(|s| s.name.as_str()), Some("Normal"));
     let heading = doc.styles.styles.iter().find(|s| s.name == "Heading 1").expect("Heading 1");

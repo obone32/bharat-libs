@@ -1,12 +1,12 @@
 //! Colour tags and the conversions compositor and display frames need.
 //!
-//! This is the slim colour-metadata layer used by craft-frame and by media
+//! This is the slim colour-metadata layer used by bharat-frame and by media
 //! `MediaInfo`: [`ColorInfo`] (matrix, transfer, primaries, range), [`HdrMetadata`], Y'CbCr
 //! matrices, transfer functions, and a few helpers (sRGB tables, HSL, hex). It is not a
 //! colour-managed pipeline: LUTs, camera log, grade and tone mapping stay out.
 //!
 //! Came from FilmCraft's `filmcraft-color` (the metadata and transfer part of that crate).
-//! Distinct from `craft-video`'s decoder colour tags (`ColorTags` in #1231 / #1768).
+//! Distinct from `bharat-video`'s decoder colour tags (`ColorTags` in #1231 / #1768).
 
 #![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable))]
 

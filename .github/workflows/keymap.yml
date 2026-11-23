@@ -25,7 +25,7 @@ jobs:
     name: Keymap feature sets
     runs-on: ubuntu-latest
     env:
-      CRAFT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/craft-fonts
+      BHARAT_FONTS_DIR: ${{ github.workspace }}/.test-inputs/bharat-fonts
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@v2.22.4
@@ -37,23 +37,23 @@ jobs:
       - name: Checkout test fonts
         uses: actions/checkout@v7.0.1
         with:
-          repository: storytold/craft-fonts
+          repository: obone32/bharat-fonts
           ref: b076417b5880bd4154bd22f00695b1d28c6bea83
-          path: .test-inputs/craft-fonts
+          path: .test-inputs/bharat-fonts
           persist-credentials: false
       - uses: step-security/dtolnay-rust-toolchain@v1.0.0
         with:
           toolchain: stable
           components: clippy
-      - run: cargo clippy -p craft-keymap --all-targets --no-default-features --locked -- -D warnings
+      - run: cargo clippy -p bharat-keymap --all-targets --no-default-features --locked -- -D warnings
       # `snapshot` covers `ui` and `egui` and compiles the dialog screenshots, which need a GPU
       # to run, so the test steps leave them out.
-      - run: cargo clippy -p craft-keymap --all-targets --features snapshot --locked -- -D warnings
+      - run: cargo clippy -p bharat-keymap --all-targets --features snapshot --locked -- -D warnings
       # Doctests run once, in the `ui` step.
       - name: Test core
-        run: cargo test -p craft-keymap --no-default-features --lib --tests --locked
+        run: cargo test -p bharat-keymap --no-default-features --lib --tests --locked
       - name: Test egui dispatch and the shortcuts dialog
-        run: cargo test -p craft-keymap --features ui --locked
+        run: cargo test -p bharat-keymap --features ui --locked
   wasm:
     timeout-minutes: 10
     name: Keymap WASM
@@ -70,4 +70,4 @@ jobs:
         with:
           toolchain: stable
           targets: wasm32-unknown-unknown
-      - run: cargo check -p craft-keymap --features ui --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-keymap --features ui --locked --target wasm32-unknown-unknown

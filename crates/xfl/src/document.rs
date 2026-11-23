@@ -4,7 +4,7 @@
 //! It does not construct a consumer's animation model. More detailed payloads remain available
 //! through [`Document::root`] for the application adapter.
 use crate::shape::XflElement;
-use craft_xml::{Doctype, El, Error as XmlError, Limits, Local, Options, Pat, UnknownEntity};
+use bharat_xml::{Doctype, El, Error as XmlError, Limits, Local, Options, Pat, UnknownEntity};
 use std::borrow::Cow;
 
 /// Maximum bytes of XML in one XFL document or library item.
@@ -237,7 +237,7 @@ impl Document {
     }
 
     /// The lossless XML tree used by consumer adapters for schema details this view does not
-    /// interpret. Text and child order come directly from `craft-xml`.
+    /// interpret. Text and child order come directly from `bharat-xml`.
     pub fn root(&self) -> &El {
         &self.root
     }

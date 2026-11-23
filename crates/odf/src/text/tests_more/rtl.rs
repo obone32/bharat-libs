@@ -3,7 +3,7 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
+use bharat_wordmodel::Document;
 
 fn open(mode: &str) -> Document {
     let content = format!(

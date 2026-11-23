@@ -1,12 +1,12 @@
-# craft-dds
+# bharat-dds
 
 DirectDraw Surface (DDS) textures, after Microsoft's public DDS and block-compression
-documentation, with no dependencies. `craft-image-codecs` reads and writes DDS through this
+documentation, with no dependencies. `bharat-image-codecs` reads and writes DDS through this
 crate and re-exports its `DdsCompression` and `DdsOptions`; an app that only needs DDS (a texture
 exporter, say) can depend on it alone and leave out the other codecs and their licences.
 
 ```toml
-craft-dds = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-dds = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 | | Read | Write |
@@ -37,21 +37,21 @@ so a smooth height or normal map has less error than when its 8-bit rounding is 
 `Texture::decode` rounds 16-bit formats to 8 bits; `Texture::decode16` returns them exactly,
 rescales channel-mask fields from their own width (a 16-bit luminance field exactly),
 interpolates BC4 and BC5 at 16 bits, and scales BC1 to BC3 by 257. `Texture::bits_per_channel`
-gives the widest stored channel; `craft-image-codecs` reads a texture through `decode16` when it
+gives the widest stored channel; `bharat-image-codecs` reads a texture through `decode16` when it
 is wider than 8 bits.
 
 ```rust
-use craft_dds::{DdsCompression, DdsOptions, Layout, Texture};
+use bharat_dds::{DdsCompression, DdsOptions, Layout, Texture};
 
 let pixels = [10, 20, 30, 255].repeat(6 * 5);
-let file = craft_dds::encode(6, 5, Layout::Rgba, &pixels, DdsOptions { compression: DdsCompression::Bc1, mipmaps: true })?;
+let file = bharat_dds::encode(6, 5, Layout::Rgba, &pixels, DdsOptions { compression: DdsCompression::Bc1, mipmaps: true })?;
 // The header first: the size and layout are known before anything is allocated.
 let texture = Texture::parse(&file)?;
 assert_eq!((texture.width(), texture.height(), texture.layout()), (6, 5, Layout::Rgba));
 let decoded = texture.decode()?;
 ```
 
-`Texture::parse` requires a complete header and nonzero dimensions. `Texture::decode` bounds its output buffer to 1 GiB; use `decode_with_limit(max_bytes)` for an explicit per-buffer budget. Allocation is fallible. This is not a total process memory limit. The `craft-image-codecs` adapter forwards its own existing `Limits::max_alloc` instead of imposing the standalone default.
+`Texture::parse` requires a complete header and nonzero dimensions. `Texture::decode` bounds its output buffer to 1 GiB; use `decode_with_limit(max_bytes)` for an explicit per-buffer budget. Allocation is fallible. This is not a total process memory limit. The `bharat-image-codecs` adapter forwards its own existing `Limits::max_alloc` instead of imposing the standalone default.
 
 The block encoder is our own: RGB565 endpoints fitted along each block's principal axis and
 refined by least squares, indices picked against the palette the reader decodes; BC1 turns texels
@@ -62,4 +62,4 @@ the same blocks can share them.
 ## Features
 
 - `parallel`: encodes and decodes rows of blocks (and mip levels) on several threads with rayon.
-  `craft-image-codecs` turns it on for native targets.
+  `bharat-image-codecs` turns it on for native targets.

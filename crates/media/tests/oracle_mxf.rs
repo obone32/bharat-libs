@@ -9,8 +9,8 @@
 
 mod common;
 
-use craft_media::CodecId;
-use craft_media::mxf::{
+use bharat_media::CodecId;
+use bharat_media::mxf::{
     Codec, CodedKind, FrameInfo, MxfFile, MxfWriter, OpAtomPcm, OperationalPattern, PackageIds, Pattern, PictureCoding, PictureDesc, Rational,
     SoundDesc, SoundFormat, StartTimecode, TrackKind, Wrapping, WriterConfig, open, write_opatom_pcm,
 };
@@ -325,7 +325,7 @@ fn written_op1a_files_are_read_by_ffmpeg_like_their_source() {
         let (Some(fa), Some(fb)) = (common::probe_json(&o.path, &["-show_format"]), common::probe_json(&out, &["-show_format"])) else { return };
         assert_eq!(fb["format"]["format_name"], "mxf", "{name}");
         assert_eq!(fa["format"]["tags"]["timecode"], fb["format"]["tags"]["timecode"], "{name}: timecode");
-        assert_eq!(fb["format"]["tags"]["product_name"], "craft-media", "{name}");
+        assert_eq!(fb["format"]["tags"]["product_name"], "bharat-media", "{name}");
         for stream in ["v:0", "a:0"] {
             assert_eq!(decode_md5(&o.path, stream), decode_md5(&out, stream), "{name}: ffmpeg's decode of {stream}");
         }

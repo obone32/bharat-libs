@@ -15,7 +15,7 @@ use std::collections::BTreeMap;
 use crate::{MIXER_BANDS, Preset};
 use serde_json::{Map, Value, json};
 
-/// Properties keyed `prefix:name` (as produced by [`craft_metadata::parse_xmp`]).
+/// Properties keyed `prefix:name` (as produced by [`bharat_metadata::parse_xmp`]).
 pub type Props = BTreeMap<String, Vec<String>>;
 
 /// What the mapped settings will develop. It decides how a `crs:` white balance is read: a raw
@@ -524,7 +524,7 @@ pub fn has_saved_upright_transform(props: &Props) -> bool {
 /// Read an XMP preset (`crs:` fields + `crs:Name` / `crs:Group`) into one of our presets.
 /// Returns `None` when the packet has no adjustments we understand.
 pub fn preset_from_xmp(xmp: &str, fallback_name: &str) -> Option<Preset> {
-    let d = craft_metadata::parse_xmp(xmp).ok()?;
+    let d = bharat_metadata::parse_xmp(xmp).ok()?;
     let props = &d.properties;
     // with the packet's structured properties, so a preset of masks or spots alone is a preset, and one of both
     // keeps them (presets have no photo to fit to: 3:2, as `crs_masks` assumes)

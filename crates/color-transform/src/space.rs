@@ -1,7 +1,7 @@
 //! 3×3 matrices, chromaticities, RGB spaces and Bradford chromatic adaptation.
 
-use craft_cms::math;
-use craft_color::Primaries;
+use bharat_cms::math;
+use bharat_color::Primaries;
 use serde::{Deserialize, Serialize};
 
 /// A row-major 3×3 matrix.
@@ -48,7 +48,7 @@ impl Mat3 {
     }
 }
 
-/// A row-major array, the form `craft_cms::math::Mat3` takes.
+/// A row-major array, the form `bharat_cms::math::Mat3` takes.
 impl From<[[f64; 3]; 3]> for Mat3 {
     fn from(m: [[f64; 3]; 3]) -> Mat3 {
         Mat3(m)

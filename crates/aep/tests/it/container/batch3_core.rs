@@ -3,11 +3,11 @@
 //! Every expected value is the value the corpus case was made with (its MANIFEST).
 
 use crate::container::helpers::{assert_near, base_layer, first_comp, layer_shown_as, layer_with_id, near, open, without_layer_id};
-use craft_aep::{Interpolation, KeyEase, KeyframeKind, LayerHeader, ParamValue, Project, PropNode, Property, Rational, ValueSource};
+use bharat_aep::{Interpolation, KeyEase, KeyframeKind, LayerHeader, ParamValue, Project, PropNode, Property, Rational, ValueSource};
 
 const L: u32 = 0x1b;
 
-fn with_layer<R>(name: &str, id: u32, f: impl FnOnce(&Project<'_, '_>, &craft_aep::Layer<'_, '_>) -> R) -> Option<R> {
+fn with_layer<R>(name: &str, id: u32, f: impl FnOnce(&Project<'_, '_>, &bharat_aep::Layer<'_, '_>) -> R) -> Option<R> {
     Some({
         let bytes = crate::common::try_fixture(name)?;
         let file = open(&bytes);
@@ -209,7 +209,7 @@ fn bezier_colour_keys_carry_the_distance_to_the_next_key() {
             assert_eq!((k.interpolation_in(), k.interpolation_out()), (Some(Interpolation::Bezier), Some(Interpolation::Bezier)));
             assert!(same_ease(&k.ease_component(0).unwrap(), &ease(0.0, 0.0, 0.0, 0.0)));
         }
-        let distance = |k: &craft_aep::Keyframe<'_>| k.spatial().unwrap().segment_length;
+        let distance = |k: &bharat_aep::Keyframe<'_>| k.spatial().unwrap().segment_length;
         assert!(near(distance(&keys[0]), 255.0 * 2f64.sqrt(), 1e-3), "{}", distance(&keys[0]));
         assert!(near(distance(&keys[0]), 360.6245, 1e-3));
         assert_eq!(distance(&keys[1]), 0.0);
@@ -346,7 +346,7 @@ fn time_remapping_is_an_inert_property_until_enabled() {
 
 // ------------------------------------------------------------------ composition (325-327)
 
-fn comp_header(name: &str) -> Option<craft_aep::CompHeader> {
+fn comp_header(name: &str) -> Option<bharat_aep::CompHeader> {
     Some({
         let bytes = crate::common::try_fixture(name)?;
         let file = open(&bytes);
@@ -372,6 +372,6 @@ fn pixel_aspect_shutter_phase_and_display_start() {
     assert_eq!(h.pixel_aspect.reduced(), Some(rat(1, 1)));
     // A short chunk still decodes the old fields.
     let bytes = [0u8; 176];
-    let h = craft_aep::CompHeader::parse(&bytes).unwrap();
+    let h = bharat_aep::CompHeader::parse(&bytes).unwrap();
     assert_eq!((h.shutter_phase, h.display_start.map(|r| r.den)), (None, Some(0)));
 }

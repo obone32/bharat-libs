@@ -15,7 +15,7 @@
 //! and [`MAX_OVERCUT_MM`], and must be finite; a reply is read only up to
 //! [`gpgl::silhouette::MAX_REPLY_LEN`] bytes. Nothing here panics.
 //!
-//! Depends on no other Craft crate. Where the protocol facts come from is in the README.
+//! Depends on no other Bharat crate. Where the protocol facts come from is in the README.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 

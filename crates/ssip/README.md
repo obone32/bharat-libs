@@ -1,4 +1,4 @@
-# craft-ssip
+# bharat-ssip
 
 A focused Speech Dispatcher SSIP wire layer: sentence-as-data encoding, final response codes,
 and a bounded incremental reply reader. No sockets, process launch, cancellation commands,

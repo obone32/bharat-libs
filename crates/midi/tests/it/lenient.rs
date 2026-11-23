@@ -1,7 +1,7 @@
 //! `read_smf_lenient` on damaged files, instrument names, the end tick and format-0 writing. The damaged-file
 //! cases come from LoopCraft's reader, whose behaviour the lenient reader keeps.
 
-use craft_midi::{
+use bharat_midi::{
     LenientRead, MAX_EVENTS, MAX_TRACKS, MAX_WARNINGS, MidiError, Note, Sequence, Smf, SmfTrack, read_smf, read_smf_lenient, write_smf,
 };
 

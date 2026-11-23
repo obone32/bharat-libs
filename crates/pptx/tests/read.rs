@@ -1,7 +1,7 @@
 //! The reader on small packages written by hand.
 
-use craft_opc::{PackageOut, RelsOut};
-use craft_pptx::{Defaults, Geom, LayoutType, Master, PhType, Plain, Presentation, ShapeKind, Size};
+use bharat_opc::{PackageOut, RelsOut};
+use bharat_pptx::{Defaults, Geom, LayoutType, Master, PhType, Plain, Presentation, ShapeKind, Size};
 
 const NS: &str = r#"xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main""#;
 const CT_PRES: &str = "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
@@ -95,9 +95,9 @@ fn deck() -> Vec<u8> {
     )
 }
 
-fn shape<'a>(p: &'a Presentation, name: &str) -> &'a craft_pptx::Shape {
+fn shape<'a>(p: &'a Presentation, name: &str) -> &'a bharat_pptx::Shape {
     let mut found = None;
-    craft_pptx::walk(&p.slides[0].shapes, &mut |s, _| {
+    bharat_pptx::walk(&p.slides[0].shapes, &mut |s, _| {
         if s.name == name && found.is_none() {
             found = Some(s);
         }
@@ -108,8 +108,8 @@ fn shape<'a>(p: &'a Presentation, name: &str) -> &'a craft_pptx::Shape {
 #[test]
 fn a_small_deck_reads_into_the_model() {
     let bytes = deck();
-    assert!(craft_pptx::sniff(&bytes));
-    let (p, lost) = craft_pptx::import_checked(&bytes, &Plain).unwrap();
+    assert!(bharat_pptx::sniff(&bytes));
+    let (p, lost) = bharat_pptx::import_checked(&bytes, &Plain).unwrap();
     assert_eq!(lost, ["ppt/slides/slide2.xml"], "the missing slide is reported and left out");
     assert_eq!(p.slide_size, Size::new(720.0, 540.0));
     assert_eq!(p.first_slide_number, 3);
@@ -130,7 +130,7 @@ fn a_small_deck_reads_into_the_model() {
     assert!(s.hidden);
     assert_eq!(s.name, "First");
     assert_eq!(s.tags, [("ADDIN".to_string(), "42".to_string())]);
-    assert!(matches!(&s.background, Some(craft_pptx::Background::Fill { .. })));
+    assert!(matches!(&s.background, Some(bharat_pptx::Background::Fill { .. })));
     assert_eq!(p.sections.len(), 1);
     assert_eq!(p.sections[0].slides, [s.id]);
     assert_eq!(p.custom_shows[0].name, "Short");
@@ -139,13 +139,13 @@ fn a_small_deck_reads_into_the_model() {
     assert!(p.validate().is_empty(), "{:?}", p.validate());
     assert!(p.next_id >= 11);
 
-    let (theme, _) = craft_pptx::import_theme(&bytes).unwrap();
+    let (theme, _) = bharat_pptx::import_theme(&bytes).unwrap();
     assert_eq!(theme.name, "Harbour");
 }
 
 #[test]
 fn the_shapes_of_a_small_deck_read_into_the_model() {
-    let p = craft_pptx::import(&deck(), &Plain).unwrap();
+    let p = bharat_pptx::import(&deck(), &Plain).unwrap();
     // A placeholder with no geometry of its own takes its layout placeholder's.
     let title = shape(&p, "Title 1");
     assert_eq!(title.ph_type(), Some(PhType::CtrTitle));
@@ -156,7 +156,7 @@ fn the_shapes_of_a_small_deck_read_into_the_model() {
     assert!(matches!(&b.geom, Geom::Preset { name, adj } if name == "roundRect" && adj == &[30000.0]));
     assert_eq!(b.xfrm.map(|x| (x.x, x.y, x.w, x.h)), Some((1.0, 2.0, 100.0, 50.0)));
     assert!(b.fill.is_some());
-    assert_eq!(b.text.as_ref().and_then(|t| t.body.anchor), Some(craft_pptx::text::Anchor::Top), "shape text sits at the top");
+    assert_eq!(b.text.as_ref().and_then(|t| t.body.anchor), Some(bharat_pptx::text::Anchor::Top), "shape text sits at the top");
 
     let pic = shape(&p, "Picture");
     assert_eq!(pic.descr, "A dot");
@@ -197,7 +197,7 @@ fn a_deck_without_a_master_takes_the_callers() {
         ],
         &[("", &[("officeDocument", "ppt/presentation.xml")]), ("ppt/presentation.xml", &[("slide", "slides/slide1.xml")])],
     );
-    let p = craft_pptx::import(&bytes, &Mine).unwrap();
+    let p = bharat_pptx::import(&bytes, &Mine).unwrap();
     assert_eq!(p.masters.len(), 1);
     assert_eq!(p.masters[0].name, "Mine");
     assert_eq!(p.slides[0].layout, p.masters[0].layouts[0].id);
@@ -206,15 +206,15 @@ fn a_deck_without_a_master_takes_the_callers() {
 
 #[test]
 fn other_files_are_refused() {
-    assert!(!craft_pptx::sniff(b"not a zip"));
-    assert!(craft_pptx::import(b"not a zip", &Plain).is_err());
+    assert!(!bharat_pptx::sniff(b"not a zip"));
+    assert!(bharat_pptx::import(b"not a zip", &Plain).is_err());
     let doc = package(
         &[("word/document.xml", "application/xml", "<w:document xmlns:w=\"w\"/>".into())],
         &[("", &[("officeDocument", "word/document.xml")])],
     );
-    assert!(craft_pptx::sniff(&doc), "a package, but not a presentation");
-    assert!(matches!(craft_pptx::import(&doc, &Plain), Err(craft_pptx::Error::NotPptx(_))));
-    assert!(craft_pptx::import_theme(&doc).is_err());
+    assert!(bharat_pptx::sniff(&doc), "a package, but not a presentation");
+    assert!(matches!(bharat_pptx::import(&doc, &Plain), Err(bharat_pptx::Error::NotPptx(_))));
+    assert!(bharat_pptx::import_theme(&doc).is_err());
 }
 
 /// A slide whose group tree is 40 levels deep, with a shape after it.
@@ -236,9 +236,9 @@ fn deep_group_deck() -> Vec<u8> {
 #[test]
 fn deep_group_nesting_is_cut() {
     let bytes = deep_group_deck();
-    let p = craft_pptx::import(&bytes, &Plain).unwrap();
+    let p = bharat_pptx::import(&bytes, &Plain).unwrap();
     let mut depth = 0;
-    craft_pptx::walk(&p.slides[0].shapes, &mut |_, d| depth = depth.max(d));
+    bharat_pptx::walk(&p.slides[0].shapes, &mut |_, d| depth = depth.max(d));
     assert_eq!(depth, 32, "33 levels of groups, the last one empty");
     assert!(p.slides[0].shapes.iter().any(|s| s.name == "Top"));
 }
@@ -259,7 +259,7 @@ fn deep_group_import_fits_a_small_stack() {
         .stack_size(STACK)
         .spawn(|| {
             let bytes = deep_group_deck();
-            let p = craft_pptx::import(&bytes, &Plain).unwrap();
+            let p = bharat_pptx::import(&bytes, &Plain).unwrap();
             assert!(p.slides[0].shapes.iter().any(|s| s.name == "Top"));
         })
         .unwrap()

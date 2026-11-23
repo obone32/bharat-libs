@@ -17,11 +17,11 @@ concurrency:
 jobs:
   sonarcloud:
     # Track shared CI improvements on main.
-    uses: storytold/craft-common-actions/.github/workflows/sonarcloud.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/sonarcloud.yml@main
     with:
       pdf-test-fonts: true
       # The codec and format code behind features that are off by default. Without these the
       # coverage build never compiles it, and new code there reads as untested.
       cargo-features: >-
-        craft-image-codecs/avif,craft-image-codecs/avif-decode,craft-video/dnx,craft-video/vp8,craft-video/prores,craft-video/h264,craft-video/hevc,craft-video/vp9,craft-video/av1,craft-video/threads,craft-audio/decode,craft-audio/encode,craft-audio/peaks,craft-audio/rayon,craft-audio/serde,craft-media/matroska,craft-media/ogg,craft-media/bitstream,craft-media/serde,craft-mesh/stl,craft-mesh/obj,craft-mesh/ply,craft-mesh/gltf,craft-metafile/write,craft-image-codecs/sgi,craft-image-codecs/sunraster,craft-jsonrpc/async-lines
+        bharat-image-codecs/avif,bharat-image-codecs/avif-decode,bharat-video/dnx,bharat-video/vp8,bharat-video/prores,bharat-video/h264,bharat-video/hevc,bharat-video/vp9,bharat-video/av1,bharat-video/threads,bharat-audio/decode,bharat-audio/encode,bharat-audio/peaks,bharat-audio/rayon,bharat-audio/serde,bharat-media/matroska,bharat-media/ogg,bharat-media/bitstream,bharat-media/serde,bharat-mesh/stl,bharat-mesh/obj,bharat-mesh/ply,bharat-mesh/gltf,bharat-metafile/write,bharat-image-codecs/sgi,bharat-image-codecs/sunraster,bharat-jsonrpc/async-lines
     secrets: inherit

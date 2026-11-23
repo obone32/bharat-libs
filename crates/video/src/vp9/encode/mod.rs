@@ -20,9 +20,9 @@
 
 #![allow(clippy::needless_range_loop)]
 
-use craft_media::bitstream::BitWriter;
-use craft_media::isobmff::VpcConfig;
-use craft_media::{CodecId, CodecParams};
+use bharat_media::bitstream::BitWriter;
+use bharat_media::isobmff::VpcConfig;
+use bharat_media::{CodecId, CodecParams};
 
 mod bool;
 mod lf;

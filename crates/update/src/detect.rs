@@ -1,4 +1,4 @@
-//! Finding Craft Apps that are already installed, however they got there.
+//! Finding Bharat Apps that are already installed, however they got there.
 //!
 //! - macOS: `<App>.app` in `/Applications` or `~/Applications`, read from its `Info.plist`.
 //! - Windows: the Windows Installer's uninstall entries (`Learning Machines LLC`), and portable
@@ -304,7 +304,7 @@ pub mod linux {
     use crate::packages::{self, Package};
     use crate::process::capture;
 
-    /// Installed Craft App packages from every package manager on this system (dpkg, rpm,
+    /// Installed Bharat App packages from every package manager on this system (dpkg, rpm,
     /// pacman, Flatpak). Read once per detection pass.
     pub fn packages() -> Vec<Package> {
         let ours = |name: &str| {

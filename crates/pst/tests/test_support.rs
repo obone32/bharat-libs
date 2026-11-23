@@ -3,8 +3,8 @@
 
 use std::io::Cursor;
 
-use craft_pst::test_writer::{FileSpec, FolderSpec, Layout, MessageSpec, build};
-use craft_pst::{Encryption, Format, Pst};
+use bharat_pst::test_writer::{FileSpec, FolderSpec, Layout, MessageSpec, build};
+use bharat_pst::{Encryption, Format, Pst};
 
 #[test]
 fn a_file_from_the_test_writer_opens() {

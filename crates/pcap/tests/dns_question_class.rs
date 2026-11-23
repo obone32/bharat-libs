@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::{decode, summarize};
+use bharat_pcap::{decode, summarize};
 use support::{dns_query, eth, ipv4_pkt, pcap, udp};
 
 fn packet(message: &[u8]) -> Vec<u8> {

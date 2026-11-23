@@ -266,7 +266,7 @@ fn the_code_pages_of_the_mail_are_the_code_pages_of_the_text() {
     assert_eq!(text("{\\rtf1\\ansi\\ansicpg20866 \\'d0\\'d2}"), "\u{43f}\u{440}");
     assert_eq!(text("{\\rtf1\\ansi\\ansicpg28592 \\'b1}"), "\u{105}");
     assert_eq!(text("{\\rtf1\\ansi\\ansicpg51949 \\'b0\\'a1}"), "\u{ac00}");
-    assert_eq!(craft_mime::charset::code_page_label(20866), Some("koi8-r"));
+    assert_eq!(bharat_mime::charset::code_page_label(20866), Some("koi8-r"));
 }
 
 proptest! {

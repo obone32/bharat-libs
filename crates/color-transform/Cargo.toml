@@ -1,6 +1,6 @@
 [package]
-name = "craft-color-transform"
-description = "Color transforms for Craft apps: RGB spaces and Bradford adaptation, white balance by temperature and tint, OkLab and OkLCh, monotone tone curves and 1D lookup tables, and BT.2408 PQ tone mapping"
+name = "bharat-color-transform"
+description = "Color transforms for Bharat apps: RGB spaces and Bradford adaptation, white balance by temperature and tint, OkLab and OkLCh, monotone tone curves and 1D lookup tables, and BT.2408 PQ tone mapping"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -12,9 +12,9 @@ workspace = true
 
 [dependencies]
 # PQ (SMPTE ST 2084), the HDR reference white and the color primaries tags.
-craft-color = { workspace = true }
-# The 3×3 matrix arithmetic and Bradford adaptation (`craft_cms::math`).
-craft-cms = { workspace = true }
+bharat-color = { workspace = true }
+# The 3×3 matrix arithmetic and Bradford adaptation (`bharat_cms::math`).
+bharat-cms = { workspace = true }
 serde = { workspace = true }
 
 [dev-dependencies]

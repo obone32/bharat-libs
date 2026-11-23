@@ -1,7 +1,7 @@
 use std::time::Duration;
 
-use craft_keymap::{Bindable, Binding, CommandRef, DropReason, Keymap, Overrides, Platform, Policy, Problem, Profiles, Scope, Scopes};
-use craft_settings::{Location, OpenOptions, Probe, Settings, SettingsStore};
+use bharat_keymap::{Bindable, Binding, CommandRef, DropReason, Keymap, Overrides, Platform, Policy, Problem, Profiles, Scope, Scopes};
+use bharat_settings::{Location, OpenOptions, Probe, Settings, SettingsStore};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -9,7 +9,7 @@ use serde_json::json;
 #[serde(default)]
 struct Prefs {
     general: General,
-    #[serde(with = "craft_keymap::keymap::overrides_list")]
+    #[serde(with = "bharat_keymap::keymap::overrides_list")]
     shortcuts: Overrides,
     profiles: Profiles,
 }

@@ -1,5 +1,5 @@
 [package]
-name = "craft-smime"
+name = "bharat-smime"
 description = "S/MIME (RFC 8551): Digital signatures checked from CMS (RFC 5652) and X.509 (RFC 5280), no I/O"
 version.workspace = true
 edition.workspace = true
@@ -11,7 +11,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-ber = { workspace = true }
+bharat-ber = { workspace = true }
 serde = { workspace = true }
 base64 = "0.23"
 # RustCrypto: CMS, X.509, DER, SPKI, OID, RSA, P256, P384, SHA2.
@@ -20,7 +20,7 @@ x509-cert = { version = "0.3", default-features = false }
 der = { version = "0.8", default-features = false, features = ["alloc", "oid"] }
 spki = { version = "0.8", default-features = false, features = ["alloc"] }
 const-oid = { version = "0.10", default-features = false, features = ["db"] }
-# Match craft-pkcs7's RSA pin; parse PKCS #1 separately to avoid incompatible RC encoding APIs.
+# Match bharat-pkcs7's RSA pin; parse PKCS #1 separately to avoid incompatible RC encoding APIs.
 rsa = { version = "=0.10.0-rc.18", default-features = false }
 pkcs1 = { version = "0.8", default-features = false, features = ["alloc"] }
 p256 = { version = "0.14", default-features = false, features = ["ecdsa", "alloc"] }

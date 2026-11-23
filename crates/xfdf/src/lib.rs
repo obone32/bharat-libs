@@ -23,7 +23,7 @@ pub fn read_fields(bytes: &[u8]) -> Result<Vec<(String, Vec<String>)>, Error> {
         return Err(Error::UnknownFormat);
     }
     let mut values = Vec::new();
-    if let Some(fields) = root.child(craft_xml::Local("fields")) {
+    if let Some(fields) = root.child(bharat_xml::Local("fields")) {
         walk_xfdf(fields, "", &mut values, 0, &mut 0)?;
     }
     Ok(values)
@@ -89,40 +89,40 @@ fn check_form_xml_depth(text: &str) -> Result<(), Error> {
     Ok(())
 }
 
-fn parse_form_xml(text: &str) -> Result<craft_xml::El, craft_xml::Error> {
-    let mut opts = craft_xml::Options { strict: true, doctype: craft_xml::Doctype::Reject, ..Default::default() };
+fn parse_form_xml(text: &str) -> Result<bharat_xml::El, bharat_xml::Error> {
+    let mut opts = bharat_xml::Options { strict: true, doctype: bharat_xml::Doctype::Reject, ..Default::default() };
     opts.limits.max_nodes = MAX_NODES as usize;
     opts.limits.max_depth = MAX_XML_DEPTH.max(1024);
     opts.parse(text.as_bytes())
 }
 
-fn el_text(el: &craft_xml::El) -> String {
+fn el_text(el: &bharat_xml::El) -> String {
     el.children
         .iter()
         .filter_map(|n| match n {
-            craft_xml::Node::Text(t) => Some(t.as_str()),
+            bharat_xml::Node::Text(t) => Some(t.as_str()),
             _ => None,
         })
         .collect()
 }
 
-fn walk_xfdf(node: &craft_xml::El, prefix: &str, out: &mut Vec<(String, Vec<String>)>, depth: usize, bytes: &mut usize) -> Result<(), Error> {
+fn walk_xfdf(node: &bharat_xml::El, prefix: &str, out: &mut Vec<(String, Vec<String>)>, depth: usize, bytes: &mut usize) -> Result<(), Error> {
     if depth > MAX_DEPTH {
         return Err(Error::Malformed(format!("XFDF fields nest more than {MAX_DEPTH} deep")));
     }
-    for f in node.children(craft_xml::Local("field")) {
+    for f in node.children(bharat_xml::Local("field")) {
         let Some(name) = f.attr("name") else { continue };
         // Charge temporary parent names too, before allocation/recursion can amplify them.
         let full_len = if prefix.is_empty() { name.len() } else { prefix.len().saturating_add(1).saturating_add(name.len()) };
         charge_xfdf_text(bytes, full_len)?;
         let full = if prefix.is_empty() { name.to_string() } else { format!("{prefix}.{name}") };
         let mut vals = Vec::new();
-        for value in f.children(craft_xml::Local("value")) {
+        for value in f.children(bharat_xml::Local("value")) {
             let len = value
                 .children
                 .iter()
                 .filter_map(|n| match n {
-                    craft_xml::Node::Text(t) => Some(t.len()),
+                    bharat_xml::Node::Text(t) => Some(t.len()),
                     _ => None,
                 })
                 .fold(0, usize::saturating_add);

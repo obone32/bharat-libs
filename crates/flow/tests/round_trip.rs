@@ -1,8 +1,8 @@
 //! A flow made into a document and read back keeps what the text formats express: kinds,
 //! lists, alignment, character formatting, links, tables, pictures and the metadata.
 
-use craft_flow::{Cell, FBlock, FTable, Flow, Fmt, Inline, Kind, ListInfo, Meta, Para, from_doc, make_img, to_doc};
-use craft_wordmodel::Align;
+use bharat_flow::{Cell, FBlock, FTable, Flow, Fmt, Inline, Kind, ListInfo, Meta, Para, from_doc, make_img, to_doc};
+use bharat_wordmodel::Align;
 
 /// A 1×1 PNG.
 const PNG: &[u8] = &[
@@ -91,9 +91,9 @@ fn a_flow_survives_a_document() {
 
 #[test]
 fn pictures_are_sniffed_and_sized_from_their_headers() {
-    assert_eq!(craft_flow::sniff_image(PNG), Some("png"));
-    assert_eq!(craft_flow::image_px(PNG), Some((1, 1)));
-    assert_eq!(craft_flow::sniff_image(b"not a picture"), None);
+    assert_eq!(bharat_flow::sniff_image(PNG), Some("png"));
+    assert_eq!(bharat_flow::image_px(PNG), Some((1, 1)));
+    assert_eq!(bharat_flow::sniff_image(b"not a picture"), None);
     assert!(make_img(b"not a picture".to_vec(), None, None, "").is_none());
     // A picture wider than the column is shrunk to it, keeping its proportions.
     let wide = make_img(PNG.to_vec(), Some(1000.0), Some(500.0), "").unwrap();
@@ -102,22 +102,22 @@ fn pictures_are_sniffed_and_sized_from_their_headers() {
 
 #[test]
 fn drop_cap_not_repeated_after_page_break() {
-    let mut doc = craft_wordmodel::Document::default();
-    let mut para = craft_wordmodel::Paragraph::with_text("Before\x0cAfter", craft_wordmodel::props::CharProps::default());
+    let mut doc = bharat_wordmodel::Document::default();
+    let mut para = bharat_wordmodel::Paragraph::with_text("Before\x0cAfter", bharat_wordmodel::props::CharProps::default());
     para.props.drop_cap = Some(3);
     para.props.drop_cap_distance = Some(72.0);
-    para.props.shading = Some(craft_wordmodel::Rgb(255, 0, 0));
-    doc.body = vec![std::sync::Arc::new(craft_wordmodel::Block::Para(para))];
+    para.props.shading = Some(bharat_wordmodel::Rgb(255, 0, 0));
+    doc.body = vec![std::sync::Arc::new(bharat_wordmodel::Block::Para(para))];
 
-    let flow = craft_flow::from_doc_with(&doc, craft_flow::FlowOpts { paras: true, ..Default::default() });
+    let flow = bharat_flow::from_doc_with(&doc, bharat_flow::FlowOpts { paras: true, ..Default::default() });
     let paras: Vec<_> = flow.blocks.iter().filter_map(|b| if let FBlock::Para(p) = b { Some(p) } else { None }).collect();
     assert_eq!(paras.len(), 2);
     // First paragraph keeps drop cap and shading
     assert_eq!(paras[0].extra.as_ref().and_then(|x| x.drop_cap), Some(3));
     assert_eq!(paras[0].extra.as_ref().and_then(|x| x.drop_cap_distance), Some(72.0));
-    assert_eq!(paras[0].extra.as_ref().and_then(|x| x.shading), Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(paras[0].extra.as_ref().and_then(|x| x.shading), Some(bharat_wordmodel::Rgb(255, 0, 0)));
     // Continuation clears drop cap, but preserves shading
     assert_eq!(paras[1].extra.as_ref().and_then(|x| x.drop_cap), None);
     assert_eq!(paras[1].extra.as_ref().and_then(|x| x.drop_cap_distance), None);
-    assert_eq!(paras[1].extra.as_ref().and_then(|x| x.shading), Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(paras[1].extra.as_ref().and_then(|x| x.shading), Some(bharat_wordmodel::Rgb(255, 0, 0)));
 }

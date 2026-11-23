@@ -9,7 +9,7 @@ const K: [u32; 64] = [
     0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 ];
 
-/// The lowercase hex SHA-256 of `data`, as craft-fonts' manifest writes it.
+/// The lowercase hex SHA-256 of `data`, as bharat-fonts' manifest writes it.
 pub(crate) fn hex(data: &[u8]) -> String {
     let mut h: [u32; 8] = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
     let mut message = data.to_vec();

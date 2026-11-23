@@ -1,4 +1,4 @@
-use craft_audio::{
+use bharat_audio::{
     AudioBuffer, BitDepth, BwfInfo, ChannelLayout, EncodeFormat, EncodeOptions, SampleFormat, decode, detect_container, encode, probe,
     wav_float_header,
 };
@@ -78,9 +78,9 @@ fn flac_roundtrip_is_lossless_vs_wav() {
             let src = sine(44_100, channels, 4096 * 2 + 17);
             let wav = encode(&src, &EncodeOptions::new(EncodeFormat::Wav).with_bit_depth(depth).with_dither(false)).unwrap();
             let flac = encode(&src, &EncodeOptions::new(EncodeFormat::Flac).with_bit_depth(depth).with_dither(false)).unwrap();
-            assert_eq!(detect_container(&flac, None), Some(craft_audio::Container::Flac));
+            assert_eq!(detect_container(&flac, None), Some(bharat_audio::Container::Flac));
             let info = probe(&flac, None).unwrap();
-            assert_eq!((info.container, info.codec), (craft_audio::Container::Flac, craft_audio::CodecId::Flac));
+            assert_eq!((info.container, info.codec), (bharat_audio::Container::Flac, bharat_audio::CodecId::Flac));
             assert_eq!((info.sample_rate, info.channels as usize, info.frames), (44_100, channels, src.frames() as u64));
             assert_eq!(info.sample_format, expected_sf(depth));
             let (_, from_wav) = decode(&wav, None).unwrap();
@@ -270,7 +270,7 @@ fn serde_types_roundtrip() {
     assert_eq!(serde_json::from_str::<EncodeOptions>(&s).unwrap(), opts);
     let info = probe(&encode(&sine(48_000, 1, 4), &opts).unwrap(), None).unwrap();
     let s = serde_json::to_string(&info).unwrap();
-    assert_eq!(serde_json::from_str::<craft_audio::AudioInfo>(&s).unwrap(), info);
+    assert_eq!(serde_json::from_str::<bharat_audio::AudioInfo>(&s).unwrap(), info);
     // A layout reads back only when its mask describes its channel count.
     let l = ChannelLayout::SURROUND_5_1;
     assert_eq!(serde_json::from_str::<ChannelLayout>(&serde_json::to_string(&l).unwrap()).unwrap(), l);
@@ -284,27 +284,27 @@ fn multichannel_wav_speaker_masks() {
     let buf = |n: usize| AudioBuffer { sample_rate: 48_000, channels: (0..n).map(|c| vec![0.01 * c as f32; 64]).collect() };
     let opts = EncodeOptions::new(EncodeFormat::Wav).with_bit_depth(BitDepth::Int24).with_dither(false);
     for (n, mask) in [(6usize, 0x3Fu32), (8, 0x63F), (12, 0x2_D63F)] {
-        let bytes = craft_audio::encode(&buf(n), &opts).unwrap();
+        let bytes = bharat_audio::encode(&buf(n), &opts).unwrap();
         assert_eq!(probe(&bytes, None).unwrap().layout, ChannelLayout::from_mask(mask), "{n} channels");
-        assert_eq!(craft_audio::decode(&bytes, Some("wav")).unwrap().1.channels.len(), n);
+        assert_eq!(bharat_audio::decode(&bytes, Some("wav")).unwrap().1.channels.len(), n);
     }
     // Explicit masks: 7.0 (sides + rears, no LFE) and Ambisonics (no positions).
-    let bytes = craft_audio::encode(&buf(7), &opts.clone().with_layout(ChannelLayout::from_mask(0x637))).unwrap();
+    let bytes = bharat_audio::encode(&buf(7), &opts.clone().with_layout(ChannelLayout::from_mask(0x637))).unwrap();
     assert_eq!(probe(&bytes, None).unwrap().layout, ChannelLayout::from_mask(0x637));
-    let bytes = craft_audio::encode(&buf(4), &opts.clone().with_layout(ChannelLayout::unordered(4))).unwrap();
+    let bytes = bharat_audio::encode(&buf(4), &opts.clone().with_layout(ChannelLayout::unordered(4))).unwrap();
     assert_eq!(probe(&bytes, None).unwrap().layout, ChannelLayout::unordered(4));
     // Plain 16-bit stereo stays a plain PCM header (format tag 1), read back as stereo.
     let o16 = opts.clone().with_bit_depth(BitDepth::Int16);
-    let bytes = craft_audio::encode(&buf(2), &o16.clone().with_layout(ChannelLayout::STEREO)).unwrap();
+    let bytes = bharat_audio::encode(&buf(2), &o16.clone().with_layout(ChannelLayout::STEREO)).unwrap();
     let fmt = bytes.windows(4).position(|w| w == b"fmt ").unwrap();
     assert_eq!(bytes.get(fmt + 8..fmt + 10), Some(&[1u8, 0][..]));
     assert_eq!(probe(&bytes, None).unwrap().layout, ChannelLayout::STEREO);
     // FLAC (decoded by symphonia) reports its channel assignment: six channels are 5.1.
     let flac = o16.clone().with_format(EncodeFormat::Flac);
-    let info = probe(&craft_audio::encode(&buf(6), &flac).unwrap(), None).unwrap();
-    assert_eq!((info.container, info.codec, info.layout), (craft_audio::Container::Flac, craft_audio::CodecId::Flac, ChannelLayout::SURROUND_5_1));
+    let info = probe(&bharat_audio::encode(&buf(6), &flac).unwrap(), None).unwrap();
+    assert_eq!((info.container, info.codec, info.layout), (bharat_audio::Container::Flac, bharat_audio::CodecId::Flac, ChannelLayout::SURROUND_5_1));
     // A layout for another channel count is refused.
-    assert!(craft_audio::encode(&buf(2), &o16.clone().with_layout(ChannelLayout::SURROUND_5_1)).is_err());
+    assert!(bharat_audio::encode(&buf(2), &o16.clone().with_layout(ChannelLayout::SURROUND_5_1)).is_err());
 }
 
 #[test]
@@ -352,7 +352,7 @@ fn flac_claiming_frames_but_holding_none_still_errors() {
 fn float_wav_header_rejects_a_frame_count_whose_total_size_overflows() {
     // 4 bytes per frame: the data length fits in u64, but adding the header to it does not.
     let frames = u64::MAX / 4;
-    assert!(matches!(wav_float_header(48_000, 1, frames), Err(craft_audio::AudioError::TooLarge(_))));
+    assert!(matches!(wav_float_header(48_000, 1, frames), Err(bharat_audio::AudioError::TooLarge(_))));
 }
 
 #[test]
@@ -383,7 +383,7 @@ fn bwf_text_is_cut_at_a_character_boundary() {
 #[test]
 fn a_byte_rate_past_32_bits_is_an_error() {
     // 4 GHz × 8 bytes per frame does not fit the 32-bit nAvgBytesPerSec field
-    assert!(matches!(wav_float_header(4_000_000_000, 2, 0), Err(craft_audio::AudioError::Encode(_))));
+    assert!(matches!(wav_float_header(4_000_000_000, 2, 0), Err(bharat_audio::AudioError::Encode(_))));
     assert!(wav_float_header(4_000_000_000 / 8, 2, 0).is_ok());
 }
 
@@ -391,7 +391,7 @@ fn a_byte_rate_past_32_bits_is_an_error() {
 /// for a file with no audio frames.
 #[test]
 fn flac_layouts_read_back_from_the_mask_comment() {
-    use craft_audio::{DecodeOptions, Decoder};
+    use bharat_audio::{DecodeOptions, Decoder};
     let cases = [
         (6, Some(ChannelLayout::SURROUND_5_1_SIDE), ChannelLayout::SURROUND_5_1_SIDE),
         (6, None, ChannelLayout::SURROUND_5_1),
@@ -404,7 +404,7 @@ fn flac_layouts_read_back_from_the_mask_comment() {
         for frames in [4096, 0] {
             let mut opts = EncodeOptions::new(EncodeFormat::Flac);
             opts.layout = layout;
-            let file = craft_audio::encode(&AudioBuffer::new(48_000, channels, frames), &opts).unwrap();
+            let file = bharat_audio::encode(&AudioBuffer::new(48_000, channels, frames), &opts).unwrap();
             assert_eq!(probe(&file, None).unwrap().layout, expected, "probe {channels} {layout:?} {frames}");
             assert_eq!(decode(&file, None).unwrap().0.layout, expected, "decode {channels} {layout:?} {frames}");
             let dec = Decoder::from_bytes(&file, None, &DecodeOptions::default()).unwrap();

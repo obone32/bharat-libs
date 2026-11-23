@@ -17,7 +17,7 @@ impl RuntimeDir {
     }
 
     fn from_resolved_path(path: PathBuf) -> Result<Self, LinkError> {
-        // LOCALAPPDATA exists on a fresh Windows install, but its Craft namespace does not.
+        // LOCALAPPDATA exists on a fresh Windows install, but its Bharat namespace does not.
         // Create and validate that single namespace first; do not recursively follow arbitrary
         // missing ancestors. RuntimeDir::at keeps its existing caller-provided-path contract.
         #[cfg(windows)]
@@ -108,7 +108,7 @@ fn probe_euid(dir: &Path) -> Result<u32, LinkError> {
     use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
     let mut rand = [0u8; 8];
     getrandom::getrandom(&mut rand).map_err(LinkError::io)?;
-    let path = dir.join(format!(".craft-uid-{}-{}", std::process::id(), crate::auth::encode_hex(&rand)));
+    let path = dir.join(format!(".bharat-uid-{}-{}", std::process::id(), crate::auth::encode_hex(&rand)));
     let file = std::fs::OpenOptions::new().write(true).create_new(true).mode(0o600).open(&path)?;
     let uid = file.metadata().map(|meta| meta.uid());
     drop(file);
@@ -137,7 +137,7 @@ fn runtime_path() -> Result<PathBuf, LinkError> {
         if !base.is_absolute() {
             return Err(LinkError::Refused { path: base.display().to_string(), reason: "LOCALAPPDATA is not absolute".into() });
         }
-        Ok(base.join("Craft").join("run"))
+        Ok(base.join("Bharat").join("run"))
     }
     #[cfg(not(any(target_os = "linux", target_os = "macos", windows)))]
     {
@@ -153,10 +153,10 @@ fn linux_runtime_path(xdg: Option<&std::ffi::OsStr>, euid: u32) -> PathBuf {
             return path.join("craft");
         }
     }
-    PathBuf::from(format!("/tmp/craft-{euid}"))
+    PathBuf::from(format!("/tmp/bharat-{euid}"))
 }
 
-/// `$TMPDIR/craft` when `TMPDIR` is absolute. Otherwise `/tmp/craft-<euid>`, because a shared
+/// `$TMPDIR/craft` when `TMPDIR` is absolute. Otherwise `/tmp/bharat-<euid>`, because a shared
 /// `/tmp/craft` belongs to the first user who creates it and refuses everyone else.
 #[cfg(any(target_os = "macos", all(test, unix)))]
 fn macos_runtime_path(tmpdir: Option<&std::ffi::OsStr>, euid: u32) -> PathBuf {
@@ -166,7 +166,7 @@ fn macos_runtime_path(tmpdir: Option<&std::ffi::OsStr>, euid: u32) -> PathBuf {
             return path.join("craft");
         }
     }
-    PathBuf::from(format!("/tmp/craft-{euid}"))
+    PathBuf::from(format!("/tmp/bharat-{euid}"))
 }
 
 pub(crate) fn ensure_private_dir(path: &Path) -> Result<(), LinkError> {
@@ -283,9 +283,9 @@ mod tests {
     #[test]
     fn xdg_fallback_is_pure() {
         assert_eq!(linux_runtime_path(Some(std::ffi::OsStr::new("/run/user/1000")), 5), PathBuf::from("/run/user/1000/craft"));
-        assert_eq!(linux_runtime_path(Some(std::ffi::OsStr::new("")), 5), PathBuf::from("/tmp/craft-5"));
-        assert_eq!(linux_runtime_path(Some(std::ffi::OsStr::new("relative")), 5), PathBuf::from("/tmp/craft-5"));
-        assert_eq!(linux_runtime_path(None, 9), PathBuf::from("/tmp/craft-9"));
+        assert_eq!(linux_runtime_path(Some(std::ffi::OsStr::new("")), 5), PathBuf::from("/tmp/bharat-5"));
+        assert_eq!(linux_runtime_path(Some(std::ffi::OsStr::new("relative")), 5), PathBuf::from("/tmp/bharat-5"));
+        assert_eq!(linux_runtime_path(None, 9), PathBuf::from("/tmp/bharat-9"));
     }
 
     #[cfg(unix)]
@@ -293,9 +293,9 @@ mod tests {
     fn macos_fallback_is_per_user() {
         use std::ffi::OsStr;
         assert_eq!(macos_runtime_path(Some(OsStr::new("/var/folders/ab/T")), 5), PathBuf::from("/var/folders/ab/T/craft"));
-        assert_eq!(macos_runtime_path(Some(OsStr::new("")), 5), PathBuf::from("/tmp/craft-5"));
-        assert_eq!(macos_runtime_path(Some(OsStr::new("relative")), 5), PathBuf::from("/tmp/craft-5"));
-        assert_eq!(macos_runtime_path(None, 9), PathBuf::from("/tmp/craft-9"));
+        assert_eq!(macos_runtime_path(Some(OsStr::new("")), 5), PathBuf::from("/tmp/bharat-5"));
+        assert_eq!(macos_runtime_path(Some(OsStr::new("relative")), 5), PathBuf::from("/tmp/bharat-5"));
+        assert_eq!(macos_runtime_path(None, 9), PathBuf::from("/tmp/bharat-9"));
         assert_ne!(macos_runtime_path(None, 5), macos_runtime_path(None, 6));
     }
 
@@ -306,11 +306,11 @@ mod tests {
         let dir = scratch("probe");
         std::fs::create_dir_all(&dir).unwrap();
         // The names the probe used to pick: a planted file and a planted symlink must not be opened.
-        let planted = dir.join(format!(".craft-uid-{}", std::process::id()));
+        let planted = dir.join(format!(".bharat-uid-{}", std::process::id()));
         std::fs::write(&planted, b"keep me").unwrap();
         let victim = dir.join("victim");
         std::fs::write(&victim, b"keep me too").unwrap();
-        let link = dir.join(format!(".craft-uid-{}-0000000000000000", std::process::id()));
+        let link = dir.join(format!(".bharat-uid-{}-0000000000000000", std::process::id()));
         symlink(&victim, &link).unwrap();
         let uid = probe_euid(&dir).unwrap();
         assert_eq!(uid, current_euid().unwrap());
@@ -331,10 +331,10 @@ mod tests {
     fn a_fresh_windows_runtime_creates_its_namespace() {
         let base = scratch("fresh-runtime");
         std::fs::create_dir_all(&base).unwrap();
-        let path = base.join("Craft").join("run");
+        let path = base.join("Bharat").join("run");
         let dir = RuntimeDir::from_resolved_path(path.clone()).unwrap();
         assert_eq!(dir.path(), path);
-        assert!(base.join("Craft").is_dir());
+        assert!(base.join("Bharat").is_dir());
         std::fs::remove_dir_all(base).unwrap();
     }
 
@@ -342,9 +342,9 @@ mod tests {
     fn resolve_points_at_a_private_craft_dir() {
         let dir = RuntimeDir::resolve().unwrap();
         #[cfg(windows)]
-        assert!(dir.path().ends_with(Path::new("Craft").join("run")), "{}", dir.path().display());
+        assert!(dir.path().ends_with(Path::new("Bharat").join("run")), "{}", dir.path().display());
         #[cfg(unix)]
-        assert!(dir.path().ends_with("craft") || dir.path().ends_with(format!("craft-{}", current_euid().unwrap())), "{}", dir.path().display());
+        assert!(dir.path().ends_with("craft") || dir.path().ends_with(format!("bharat-{}", current_euid().unwrap())), "{}", dir.path().display());
         #[cfg(unix)]
         {
             use std::os::unix::fs::MetadataExt;

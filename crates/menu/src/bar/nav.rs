@@ -20,7 +20,7 @@
 use egui::containers::menu::{MenuState, SubMenu, find_menu_root};
 use egui::{Id, Key, Modifiers, Pos2, Rect, Sense, Ui, pos2, vec2};
 
-use craft_keymap::CommandRef;
+use bharat_keymap::CommandRef;
 
 /// Height of a scroll-arrow strip.
 pub(crate) const ARROW: f32 = 16.0;
@@ -100,7 +100,7 @@ pub(crate) struct Nav {
 }
 
 fn open_id() -> Id {
-    Id::unique("craft-menu-bar-open")
+    Id::unique("bharat-menu-bar-open")
 }
 
 /// Whether one of the bar's menus is open. An app leaves the keys to it meanwhile: its
@@ -461,7 +461,7 @@ pub(crate) fn level(ui: &mut Ui, depth: usize, nav: &mut Nav, label: &dyn Fn(&'s
     // The menu frame's margin and stroke around the rows.
     let frame = ui.spacing().menu_margin.sum().y + 2.0;
     let anchor = nav.anchors.get(level).copied().flatten();
-    let key = ui.scope_id().with(("craft-menu-level", depth));
+    let key = ui.scope_id().with(("bharat-menu-level", depth));
     // Rows' height from the last frame: does this level overflow?
     let content: Option<f32> = ctx.data(|d| d.get_temp(key));
     let room = level_room(screen, nav.bar_bottom, depth, anchor, content, frame);
@@ -473,7 +473,7 @@ pub(crate) fn level(ui: &mut Ui, depth: usize, nav: &mut Nav, label: &dyn Fn(&'s
     // height and scroll even on a tall window. Ask for the room the window has; auto-shrink then
     // fits the area to its rows, so a menu scrolls only when they don't fit.
     let mut area = egui::ScrollArea::vertical()
-        .id_salt(("craft-menu-level", depth))
+        .id_salt(("bharat-menu-level", depth))
         .max_height(height)
         .min_scrolled_height(height)
         .scroll_source(egui::containers::scroll_area::ScrollSource::ALL);

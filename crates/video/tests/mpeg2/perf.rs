@@ -1,4 +1,4 @@
-//! Decode speed (ignored; run with `cargo test --release -p craft-video --features mpeg2,threads --test mpeg2 perf:: --
+//! Decode speed (ignored; run with `cargo test --release -p bharat-video --features mpeg2,threads --test mpeg2 perf:: --
 //! --ignored --nocapture`). Uses the 1080i fixture of `tests/mpeg2/oracle.rs` (ffmpeg-encoded, 25 Mb/s).
 
 use crate::common;
@@ -8,15 +8,15 @@ use common::*;
 #[test]
 #[ignore]
 fn perf_1080i_decode_fps() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("mpeg2 perf") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("mpeg2 perf") else { return };
     let f = make(&ff, &HD1080I).expect("fixture");
     let es = std::fs::read(&f).unwrap();
-    let aus = craft_video::mpeg2::access_units(&es);
+    let aus = bharat_video::mpeg2::access_units(&es);
     for threads in [false, true] {
         let mut best = f64::MAX;
         let mut frames = 0;
         for _ in 0..5 {
-            let mut d = craft_video::mpeg2::Decoder::new();
+            let mut d = bharat_video::mpeg2::Decoder::new();
             d.set_threads(threads);
             let t0 = std::time::Instant::now();
             let mut n = 0;

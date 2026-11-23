@@ -1,4 +1,4 @@
-use craft_pcraft_format::tip::{MAX_SAMPLES, MAX_SIDE, decode, decode_with_max_side, encode};
+use bharat_pcraft_format::tip::{MAX_SAMPLES, MAX_SIDE, decode, decode_with_max_side, encode};
 use std::io::Write;
 
 fn fixture(bits: u8, width: u32, height: u32, samples: &[u8]) -> Vec<u8> {

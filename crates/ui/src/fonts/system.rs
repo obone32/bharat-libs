@@ -55,7 +55,7 @@ impl<T: FontIndex> Shared<T> {
             }
             idle
         };
-        if idle && std::thread::Builder::new().name("craft-ui system fonts".into()).spawn(|| self.finish()).is_err() {
+        if idle && std::thread::Builder::new().name("bharat-ui system fonts".into()).spawn(|| self.finish()).is_err() {
             self.finish();
         }
     }
@@ -85,7 +85,7 @@ impl<T: FontIndex> Shared<T> {
                 .map(String::as_str)
                 .or_else(|| payload.downcast_ref::<&str>().copied())
                 .unwrap_or("non-string panic payload");
-            eprintln!("craft-ui: building the system font index failed, so it adds no fonts: {message}");
+            eprintln!("bharat-ui: building the system font index failed, so it adds no fonts: {message}");
         });
         let next = built.map_or(State::Failed, |index| State::Ready(Arc::new(Mutex::new(index))));
         let previous = std::mem::replace(&mut *self.lock(), next);

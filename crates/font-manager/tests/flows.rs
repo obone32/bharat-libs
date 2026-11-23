@@ -1,18 +1,18 @@
 //! The main flows against a small index, a font folder made per test and a fake font store.
-//! `CRAFT_FONT_MANAGER_SNAPSHOTS=<dir>` also saves screenshots; run that with
+//! `BHARAT_FONT_MANAGER_SNAPSHOTS=<dir>` also saves screenshots; run that with
 //! `-- --test-threads=1`, as rendering on several threads at once can crash older Vulkan loaders.
-//! With `CRAFT_FONT_MANAGER_GOOGLE_FONTS=<google/fonts checkout>` the fake store also "downloads"
+//! With `BHARAT_FONT_MANAGER_GOOGLE_FONTS=<google/fonts checkout>` the fake store also "downloads"
 //! the index's files from it.
 
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use craft_font_manager::craft_font_catalog::Os;
-use craft_font_manager::index::Index;
-use craft_font_manager::store::{Call, FakeStore, Installer};
-use craft_font_manager::{Catalog, FontEnv, Source};
-use craft_font_manager::{FontsPanel, Look, Options, Palette, Runner, Settings, Tab, install_interface_fonts};
+use bharat_font_manager::bharat_font_catalog::Os;
+use bharat_font_manager::index::Index;
+use bharat_font_manager::store::{Call, FakeStore, Installer};
+use bharat_font_manager::{Catalog, FontEnv, Source};
+use bharat_font_manager::{FontsPanel, Look, Options, Palette, Runner, Settings, Tab, install_interface_fonts};
 use egui::accesskit::Role;
 use egui_kittest::Harness;
 use egui_kittest::kittest::{By, NodeT, Queryable};
@@ -74,7 +74,7 @@ fn setup_with(
         (UBUNTU.to_owned(), epaint_default_fonts::UBUNTU_LIGHT.to_vec()),
     ]);
     let store = FakeStore::new(store_dir, files);
-    let store = Arc::new(match std::env::var_os("CRAFT_FONT_MANAGER_GOOGLE_FONTS") {
+    let store = Arc::new(match std::env::var_os("BHARAT_FONT_MANAGER_GOOGLE_FONTS") {
         Some(checkout) => store.serving(checkout),
         None => store,
     });
@@ -393,17 +393,17 @@ fn save(h: &mut Harness<'_, FontsPanel>, dir: &std::ffi::OsStr, name: &str) {
 /// The interface fonts with the system's for the scripts egui's own faces lack.
 fn system_fonts(language: &'static str) -> impl Fn(&egui::Context) + 'static {
     move |ctx| {
-        use craft_ui::fonts::{I18nScripts, UiFonts};
+        use bharat_ui::fonts::{I18nScripts, UiFonts};
         let provider = Arc::new(egui_system_font_provider::SystemFontProvider::new().with_locale(Some(language)));
         UiFonts::new(&I18nScripts).languages(&["en", language]).ui_language(language).system_provider(provider).install(ctx);
-        craft_ui::direction::apply(ctx, craft_ui::direction::resolve(language, craft_ui::direction::Setting::Language));
+        bharat_ui::direction::apply(ctx, bharat_ui::direction::resolve(language, bharat_ui::direction::Setting::Language));
     }
 }
 
-/// `CRAFT_FONT_MANAGER_SNAPSHOTS=<dir>`: the panel's main states.
+/// `BHARAT_FONT_MANAGER_SNAPSHOTS=<dir>`: the panel's main states.
 #[test]
 fn screenshots() {
-    let Some(dir) = std::env::var_os("CRAFT_FONT_MANAGER_SNAPSHOTS") else { return };
+    let Some(dir) = std::env::var_os("BHARAT_FONT_MANAGER_SNAPSHOTS") else { return };
     let shot = |name: &str, language: &'static str, f: &dyn Fn(&mut Harness<'_, FontsPanel>, &FakeStore)| {
         let (mut h, store) = setup_with(&format!("shot-{name}"), Settings::default(), Runner::Thread, system_fonts(language));
         h.state_mut().set_look(launcher_look());

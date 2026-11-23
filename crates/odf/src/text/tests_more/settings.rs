@@ -4,7 +4,7 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
+use bharat_wordmodel::Document;
 
 fn settings_of(bytes: &[u8]) -> String {
     let mut z = crate::Package::open(bytes, &crate::Limits::DEFAULT).unwrap();

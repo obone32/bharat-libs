@@ -2,8 +2,8 @@
 //! checked on every platform: which certificate keys it lists, and how a CNG signature becomes
 //! the one a CMS signature carries.
 
-use craft_pkcs7::keys::{DigestAlg, Scheme, StoreKey};
-use craft_pkcs7::{Error, PublicKey};
+use bharat_pkcs7::keys::{DigestAlg, Scheme, StoreKey};
+use bharat_pkcs7::{Error, PublicKey};
 use p256::ecdsa::signature::hazmat::PrehashSigner;
 
 /// One key of every kind, with what the store must hold to sign for it.

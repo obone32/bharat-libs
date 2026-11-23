@@ -36,8 +36,8 @@ fn bof(dt: u16) -> Vec<u8> {
 
 /// A compound file whose root holds one stream. A stream the file cannot hold, such as one with
 /// an empty name or a name longer than 31 characters, returns the writer's error.
-pub fn compound(stream: &str, data: &[u8]) -> Result<Vec<u8>, craft_cfb::Error> {
-    craft_cfb::write_streams(craft_cfb::Version::V3, &[(stream, data)])
+pub fn compound(stream: &str, data: &[u8]) -> Result<Vec<u8>, bharat_cfb::Error> {
+    bharat_cfb::write_streams(bharat_cfb::Version::V3, &[(stream, data)])
 }
 
 /// The XF index and value of a cell written as a Number record, or `None` for a cell written as
@@ -55,12 +55,12 @@ fn number(cell: &str) -> Option<(u16, f64)> {
 /// format 14), an empty cell is left out, and everything else, including a `date:` cell whose
 /// serial is not a number, goes through the shared-string table (as UTF-16 when it isn't
 /// Latin-1). A nonempty cell past row 65,535 or column 255 (zero-based) returns
-/// [`craft_cfb::Error::Invalid`] naming its sheet, row and column, and a compound file that cannot
+/// [`bharat_cfb::Error::Invalid`] naming its sheet, row and column, and a compound file that cannot
 /// be written returns the writer's error.
 ///
 /// shortcut: characters outside the Basic Multilingual Plane are dropped, sheet names are cut at
 /// 255 characters and strings at 4,000 (so each fits one record); lift when a fixture needs more.
-pub fn workbook(sheets: &[(&str, Vec<Vec<String>>)]) -> Result<Vec<u8>, craft_cfb::Error> {
+pub fn workbook(sheets: &[(&str, Vec<Vec<String>>)]) -> Result<Vec<u8>, bharat_cfb::Error> {
     let mut sst: Vec<&str> = Vec::new();
     let mut references = 0usize;
     for (name, rows) in sheets {
@@ -70,7 +70,7 @@ pub fn workbook(sheets: &[(&str, Vec<Vec<String>>)]) -> Result<Vec<u8>, craft_cf
                     continue;
                 }
                 if r > MAX_ROW || c > MAX_COLUMN {
-                    return Err(craft_cfb::Error::Invalid(format!(
+                    return Err(bharat_cfb::Error::Invalid(format!(
                         "fixture cell on sheet {name:?} at zero-based row {r}, column {c} is outside the BIFF8 grid"
                     )));
                 }
@@ -84,7 +84,7 @@ pub fn workbook(sheets: &[(&str, Vec<Vec<String>>)]) -> Result<Vec<u8>, craft_cf
         }
     }
     let total = i32::try_from(references)
-        .map_err(|_| craft_cfb::Error::Invalid(format!("{references} shared-string references do not fit the SST record")))?;
+        .map_err(|_| bharat_cfb::Error::Invalid(format!("{references} shared-string references do not fit the SST record")))?;
     let mut out = Vec::new();
     rec(&mut out, BOF, &bof(0x0005));
     for ifmt in [0u16, 14] {
@@ -138,7 +138,7 @@ pub fn workbook(sheets: &[(&str, Vec<Vec<String>>)]) -> Result<Vec<u8>, craft_cf
                     let i = sst
                         .iter()
                         .position(|s| s == v)
-                        .ok_or_else(|| craft_cfb::Error::Invalid(format!("the cell text {v:?} is not in the shared-string table")))?;
+                        .ok_or_else(|| bharat_cfb::Error::Invalid(format!("the cell text {v:?} is not in the shared-string table")))?;
                     d.extend_from_slice(&0u16.to_le_bytes());
                     d.extend_from_slice(&(i as u32).to_le_bytes());
                     rec(&mut out, 0x00FD, &d);

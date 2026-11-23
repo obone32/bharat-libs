@@ -1,5 +1,5 @@
 [package]
-name = "craft-proto"
+name = "bharat-proto"
 description = "Mail protocols without sockets: IMAP4rev1 and SMTP clients over any Read + Write stream"
 version.workspace = true
 edition.workspace = true

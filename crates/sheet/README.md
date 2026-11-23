@@ -1,7 +1,7 @@
-# craft-sheet
+# bharat-sheet
 
-What every spreadsheet file format says in the same words, kept once so that `craft-xls`,
-`craft-xlsx` and `craft-ods` hand an application the same types:
+What every spreadsheet file format says in the same words, kept once so that `bharat-xls`,
+`bharat-xlsx` and `bharat-ods` hand an application the same types:
 
 - `CellRef` and `Range`: zero-based cell positions, and their A1 text both ways (`B3`,
   `$B$3`, `A1:C2`), inside Excel's 1,048,576 by 16,384 grid.

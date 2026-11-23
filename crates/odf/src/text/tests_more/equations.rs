@@ -2,14 +2,14 @@
 //! formula sub-document holding MathML), read back by the reader that opens LibreOffice's.
 
 use crate::text::{export, import};
-use craft_wordmodel::para::{InlineObject, OBJ};
-use craft_wordmodel::{Document, Paragraph, para_block};
+use bharat_wordmodel::para::{InlineObject, OBJ};
+use bharat_wordmodel::{Document, Paragraph, para_block};
 
-fn eq_para(before: &str, linear: &str, display: bool) -> std::sync::Arc<craft_wordmodel::Block> {
+fn eq_para(before: &str, linear: &str, display: bool) -> std::sync::Arc<bharat_wordmodel::Block> {
     let mut p = Paragraph::new();
     p.text = format!("{before}{OBJ}");
     p.objects.push(InlineObject::Equation { linear: linear.into(), display, math: Default::default() });
-    p.runs = vec![craft_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
     para_block(p)
 }
 

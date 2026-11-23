@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use craft_xml::{El, Local, Options};
+use bharat_xml::{El, Local, Options};
 
 use crate::name::{dir_of, normalize, percent_decode, resolve};
 

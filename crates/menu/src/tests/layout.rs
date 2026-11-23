@@ -1,6 +1,6 @@
 //! The Windows, Linux and web layouts, platform filtering, and the keymap adapter.
 
-use craft_keymap::{Bindable, Binding, Keymap, Platform, Policy, Scope, Scopes};
+use bharat_keymap::{Bindable, Binding, Keymap, Platform, Policy, Scope, Scopes};
 
 use super::*;
 

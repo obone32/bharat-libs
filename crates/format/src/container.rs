@@ -87,7 +87,7 @@ pub struct PartDigest {
 
 /// A container being written.
 pub struct Writer {
-    zip: craft_zip::Writer,
+    zip: bharat_zip::Writer,
     names: BTreeSet<String>,
     expanded: usize,
     resolved: usize,
@@ -101,7 +101,7 @@ type TrackedParts = (fn(&str) -> bool, Vec<PartDigest>);
 
 impl Writer {
     pub fn new(limits: Limits) -> Writer {
-        Writer { zip: craft_zip::Writer::new(), names: BTreeSet::new(), expanded: 0, resolved: 0, limits, tracked: None }
+        Writer { zip: bharat_zip::Writer::new(), names: BTreeSet::new(), expanded: 0, resolved: 0, limits, tracked: None }
     }
 
     /// Record the parts written from now on whose name `include` accepts, with their SHA-256, for
@@ -144,11 +144,11 @@ impl Writer {
         if cancelled.is_some_and(|c| c()) {
             return Err(FormatError::Cancelled);
         }
-        // the configured level, clamped to the Deflate levels craft-zip writes (1 to 9)
+        // the configured level, clamped to the Deflate levels bharat-zip writes (1 to 9)
         let compression = if compressed {
-            craft_zip::Compression::Level((self.limits.level)(name, bytes.len()).clamp(1, 9) as u8)
+            bharat_zip::Compression::Level((self.limits.level)(name, bytes.len()).clamp(1, 9) as u8)
         } else {
-            craft_zip::Compression::Stored
+            bharat_zip::Compression::Stored
         };
         match cancelled {
             Some(cancelled) if bytes.len() > PIECE => {
@@ -223,7 +223,7 @@ impl Writer {
 /// (the entry count, unique and plain names, every part's
 /// declared size), not the parts.
 pub struct Reader {
-    archive: craft_zip::Archive<'static>,
+    archive: bharat_zip::Archive<'static>,
     blobs: BTreeMap<String, Vec<u8>>,
     /// The bytes of payloads resolved so far, repeats counted: bounded by the expanded budget.
     pub hydrated: usize,
@@ -249,9 +249,9 @@ impl Reader {
             return Err(invalid("the file changed while it was read"));
         }
 
-        let mut archive = craft_zip::Archive::open_owned(
+        let mut archive = bharat_zip::Archive::open_owned(
             bytes,
-            craft_zip::Limits { max_entries: limits.max_entries as u64, max_total_bytes: (limits.max_expanded)() as u64 },
+            bharat_zip::Limits { max_entries: limits.max_entries as u64, max_total_bytes: (limits.max_expanded)() as u64 },
         )
         .map_err(invalid)?;
         // the directory lists distinct names, so a repeated name is caught here
@@ -318,11 +318,11 @@ impl Reader {
         // the expanded budget is read each time: a raised (or lowered) one applies at once, the
         // bytes already read still counting against it
         let budget = self.archive.budget_mut();
-        *budget = craft_zip::Budget::new(budget.what(), (self.limits.max_expanded)() as u64);
+        *budget = bharat_zip::Budget::new(budget.what(), (self.limits.max_expanded)() as u64);
         if budget.charge(self.read_total).is_err() {
             return Err(invalid("package too large"));
         }
-        // Read within budget. craft-zip's read() handles decompression bombs via the limit.
+        // Read within budget. bharat-zip's read() handles decompression bombs via the limit.
         let bytes = self.archive.read(name, limit as u64).map_err(invalid)?.ok_or_else(|| invalid("part not found"))?;
         if bytes.len() as u64 != expected {
             return Err(invalid("part length mismatch"));

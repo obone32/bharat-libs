@@ -1,7 +1,7 @@
 //! TTML text that looks like markup stays text, beside the cue's own style tags.
 
-use craft_captions::ttml::{Flavor, write};
-use craft_captions::{Format, TICKS_PER_SECOND, Tick, parse};
+use bharat_captions::ttml::{Flavor, write};
+use bharat_captions::{Format, TICKS_PER_SECOND, Tick, parse};
 
 fn caption(xml: &str, format: Format) -> String {
     let doc = parse(xml.as_bytes(), format).unwrap();
@@ -45,7 +45,7 @@ fn literal_brackets_keep_their_words_and_their_style() {
     ] {
         let text = caption(xml, Format::Ttml);
         assert_eq!(text, stored);
-        assert_eq!(craft_captions::plain_text(&text), plain);
+        assert_eq!(bharat_captions::plain_text(&text), plain);
         // written back out, the XML text is the source text escaped once (not the stored entity
         // escaped again), and imported again, in both flavours, the cue reads the same
         let doc = parse(xml.as_bytes(), Format::Ttml).unwrap();

@@ -3,7 +3,7 @@
 
 mod common;
 
-use craft_media::ogg::{self, Codec, OggFile, OpusTiming};
+use bharat_media::ogg::{self, Codec, OggFile, OpusTiming};
 use serde_json::Value;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -68,7 +68,7 @@ fn spec(name: &str) -> Option<Vec<String>> {
 }
 
 /// Generate (once) and return the path of a fixture; `None` after printing `SKIPPED` if generation
-/// failed (a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// failed (a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 fn fixture(ffmpeg: &Path, name: &str) -> Option<PathBuf> {
     let dir = fixture_dir();
     let out = dir.join(name);
@@ -314,7 +314,7 @@ fn chained_opus() {
     assert_stream_matches("chained_opus.opus", &file, &bytes, &both, &json, 0);
 }
 
-/// Pre-generate every fixture (`cargo test -p craft-media --all-features -- --ignored generate_fixtures`).
+/// Pre-generate every fixture (`cargo test -p bharat-media --all-features -- --ignored generate_fixtures`).
 #[test]
 #[ignore]
 fn generate_fixtures() {

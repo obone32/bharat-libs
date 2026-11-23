@@ -3,9 +3,9 @@
 
 use std::sync::Arc;
 
-use craft_opc::Rels;
-use craft_sheet::{CellError, CellRef, MAX_COLS, MAX_ROWS, Range, Value};
-use craft_xml::{El, Writer};
+use bharat_opc::Rels;
+use bharat_sheet::{CellError, CellRef, MAX_COLS, MAX_ROWS, Range, Value};
+use bharat_xml::{El, Writer};
 
 use crate::features::Features;
 use crate::strings::{StringItem, decode_xstring, encode_xstring};
@@ -295,7 +295,7 @@ fn write_row(w: &mut Writer, row: &Row) {
     if row.collapsed {
         t = t.attr("collapsed", 1);
     }
-    for (k, v) in row.attrs.iter().filter(|(k, _)| craft_xml::is_name(k)) {
+    for (k, v) in row.attrs.iter().filter(|(k, _)| bharat_xml::is_name(k)) {
         t = t.attr(k, v);
     }
     if row.cells.is_empty() {
@@ -341,7 +341,7 @@ fn write_cell(w: &mut Writer, c: &Cell) {
             FormulaKind::DataTable => Some("dataTable"),
         };
         let mut t = w.tag("f").attr_opt("t", kind).attr_opt("ref", f.range.map(|r| r.a1())).attr_opt("si", f.shared_index);
-        for (k, v) in f.attrs.iter().filter(|(k, _)| !matches!(k.as_str(), "t" | "ref" | "si") && craft_xml::is_name(k)) {
+        for (k, v) in f.attrs.iter().filter(|(k, _)| !matches!(k.as_str(), "t" | "ref" | "si") && bharat_xml::is_name(k)) {
             t = t.attr(k, v);
         }
         if f.text.is_empty() { t.empty() } else { t.text(&f.text) }
@@ -545,7 +545,7 @@ mod tests {
         let xml = r#"<row r="3" ht="20" customHeight="1" s="4" customFormat="1" outlineLevel="9"><c r="B3" s="2" t="s"><v>7</v></c><c><f t="shared" ref="C3:C9" si="0">A1*2</f><v>4</v></c>
             <c r="XFE3"><v>1</v></c><c r="E3" t="e"><v>#SPILL!</v></c><c r="F3" t="e"><v>#WHAT</v></c><c t="b"><v>1</v></c><c t="inlineStr"><is><t>in_x000A_line</t></is></c><c t="n"><v>abc</v></c><c t="str"><v>a_x0009_</v></c><c t="d"><v>2024-01-01</v></c><c vm="1" cm="2" ph="1"/></row>"#;
         let mut r = RowReader::default();
-        let row = r.row(&craft_xml::Options::local().parse(xml.as_bytes()).unwrap_or_default()).unwrap_or_default();
+        let row = r.row(&bharat_xml::Options::local().parse(xml.as_bytes()).unwrap_or_default()).unwrap_or_default();
         assert_eq!((row.index, row.height, row.custom_height, row.style, row.outline_level), (2, Some(20.0), true, Some(4), 7));
         assert_eq!(r.dropped, 1);
         let at: Vec<String> = row.cells.iter().map(|c| c.at.a1()).collect();
@@ -565,17 +565,17 @@ mod tests {
         assert_eq!((last.value_metadata, last.cell_metadata, last.phonetic, last.style), (Some(1), Some(2), true, 0));
         assert_eq!(row.cells[0].value.resolve(&[], false), Value::Empty);
         // Without `r`, the next row follows the last one.
-        let next = r.row(&craft_xml::El::new("row")).map(|r| r.index);
+        let next = r.row(&bharat_xml::El::new("row")).map(|r| r.index);
         assert_eq!(next, Some(3));
-        assert!(r.row(&craft_xml::El::new("row").with_attr("r", "1048577")).is_none());
-        assert!(r.row(&craft_xml::El::new("row").with_attr("r", "0")).is_none());
+        assert!(r.row(&bharat_xml::El::new("row").with_attr("r", "1048577")).is_none());
+        assert!(r.row(&bharat_xml::El::new("row").with_attr("r", "0")).is_none());
         assert_eq!((r.rows, r.dropped), (4, 3));
     }
 
     #[test]
     fn rows_write_back() {
         let xml = r#"<row r="3" spans="1:9" ht="20" customHeight="1" s="4" customFormat="1" outlineLevel="2" collapsed="1" hidden="1" thickBot="1"><c r="B3" s="2" t="s"><v>7</v></c><c r="C3"><f t="shared" ref="C3:C9" si="0" aca="1">A1*2</f><v>4</v></c><c r="D3"><f t="shared" si="0"/><v>0.1</v></c><c r="E3" t="e"><v>#SPILL!</v></c><c r="G3" t="b"><v>0</v></c><c r="H3" t="inlineStr"><is><t xml:space="preserve">in_x000A_line </t></is></c><c r="J3" t="str"><f>"a"&amp;"b"</f><v>a_x0009_b</v></c><c r="K3" t="d"><v>2024-01-01</v></c><c r="L3" s="1" cm="1" vm="2" ph="1"/></row>"#;
-        let read = |xml: &str| RowReader::default().row(&craft_xml::Options::local().parse(xml.as_bytes()).unwrap_or_default()).unwrap_or_default();
+        let read = |xml: &str| RowReader::default().row(&bharat_xml::Options::local().parse(xml.as_bytes()).unwrap_or_default()).unwrap_or_default();
         let row = read(xml);
         let mut w = Writer::new();
         write_row(&mut w, &row);

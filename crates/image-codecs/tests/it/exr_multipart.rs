@@ -3,8 +3,8 @@
 //! listing, the colour-ranked auto-pick and part-by-index decoding, and malformed
 //! inputs must error, never panic.
 
-use craft_image_codecs::f16;
-use craft_image_codecs::{
+use bharat_image_codecs::f16;
+use bharat_image_codecs::{
     ChannelLayout, DecodeOptions, DecodeWarning, Format, Limits, SampleType, decode, decode_as_with, decode_exr_part, exr_info, probe_size,
 };
 use exr::prelude::{

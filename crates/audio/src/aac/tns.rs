@@ -3,7 +3,7 @@
 
 use std::f64::consts::FRAC_PI_2;
 
-use craft_media::bitstream::{BitReader, BitWriter};
+use bharat_media::bitstream::{BitReader, BitWriter};
 
 use crate::aac::ics::IcsInfo;
 use crate::aac::tables::{tns_max_bands, tns_max_order};

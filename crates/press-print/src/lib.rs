@@ -1,15 +1,15 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Press-accurate printing for the Craft apps: a PDF page separated into plates by
-//! craft-prepress, composited into the printer's RGB profile and printed through
-//! `craft_print::rgb` with its color already managed, so overprint, spot inks and the press's
+//! Press-accurate printing for the Bharat apps: a PDF page separated into plates by
+//! bharat-prepress, composited into the printer's RGB profile and printed through
+//! `bharat_print::rgb` with its color already managed, so overprint, spot inks and the press's
 //! colors reach the driver as the plates have them. See the README.
 
 use std::ops::ControlFlow;
 
-use craft_cms::{Builtin, ColorSpace, Intent, Profile};
-use craft_prepress::{Band, Conversion, Options, Output, OutputError, plates_in_bands, press_profile};
-use craft_print::rgb;
+use bharat_cms::{Builtin, ColorSpace, Intent, Profile};
+use bharat_prepress::{Band, Conversion, Options, Output, OutputError, plates_in_bands, press_profile};
+use bharat_print::rgb;
 
 /// How a page becomes the printer's pixels.
 #[derive(Clone, Debug)]
@@ -38,7 +38,7 @@ impl Settings {
 pub struct PressPage {
     pub width: u32,
     pub height: u32,
-    /// The resolution separated at, after craft-prepress's limits.
+    /// The resolution separated at, after bharat-prepress's limits.
     pub dpi: f32,
     /// How process color that wasn't CMYK became CMYK.
     pub conversion: Conversion,
@@ -47,7 +47,7 @@ pub struct PressPage {
 }
 
 impl PressPage {
-    /// The page as `craft_print::rgb` takes it.
+    /// The page as `bharat_print::rgb` takes it.
     pub fn image(&self) -> rgb::RgbImage<'_> {
         rgb::RgbImage { width: self.width, height: self.height, data: &self.rgb }
     }
@@ -58,7 +58,7 @@ impl PressPage {
 #[non_exhaustive]
 pub enum Error {
     #[error(transparent)]
-    Separate(#[from] craft_prepress::Error),
+    Separate(#[from] bharat_prepress::Error),
     #[error(transparent)]
     Output(#[from] OutputError),
     #[error("the printer profile is not RGB")]
@@ -76,7 +76,7 @@ pub enum Error {
 /// The page separates in bands (`plates_in_bands`), each band composites into the printer's
 /// profile from the printing condition its plates were made for (`press_profile`), and the
 /// bands join into one image. Plates made by the device formulas have no profile; they convert
-/// from craft-cms's Coated FOGRA39, as craft-prepress's preview does by default. The image is
+/// from bharat-cms's Coated FOGRA39, as bharat-prepress's preview does by default. The image is
 /// at most `MAX_BANDED_PIXELS` pixels, 3 bytes each. Never panics.
 pub fn render(pdf: &[u8], page: usize, dpi: f32, settings: &Settings) -> Result<PressPage, Error> {
     match render_within(pdf, page, dpi, settings, usize::MAX)? {
@@ -151,7 +151,7 @@ fn fitted(pdf: &[u8], page: usize, dpi: f32, settings: &Settings, max: usize) ->
 /// times.
 ///
 /// The page separates at the printer's resolution, the larger of its two, whatever the size of
-/// `rect`, within craft-prepress's limits and the 512 MiB image `rgb::print` takes: past that,
+/// `rect`, within bharat-prepress's limits and the 512 MiB image `rgb::print` takes: past that,
 /// at the resolution that fits. The job is application-managed whatever `job.color_policy` says:
 /// the pixels are in the printer's profile already, and a second conversion by the driver
 /// would undo the press colors. One call is one job; `rgb::print` takes one image per job.
@@ -210,7 +210,7 @@ trailer << /Root 1 0 R >>
 %%EOF",
             content.len()
         );
-        let settings = Settings::new(craft_cms::builtin::srgb().clone());
+        let settings = Settings::new(bharat_cms::builtin::srgb().clone());
         // 40 pt at 1800 dpi is 1000 × 1000 pixels, 3 MB.
         let max = 1_000_000;
         assert!(matches!(render_within(pdf.as_bytes(), 0, 1800.0, &settings, max).unwrap(), Within::Over(3_000_000)));

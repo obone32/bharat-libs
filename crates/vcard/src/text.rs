@@ -1,5 +1,5 @@
 //! Text values: cleaning, escaping, splitting, and the 2.1 encodings (quoted-printable, base64;
-//! a `CHARSET` is read by `craft_mime::charset`, as mail is).
+//! a `CHARSET` is read by `bharat_mime::charset`, as mail is).
 
 /// A one-line field: line breaks and other control characters become spaces, and the ends are
 /// trimmed.
@@ -128,7 +128,7 @@ pub(crate) fn quoted_printable(s: &str) -> Vec<u8> {
 /// The bytes of a base64 value, white space and padding or not; empty for junk.
 pub(crate) fn base64_bytes(s: &str) -> Vec<u8> {
     let compact: String = s.chars().filter(|c| !c.is_whitespace()).collect();
-    craft_mime::base64::STANDARD_NO_PAD.decode(compact.trim_end_matches('=')).unwrap_or_default()
+    bharat_mime::base64::STANDARD_NO_PAD.decode(compact.trim_end_matches('=')).unwrap_or_default()
 }
 
 /// Whether `c` is one of Unicode's format characters (general category Cf, Unicode 17.0):

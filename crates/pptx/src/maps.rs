@@ -3,7 +3,7 @@
 
 use crate::anim::{ANIMATIONS, AnimClass};
 
-use craft_xml::{El, Writer, value};
+use bharat_xml::{El, Writer, value};
 
 /// (our kind, namespace prefix, element) for transitions that map one-to-one.
 const SIMPLE: &[(&str, &str, &str)] =

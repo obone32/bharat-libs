@@ -1,5 +1,5 @@
 //! Installed Language packs: a language's spelling dictionary, hyphenation patterns and licence
-//! texts, downloaded and unpacked by the app's font store (craft-libs `craft-font-store`, item
+//! texts, downloaded and unpacked by the app's font store (bharat-libs `bharat-font-store`, item
 //! kind `language-pack`) and read here at runtime.
 //!
 //! The packs folder ([`set_packs_dir`]) holds one folder per pack, named by its locale (lowercase
@@ -189,21 +189,21 @@ pub(crate) static LICENCE_BYTES_READ: std::sync::atomic::AtomicU64 = std::sync::
 /// Most bytes of pack licence text [`licence_texts`] reads in all.
 const MAX_LICENCE_TOTAL: u64 = 16 << 20;
 
-/// The notice of the embedded Moby word list (craft-i18n `language-data/en-us/en-us.dic`).
+/// The notice of the embedded Moby word list (bharat-i18n `language-data/en-us/en-us.dic`).
 const MOBY_NOTICE: &str = "The Moby Hyphenator II word list by Grady Ward (Project Gutenberg eBook #3204) is in the public domain. \
-The English hyphenation patterns were trained from it for the Craft apps and are distributed with them under MIT OR Apache-2.0.";
+The English hyphenation patterns were trained from it for the Bharat apps and are distributed with them under MIT OR Apache-2.0.";
 
 /// The notice of the word list built into the crate (`data/en-words.dic`).
-const BUILT_IN_MOBY_NOTICE: &str = "The English word list built into craft-proof is the Moby Hyphenator II word list by Grady Ward \
+const BUILT_IN_MOBY_NOTICE: &str = "The English word list built into bharat-proof is the Moby Hyphenator II word list by Grady Ward \
 (Project Gutenberg eBook #3204), which is in the public domain.";
 
-/// The notice of our English supplement (`data/en-extra.txt`, and craft-i18n's copy).
+/// The notice of our English supplement (`data/en-extra.txt`, and bharat-i18n's copy).
 const EXTRA_EN_NOTICE: &str = "The English word supplement (en-extra.txt), common words the Moby list lacks, is written by \
 WordCraft contributors and licensed MIT OR Apache-2.0.";
 
 /// The locales whose upstream Language data is embedded in this build: `en-us`, and by default `de`,
 /// `pl`, `pt`, `it` (until Language packs ship, CP4.4; our own `ru-extra.txt` is embedded but not
-/// listed); a build with `CRAFT_PROOF_EMBED`
+/// listed); a build with `BHARAT_PROOF_EMBED`
 /// embeds English and the ones it names (`en`: English only).
 pub fn embedded_locales() -> &'static [&'static str] {
     crate::data::EMBEDDED_LOCALES
@@ -635,7 +635,7 @@ fn load_patterns(path: &Path) -> Result<Patterns, String> {
 mod tests {
     use super::*;
 
-    /// Review follow-up (craft-libs#485): the remembered pack patterns have a memory budget, not
+    /// Review follow-up (bharat-libs#485): the remembered pack patterns have a memory budget, not
     /// only a count, so 256 languages of large patterns can't each stay in memory.
     #[test]
     fn remembered_patterns_keep_to_a_memory_budget() {
@@ -724,22 +724,22 @@ mod tests {
     /// build, the English-only one too.
     #[test]
     fn our_supplements_are_always_embedded() {
-        if cfg!(craft_proof_data) {
+        if cfg!(bharat_proof_data) {
             assert!(!crate::data::EXTRA_RU.is_empty(), "ru-extra.txt is embedded");
         }
     }
 
     /// #5208 review: until Language packs are published, the default build embeds the
-    /// carry-over locales (de, pl, pt, it patterns, ru-extra); `CRAFT_PROOF_EMBED=en` is the
+    /// carry-over locales (de, pl, pt, it patterns, ru-extra); `BHARAT_PROOF_EMBED=en` is the
     /// English-only build (CP4.4's default once language-packs-1 is pinned).
     #[test]
     fn the_default_build_embeds_the_carry_over_locales() {
-        let embed = option_env!("CRAFT_PROOF_EMBED").unwrap_or_default().trim().to_ascii_lowercase();
+        let embed = option_env!("BHARAT_PROOF_EMBED").unwrap_or_default().trim().to_ascii_lowercase();
         let named: Vec<&str> = if embed.is_empty() { vec!["de", "pl", "pt", "it", "ru"] } else { embed.split(',').map(str::trim).collect() };
         for l in embedded_locales() {
             assert!(l.starts_with("en-") || *l == "ru" || named.iter().any(|e| e == l || *e == "all"), "{l} is embedded");
         }
-        if cfg!(craft_proof_data) && embed.is_empty() {
+        if cfg!(bharat_proof_data) && embed.is_empty() {
             for l in ["de", "pl", "pt", "it"] {
                 assert!(embedded_locales().contains(&l), "{l} is embedded by default");
             }

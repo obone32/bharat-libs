@@ -1,5 +1,5 @@
-//! Rich Text Format, read into and written from the word model (`craft_wordmodel::Document`)
-//! through the text formats' flow (`craft_flow`). Feature `doc`.
+//! Rich Text Format, read into and written from the word model (`bharat_wordmodel::Document`)
+//! through the text formats' flow (`bharat_flow`). Feature `doc`.
 //!
 //! WordCraft's RTF reader and writer.
 //!
@@ -38,10 +38,10 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use craft_wordmodel::props::VAlign;
-use craft_wordmodel::{Align, Block, Blocks, Document, InlineObject, Paragraph, Rgb};
+use bharat_wordmodel::props::VAlign;
+use bharat_wordmodel::{Align, Block, Blocks, Document, InlineObject, Paragraph, Rgb};
 
-use craft_flow::{self as model, Cell, FBlock, FTable, Flow, Fmt, Inline, Kind, ListInfo, Meta, Para, RevMark, make_img};
+use bharat_flow::{self as model, Cell, FBlock, FTable, Flow, Fmt, Inline, Kind, ListInfo, Meta, Para, RevMark, make_img};
 
 use crate::date;
 mod export;

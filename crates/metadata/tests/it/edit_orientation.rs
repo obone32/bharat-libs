@@ -1,6 +1,6 @@
 //! Orientation in Exif and XMP blocks: read, and rewritten to 1 in place.
 
-use craft_metadata::edit::*;
+use bharat_metadata::edit::*;
 use proptest::prelude::{any, prop_assert, prop_assert_eq, proptest};
 
 /// A minimal EXIF (TIFF-structured) block: a filler tag, then Orientation.

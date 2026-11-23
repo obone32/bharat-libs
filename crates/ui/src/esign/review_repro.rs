@@ -1,5 +1,5 @@
 //! Regression tests for the three gate items skylartaylor raised on PR #661,
-//! reproduced against 0a937ef (storytold/craft-libs#661):
+//! reproduced against 0a937ef (obone32/bharat-libs#661):
 //! <https://gist.github.com/skylartaylor/c1108ecf20d63c5e3183947408ddab7a>.
 //!
 //! `Hold` is a backend that keeps every request and its `Replier` so a test
@@ -7,8 +7,8 @@
 
 use std::sync::{Arc, Mutex};
 
-use craft_cloud::Identity;
-use craft_esign::{Envelope, EnvelopeStatus, EsignCapability};
+use bharat_cloud::Identity;
+use bharat_esign::{Envelope, EnvelopeStatus, EsignCapability};
 
 use super::*;
 

@@ -13,7 +13,7 @@ permissions:
 
 # A fraction of the fuzz-style cases, as in the Workspace gate; nightly.yml runs them in full.
 env:
-  CRAFT_HOSTILE_DIVISOR: "8"
+  BHARAT_HOSTILE_DIVISOR: "8"
   PROPTEST_CASES: "64"
 
 concurrency:
@@ -46,22 +46,22 @@ jobs:
         run: |
           for f in "" decode decode-native symphonia encode lossless-encode pcm-encode flac-encode peaks aac-decode aac-encode "aac-encode,rayon" opus-decode opus-encode ac3-decode mpa-decode serde; do
             echo "::group::features: ${f:-none}"
-            cargo clippy -p craft-audio --all-targets --locked --no-default-features ${f:+--features "$f"} -- -D warnings
+            cargo clippy -p bharat-audio --all-targets --locked --no-default-features ${f:+--features "$f"} -- -D warnings
             echo "::endgroup::"
           done
       # missing_docs is a warning in the crate; -D warnings makes it (and broken links) fail here.
-      - run: cargo doc -p craft-audio --all-features --no-deps --locked
+      - run: cargo doc -p bharat-audio --all-features --no-deps --locked
         env:
           RUSTDOCFLAGS: "-D warnings"
       # Partial feature sets must document too (their links to other features are allowed to dangle).
-      - run: cargo doc -p craft-audio --no-default-features --features decode-native --no-deps --locked
+      - run: cargo doc -p bharat-audio --no-default-features --features decode-native --no-deps --locked
         env:
           RUSTDOCFLAGS: "-D warnings"
-      - run: cargo doc -p craft-audio --no-default-features --features lossless-encode --no-deps --locked
+      - run: cargo doc -p bharat-audio --no-default-features --features lossless-encode --no-deps --locked
         env:
           RUSTDOCFLAGS: "-D warnings"
-      - run: cargo check -p craft-audio --all-features --locked --target wasm32-unknown-unknown
-      - run: cargo check -p craft-audio --no-default-features --features lossless-encode --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-audio --all-features --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-audio --no-default-features --features lossless-encode --locked --target wasm32-unknown-unknown
   features:
     timeout-minutes: 10
     name: Audio tests without symphonia and lossless-encode only
@@ -77,10 +77,10 @@ jobs:
       - uses: step-security/dtolnay-rust-toolchain@v1.0.0
         with:
           toolchain: stable
-      - run: cargo test -p craft-audio --no-default-features --features lossless-encode --locked
-      - run: cargo test -p craft-audio --no-default-features --features pcm-encode --locked --lib
-      - run: cargo test -p craft-audio --no-default-features --features flac-encode --locked --lib
-      - run: cargo test -p craft-audio --no-default-features --features decode-native --locked
+      - run: cargo test -p bharat-audio --no-default-features --features lossless-encode --locked
+      - run: cargo test -p bharat-audio --no-default-features --features pcm-encode --locked --lib
+      - run: cargo test -p bharat-audio --no-default-features --features flac-encode --locked --lib
+      - run: cargo test -p bharat-audio --no-default-features --features decode-native --locked
   test:
     timeout-minutes: 20
     name: Audio tests with ffmpeg oracles and the Opus conformance vectors
@@ -123,13 +123,13 @@ jobs:
             scripts/fetch-opus-vectors.sh "$RUNNER_TEMP/media-fixtures/opus/vectors" > "$RUNNER_TEMP/vectors.log" 2>&1 || exit 2
           } &
           fetch=$!
-          cargo test -p craft-audio --all-features --locked --no-run
+          cargo test -p bharat-audio --all-features --locked --no-run
           wait "$fetch" || case $? in
             1) cat "$RUNNER_TEMP/apt.log"; exit 1 ;;
             *) cat "$RUNNER_TEMP/vectors.log"; exit 1 ;;
           esac
           ffmpeg -hide_banner -version | sed -n 1p
-      - run: cargo test -p craft-audio --all-features --locked
+      - run: cargo test -p bharat-audio --all-features --locked
         env:
-          CRAFT_MEDIA_REQUIRE_ORACLES: "1"
-          CRAFT_MEDIA_FIXTURES_DIR: ${{ runner.temp }}/media-fixtures
+          BHARAT_MEDIA_REQUIRE_ORACLES: "1"
+          BHARAT_MEDIA_FIXTURES_DIR: ${{ runner.temp }}/media-fixtures

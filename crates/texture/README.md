@@ -1,4 +1,4 @@
-# craft-texture
+# bharat-texture
 
 Linear float image planes and texture sampling. An `Image` is a gray (1 channel) or RGBA plane of
 `f32`, row-major with the top row first, shared copy-on-write through an `Arc`. Values are stored
@@ -104,7 +104,7 @@ Without `parallel` the crate builds for `wasm32-unknown-unknown`.
 
 For MaterialCraft:
 
-| `materialcraft-image` | craft-texture |
+| `materialcraft-image` | bharat-texture |
 | --- | --- |
 | `image.w`, `image.h`, `image.kind`, `image.data` | `width()`, `height()`, `kind()`, `data()` and `shared_data()` |
 | `Image { w, h, kind, data }` built by hand | `Image::from_data(w, h, kind, data, &Limits::default())` |

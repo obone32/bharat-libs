@@ -13,7 +13,7 @@
 //! the controller's side: the real-time command bytes and the reply parsers.
 //!
 //! Flattening curves, choosing what to cut and at what power, and machine or material presets
-//! are the caller's business. Depends on no other Craft crate.
+//! are the caller's business. Depends on no other Bharat crate.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 

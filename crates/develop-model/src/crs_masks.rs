@@ -13,7 +13,7 @@
 
 use std::collections::BTreeMap;
 
-use craft_metadata::XmpValue;
+use bharat_metadata::XmpValue;
 use serde_json::{Value, json};
 
 /// Top-level properties keyed `prefix:name`, with structure.

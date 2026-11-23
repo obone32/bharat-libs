@@ -108,8 +108,8 @@ struct Usage {
     image_bytes: AtomicUsize,
 }
 
-fn shared_limits(bytes: usize, limits: Limits) -> craft_svg::tree::Limits {
-    craft_svg::tree::Limits {
+fn shared_limits(bytes: usize, limits: Limits) -> bharat_svg::tree::Limits {
+    bharat_svg::tree::Limits {
         bytes,
         depth: limits.depth,
         tree_depth: limits.depth,
@@ -121,8 +121,8 @@ fn shared_limits(bytes: usize, limits: Limits) -> craft_svg::tree::Limits {
     }
 }
 
-fn bounded_text(bytes: &[u8], byte_limit: usize, limits: Limits) -> Result<std::borrow::Cow<'_, str>, craft_svg::tree::Error> {
-    craft_svg::tree::text(bytes, &shared_limits(byte_limit, limits))
+fn bounded_text(bytes: &[u8], byte_limit: usize, limits: Limits) -> Result<std::borrow::Cow<'_, str>, bharat_svg::tree::Error> {
+    bharat_svg::tree::text(bytes, &shared_limits(byte_limit, limits))
 }
 
 fn reserve(counter: &AtomicUsize, amount: usize, limit: usize) -> bool {
@@ -151,7 +151,7 @@ fn image_resolver(limits: Limits) -> usvg::ImageHrefResolver<'static> {
     let default_data = usvg::ImageHrefResolver::default_data_resolver();
     usvg::ImageHrefResolver {
         resolve_data: Box::new(move |mime, bytes, options| {
-            if mime == "image/svg+xml" || (mime == "text/plain" && (craft_svg::sniff::is_svg(&bytes) || craft_svg::sniff::is_svgz(&bytes))) {
+            if mime == "image/svg+xml" || (mime == "text/plain" && (bharat_svg::sniff::is_svg(&bytes) || bharat_svg::sniff::is_svgz(&bytes))) {
                 return embedded_svg(&usage, limits, &bytes, options);
             }
             if !reserve(&usage.image_bytes, bytes.len(), limits.embedded_image_bytes) {

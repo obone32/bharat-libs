@@ -1,6 +1,6 @@
 //! The Layer II encoder (feature `mpa-encode`): every frame has the header and size its settings
 //! give and decodes with our decoder; ffmpeg as an external decoder (skipped without ffmpeg, a
-//! failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`) decodes the stream without a complaint, to the
+//! failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`) decodes the stream without a complaint, to the
 //! right length, and its output, aligned by [`DELAY`], matches the input within a signal-to-noise
 //! ratio per bit rate. The bounds sit well under what the encoder reaches today; white noise loses
 //! the subbands above the table's last one (a sixth of it at 48 kHz), so its bound is low.
@@ -8,8 +8,8 @@
 use std::path::Path;
 use std::process::{Command, Stdio};
 
-use craft_audio::mpa::encoder::{Config, DELAY, EncodeError, Encoder, bitrates, nearest_bitrate};
-use craft_audio::mpa::{Decoder, Mode, Version, parse_header};
+use bharat_audio::mpa::encoder::{Config, DELAY, EncodeError, Encoder, bitrates, nearest_bitrate};
+use bharat_audio::mpa::{Decoder, Mode, Version, parse_header};
 
 fn chords(rate: u32, n: usize, detune: f32) -> Vec<f32> {
     let f = [220.0, 277.18, 329.63, 440.0, 1318.5, 3520.0];
@@ -209,8 +209,8 @@ fn ffmpeg_decode(ff: &Path, path: &Path, channels: usize) -> (Vec<Vec<f32>>, Str
 
 #[test]
 fn ffmpeg_decodes_our_streams_to_the_input() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("mp2enc");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("mp2enc");
     for c in CASES {
         let n = c.rate as usize * 2 + 777;
         let input = inputs(c, n);

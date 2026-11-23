@@ -1,4 +1,4 @@
-use craft_plist::{self as plist, Value};
+use bharat_plist::{self as plist, Value};
 
 /// Quoted delimiters belong to attributes, including on empty elements.
 #[test]

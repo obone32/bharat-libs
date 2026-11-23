@@ -1,5 +1,5 @@
 //! The coded formats of [`FileEncoder`](crate::FileEncoder): AAC-LC and ALAC in M4A (through
-//! craft-media's MP4 muxer) and MP3, AC-3 and E-AC-3 as raw streams. [`Writer`] maps the caller's
+//! bharat-media's MP4 muxer) and MP3, AC-3 and E-AC-3 as raw streams. [`Writer`] maps the caller's
 //! WAV-order channels onto the encoder's order, drives the packet encoder, and for M4A records the
 //! encoder's priming and the exact length in the edit list.
 
@@ -240,8 +240,8 @@ impl Codec {
     /// The MP4 sample entry of the stream as encoded so far (`bytes` in packets of `frames`
     /// frames in all): the configuration a decoder needs, with the average bit rate.
     #[cfg(any(feature = "aac-encode", feature = "alac-encode"))]
-    fn sample_entry(&self, sample_rate: u32, channels: u32, bytes: u64, frames: u64) -> Option<craft_media::isobmff::SampleEntry> {
-        use craft_media::isobmff::{CodecConfig, FourCc, SampleEntry};
+    fn sample_entry(&self, sample_rate: u32, channels: u32, bytes: u64, frames: u64) -> Option<bharat_media::isobmff::SampleEntry> {
+        use bharat_media::isobmff::{CodecConfig, FourCc, SampleEntry};
         match self {
             #[cfg(feature = "aac-encode")]
             Codec::Aac(enc) => {
@@ -278,9 +278,9 @@ fn alac_packet(enc: &mut crate::alac::Encoder, pending: &mut [Vec<i32>], out: &m
 
 /// A muxer's error as this crate's: a failed write stays an I/O error.
 #[cfg(any(feature = "aac-encode", feature = "alac-encode"))]
-fn mux_error(e: craft_media::isobmff::Error) -> AudioError {
+fn mux_error(e: bharat_media::isobmff::Error) -> AudioError {
     match e {
-        craft_media::isobmff::Error::Io(e) => AudioError::Io(e),
+        bharat_media::isobmff::Error::Io(e) => AudioError::Io(e),
         e => AudioError::Encode(format!("M4A: {e}")),
     }
 }
@@ -293,10 +293,10 @@ fn mux_error(e: craft_media::isobmff::Error) -> AudioError {
 /// keeps that edit exact.
 #[cfg(any(feature = "aac-encode", feature = "alac-encode"))]
 struct M4a<W: Write + Seek> {
-    mux: craft_media::isobmff::Mp4Writer<W>,
+    mux: bharat_media::isobmff::Mp4Writer<W>,
     /// The track, added with the first packet: a file with no audio gets a track without an edit.
     track: Option<usize>,
-    entry: craft_media::isobmff::SampleEntry,
+    entry: bharat_media::isobmff::SampleEntry,
     sample_rate: u32,
     channels: u32,
     priming: u32,
@@ -309,7 +309,7 @@ struct M4a<W: Write + Seek> {
 #[cfg(any(feature = "aac-encode", feature = "alac-encode"))]
 impl<W: Write + Seek> M4a<W> {
     fn new(out: W, codec: &Codec, sample_rate: u32, channels: u32) -> Result<Self> {
-        use craft_media::isobmff::{Brand, Mp4Writer, WriterOptions};
+        use bharat_media::isobmff::{Brand, Mp4Writer, WriterOptions};
         let entry = codec.sample_entry(sample_rate, channels, 0, 0).ok_or_else(|| AudioError::Unsupported("M4A holds AAC and ALAC".into()))?;
         let mut options = WriterOptions::new(Brand::Mp4);
         options.movie_timescale = sample_rate;
@@ -321,7 +321,7 @@ impl<W: Write + Seek> M4a<W> {
         if let Some(track) = self.track {
             return Ok(track);
         }
-        let mut config = craft_media::isobmff::TrackConfig::new(self.entry.clone(), self.sample_rate);
+        let mut config = bharat_media::isobmff::TrackConfig::new(self.entry.clone(), self.sample_rate);
         if has_audio && self.priming > 0 {
             config.media_start = Some(i64::from(self.priming));
             // AAC's overlap: a packet decodes right only after the one before it. Apple's
@@ -335,7 +335,7 @@ impl<W: Write + Seek> M4a<W> {
 
     fn sample(&mut self, packet: &Packet, duration: u32) -> Result<()> {
         let track = self.track(true)?;
-        let sample = craft_media::isobmff::WriteSample { data: &packet.data, duration, composition_offset: 0, is_sync: true };
+        let sample = bharat_media::isobmff::WriteSample { data: &packet.data, duration, composition_offset: 0, is_sync: true };
         self.mux.write_sample(track, sample).map_err(mux_error)?;
         self.frames += u64::from(duration);
         self.bytes += packet.data.len() as u64;

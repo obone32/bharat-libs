@@ -1,6 +1,6 @@
 #![no_main]
 
-use craft_jpeg::{Bands, Limits};
+use bharat_jpeg::{Bands, Limits};
 use libfuzzer_sys::fuzz_target;
 
 /// Limits that keep each input's work small: 1 MP and 64 MiB.

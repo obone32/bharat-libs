@@ -98,7 +98,7 @@ fn page(w: f64, h: f64) -> Rect {
 }
 
 fn write_emf(ops: &[Op], w: f64, h: f64) -> Vec<u8> {
-    emf(ops, page(w, h), "Craft", "Picture").unwrap()
+    emf(ops, page(w, h), "Bharat", "Picture").unwrap()
 }
 
 /// Red, green, blue; then half-transparent black, transparent, white.
@@ -126,7 +126,7 @@ fn emf_header_frame_is_the_region_in_hundredths_of_a_millimetre() {
     let off = u32_at(b, 64) as usize;
     assert_eq!(off, 108);
     let desc: Vec<u16> = (0..n).map(|i| u16_at(b, off + 2 * i)).collect();
-    assert_eq!(String::from_utf16_lossy(&desc), "Craft\0Picture\0\0");
+    assert_eq!(String::from_utf16_lossy(&desc), "Bharat\0Picture\0\0");
     // An empty picture has empty bounds.
     let empty = write_emf(&[], 72.0, 72.0);
     assert_eq!([i32_at(&empty, 8), i32_at(&empty, 16)], [0, -1]);

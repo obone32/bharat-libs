@@ -150,7 +150,7 @@ fn make(ff: &Path, s: &Spec) -> Option<PathBuf> {
 fn frames(data: &[u8]) -> Vec<&[u8]> {
     let mut out = Vec::new();
     let mut p = 0;
-    while let Ok(h) = craft_audio::ac3::parse_header(&data[p..]) {
+    while let Ok(h) = bharat_audio::ac3::parse_header(&data[p..]) {
         if p + h.frame_bytes > data.len() {
             break;
         }
@@ -166,7 +166,7 @@ fn ffmpeg_encoded_streams_decode() {
     for s in SPECS {
         let f = make(&ff, s).unwrap_or_else(|| panic!("could not generate {}", s.name));
         let data = std::fs::read(&f).unwrap();
-        let mut dec = craft_audio::ac3::Decoder::new();
+        let mut dec = bharat_audio::ac3::Decoder::new();
         let mut ours: Vec<Vec<f32>> = vec![Vec::new(); s.channels as usize];
         for fr in frames(&data) {
             let d = dec.decode(fr).unwrap();
@@ -194,7 +194,7 @@ fn ffmpeg_encoded_streams_decode() {
         }
         // the same stream decoded with another dither sequence: how far dither alone moves the
         // output (the difference to ffmpeg must be of that order)
-        let mut dec2 = craft_audio::ac3::Decoder::new();
+        let mut dec2 = bharat_audio::ac3::Decoder::new();
         dec2.set_dither_seed(0xDEAD_BEEF);
         let other: Vec<f32> = frames(&data).iter().flat_map(|fr| dec2.decode(fr).unwrap().channels.swap_remove(0)).collect();
         let (mut sig, mut err) = (0f64, 0f64);
@@ -229,7 +229,7 @@ fn damaged_eac3_frames_never_panic() {
     for s in SPECS.iter().filter(|s| s.codec == "eac3") {
         let f = make(&ff, s).unwrap_or_else(|| panic!("could not generate {}", s.name));
         let data = std::fs::read(&f).unwrap();
-        let mut dec = craft_audio::ac3::Decoder::new();
+        let mut dec = bharat_audio::ac3::Decoder::new();
         for fr in frames(&data).into_iter().take(8) {
             for k in 0..300 {
                 let mut m = fr.to_vec();
@@ -269,7 +269,7 @@ fn generate_fixtures() {
 /// not as the first packet's length times its index.
 #[test]
 fn a_seek_in_matroska_e_ac3_whose_packets_change_length_lands_exactly() {
-    use craft_media::matroska::{MkvWriter, MuxOptions, TrackKind, TrackSpec};
+    use bharat_media::matroska::{MkvWriter, MuxOptions, TrackKind, TrackSpec};
     let ff = require_ffmpeg!();
     let s = SPECS.iter().find(|s| s.name == "eac3_stereo_192k").unwrap();
     let raw = std::fs::read(make(&ff, s).unwrap_or_else(|| panic!("could not generate {}", s.name))).unwrap();
@@ -288,10 +288,10 @@ fn a_seek_in_matroska_e_ac3_whose_packets_change_length_lands_exactly() {
     }
     let file = mkv.finish().unwrap().into_inner();
 
-    let (_, whole) = craft_audio::decode(&file, Some("mkv")).unwrap();
+    let (_, whole) = bharat_audio::decode(&file, Some("mkv")).unwrap();
     assert_eq!(whole.frames(), syncframes.len() * 1536);
     for target in [20 * 1536 + 700, 30 * 1536] {
-        let mut dec = craft_audio::Decoder::open(file.clone(), Some("mkv"), &craft_audio::DecodeOptions::default()).unwrap();
+        let mut dec = bharat_audio::Decoder::open(file.clone(), Some("mkv"), &bharat_audio::DecodeOptions::default()).unwrap();
         assert_eq!(dec.seek(target as u64).unwrap(), target as u64);
         let block = dec.next_block().unwrap().unwrap();
         let n = block.channels[0].len();

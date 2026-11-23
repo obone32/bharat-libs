@@ -2,7 +2,7 @@
 
 use crate::common;
 use common::*;
-use craft_video::dnx::{DecodeOptions, decode_frame_with};
+use bharat_video::dnx::{DecodeOptions, decode_frame_with};
 
 fn specs() -> Vec<Spec> {
     let t = |s: &str, r: u32| format!("testsrc2=s={s}:r={r}");
@@ -71,7 +71,7 @@ fn decode_matches_ffmpeg() {
         println!(
             "{:<22} cid {} max {} mean {:.5} exact {:.3}% beyond ±1: {}",
             spec.name,
-            craft_video::dnx::probe(&pk[0]).unwrap().cid,
+            bharat_video::dnx::probe(&pk[0]).unwrap().cid,
             st.max,
             st.mean(),
             st.exact_pct(),

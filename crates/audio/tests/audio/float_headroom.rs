@@ -1,4 +1,4 @@
-use craft_audio::{AudioBuffer, BitDepth, EncodeFormat, EncodeOptions, FileEncoder, SampleFormat, decode, encode};
+use bharat_audio::{AudioBuffer, BitDepth, EncodeFormat, EncodeOptions, FileEncoder, SampleFormat, decode, encode};
 use std::io::Cursor;
 
 fn encoded(audio: &AudioBuffer, options: &EncodeOptions, streaming: bool) -> Vec<u8> {

@@ -1,10 +1,10 @@
 //! ALAC against ffmpeg (oracle; skipped when ffmpeg is absent): ffmpeg's ALAC files decode to the
-//! exact input samples through `craft_audio::decode`, and ffmpeg decodes our encoder's packets,
+//! exact input samples through `bharat_audio::decode`, and ffmpeg decodes our encoder's packets,
 //! muxed into M4A, to the exact input samples. Both in WAV channel order.
 
-use craft_audio::alac::{Encoder, EncoderConfig, alac_order};
-use craft_audio::craft_media::isobmff::{Brand, CodecConfig, FourCc, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
-use craft_audio::{CodecId, decode};
+use bharat_audio::alac::{Encoder, EncoderConfig, alac_order};
+use bharat_audio::bharat_media::isobmff::{Brand, CodecConfig, FourCc, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
+use bharat_audio::{CodecId, decode};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -92,7 +92,7 @@ fn our_m4a(wav: &[Vec<i32>], bits: u32, frame_length: u32) -> Vec<u8> {
     w.finish().unwrap().into_inner()
 }
 
-/// `craft_audio::decode` of an ALAC file, back to integers (exact up to 24 bits, which `f32`
+/// `bharat_audio::decode` of an ALAC file, back to integers (exact up to 24 bits, which `f32`
 /// holds).
 fn our_decode(bytes: &[u8], bits: u32) -> Vec<Vec<i32>> {
     let (info, buf) = decode(bytes, Some("m4a")).unwrap();

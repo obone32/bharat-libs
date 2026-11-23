@@ -882,7 +882,7 @@ mod tests {
         let (ins, complete) = crate::dex_ops::decode(&code.insns, 1000);
         assert!(complete);
         let text: Vec<String> = ins.iter().map(|i| d.format_insn(i)).collect();
-        assert_eq!(text[0], "const-string v0, \"Hello, Craft!\"");
+        assert_eq!(text[0], "const-string v0, \"Hello, Bharat!\"");
         assert_eq!(text[1], "invoke-static {v0}, Lcom/example/notes/Util;->log(Ljava/lang/String;)V");
         let pick = cd.virtual_methods.iter().find(|m| d.method_name(m.method_idx) == "pick").unwrap();
         let pc = d.code(pick.code_off).unwrap();

@@ -5,9 +5,9 @@ use std::path::PathBuf;
 use std::sync::{Arc, mpsc};
 use std::time::{Duration, Instant};
 
-use craft_ipc::client::{Client, HelloClient};
-use craft_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
-use craft_ipc::{LinkError, RuntimeDir};
+use bharat_ipc::client::{Client, HelloClient};
+use bharat_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
+use bharat_ipc::{LinkError, RuntimeDir};
 use serde_json::{Value, json};
 
 struct Cleanup(PathBuf);
@@ -68,8 +68,8 @@ fn native_transport_authenticates_and_delivers_commands() {
             app_version: "test".into(),
             pid: std::process::id(),
             instance: "550e8400-e29b-41d4-a716-446655440000".into(),
-            protocol_min: craft_ipc::wire::PROTOCOL_MIN,
-            protocol_max: craft_ipc::wire::PROTOCOL_MAX,
+            protocol_min: bharat_ipc::wire::PROTOCOL_MIN,
+            protocol_max: bharat_ipc::wire::PROTOCOL_MAX,
         })
         .unwrap();
     let reply = client.call("engine.execute", json!({"command": "ping"})).unwrap();

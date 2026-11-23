@@ -1,7 +1,7 @@
 //! An index-map section that points at an external map (`url`) adds no sources here, but its
 //! sources are unknown rather than absent: the inventory says how many such sections it saw.
 
-use craft_sourcemap::{InventoryLimits, Limits, SourceMap, parse, parse_sources};
+use bharat_sourcemap::{InventoryLimits, Limits, SourceMap, parse, parse_sources};
 use serde_json::{Value, json};
 
 fn decode(value: Value) -> SourceMap {

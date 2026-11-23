@@ -82,20 +82,20 @@ fn read_manifest(xml: &[u8]) -> Vec<(String, Params, Option<usize>)> {
 
 /// The package, its declared entry count checked before it is indexed (with
 /// [`zip_guard`]'s wording).
-fn open_zip(bytes: &[u8]) -> Result<craft_zip::Archive<'_>, CryptError> {
+fn open_zip(bytes: &[u8]) -> Result<bharat_zip::Archive<'_>, CryptError> {
     zip_guard::check(bytes, MAX_ZIP_ENTRIES).map_err(CryptError::Unsupported)?;
-    craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: MAX_ZIP_ENTRIES, max_total_bytes: u64::MAX })
+    bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: MAX_ZIP_ENTRIES, max_total_bytes: u64::MAX })
         .map_err(|e| CryptError::Unsupported(format!("not a valid package ({e})")))
 }
 
 /// `name` read from `z`, at most [`MAX_ENTRY`] bytes of it. `None` when it is missing, damaged
 /// or larger.
-fn read_entry(z: &mut craft_zip::Archive<'_>, name: &str) -> Option<Vec<u8>> {
+fn read_entry(z: &mut bharat_zip::Archive<'_>, name: &str) -> Option<Vec<u8>> {
     z.read(name, MAX_ENTRY).ok().flatten()
 }
 
 /// The files of a package in its order, folders left out, each at most [`MAX_ENTRY`] bytes.
-fn files_of(z: &craft_zip::Archive<'_>) -> Vec<String> {
+fn files_of(z: &bharat_zip::Archive<'_>) -> Vec<String> {
     z.names().filter(|n| !n.ends_with('/')).map(|n| n.into_owned()).collect()
 }
 
@@ -240,11 +240,11 @@ fn plain_manifest(xml: &str) -> String {
 
 /// A password-protected package decrypted into a plain one.
 pub fn decrypt(bytes: &[u8], password: &str) -> Result<Vec<u8>, CryptError> {
-    let broken = |e: craft_zip::Error| CryptError::Unsupported(format!("not a valid package ({e})"));
+    let broken = |e: bharat_zip::Error| CryptError::Unsupported(format!("not a valid package ({e})"));
     let mut z = open_zip(bytes)?;
     let manifest = read_entry(&mut z, MANIFEST_PATH).unwrap_or_default();
     let encrypted = read_manifest(&manifest);
-    let mut w = craft_zip::Writer::new();
+    let mut w = bharat_zip::Writer::new();
     let mut checked = false;
     let mut work = 0u64;
     for name in files_of(&z).into_iter().take(MAX_FILES) {
@@ -260,7 +260,7 @@ pub fn decrypt(bytes: &[u8], password: &str) -> Result<Vec<u8>, CryptError> {
             None if name == MANIFEST_PATH => plain_manifest(&String::from_utf8_lossy(&data)).into_bytes(),
             None => data,
         };
-        let compression = if name == "mimetype" { craft_zip::Compression::Stored } else { craft_zip::Compression::Deflated };
+        let compression = if name == "mimetype" { bharat_zip::Compression::Stored } else { bharat_zip::Compression::Deflated };
         w.add(&name, &data, compression).map_err(broken)?;
     }
     if !checked {
@@ -283,7 +283,7 @@ fn random(n: usize) -> Result<Vec<u8>, CryptError> {
 /// A package encrypted with `password`: every file but the `mimetype` and the manifest, the
 /// manifest saying how.
 pub fn encrypt(bytes: &[u8], password: &str) -> Result<Vec<u8>, CryptError> {
-    let err = |e: craft_zip::Error| CryptError::Unsupported(e.to_string());
+    let err = |e: bharat_zip::Error| CryptError::Unsupported(e.to_string());
     let io = |e: std::io::Error| CryptError::Unsupported(e.to_string());
     let mut z = open_zip(bytes)?;
     let start = start_key(SHA256, Some(32), password)?;
@@ -350,7 +350,7 @@ pub fn encrypt(bytes: &[u8], password: &str) -> Result<Vec<u8>, CryptError> {
     let unlisted: String = data_of
         .iter()
         .filter(|(n, _)| !listed.contains(n))
-        .map(|(n, enc)| format!("<manifest:file-entry manifest:full-path=\"{}\" manifest:media-type=\"\"{enc}\n", craft_xml::esc_attr(n)))
+        .map(|(n, enc)| format!("<manifest:file-entry manifest:full-path=\"{}\" manifest:media-type=\"\"{enc}\n", bharat_xml::esc_attr(n)))
         .collect();
     match rest.rfind("</manifest:manifest>") {
         Some(e) => {
@@ -360,8 +360,8 @@ pub fn encrypt(bytes: &[u8], password: &str) -> Result<Vec<u8>, CryptError> {
         }
         None => out.push_str(rest),
     }
-    use craft_zip::Compression::{Deflated, Stored};
-    let mut w = craft_zip::Writer::new();
+    use bharat_zip::Compression::{Deflated, Stored};
+    let mut w = bharat_zip::Writer::new();
     for (name, data, _) in files.iter().filter(|(n, _, _)| n == "mimetype") {
         w.add(name, data, Stored).map_err(err)?;
     }

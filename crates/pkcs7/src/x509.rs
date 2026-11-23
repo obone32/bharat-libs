@@ -113,7 +113,7 @@ macro_rules! certificate_representations {
         /// A parsed certificate. Signed material remains private until consumed.
         ///
         /// ```compile_fail
-        /// fn replace_signed_bytes(cert: &mut craft_pkcs7::x509::Certificate) {
+        /// fn replace_signed_bytes(cert: &mut bharat_pkcs7::x509::Certificate) {
         ///     cert.tbs.clear();
         /// }
         /// ```

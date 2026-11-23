@@ -13,7 +13,7 @@ fn line_at_ys(line: Line, y0: f64, y1: f64) -> (f64, f64) {
 
 /// Returns `(1 - t) * line.p0.x + t * line.p1.x`.
 fn x_at_t(line: Line, t: f64) -> f64 {
-    // Craft patch (subnormal x): a product of t and a subnormal x coordinate
+    // Bharat patch (subnormal x): a product of t and a subnormal x coordinate
     // loses bits, so x = 5e-324 times 0.5 rounds to 0. When both x coordinates
     // have a magnitude below 2^-500, take the weighted sum of the x coordinates
     // times 2^600 and scale the sum back. Multiplying by a power of two is

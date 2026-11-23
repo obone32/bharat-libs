@@ -135,8 +135,8 @@ impl InstanceRecord {
                 }
             }
             Endpoint::Pipe { name } => {
-                if !name.starts_with("craft-") || name.contains('/') || name.contains('\\') {
-                    return Err(LinkError::Invalid("pipe name must start with craft-".into()));
+                if !name.starts_with("bharat-") || name.contains('/') || name.contains('\\') {
+                    return Err(LinkError::Invalid("pipe name must start with bharat-".into()));
                 }
             }
             Endpoint::Tcp { port } => {

@@ -36,7 +36,7 @@ pub(super) enum Ev {
 }
 
 /// No limit but the input's own size (each part is at most a package entry).
-const LIMITS: craft_xml::Limits = craft_xml::Limits {
+const LIMITS: bharat_xml::Limits = bharat_xml::Limits {
     max_input: usize::MAX,
     max_depth: usize::MAX,
     max_nodes: usize::MAX,
@@ -54,19 +54,19 @@ pub(super) fn events(xml: &[u8], mut f: impl FnMut(Ev)) {
 /// and end both take the whole element).
 pub(super) fn events_at(xml: &[u8], mut f: impl FnMut(Ev, (usize, usize))) {
     // Names and attributes as written, and at most 128 attributes kept per element.
-    let opts = craft_xml::Options::default().with_limits(LIMITS);
+    let opts = bharat_xml::Options::default().with_limits(LIMITS);
     let mut events = opts.events(xml);
     // Malformed XML ends the stream.
     while let Ok(Some(ev)) = events.next() {
         let span = events.span();
         let at = (span.start, span.end);
         match ev {
-            craft_xml::Event::Start { name, mut attrs } => {
+            bharat_xml::Event::Start { name, mut attrs } => {
                 attrs.truncate(128);
                 f(Ev::Start(name, attrs), at)
             }
-            craft_xml::Event::End { name } => f(Ev::End(name), at),
-            craft_xml::Event::Text(t) | craft_xml::Event::CData(t) => f(Ev::Text(t), at),
+            bharat_xml::Event::End { name } => f(Ev::End(name), at),
+            bharat_xml::Event::Text(t) | bharat_xml::Event::CData(t) => f(Ev::Text(t), at),
             _ => {}
         }
     }
@@ -91,9 +91,9 @@ pub(super) fn holds_words(xml: &[u8], from: usize) -> bool {
     wrapped.extend_from_slice(OPEN);
     wrapped.extend_from_slice(rest);
     // An unknown entity is an error rather than left out, so that it counts as words.
-    let opts = craft_xml::Options { unknown_entity: craft_xml::UnknownEntity::Error, ..craft_xml::Options::default().with_limits(LIMITS) };
+    let opts = bharat_xml::Options { unknown_entity: bharat_xml::UnknownEntity::Error, ..bharat_xml::Options::default().with_limits(LIMITS) };
     let mut r = opts.events(&wrapped);
-    if !matches!(r.next(), Ok(Some(craft_xml::Event::Start { .. }))) {
+    if !matches!(r.next(), Ok(Some(bharat_xml::Event::Start { .. }))) {
         return true;
     }
     let mut depth = 0usize;
@@ -112,12 +112,12 @@ pub(super) fn holds_words(xml: &[u8], from: usize) -> bool {
         let markup = wrapped.get(span.clone()).unwrap_or_default();
         last = span;
         match ev {
-            craft_xml::Event::Start { .. } => depth = depth.saturating_add(1),
-            craft_xml::Event::End { .. } if depth == 0 => return false,
-            craft_xml::Event::End { .. } => depth = depth.saturating_sub(1),
+            bharat_xml::Event::Start { .. } => depth = depth.saturating_add(1),
+            bharat_xml::Event::End { .. } if depth == 0 => return false,
+            bharat_xml::Event::End { .. } => depth = depth.saturating_sub(1),
             // A reference, resolved: words whatever it stands for.
-            craft_xml::Event::Text(_) if markup.starts_with(b"&") => return true,
-            craft_xml::Event::Text(t) | craft_xml::Event::CData(t) if t.bytes().any(|b| !b.is_ascii_whitespace()) => return true,
+            bharat_xml::Event::Text(_) if markup.starts_with(b"&") => return true,
+            bharat_xml::Event::Text(t) | bharat_xml::Event::CData(t) if t.bytes().any(|b| !b.is_ascii_whitespace()) => return true,
             _ => {}
         }
     }

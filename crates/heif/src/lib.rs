@@ -1,4 +1,4 @@
-//! `craft-heif`: the optional HEIF / HEIC (iPhone and Mac photo) decoder.
+//! `bharat-heif`: the optional HEIF / HEIC (iPhone and Mac photo) decoder.
 //!
 //! `heic-rs`, a pure-Rust HEIF container and HEVC still-picture decoder, reads the container and
 //! reconstructs the coded pictures (bit-exact against libde265 on iPhone photos); this crate turns
@@ -707,7 +707,7 @@ mod tests {
     }
 
     /// A crate that enables the former feature name `testdata` gets `test-support`, and with it
-    /// `craft_heif::testdata`. Without that, this test does not compile.
+    /// `bharat_heif::testdata`. Without that, this test does not compile.
     #[test]
     #[cfg(feature = "testdata")]
     fn the_testdata_feature_turns_on_test_support() {

@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::{Decoded, decode};
+use bharat_pcap::{Decoded, decode};
 use support::{client_hello, ipv4_pkt, tcp};
 
 fn decoded(record: &[u8]) -> Decoded {
@@ -104,7 +104,7 @@ fn complete_hello_metadata_is_unchanged() {
     assert!(!hello.partial);
 }
 
-fn hello_with_vectors(session: &[u8], suites: &[u8], compression: &[u8], extensions: &[(u16, &[u8])]) -> craft_pcap::TlsHello {
+fn hello_with_vectors(session: &[u8], suites: &[u8], compression: &[u8], extensions: &[(u16, &[u8])]) -> bharat_pcap::TlsHello {
     let mut record = client_hello("unused.test");
     record.truncate(43);
     record.push(session.len() as u8);

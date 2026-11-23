@@ -101,8 +101,8 @@ impl<E: XflElement> EnvelopePoint<'_, E> {
 mod tests {
     use super::*;
 
-    fn parse(source: &[u8]) -> craft_xml::El {
-        craft_xml::parse(source).expect("well-formed test XML")
+    fn parse(source: &[u8]) -> bharat_xml::El {
+        bharat_xml::parse(source).expect("well-formed test XML")
     }
 
     #[test]

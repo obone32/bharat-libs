@@ -1,8 +1,8 @@
 //! `jpeg_inks`: four-component JPEGs read as Adobe-inverted inks, as `zune-jpeg`-based readers
 //! kept them, beside `decode`'s own reading.
 
-use craft_image_codecs::jpeg_inks::{decode_jpeg_inks, jpeg_components, jpeg_dimensions, jpeg_icc_profile};
-use craft_image_codecs::*;
+use bharat_image_codecs::jpeg_inks::{decode_jpeg_inks, jpeg_components, jpeg_dimensions, jpeg_icc_profile};
+use bharat_image_codecs::*;
 
 /// A `w` × `h` four-component JPEG of `samples` at quality 100, written by `jpeg-encoder` as
 /// `ty`, with ICC profile `icc` when given.
@@ -101,7 +101,7 @@ fn sides_past_zunes_default_are_not_read() {
 }
 
 /// What isn't a four-component image `zune-jpeg` decodes is refused: other component counts, an
-/// arithmetic-coded or 12-bit frame (`decode` hands those to craft-jpeg), a size past the limits,
+/// arithmetic-coded or 12-bit frame (`decode` hands those to bharat-jpeg), a size past the limits,
 /// and data that isn't a JPEG.
 #[test]
 fn other_jpegs_are_refused() {

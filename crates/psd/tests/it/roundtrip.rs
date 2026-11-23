@@ -1,7 +1,7 @@
 //! Round-trip and byte-stability tests over generated files.
 
-use craft_psd::testgen::{self, MODES, mode_channels, mode_depths, pattern_plane};
-use craft_psd::*;
+use bharat_psd::testgen::{self, MODES, mode_channels, mode_depths, pattern_plane};
+use bharat_psd::*;
 
 fn assert_stable(file: &PsdFile, name: &str) {
     let bytes = file.to_bytes().unwrap_or_else(|e| panic!("{name}: write failed: {e}"));
@@ -266,7 +266,7 @@ fn psd_too_large_for_32bit_errors_on_write() {
     let mut f = testgen::small(Version::Psd, Compression::Raw);
     // A resource larger than u32 can't be constructed cheaply; instead check
     // RLE rows > 65535 bytes are rejected for PSD but allowed for PSB.
-    let l = craft_psd::compression::PlaneLayout { planes: 1, width: 70_000, height: 1, depth: 8, version: Version::Psd };
+    let l = bharat_psd::compression::PlaneLayout { planes: 1, width: 70_000, height: 1, depth: 8, version: Version::Psd };
     let row: Vec<u8> = (0..70_000u32).map(|i| (i % 251) as u8).collect();
     assert!(compression::encode_planes(Compression::Rle, &row, &l).is_err());
     let l = compression::PlaneLayout { version: Version::Psb, ..l };
@@ -279,7 +279,7 @@ fn psd_too_large_for_32bit_errors_on_write() {
 fn save_and_open() {
     let f = testgen::small(Version::Psd, Compression::Rle);
     // `create_dir` refuses a directory or symlink planted at the predictable name.
-    let dir = tempfile_dir("craft-psd-test");
+    let dir = tempfile_dir("bharat-psd-test");
     let p = dir.join("x.psd");
     f.save(&p).unwrap();
     let g = PsdFile::open(&p).unwrap().unwrap();

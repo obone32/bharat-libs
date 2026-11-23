@@ -1,5 +1,5 @@
 [package]
-name = "craft-tcraft"
+name = "bharat-tcraft"
 description = "Streaming binary payloads of TextureCraft project archives"
 version.workspace = true
 edition.workspace = true
@@ -11,7 +11,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-zip = { workspace = true }
+bharat-zip = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

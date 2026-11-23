@@ -5,8 +5,8 @@
 
 use crate::text::tests::{NS_T, content_of, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::para::{InlineObject, OBJ};
+use bharat_wordmodel::Document;
+use bharat_wordmodel::para::{InlineObject, OBJ};
 
 const NS_N: &str = r#"xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0""#;
 

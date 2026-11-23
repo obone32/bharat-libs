@@ -268,7 +268,7 @@ fn text_style(v: &View, size: Option<f64>) -> Obj {
         for (from, to) in [("family", "fontFamily"), ("style", "fontStyle"), ("postscript", "fontPostScriptName")] {
             if let Some(x) = f.get(from).and_then(Kv::str).filter(|x| !x.is_empty()) {
                 // Compact and spaced style names ("SemiBold", "Semi Bold") are the same style.
-                s.insert(to.into(), if from == "style" { json!(craft_figma_rest::style_name(x)) } else { json!(x) });
+                s.insert(to.into(), if from == "style" { json!(bharat_figma_rest::style_name(x)) } else { json!(x) });
             }
         }
     }

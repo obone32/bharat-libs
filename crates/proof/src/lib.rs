@@ -1,10 +1,10 @@
-//! Proofing for the Craft Apps (moved from WordCraft's `wordcraft-proof`), per language. A run's language (its BCP 47 tag) picks the tools through
+//! Proofing for the Bharat Apps (moved from WordCraft's `wordcraft-proof`), per language. A run's language (its BCP 47 tag) picks the tools through
 //! [`ProofLang`]; the `*_in` functions take it, the older English-only ones remain.
 //!
 //! - **English** ([`ProofLang::En`]; also text with no language): spelling against the SCOWL
 //!   2026 Hunspell dictionary of the run's English ([`scowl`]; else the public-domain Moby word
 //!   list, ~160k words, the same list that drives hyphenation) plus our
-//!   supplement of modern words it lacks (craft-i18n's `language-data/en-us/en-extra.txt`: `desktop`, `email`,
+//!   supplement of modern words it lacks (bharat-i18n's `language-data/en-us/en-extra.txt`: `desktop`, `email`,
 //!   `download`…), with inflections (`-s`, `-es`, `-ed`, `-ing`, `-ly`, `'s`…), a user dictionary and ignore lists;
 //!   suggestions by edit distance. Grammar checks that are cheap and reliable: repeated words,
 //!   `a`/`an`, capital letter after a sentence end, spaces before punctuation, doubled spaces.
@@ -56,8 +56,8 @@
 //! [`check_text`] checks a paragraph whose runs are in different languages.
 //!
 //! **Language data** (the SCOWL English dictionaries, the Moby word list, the pattern files, our
-//! word supplements) is embedded at build time from craft-i18n's `language-data/`
-//! (`CRAFT_I18N_DIR`, see `build.rs`). English spelling never goes unchecked: a dictionaries-folder
+//! word supplements) is embedded at build time from bharat-i18n's `language-data/`
+//! (`BHARAT_I18N_DIR`, see `build.rs`). English spelling never goes unchecked: a dictionaries-folder
 //! English first, then the embedded SCOWL dictionary, then an English Hunspell dictionary
 //! installed on the system, then the whole Moby word list built into the crate (see
 //! [`english_source`]). Hyphenation that needs the data is off without it; grammar and the
@@ -66,7 +66,7 @@
 
 pub mod affix;
 mod affix_suggest;
-/// The Language data embedded from craft-i18n by `build.rs` (each constant empty when it isn't).
+/// The Language data embedded from bharat-i18n by `build.rs` (each constant empty when it isn't).
 mod data {
     include!(concat!(env!("OUT_DIR"), "/language_data.rs"));
 }
@@ -1190,8 +1190,8 @@ pub(crate) fn hold_dictionary_tests() {
     });
 }
 
-/// The no-Language-data build (`build.rs` sets `craft_proof_no_data` when nothing is embedded).
-#[cfg(all(test, craft_proof_no_data))]
+/// The no-Language-data build (`build.rs` sets `bharat_proof_no_data` when nothing is embedded).
+#[cfg(all(test, bharat_proof_no_data))]
 mod no_data;
 
 #[cfg(test)]
@@ -1242,12 +1242,12 @@ mod tests {
 
     use super::*;
 
-    /// craft-libs#489 review: a suggestion an OCONV table wrote with `’` is still mapped to this
+    /// bharat-libs#489 review: a suggestion an OCONV table wrote with `’` is still mapped to this
     /// dialect's spelling (`colour’s` → `color’s` in American English), and keeps its apostrophe.
     #[test]
     fn curly_suggestions_are_mapped_to_the_dialect() {
         if english_preferred("colour's", ProofLang::En).is_none() {
-            return; // no dialect lists without CRAFT_I18N_DIR
+            return; // no dialect lists without BHARAT_I18N_DIR
         }
         assert_eq!(in_dialect("colour’s", "colours", ProofLang::En), "color’s");
         assert_eq!(in_dialect("colour's", "colours", ProofLang::En), "color's");
@@ -1332,7 +1332,7 @@ mod tests {
             assert_eq!(check_spelling_in("teh hous", ProofLang::En).len(), 1);
             assert!(suggest_in("hous", 3, ProofLang::En).contains(&"house".to_string()), "{:?}", suggest_in("hous", 3, ProofLang::En));
             // No en_GB or en_CA file: never the en_US one, which would mark their spellings
-            // (craft-libs#482 re-review), but their own installed elsewhere or the built-in list.
+            // (bharat-libs#482 re-review), but their own installed elsewhere or the built-in list.
             for lang in [ProofLang::EnGb, ProofLang::EnCa] {
                 assert_ne!(english_source(lang), Some(EnglishSource::Hunspell(dic.clone())), "{lang:?}");
                 if english_source(lang) == Some(EnglishSource::CoreList) {
@@ -1444,7 +1444,7 @@ mod tests {
         assert_eq!(dictionary_load_error(ProofLang::EnGb), None, "a new folder forgets the old errors");
     }
 
-    /// craft-libs#482 review: an English dictionary that can't be read is skipped for the next
+    /// bharat-libs#482 review: an English dictionary that can't be read is skipped for the next
     /// name or folder of the same English, never for another English's; and a dictionary with
     /// compounding and output conversion (as the usual en_US and en_GB ones have) is read. (Only
     /// American English gets a dictionary that loads: the British tests don't hold the lock.)
@@ -1734,7 +1734,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(&root);
     }
 
-    /// Review follow-up (craft-libs#485): a word in another script than a pack language's
+    /// Review follow-up (bharat-libs#485): a word in another script than a pack language's
     /// dictionary (a Russian name in a Dutch run, a Dutch word in a Greek one) isn't marked; a
     /// misspelling in the dictionary's own script still is.
     #[test]
@@ -1987,7 +1987,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(&root);
     }
 
-    /// craft-libs#485 review: a licence file that is too big is skipped alone; the pack's other
+    /// bharat-libs#485 review: a licence file that is too big is skipped alone; the pack's other
     /// licences and the next pack's are still shown.
     #[test]
     fn an_oversized_licence_skips_only_itself() {
@@ -2009,7 +2009,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(&root);
     }
 
-    /// craft-libs#483 and #488 reviews: a score keeps its spaces (`3 : 1`) in every language's
+    /// bharat-libs#483 and #488 reviews: a score keeps its spaces (`3 : 1`) in every language's
     /// space-before-punctuation rule, and in Polish and Russian ` ,,` (a typed opening quote) is
     /// left to the doubled-punctuation rule alone.
     #[test]
@@ -2219,13 +2219,13 @@ mod tests {
         assert_eq!(grammar("elma ve armut. sonra kiraz", ProofLang::Tr, true), ["sonra"]);
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn dictionary_loads() {
         assert!(dict::Dictionary::en_us().len() > 100_000);
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn spelling() {
         // English results depend on the dictionaries other tests install.
@@ -2258,7 +2258,7 @@ mod tests {
     }
 
     /// #1694: `-ically` adverbs come from their `-ic` adjective (specific → specifically).
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn ically_adverbs_are_known() {
         // English results depend on the dictionaries other tests install.
@@ -2273,7 +2273,7 @@ mod tests {
 
     /// #1694 review: only `-ic` adjectives take `-ally`; other known words (dictionary or
     /// supplement) don't.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn non_ic_words_do_not_take_ally() {
         // English results depend on the dictionaries other tests install.
@@ -2285,7 +2285,7 @@ mod tests {
     }
 
     /// #520: common modern words (and their inflections) are known; misspellings still flagged.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn common_modern_words() {
         // English results depend on the dictionaries other tests install.
@@ -2324,7 +2324,7 @@ mod tests {
 
     /// The supplement stays a sorted list of lowercase base forms.
     /// #40: British spellings and their inflections are not flagged.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn british_spellings_are_known() {
         // English results depend on the dictionaries other tests install.
@@ -2373,7 +2373,7 @@ mod tests {
 
     /// Each English accepts its own spellings and flags the other dialect's, suggesting its own
     /// first, as Word does (#1281, #1045).
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn english_dialects_flag_each_others_spellings() {
         // English results depend on the dictionaries other tests install.
@@ -2468,7 +2468,7 @@ mod tests {
 
     /// The words #40 (folded into #1281) reported as flagged in British English, with their
     /// inflections: right in en-GB, and in en-US flagged or not as `en-variants.txt` decides.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn british_words_reported_in_issue_40_are_right_in_en_gb() {
         // English results depend on the dictionaries other tests install.
@@ -2517,7 +2517,7 @@ mod tests {
 
     /// Review follow-up: British English takes `-ize` (Oxford spelling) but never `-yze`, also in
     /// forms en-variants.txt doesn't list. Hunspell 1.7.5 with SCOWL's en_GB rejects these too.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn british_english_rejects_unlisted_yze_forms() {
         crate::hold_dictionary_tests();
@@ -2531,11 +2531,11 @@ mod tests {
         }
     }
 
-    /// Review follow-up: Australian English reads SCOWL's own en-AU dictionary (craft-i18n ships
+    /// Review follow-up: Australian English reads SCOWL's own en-AU dictionary (bharat-i18n ships
     /// it), not en-GB's: its Australian words are right and spelled as Hunspell's en_AU spells
     /// them; British English doesn't take them. The British policy still applies: American
     /// spellings are wrong, `-ise` and `-ize` both right.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn australian_english_reads_its_own_scowl() {
         crate::hold_dictionary_tests();
@@ -2599,7 +2599,7 @@ mod tests {
     /// Review follow-up: SCOWL's en-AU list keeps one spelling per word, so Australian English also
     /// takes a word the en-GB list has (`enquiry`, `guerrilla`, `liquorice`); American-only
     /// spellings, wrong in both, stay wrong. Suggestions still come from the en-AU list.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn australian_english_also_takes_british_words() {
         crate::hold_dictionary_tests();
@@ -2652,7 +2652,7 @@ mod tests {
 
     /// English spelling reads SCOWL 2026 through the affix engine: one dictionary per English,
     /// its notice embedded, and its ordinals (`COMPOUNDRULE`) understood.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn english_reads_scowl() {
         for l in [ProofLang::En, ProofLang::EnGb, ProofLang::EnCa] {
@@ -2687,10 +2687,10 @@ mod tests {
         assert_eq!(suggest_in("color", 5, ProofLang::EnGb).first().map(String::as_str), Some("colour"));
     }
 
-    /// craft-libs#483 review: English suggestions offer a missing space only between two
+    /// bharat-libs#483 review: English suggestions offer a missing space only between two
     /// lower-case words of three letters or more, after every one-word candidate, and no word the
     /// dictionary only has capitalized (`Col`, `Wis`) for a lower-case word.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn english_suggestions_skip_junk_splits_and_names() {
         for (w, l) in [
@@ -2717,7 +2717,7 @@ mod tests {
 
     /// `en-variants.txt` stays with SCOWL: SCOWL's size-60 lists keep one spelling per dialect,
     /// and Word accepts more (both `-ize` and `-ise` in British English, `judgement` in American).
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn dialect_policy_widens_scowl() {
         let gb = scowl::dict(ProofLang::EnGb).unwrap();
@@ -2728,11 +2728,11 @@ mod tests {
         assert!(is_correct_in("encyclopaedia", ProofLang::EnGb) && is_correct_in("encyclopedia", ProofLang::EnGb));
     }
 
-    /// craft-libs#483 review: each English checks against its own SCOWL dictionary only. A stem
+    /// bharat-libs#483 review: each English checks against its own SCOWL dictionary only. A stem
     /// one English's dictionary has and another's lacks (`colourblind`, `greyscale` in en-GB;
     /// `colorblind`, `esophagi` in en-US) doesn't cross, unless our dialect policy or the `-ize`
     /// spellings of British English say so. Sampled from every pair of Englishes.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn scowl_dialects_dont_cross() {
         let langs = [
@@ -2774,10 +2774,10 @@ mod tests {
         }
     }
 
-    /// craft-libs#483 re-review: British English takes the `-ize` spelling of an `-ise` word only
+    /// bharat-libs#483 re-review: British English takes the `-ize` spelling of an `-ise` word only
     /// when American or Canadian English spells it so; a misspelling whose `-s-` form is a word
     /// (`wize`, `advize`) stays wrong, as in Hunspell's en-GB.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn british_ize_needs_a_real_ize_word() {
         let wrong = [
@@ -2794,7 +2794,7 @@ mod tests {
         }
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn user_dictionary_accepts_the_other_dialects_spelling() {
         // English results depend on the dictionaries other tests install.
@@ -2806,7 +2806,7 @@ mod tests {
         assert!(!is_correct_in("savour", ProofLang::En));
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn supplement_is_sorted_lowercase() {
         let words: Vec<&str> = EXTRA_EN.lines().filter(|l| !l.is_empty() && !l.starts_with('#')).collect();
@@ -2826,7 +2826,7 @@ mod tests {
         assert_eq!(bad, vec!["sentense", "mispelled"]);
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn address_token_covers_every_word_split_out_of_it() {
         // English results depend on the dictionaries other tests install.
@@ -2843,7 +2843,7 @@ mod tests {
         assert_eq!(bad.last(), Some(&"wugwug"), "{bad:?}");
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn address_after_a_wide_space_is_an_internet_token() {
         // English results depend on the dictionaries other tests install.
@@ -2866,7 +2866,7 @@ mod tests {
         // #1335: thousands of punctuation-separated words inside a single
         // whitespace-free token: one classification for the token, one issue per
         // misspelled word, through every public spelling entry point. Without the Language data
-        // too (craft-libs#482 review: the old core list took 14 s here).
+        // too (bharat-libs#482 review: the old core list took 14 s here).
         let started = std::time::Instant::now();
         let word = |i: usize| {
             let mut w = String::from("zxq");
@@ -2926,7 +2926,7 @@ mod tests {
         }
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn user_dictionary_works() {
         // English results depend on the dictionaries other tests install.
@@ -2937,7 +2937,7 @@ mod tests {
     }
 
     /// #40: the user dictionary survives a save and a fresh load.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn user_dictionary_persists_through_a_file() {
         crate::hold_dictionary_tests();
@@ -2961,7 +2961,7 @@ mod tests {
     }
 
     /// #40: a hostile file is capped: invalid lines are skipped, and only the first megabyte is read.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn hostile_dictionary_files_are_capped() {
         // English results depend on the dictionaries other tests install.
@@ -2986,7 +2986,7 @@ mod tests {
     }
 
     /// #40: saving merges in words another process saved, and leaves out the ones just removed.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn saving_merges_with_the_file() {
         // English results depend on the dictionaries other tests install.
@@ -3006,7 +3006,7 @@ mod tests {
     }
 
     /// Ignore All lasts for the session: the word is accepted but isn't in the dictionary.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn ignored_words_are_not_dictionary_words() {
         // English results depend on the dictionaries other tests install.
@@ -3109,7 +3109,7 @@ mod tests {
     }
 
     /// #100: runs in a language without a dictionary are never flagged; English still is.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn non_english_words_are_not_flagged() {
         for w in ["ąžuolas", "élève", "über", "labas", "bonjour"] {
@@ -3122,7 +3122,7 @@ mod tests {
     }
 
     /// File › Options › Proofing (#485): each "Ignore" choice turned off makes those words count.
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn ignore_options_decide_what_is_checked() {
         let t = "SENTENSE helo2 www.exampel.org";
@@ -3134,7 +3134,7 @@ mod tests {
         assert!(is_correct_with("NASA", &all), "capitals that are a word stay correct");
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn hyphenation() {
         let l = hyphen::Limits::default();
@@ -3145,7 +3145,7 @@ mod tests {
         v.iter().filter(|i| i.kind == IssueKind::Spelling).map(|i| t[i.start..i.end].to_string()).collect()
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn each_language_uses_its_own_tools() {
         // English results depend on the dictionaries other tests install.
@@ -3168,7 +3168,7 @@ mod tests {
         assert!(!g.iter().any(|i| i.message.contains("\"an\"")), "{g:?}");
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn italian_uses_its_own_tools() {
         // English results depend on the dictionaries other tests install.
@@ -3186,7 +3186,7 @@ mod tests {
         assert!(g.iter().any(|i| i.message.contains("ripetuta")), "{g:?}");
     }
 
-    #[cfg_attr(not(craft_proof_data), ignore = "needs the Language data (CRAFT_I18N_DIR)")]
+    #[cfg_attr(not(bharat_proof_data), ignore = "needs the Language data (BHARAT_I18N_DIR)")]
     #[test]
     fn mixed_language_paragraphs_check_each_run_in_its_language() {
         // English results depend on the dictionaries other tests install.

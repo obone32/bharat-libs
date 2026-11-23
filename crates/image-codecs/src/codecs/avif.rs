@@ -303,7 +303,7 @@ mod tests {
             }
             offset += size;
         };
-        let mut decoder = craft_video::av1::decode::Decoder::new();
+        let mut decoder = bharat_video::av1::decode::Decoder::new();
         let mut frames = decoder.decode(payload).unwrap();
         frames.extend(decoder.flush_result().unwrap());
         let luma = &frames.first().expect("encoded AV1 frame").planes[0];

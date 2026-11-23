@@ -3,7 +3,7 @@
 //! made with (its MANIFEST).
 
 use crate::container::helpers::{assert_near, base_layer, first_comp, layer_named, layer_of_type, layer_shown_as, near, open};
-use craft_aep::{
+use bharat_aep::{
     Caps, CueType, GradientType, ItemKind, Justification, LayerRef, LayerType, MaskMode, ParamKind, ParamValue, PolystarType, Project, PropNode,
     Rational, ShapeDetail, ShapeItem, TextDocument, ValueSource,
 };
@@ -181,7 +181,7 @@ fn one_mkif_per_mask_and_the_mode_none() {
         assert_eq!(m.shapes.len(), 1);
     }
     let (w, h) = project.layer_source_size(&layer).unwrap();
-    let px = |m: &craft_aep::Mask| m.shapes.iter().map(|s| s.vertices((f64::from(w), f64::from(h)))).collect::<Vec<_>>();
+    let px = |m: &bharat_aep::Mask| m.shapes.iter().map(|s| s.vertices((f64::from(w), f64::from(h)))).collect::<Vec<_>>();
     let v1 = px(&masks[0]);
     for (v, w) in v1[0].iter().zip(ellipse_vertices()) {
         assert_near(&v.position, &w, 1e-2);
@@ -210,7 +210,7 @@ fn one_mkif_per_mask_and_the_mode_none() {
 
 // ------------------------------------------------------------------ shapes (330-333)
 
-fn shape_group(name: &str) -> Option<craft_aep::ShapeGroup> {
+fn shape_group(name: &str) -> Option<bharat_aep::ShapeGroup> {
     Some({
         let bytes = crate::common::try_fixture(name)?;
         let file = open(&bytes);
@@ -402,7 +402,7 @@ fn camera_zoom_keeps_the_auto_position() {
 
 // ------------------------------------------------------------------ marker data (347-349, 249)
 
-fn layer_markers(name: &str) -> Option<Vec<craft_aep::Marker>> {
+fn layer_markers(name: &str) -> Option<Vec<bharat_aep::Marker>> {
     Some({
         let bytes = crate::common::try_fixture(name)?;
         let file = open(&bytes);

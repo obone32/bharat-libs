@@ -4,16 +4,16 @@
 //! levels, white balance and metadata the decoder read then.
 //!
 //! The files are not in the repository (5–11 MB each): `python scripts/fetch-crw-samples.py
-//! <dir>` downloads and verifies them, and `CRAFT_CRW_SAMPLES=<dir>` points the test at them.
-//! Without the variable the test prints that it skipped and passes; `CRAFT_CRW_REQUIRE_SAMPLES=1`
+//! <dir>` downloads and verifies them, and `BHARAT_CRW_SAMPLES=<dir>` points the test at them.
+//! Without the variable the test prints that it skipped and passes; `BHARAT_CRW_REQUIRE_SAMPLES=1`
 //! (CI) turns the skip into a failure.
 //!
-//! `CRAFT_CRW_ORACLE=<dir>` additionally compares every sample against `<name>.crw.tiff`
+//! `BHARAT_CRW_ORACLE=<dir>` additionally compares every sample against `<name>.crw.tiff`
 //! references next to the files (16-bit grey TIFFs of the whole sensor, as written by the
 //! reference decoder's `unprocessed_raw -T`), the check the derivation used. Those references
 //! are not distributable and live outside the repository.
 
-use craft_crw::{Error, Limits, decode, probe};
+use bharat_crw::{Error, Limits, decode, probe};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use std::path::{Path, PathBuf};
@@ -59,13 +59,13 @@ fn hex(digest: impl AsRef<[u8]>) -> String {
 }
 
 fn samples_dir() -> Option<PathBuf> {
-    match std::env::var_os("CRAFT_CRW_SAMPLES") {
+    match std::env::var_os("BHARAT_CRW_SAMPLES") {
         Some(dir) => Some(PathBuf::from(dir)),
-        None if std::env::var_os("CRAFT_CRW_REQUIRE_SAMPLES").is_some_and(|v| v == "1") => {
-            panic!("CRAFT_CRW_REQUIRE_SAMPLES=1 but CRAFT_CRW_SAMPLES is unset")
+        None if std::env::var_os("BHARAT_CRW_REQUIRE_SAMPLES").is_some_and(|v| v == "1") => {
+            panic!("BHARAT_CRW_REQUIRE_SAMPLES=1 but BHARAT_CRW_SAMPLES is unset")
         }
         None => {
-            eprintln!("CRAFT_CRW_SAMPLES not set; skipping the sample-file tests (scripts/fetch-crw-samples.py)");
+            eprintln!("BHARAT_CRW_SAMPLES not set; skipping the sample-file tests (scripts/fetch-crw-samples.py)");
             None
         }
     }
@@ -195,8 +195,8 @@ fn oracle_samples(bytes: &[u8]) -> (usize, usize, Vec<u16>) {
 
 #[test]
 fn oracle_tiffs_match_every_sample() {
-    let Some(dir) = std::env::var_os("CRAFT_CRW_ORACLE").map(PathBuf::from) else {
-        eprintln!("CRAFT_CRW_ORACLE not set; skipping the reference-TIFF comparison");
+    let Some(dir) = std::env::var_os("BHARAT_CRW_ORACLE").map(PathBuf::from) else {
+        eprintln!("BHARAT_CRW_ORACLE not set; skipping the reference-TIFF comparison");
         return;
     };
     let mut entries: Vec<PathBuf> = std::fs::read_dir(&dir).expect("oracle directory").filter_map(|e| e.ok()).map(|e| e.path()).collect();

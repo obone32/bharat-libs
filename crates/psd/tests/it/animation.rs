@@ -1,9 +1,9 @@
 //! Synthetic only: no personal PSDs, paths, or copied descriptor payloads.
 
-use craft_psd::animation::{AnimationRecord, AnimationResource, frame_info, frame_sets, layer_frame_states, parse_descriptor};
-use craft_psd::descriptor::{Descriptor, Value, VersionedDescriptor};
-use craft_psd::metadata::{MetadataItem, parse_shmd, write_shmd};
-use craft_psd::{ImageResource, PsdBuilder, PsdFile, ResourceData, TaggedBlock, Version};
+use bharat_psd::animation::{AnimationRecord, AnimationResource, frame_info, frame_sets, layer_frame_states, parse_descriptor};
+use bharat_psd::descriptor::{Descriptor, Value, VersionedDescriptor};
+use bharat_psd::metadata::{MetadataItem, parse_shmd, write_shmd};
+use bharat_psd::{ImageResource, PsdBuilder, PsdFile, ResourceData, TaggedBlock, Version};
 use proptest::prelude::*;
 
 fn descriptor() -> VersionedDescriptor {

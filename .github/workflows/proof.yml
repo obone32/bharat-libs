@@ -14,7 +14,7 @@ permissions:
 concurrency:
   # One group per pull request and per branch: a newer push cancels the run it supersedes, on main
   # too, since the newest run checks everything before it.
-  group: craft-proof-${{ github.ref }}
+  group: bharat-proof-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -31,14 +31,14 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      # The Language data (craft-i18n `language-data/`), embedded by crates/proof/build.rs.
-      # Pinned to storytold/craft-i18n#114's head (#109's SCOWL dictionaries + judgment/judgement,
+      # The Language data (bharat-i18n `language-data/`), embedded by crates/proof/build.rs.
+      # Pinned to obone32/bharat-i18n#114's head (#109's SCOWL dictionaries + judgment/judgement,
       # CP2.1); TODO(CP2.1): move to #114's merge commit once it merges.
       - uses: actions/checkout@v7.0.1
         with:
-          repository: storytold/craft-i18n
+          repository: obone32/bharat-i18n
           ref: c239f934ace90b7939afaceb23b472ceeafd6b8a
-          path: craft-i18n
+          path: bharat-i18n
           persist-credentials: false
       - uses: step-security/dtolnay-rust-toolchain@v1.0.0
         with:
@@ -46,24 +46,24 @@ jobs:
           components: clippy
           targets: wasm32-unknown-unknown
       - name: The web build without Language data (a fork, docs.rs, offline)
-        run: cargo check -p craft-proof --locked --target wasm32-unknown-unknown
+        run: cargo check -p bharat-proof --locked --target wasm32-unknown-unknown
       - name: A release without Language data fails
         run: |
-          if CRAFT_I18N_REQUIRED=1 cargo check -p craft-proof --locked 2>build.log; then
-            echo "::error::CRAFT_I18N_REQUIRED=1 without CRAFT_I18N_DIR built"; exit 1
+          if BHARAT_I18N_REQUIRED=1 cargo check -p bharat-proof --locked 2>build.log; then
+            echo "::error::BHARAT_I18N_REQUIRED=1 without BHARAT_I18N_DIR built"; exit 1
           fi
-          grep -q "CRAFT_I18N_REQUIRED=1 but CRAFT_I18N_DIR is unset" build.log
+          grep -q "BHARAT_I18N_REQUIRED=1 but BHARAT_I18N_DIR is unset" build.log
       - name: With Language data
         env:
-          CRAFT_I18N_DIR: ${{ github.workspace }}/craft-i18n
-          CRAFT_I18N_REQUIRED: "1"
+          BHARAT_I18N_DIR: ${{ github.workspace }}/bharat-i18n
+          BHARAT_I18N_REQUIRED: "1"
         run: |
-          cargo clippy -p craft-proof --all-targets --locked -- -D warnings
-          cargo test -p craft-proof --locked
-          cargo check -p craft-proof --locked --target wasm32-unknown-unknown
-      - name: The English-only build (CRAFT_PROOF_EMBED=en, CP4.4's default once Language packs ship)
+          cargo clippy -p bharat-proof --all-targets --locked -- -D warnings
+          cargo test -p bharat-proof --locked
+          cargo check -p bharat-proof --locked --target wasm32-unknown-unknown
+      - name: The English-only build (BHARAT_PROOF_EMBED=en, CP4.4's default once Language packs ship)
         env:
-          CRAFT_I18N_DIR: ${{ github.workspace }}/craft-i18n
-          CRAFT_I18N_REQUIRED: "1"
-          CRAFT_PROOF_EMBED: en
-        run: cargo test -p craft-proof --locked
+          BHARAT_I18N_DIR: ${{ github.workspace }}/bharat-i18n
+          BHARAT_I18N_REQUIRED: "1"
+          BHARAT_PROOF_EMBED: en
+        run: cargo test -p bharat-proof --locked

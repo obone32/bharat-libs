@@ -1,5 +1,5 @@
 [package]
-name = "craft-pst"
+name = "bharat-pst"
 description = "Outlook personal folders files (.pst, [MS-PST]): a reader over any Read + Seek of the node database, property and table contexts, folders, messages, recipients, attachments and named properties."
 version.workspace = true
 edition.workspace = true
@@ -20,5 +20,5 @@ workspace = true
 [dependencies]
 
 [dev-dependencies]
-craft-pst = { path = ".", features = ["test-support"] }
+bharat-pst = { path = ".", features = ["test-support"] }
 proptest = { workspace = true }

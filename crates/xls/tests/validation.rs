@@ -5,7 +5,7 @@
 mod common;
 
 use common::*;
-use craft_xls::{CellRef, DataValidation, ErrorStyle, Operator, Range, ValidationType, Workbook};
+use bharat_xls::{CellRef, DataValidation, ErrorStyle, Operator, Range, ValidationType, Workbook};
 
 /// A workbook of one worksheet, "Sheet1", holding `records`, with defined names (Lbl records,
 /// each a name and its formula) in the globals.

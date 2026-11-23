@@ -1,7 +1,7 @@
 //! Reading an answer: the SOAP envelope, a fault, and the response messages of an operation with
 //! their classes and codes.
 //!
-//! The answer is read with `craft-xml` into a tree whose names carry fixed prefixes whatever the
+//! The answer is read with `bharat-xml` into a tree whose names carry fixed prefixes whatever the
 //! document used: `s:` for the envelope ([`SOAP`]), `m:` for the messages ([`MESSAGES`]), `t:` for
 //! the types ([`TYPES`]), `e:` for the errors ([`ERRORS`]); a name in any other namespace starts
 //! with `?:`. Elements are found by namespace and local name, never by the document's prefix;
@@ -9,7 +9,7 @@
 
 use std::fmt;
 
-use craft_xml::{Canonical, Doctype, El, Limits, Local, Options, UnknownEntity};
+use bharat_xml::{Canonical, Doctype, El, Limits, Local, Options, UnknownEntity};
 
 use crate::codes::{DEFAULT_BACK_OFF_MS, MAX_BACK_OFF_MS, MIN_BACK_OFF_MS, ResponseClass, ResponseCode};
 use crate::soap::{ERRORS, MESSAGES, SOAP, TYPES};

@@ -7,7 +7,7 @@
 
 use std::sync::{Arc, Mutex};
 
-use craft_cloud::{Capability, Entry, EntryKind};
+use bharat_cloud::{Capability, Entry, EntryKind};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
 

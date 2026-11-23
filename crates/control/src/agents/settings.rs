@@ -87,7 +87,7 @@ impl WhenAppClosed {
 }
 
 /// Whether agents may use the open window. With the suite's `AI-MCP` flag only the launcher's
-/// switch decides: one switch for every Craft app, none in the app. Without the flag the app's own
+/// switch decides: one switch for every Bharat app, none in the app. Without the flag the app's own
 /// earlier consent decides (`legacy`; PhotoCraft's is a Control Port saved before the switch).
 /// Allow Agent Control off still refuses agents either way ([`AgentSettings::allow_agent_control`]).
 pub fn agents_allowed(mcp_flag: bool, launcher: bool, legacy: bool) -> bool {

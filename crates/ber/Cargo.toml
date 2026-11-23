@@ -1,5 +1,5 @@
 [package]
-name = "craft-ber"
+name = "bharat-ber"
 description = "ASN.1 BER and DER (X.690): reading TLVs, BER to DER, and what an opaque signed CMS holds"
 version.workspace = true
 edition.workspace = true

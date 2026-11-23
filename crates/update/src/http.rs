@@ -1039,7 +1039,7 @@ pub(crate) mod tests {
 
     #[test]
     fn a_long_release_list_is_read_up_to_the_api_cap() {
-        // SolidCraft's list of 100 releases was 6.5 MB, past MAX_SMALL (craft-launcher#1021).
+        // SolidCraft's list of 100 releases was 6.5 MB, past MAX_SMALL (bharat-launcher#1021).
         let long = vec![b' '; (MAX_SMALL as usize) + 1024];
         let (url, _) = serve(long.clone(), vec![Reply::Full]);
         let http = Http::new(crate::TEST_AGENT).unwrap();
@@ -1074,7 +1074,7 @@ pub(crate) mod tests {
         enc.finish().unwrap()
     }
 
-    /// Live: a real Craft App release asset (`cargo test -p artcraft-launcher-native -- --ignored`).
+    /// Live: a real Bharat App release asset (`cargo test -p artcraft-launcher-native -- --ignored`).
     #[test]
     #[ignore = "needs network access"]
     fn downloads_a_real_release_asset() {

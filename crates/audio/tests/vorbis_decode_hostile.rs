@@ -1,8 +1,8 @@
 //! Hostile input to the Vorbis decoder: damaged headers and packets, truncations, and headers that
 //! ask for absurd sizes. Every case is an error or a result, never a panic or a large allocation.
 
-use craft_audio::vorbis::decoder::{Decoder, Error, decode_ogg};
-use craft_audio::{AudioBuffer, OggVorbisOptions, encode_ogg_vorbis};
+use bharat_audio::vorbis::decoder::{Decoder, Error, decode_ogg};
+use bharat_audio::{AudioBuffer, OggVorbisOptions, encode_ogg_vorbis};
 
 fn xorshift(seed: &mut u32) -> u32 {
     *seed ^= *seed << 13;
@@ -23,7 +23,7 @@ fn parts(channels: usize) -> Parts {
         .collect();
     let ogg =
         encode_ogg_vorbis(&AudioBuffer { sample_rate: 44_100, channels: signal }, &OggVorbisOptions::default().with_quality(4.0)).expect("encode");
-    let file = craft_media::ogg::open(ogg.as_slice()).expect("open");
+    let file = bharat_media::ogg::open(ogg.as_slice()).expect("open");
     let s = &file.streams[0];
     let packets = (0..s.packets.len()).map(|i| file.read_packet(ogg.as_slice(), 0, i).expect("packet")).collect();
     Parts { headers: s.headers.clone(), packets, ogg }

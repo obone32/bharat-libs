@@ -5,7 +5,7 @@
 use std::io::Write;
 use std::sync::Arc;
 
-use craft_pdf::cos::{Algorithm, Auth, CosError, Document, NewEncryption, ObjRef, Object, PdfString, SaveOptions, write_full, write_incremental};
+use bharat_pdf::cos::{Algorithm, Auth, CosError, Document, NewEncryption, ObjRef, Object, PdfString, SaveOptions, write_full, write_incremental};
 
 const SECRET: &str = "BT /F1 18 Tf 20 100 Td (Secret page) Tj ET";
 
@@ -270,18 +270,18 @@ fn signature_contents_stay_unencrypted() {
         let mut doc = Document::open(Arc::new(fixture())).unwrap();
         let hex = |b: &[u8]| Object::String(PdfString { bytes: b.to_vec(), hex: true });
         let byte_range = Object::Array([0, 10, 20, 30].into_iter().map(Object::Int).collect());
-        let mut sig = craft_pdf::cos::Dict::new();
+        let mut sig = bharat_pdf::cos::Dict::new();
         sig.set(b"Type".to_vec(), Object::name("Sig"));
         sig.set(b"Contents".to_vec(), hex(&[0x30, 0x82, 0xDE, 0xAD]));
         sig.set(b"ByteRange".to_vec(), byte_range.clone());
         sig.set(b"Name".to_vec(), PdfString::literal(b"Signer Name".to_vec()));
         let sig = doc.add(Object::Dict(sig));
         // No /Type: still a signature dictionary by its /Contents and /ByteRange.
-        let mut untyped = craft_pdf::cos::Dict::new();
+        let mut untyped = bharat_pdf::cos::Dict::new();
         untyped.set(b"Contents".to_vec(), hex(&[0x30, 0x82, 0xBE, 0xEF]));
         untyped.set(b"ByteRange".to_vec(), byte_range);
         let untyped = doc.add(Object::Dict(untyped));
-        let mut note = craft_pdf::cos::Dict::new();
+        let mut note = bharat_pdf::cos::Dict::new();
         note.set(b"Type".to_vec(), Object::name("Annot"));
         note.set(b"Contents".to_vec(), PdfString::literal(b"Private note".to_vec()));
         let note = doc.add(Object::Dict(note));
@@ -321,7 +321,7 @@ fn signature_contents_stay_unencrypted() {
 fn a_byte_range_does_not_exempt_an_annotation() {
     for (ty, subtype) in [(Some("Annot"), "Text"), (None, "FreeText"), (Some("Sig"), "Text")] {
         let mut doc = Document::open(Arc::new(fixture())).unwrap();
-        let mut note = craft_pdf::cos::Dict::new();
+        let mut note = bharat_pdf::cos::Dict::new();
         if let Some(ty) = ty {
             note.set(b"Type".to_vec(), Object::name(ty));
         }
@@ -527,7 +527,7 @@ fn select(doc: &mut Document, (filter, parms): (Object, Object)) {
 fn selector(doc: &mut Document, form: usize, name: &str) -> Option<(Object, Object)> {
     let crypt = Object::name("Crypt");
     let parms = |n: Object| {
-        let mut d = craft_pdf::cos::Dict::new();
+        let mut d = bharat_pdf::cos::Dict::new();
         d.set(b"Name".to_vec(), n);
         Object::Dict(d)
     };
@@ -620,9 +620,9 @@ fn spends(doc: &mut Document, follows: usize) -> Object {
     if left > 8 {
         filters.push(spends(doc, left - 8));
     }
-    let mut dict = craft_pdf::cos::Dict::new();
+    let mut dict = bharat_pdf::cos::Dict::new();
     dict.set(b"Filter".to_vec(), Object::Array(filters));
-    Object::Ref(doc.add(Object::Stream(craft_pdf::cos::Stream::from_raw(dict, Vec::new()))))
+    Object::Ref(doc.add(Object::Stream(bharat_pdf::cos::Stream::from_raw(dict, Vec::new()))))
 }
 
 /// Gives the content stream a `/Type` that takes `follows` references to read, ahead of its filter.
@@ -657,7 +657,7 @@ fn a_crypt_filter_past_what_a_read_may_follow_is_the_documents_own() {
 #[test]
 fn a_crypt_filter_with_no_name_after_all_a_read_may_follow_is_identity() {
     let mut doc = Document::open(Arc::new(protect(Algorithm::Aes128, "", "owner", -1))).unwrap();
-    select(&mut doc, (Object::name("Crypt"), Object::Dict(craft_pdf::cos::Dict::new())));
+    select(&mut doc, (Object::name("Crypt"), Object::Dict(bharat_pdf::cos::Dict::new())));
     spend_first(&mut doc, 32);
     let saved = write_incremental(&doc, &SaveOptions::default()).unwrap();
     assert!(holds(&saved, "Secret page"), "written as the stream asks");
@@ -721,9 +721,9 @@ fn protecting_drops_a_crypt_filter_selected_by_reference() {
     }
     for shared in [false, true] {
         let mut doc = Document::open(Arc::new(fixture())).unwrap();
-        let mut named = craft_pdf::cos::Dict::new();
+        let mut named = bharat_pdf::cos::Dict::new();
         named.set(b"Name".to_vec(), Object::name("MyCF"));
-        let mut other = craft_pdf::cos::Dict::new();
+        let mut other = bharat_pdf::cos::Dict::new();
         other.set(b"Note".to_vec(), Object::String(PdfString::text("Private note")));
         other.set(b"Predictor".to_vec(), Object::Int(1));
         let parms = Object::Array(vec![Object::Dict(named), Object::Dict(other)]);
@@ -748,19 +748,19 @@ fn protecting_drops_a_crypt_filter_selected_by_reference() {
 fn protecting_copies_no_large_object_into_every_stream() {
     let pad = Object::Array(vec![Object::Int(1); 100_000]);
     let mut doc = Document::open(Arc::new(fixture())).unwrap();
-    let mut large = craft_pdf::cos::Dict::new();
+    let mut large = bharat_pdf::cos::Dict::new();
     large.set(b"Pad".to_vec(), pad.clone());
     let parms = doc.add(Object::Array(vec![Object::Null, Object::Dict(large)]));
     let filter = doc.add(Object::Array(vec![Object::name("Crypt"), Object::Name(vec![b'A'; 100_000]), pad]));
     let mut streams = Vec::new();
     for _ in 0..200 {
-        let mut by_parms = craft_pdf::cos::Dict::new();
+        let mut by_parms = bharat_pdf::cos::Dict::new();
         by_parms.set(b"Filter".to_vec(), Object::Array(vec![Object::name("Crypt"), Object::name("ASCIIHexDecode")]));
         by_parms.set(b"DecodeParms".to_vec(), Object::Ref(parms));
-        streams.push(Object::Ref(doc.add(Object::Stream(craft_pdf::cos::Stream::from_raw(by_parms, b"41>".to_vec())))));
-        let mut by_filter = craft_pdf::cos::Dict::new();
+        streams.push(Object::Ref(doc.add(Object::Stream(bharat_pdf::cos::Stream::from_raw(by_parms, b"41>".to_vec())))));
+        let mut by_filter = bharat_pdf::cos::Dict::new();
         by_filter.set(b"Filter".to_vec(), Object::Ref(filter));
-        streams.push(Object::Ref(doc.add(Object::Stream(craft_pdf::cos::Stream::from_raw(by_filter, b"41>".to_vec())))));
+        streams.push(Object::Ref(doc.add(Object::Stream(bharat_pdf::cos::Stream::from_raw(by_filter, b"41>".to_vec())))));
     }
     doc.update_dict(doc.root().unwrap(), |c| c.set(b"Test".to_vec(), Object::Array(streams))).unwrap();
     doc.set_encryption(&NewEncryption {
@@ -802,7 +802,7 @@ fn a_file_identifier_of_many_references_is_two_strings() {
 #[test]
 fn a_crypt_filter_reference_to_itself_or_nothing_reads_as_absent() {
     let named = |n: Object| {
-        let mut d = craft_pdf::cos::Dict::new();
+        let mut d = bharat_pdf::cos::Dict::new();
         d.set(b"Name".to_vec(), n);
         Object::Dict(d)
     };
@@ -840,7 +840,7 @@ fn a_crypt_filter_reference_to_itself_or_nothing_reads_as_absent() {
 #[test]
 fn a_lone_parameter_dictionary_is_the_first_filters() {
     let mut doc = Document::open(Arc::new(protect(Algorithm::Aes128, "", "owner", -1))).unwrap();
-    let mut parms = craft_pdf::cos::Dict::new();
+    let mut parms = bharat_pdf::cos::Dict::new();
     parms.set(b"Name".to_vec(), Object::name("StdCF"));
     let first = Object::Array(vec![Object::name("Crypt"), Object::name("ASCIIHexDecode")]);
     let second = Object::Array(vec![Object::name("ASCIIHexDecode"), Object::name("Crypt")]);
@@ -856,7 +856,7 @@ fn a_lone_parameter_dictionary_is_the_first_filters() {
 fn protecting_keeps_the_parameters_of_the_filter_before_a_crypt_filter() {
     let protected = |filters: Vec<Object>| {
         let mut doc = Document::open(Arc::new(fixture())).unwrap();
-        let mut parms = craft_pdf::cos::Dict::new();
+        let mut parms = bharat_pdf::cos::Dict::new();
         parms.set(b"Name".to_vec(), Object::name("MyCF"));
         select(&mut doc, (Object::Array(filters), Object::Dict(parms)));
         doc.set_encryption(&NewEncryption {
@@ -905,7 +905,7 @@ fn protecting_leaves_a_parameter_array_too_short_for_the_crypt_filter() {
     }
 }
 
-/// A chain of up to [`craft_pdf::filters::MAX_CHAIN`] filters and `/Crypt` is read; a longer one
+/// A chain of up to [`bharat_pdf::filters::MAX_CHAIN`] filters and `/Crypt` is read; a longer one
 /// names no crypt filter, so its entries aren't followed for every stream sharing it.
 #[test]
 fn a_chain_longer_than_any_decoder_takes_names_no_crypt_filter() {
@@ -917,8 +917,8 @@ fn a_chain_longer_than_any_decoder_takes_names_no_crypt_filter() {
         select(&mut doc, (Object::Ref(array), Object::Null));
         holds(&write_incremental(&doc, &SaveOptions::default()).unwrap(), "Secret page")
     };
-    assert!(chain(craft_pdf::filters::MAX_CHAIN), "the longest chain read: /Identity, in the clear");
-    assert!(!chain(craft_pdf::filters::MAX_CHAIN + 1), "one more: the document's filter");
+    assert!(chain(bharat_pdf::filters::MAX_CHAIN), "the longest chain read: /Identity, in the clear");
+    assert!(!chain(bharat_pdf::filters::MAX_CHAIN + 1), "one more: the document's filter");
 }
 
 /// A stream's `/Type` by reference picks its handling like one given directly: metadata left
@@ -974,7 +974,7 @@ fn a_signature_dictionary_is_known_in_every_form() {
     ];
     let mut signatures = Vec::new();
     for (entries, contents) in forms {
-        let mut sig = craft_pdf::cos::Dict::new();
+        let mut sig = bharat_pdf::cos::Dict::new();
         for (key, value) in entries {
             sig.set(key.as_bytes().to_vec(), value);
         }
@@ -983,14 +983,14 @@ fn a_signature_dictionary_is_known_in_every_form() {
         signatures.push(Object::Ref(doc.add(Object::Dict(sig))));
     }
     // Nested in another object, it follows nothing, but known directly it is one all the same.
-    let mut nested = craft_pdf::cos::Dict::new();
+    let mut nested = bharat_pdf::cos::Dict::new();
     nested.set(b"Type".to_vec(), Object::name("Sig"));
     nested.set(b"Contents".to_vec(), Object::String(PdfString { bytes: vec![0xAB, 0xBA], hex: true }));
-    let mut field = craft_pdf::cos::Dict::new();
+    let mut field = bharat_pdf::cos::Dict::new();
     field.set(b"V".to_vec(), Object::Dict(nested));
     signatures.push(Object::Ref(doc.add(Object::Dict(field))));
     // Neither of what makes one: a string /Contents alone is anybody's, so it's encrypted.
-    let mut other = craft_pdf::cos::Dict::new();
+    let mut other = bharat_pdf::cos::Dict::new();
     other.set(b"Contents".to_vec(), Object::String(PdfString { bytes: vec![0xAB, 0xCD], hex: true }));
     signatures.push(Object::Ref(doc.add(Object::Dict(other))));
     doc.update_dict(doc.root().unwrap(), |c| c.set(b"Test".to_vec(), Object::Array(signatures))).unwrap();
@@ -1018,7 +1018,7 @@ struct Classic {
     info: ObjRef,
     encrypt: ObjRef,
     id: Vec<u8>,
-    dict: craft_pdf::cos::Dict,
+    dict: bharat_pdf::cos::Dict,
 }
 
 fn classic_file() -> Classic {
@@ -1098,7 +1098,7 @@ fn an_object_stream_reached_from_a_selector_keeps_its_members() {
         rows.push(b.wrapping_sub(before));
         before = b;
     }
-    let coded = craft_pdf::cos::Stream::flate(craft_pdf::cos::Dict::new(), &rows).raw;
+    let coded = bharat_pdf::cos::Stream::flate(bharat_pdf::cos::Dict::new(), &rows).raw;
     let mut object_stream =
         format!("<< /Type /ObjStm /N 2 /First {} /Filter /FlateDecode /DecodeParms 911 0 R /Length {} >>\nstream\n", header.len(), coded.len())
             .into_bytes();
@@ -1290,9 +1290,9 @@ fn a_direct_encrypt_dictionary_keeps_what_it_refers_to() {
 fn selectors_that_lead_to_selectors_load_at_once() {
     let mut doc = Document::open(Arc::new(protect(Algorithm::Aes128, "", "owner", -1))).unwrap();
     let stream_of = |doc: &mut Document, filters: Vec<Object>| {
-        let mut dict = craft_pdf::cos::Dict::new();
+        let mut dict = bharat_pdf::cos::Dict::new();
         dict.set(b"Filter".to_vec(), Object::Array(filters));
-        doc.add(Object::Stream(craft_pdf::cos::Stream::from_raw(dict, Vec::new())))
+        doc.add(Object::Stream(bharat_pdf::cos::Stream::from_raw(dict, Vec::new())))
     };
     let tree = |doc: &mut Document| {
         let mut level: Vec<ObjRef> = (0..6_561).map(|i| doc.add(Object::Int(i))).collect();
@@ -1333,7 +1333,7 @@ fn r6_file(cf: &str, selectors: &str, extra: &str, data: Option<&[u8]>) -> Vec<u
         encrypt_metadata: true,
         seed: [3; 32],
     };
-    let h = craft_pdf::crypt::create(&params, ID0).unwrap();
+    let h = bharat_pdf::crypt::create(&params, ID0).unwrap();
     let d = h.dict();
     let hex = |b: &[u8]| b.iter().map(|x| format!("{x:02X}")).collect::<String>();
     let encrypt = format!(
@@ -1344,7 +1344,7 @@ fn r6_file(cf: &str, selectors: &str, extra: &str, data: Option<&[u8]>) -> Vec<u
         hex(&d.ue),
         hex(&d.perms)
     );
-    let data = data.map_or_else(|| h.encrypt_stream(4, 0, SECRET.as_bytes(), craft_pdf::crypt::StreamKind::Normal), <[u8]>::to_vec);
+    let data = data.map_or_else(|| h.encrypt_stream(4, 0, SECRET.as_bytes(), bharat_pdf::crypt::StreamKind::Normal), <[u8]>::to_vec);
     let title = h.encrypt_string(6, 0, b"Quarterly numbers");
     let mut stream = format!("<< /Length {}{extra} >>\nstream\n", data.len()).into_bytes();
     stream.extend_from_slice(&data);
@@ -1433,7 +1433,7 @@ fn a_stream_encrypted_with_a_method_that_cant_be_decrypted_stays_as_stored() {
     // An edit elsewhere: incremental, the stream untouched and still as stored.
     let mut edited_info = doc.clone();
     let info = edited_info.trailer().reference(b"Info").unwrap();
-    let mut d = craft_pdf::cos::Dict::new();
+    let mut d = bharat_pdf::cos::Dict::new();
     d.set(b"Title".to_vec(), Object::String(PdfString::text("Edited")));
     edited_info.set(info, Object::Dict(d));
     let saved = write_incremental(&edited_info, &SaveOptions::default()).unwrap();
@@ -1450,7 +1450,7 @@ fn a_stream_encrypted_with_a_method_that_cant_be_decrypted_stays_as_stored() {
     // and through a full save, which the security of such a stream doesn't survive.
     let mut same_number = doc.clone();
     let root = same_number.trailer().reference(b"Root").unwrap();
-    let mut catalog = craft_pdf::cos::Dict::new();
+    let mut catalog = bharat_pdf::cos::Dict::new();
     catalog.set(b"A".to_vec(), Object::Ref(contents));
     catalog.set(b"Type".to_vec(), Object::name("Catalog"));
     catalog.set(b"Pages".to_vec(), Object::Ref(ObjRef::new(2, 0)));

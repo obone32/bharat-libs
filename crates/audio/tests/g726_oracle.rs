@@ -1,6 +1,6 @@
 #![cfg(feature = "g726")]
 
-use craft_audio::g726::{BitPacking, BitRate, Decoder, Encoder, decode, decode_interleaved, encode, encode_interleaved};
+use bharat_audio::g726::{BitPacking, BitRate, Decoder, Encoder, decode, decode_interleaved, encode, encode_interleaved};
 use std::process::Command;
 
 fn pearson_correlation(x: &[i16], y: &[i16]) -> f64 {
@@ -147,7 +147,7 @@ fn test_ffmpeg_g726_oracle_encoder_and_decoder() {
         pcm.push(s);
     }
 
-    let dir = std::env::temp_dir().join("craft_g726_oracle");
+    let dir = std::env::temp_dir().join("bharat_g726_oracle");
     let _ = std::fs::create_dir_all(&dir);
     let in_pcm_path = dir.join("input.s16le");
     let mut in_bytes = Vec::with_capacity(pcm.len() * 2);

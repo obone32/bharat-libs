@@ -1,4 +1,4 @@
-//! The reader's tests, from Craft Anything's `zip.rs`.
+//! The reader's tests, from Bharat Anything's `zip.rs`.
 
 use super::*;
 
@@ -392,7 +392,7 @@ fn a_method_left_out_of_the_build_is_unsupported() {
     assert!(matches!(read_entry_unverified(&data, &entry, 100), Err(ZipError::Unsupported(m)) if m.contains("not built in")));
 }
 
-// RRFZ, Craft Anything 29badae7: deprecated ZIP method 20 is Zstandard.
+// RRFZ, Bharat Anything 29badae7: deprecated ZIP method 20 is Zstandard.
 #[cfg(feature = "lenient-zstd")]
 mod legacy_zstandard {
     use crate::lenient as zip;

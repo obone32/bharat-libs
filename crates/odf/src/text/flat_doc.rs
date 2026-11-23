@@ -1,7 +1,7 @@
 //! Flat OpenDocument text (`.fodt`): taken apart into a package ([`crate::flat`]) and opened as
 //! one; saved by putting a package's files together.
 
-use craft_wordmodel::{Document, SectionProps};
+use bharat_wordmodel::{Document, SectionProps};
 
 use crate::{Limits, flat, mime};
 

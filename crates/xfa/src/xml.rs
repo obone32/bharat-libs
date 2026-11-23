@@ -1,4 +1,4 @@
-//! Lightweight namespace-aware XML DOM with source byte ranges, backed by `craft_xml`.
+//! Lightweight namespace-aware XML DOM with source byte ranges, backed by `bharat_xml`.
 
 use std::ops::Range;
 
@@ -183,9 +183,9 @@ impl Document {
     }
 
     fn parse_with_namespace_budget(text: &str, options: ParsingOptions, mut namespace_bytes: usize) -> Result<Self, String> {
-        let mut opts = craft_xml::Options {
+        let mut opts = bharat_xml::Options {
             strict: true,
-            doctype: if options.allow_dtd { craft_xml::Doctype::Ignore } else { craft_xml::Doctype::Reject },
+            doctype: if options.allow_dtd { bharat_xml::Doctype::Ignore } else { bharat_xml::Doctype::Reject },
             ..Default::default()
         };
         opts.limits.max_nodes = options.nodes_limit as usize;
@@ -209,7 +209,7 @@ impl Document {
             let span = events.span();
             let span = span.start + source_offset..span.end + source_offset;
             match ev {
-                craft_xml::Event::Start { name, attrs } => {
+                bharat_xml::Event::Start { name, attrs } => {
                     if nodes.len() >= options.nodes_limit as usize {
                         return Err("nodes limit reached".to_string());
                     }
@@ -255,7 +255,7 @@ impl Document {
                     }
                     open.push((id, scope_mark));
                 }
-                craft_xml::Event::End { .. } => {
+                bharat_xml::Event::End { .. } => {
                     if let Some((id, scope_mark)) = open.pop() {
                         if let NodeKind::Element { range, .. } = &mut nodes[id].kind {
                             range.end = span.end;
@@ -263,7 +263,7 @@ impl Document {
                         scope.truncate(scope_mark);
                     }
                 }
-                craft_xml::Event::Text(t) | craft_xml::Event::CData(t) => {
+                bharat_xml::Event::Text(t) | bharat_xml::Event::CData(t) => {
                     if let Some(&(parent, _)) = open.last() {
                         if let Some(&last_child) = nodes[parent].children.last()
                             && let NodeKind::Text(existing) = &mut nodes[last_child].kind
@@ -279,7 +279,7 @@ impl Document {
                         nodes[parent].children.push(id);
                     }
                 }
-                craft_xml::Event::Pi { .. } | craft_xml::Event::Comment(_) => {}
+                bharat_xml::Event::Pi { .. } | bharat_xml::Event::Comment(_) => {}
             }
         }
 

@@ -1,5 +1,5 @@
 [package]
-name = "craft-kiwi"
+name = "bharat-kiwi"
 description = "Clean-room decoder and encoder for the kiwi binary schema format: a schema of enums, structs and messages, and messages decoded with it into a tree keyed by field name, with bounded reads."
 version.workspace = true
 edition.workspace = true

@@ -11,8 +11,8 @@
 
 use std::sync::{Arc, Mutex};
 
-use craft_cloud::{Capability, Contact, Permission, Share, ShareTarget};
-use craft_ui::share::{Answer, Failure, Replier, Request, ShareBackend, ShareDialog};
+use bharat_cloud::{Capability, Contact, Permission, Share, ShareTarget};
+use bharat_ui::share::{Answer, Failure, Replier, Request, ShareBackend, ShareDialog};
 use egui::{Context, Event, FullOutput, Modifiers, PointerButton, Pos2, RawInput, Rect, accesskit, pos2, vec2};
 
 const SCREEN: [f32; 2] = [620.0, 900.0];

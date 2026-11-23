@@ -1,27 +1,27 @@
-# craft-raw
+# bharat-raw
 
 Camera raw files, the file-format layer: bytes in, the sensor data out as a neutral `RawImage` with
 what the file says about rendering it, and back for DNG. No `unsafe`, no panics on malformed input,
 no I/O (`&[u8]` in), and it builds for `wasm32-unknown-unknown`.
 
 ```toml
-craft-raw = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-raw = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ```rust
-match craft_raw::probe(&bytes) {
+match bharat_raw::probe(&bytes) {
     Some(format) if format.is_supported() => {
-        let raw = craft_raw::decode(&bytes)?;      // or decode_with(&bytes, &limits)
+        let raw = bharat_raw::decode(&bytes)?;      // or decode_with(&bytes, &limits)
         // raw.data: the samples as stored; raw.cfa, raw.black, raw.white, raw.active_area, raw.crop,
         // raw.orientation, raw.color (matrices, as-shot white), raw.opcodes, raw.camera
     }
-    Some(_) => { /* a raw this build does not decode: show craft_raw::embedded_preview(&bytes) */ }
+    Some(_) => { /* a raw this build does not decode: show bharat_raw::embedded_preview(&bytes) */ }
     None => { /* not a raw file */ }
 }
 ```
 
-It is the first of the three crates planned in craft-libs#587 (`craft-raw`, `craft-develop-model`,
-`craft-develop`) and part of the move of all format code into craft-libs (#778). The base is
+It is the first of the three crates planned in bharat-libs#587 (`bharat-raw`, `bharat-develop-model`,
+`bharat-develop`) and part of the move of all format code into bharat-libs (#778). The base is
 LightCraft's `lightcraft-raw`; what PhotoCraft's `photocraft-raw` and FilmCraft's `filmcraft-dng`
 did that it did not was ported, each with a test (see [Ported behaviour](#ported-behaviour)).
 
@@ -31,7 +31,7 @@ The format layer ends where arithmetic on the picture begins.
 
 | In this crate | In the develop pipeline (not here) |
 |---|---|
-| Recognising containers (`probe`), walking TIFF/IFD structure on `craft-tiff` | Black subtraction, white scaling, cropping to the active area |
+| Recognising containers (`probe`), walking TIFF/IFD structure on `bharat-tiff` | Black subtraction, white scaling, cropping to the active area |
 | Decompressing the samples: unpacking, lossless JPEG, lossy JPEG, Deflate, JPEG XL | Demosaicing, binned previews, hot-pixel and highlight handling |
 | A DNG `LinearizationTable` (a storage code, applied so the samples are sensor values; left unapplied when `OpcodeList1` is present, so the develop pipeline can run that list on the stored codes first) | Raising samples stuck below the stated white level (`lift_clipped_samples`) |
 | Black and white levels, CFA layout, active area, default crop, orientation, pixel aspect | The DNG colour model's arithmetic (illuminant interpolation, camera to working space) |
@@ -52,14 +52,14 @@ One module and one Cargo feature per maker or container family. All are on by de
 |---|---|---|
 | `dng` | Adobe DNG | Uncompressed at 1 to 16 bits (packed MSB-first, or 8/16-bit in file byte order), lossless JPEG (all seven predictors, 1 to 4 components, point transform, restart intervals), lossy JPEG (compression 34892, 8-bit baseline tiles or strips), Deflate with predictors 1, 2 and the floating-point predictors (16, 24 and 32-bit floats), strips and tiles, planar or interleaved, CFA of any period up to 16 × 16 (Bayer, X-Trans) and LinearRaw with 1, 3 or 4 samples, DNG 1.7 row and column interleave, reduced-resolution LinearRaw copies (`decode_reduced`), semantic masks, CinemaDNG frame tags. Writing: uncompressed, lossless JPEG tiles, Deflate tiles (integer, half and single floats) |
 | `jxl` | JPEG XL DNG (DNG 1.7, compression 52546) | Lossless and lossy tiles through `jxl-oxide`; implies `dng` |
-| `crw` | Canon CRW (CIFF) | Decoded by [`craft-crw`](../crw/README.md), the one CRW decoder, and returned through this crate's types |
+| `crw` | Canon CRW (CIFF) | Decoded by [`bharat-crw`](../crw/README.md), the one CRW decoder, and returned through this crate's types |
 | `cr2` | Canon CR2 | The lossless-JPEG frame of IFD 3 de-sliced (`0xc640`); the layout from `CR2CFAPattern` (`0xc5e0`); image area from `SensorInfo`; black measured on the masked columns; white from the saturation plateau; as-shot white balance from `ColorData` or `WBInfo`; the white-balance presets at their temperatures (`ColorData::kelvin_presets`). sRAW / mRAW (subsampled YCbCr, 4:2:2 and 4:2:0) come out as linear white-balanced RGB with three samples per pixel, the chroma gains measured against the file's own 16-bit RGB image in IFD 2 |
 | `nef` | Nikon NEF / NRW | Uncompressed (16-bit words, 12-bit packed, Coolpix word packing), the two interlaced fields of the E5400, E5700, E8400 and E8800 (the E5700 CYGM mosaic as approximate linear RGB), the packed layouts labelled compression 34713, Nikon's Huffman coding (lossless and lossy types, 12 and 14 bits, "lossy after split") with the `0x0096` linearisation table, small raw (YCbCr 4:2:2) as linear white-balanced RGB; black from `0x003d` or the NRW block, as-shot white balance from `0x000c`, `CropArea` or the measured image area of bodies that record none, masked trailing columns left out of the active area, the D1X pixel aspect, and the in-file distortion correction as a `WarpRectilinear` opcode ([derivation](docs/nikon-lens-corrections.md)). High Efficiency (HE / HE★) is refused by name; the previews still read |
 | `rw2` | Panasonic RW2, Leica RWL, older Panasonic / Leica RAW | Packed blocks (formats 2, 5, 7), formats 4 and 6, format 8 prefix-coded strips and tiles (a sample outside the bit depth makes the strip corrupt), 16-bit words; black per colour from `0x001c`–`0x001e` (plus the 15 counts formats 4 and 6 store above it, 15 when no black is recorded); white from the saturation plateau; sensor borders as the active area and the in-camera aspect crop; mapped-out defect pixels filled; as-shot white balance from `0x0024`–`0x0026`; the in-camera distortion correction (`0x0119`) as a `WarpRectilinear` opcode. Raw formats 1 and 3 and compression 34826 are refused (no samples of them) |
 | `raf` | Fujifilm RAF | The RAF header, records and raw IFD; uncompressed Bayer and X-Trans (16-bit words, 12-bit LSB-first, 32-bit word packing); Fujifilm's lossless and lossy striped compression ([derivation](docs/raf-compression.md), [corpus](docs/raf-corpus.sha256)); black, as-shot white balance and, for bodies without colour matrices, the camera's neutral multipliers for Illuminant A and D65 (`ColorData::kelvin_presets`, a neutral pair); orientation, make and model from the embedded JPEG's Exif; the in-file distortion and vignetting corrections as opcodes; the embedded preview, also by range from the header alone (`bounded_preview`, `embedded_preview_from_range`). The pre-2010 FinePix layout without a raw IFD is refused |
 | `orf` | Olympus / OM System ORF | Uncompressed: 16-bit words (12-bit values in the top bits shifted down), 12-bit packed in 32-bit words (XZ-2), 12-bit two-field (older compacts), 16-byte blocks of ten 12-bit samples (E-300, E-330, E-500, high-resolution modes); CFA from Exif `CFAPattern`; black, as-shot white balance (relative to `WB_GLevel`) and crop from the maker note's ImageProcessing, or from the main note on bodies without it; the CameraSettings preview. Compressed ORF is refused ([why](docs/orf-compression.md)); its preview still reads |
 | `arw` | Sony ARW (and the SR2 / SRF containers) | Uncompressed 16-bit words and packed 12-bit, ARW2 (cRAW, compression 32767), lossless JPEG tiles of 2 × 2 cells (compression 7) and the linear YCbCr of downsized lossless files, ARW6 "Compressed RAW 2" (compression 32766, SMPTE RDD 34 LLVC; [derivation](docs/arw6-compression.md)); the encrypted SR2SubIFD (every key) for black, white balance, crop and the white-balance presets at their temperatures (`ColorData::kelvin_presets`); crop from Sony's crop tags, the DNG-style default crop or the recorded image size; the in-file distortion, shading and lateral CA tables decoded with their provenance (`RawImage::lens_metadata`), and the validated distortion as a `WarpRectilinear` opcode ([7RM4A and others](docs/sony-lens-corrections.md), [7RM6](docs/sony-ilce7rm6-lens-corrections.md)); the Dynamic Range Optimizer flag of the embedded preview (`embedded_preview_dynamic_range_optimized`) |
-| `cr3` | Canon CR3 | CRX lossless Bayer and C-RAW (lossy) from the main raw track (`CMP1`), through craft-metadata's CR3 container parser; geometry from `CDI1`/`IAD1` and the maker note's `AspectInfo`; as-shot white balance, black and white from `ColorData` (static or the timed `CTMD` maker note), with the stated white extended to a saturation plateau above it (and BaselineExposure compensated); orientation, make and model from `CMT1`; the full-size JPEG track or the `PRVW` / `THMB` boxes as the embedded preview, and the preview colour space from the Canon maker note ([record](docs/cr3.md)). Unverified marker families are refused |
+| `cr3` | Canon CR3 | CRX lossless Bayer and C-RAW (lossy) from the main raw track (`CMP1`), through bharat-metadata's CR3 container parser; geometry from `CDI1`/`IAD1` and the maker note's `AspectInfo`; as-shot white balance, black and white from `ColorData` (static or the timed `CTMD` maker note), with the stated white extended to a saturation plateau above it (and BaselineExposure compensated); orientation, make and model from `CMT1`; the full-size JPEG track or the `PRVW` / `THMB` boxes as the embedded preview, and the preview colour space from the Canon maker note ([record](docs/cr3.md)). Unverified marker families are refused |
 | `mrw` | Minolta / Konica Minolta MRW | The `\0MRM` block container (`PRD`, `WBG`, `TTW`), 12-bit packed and 16-bit word mosaics, as-shot white balance from `WBG`, white from the saturation plateau |
 | `erf` | Epson ERF (R-D1, R-D1s, R-D1x) | 12-bit samples in 16-byte blocks, black levels from the maker note, the measured picture origin. No white balance (the file states none) |
 | `mef` | Mamiya MEF (ZD) | Uncompressed 12-bit packed; default crop from the RGB preview's measured window. No white balance (the file states none) |
@@ -87,7 +87,7 @@ decoder allocate. Each has a test.
 Independent of the limits, sizes are checked against the bytes present: an image must have a chunk
 for every tile or strip, its chunks may not be much larger than the image, and no coding may claim
 more than 2048 samples per stored byte, so a small file cannot ask for a large buffer. CRW keeps
-`craft-crw`'s own cap of 2²³ samples (or the caller's, when lower). Semantic masks are capped at 16
+`bharat-crw`'s own cap of 2²³ samples (or the caller's, when lower). Semantic masks are capped at 16
 masks of 2²⁵ samples; opcode lists at 4096 opcodes.
 
 ## Ported behaviour
@@ -105,7 +105,7 @@ the three supported was kept:
 | PhotoCraft, FilmCraft | Lossy JPEG DNG is 8 bits per sample; another depth is `Unsupported` | 8-bit codes were read as the declared depth |
 | PhotoCraft, FilmCraft | A lossy tile's JPEG must cover the part of its tile inside the image | a smaller JPEG left the rest of the tile black |
 | FilmCraft | CinemaDNG `FrameRate`, `TimeCodes` and `ReelName` (`RawImage::cinema`), read and written | not read |
-| craft-crw | A big-endian (`MM`) CIFF header is a CRW | `probe` knew only `II` |
+| bharat-crw | A big-endian (`MM`) CIFF header is a CRW | `probe` knew only `II` |
 | PhotoCraft | Hasselblad: four `BlackLevel` values without `BlackLevelRepeatDim` are one per site of the 2 × 2 CFA (files that are not DNGs only) | the first value was used for every site |
 
 Left as LightCraft has it, with the reason:
@@ -174,7 +174,7 @@ Left as LightCraft has it, with the reason:
 - Exif-only inputs a decoder needs are read from the Exif IFD directly: the 7RM6 lens tables are chosen by
   `LensModel` and `FocalLength`.
 - Canon CR3 is LightCraft's reader. PhotoCraft has no CR3 sensor decoder (it shows the JPEG track or `PRVW`, and
-  reads `CMT1` orientation), which this crate also does. The CR3 container parser is craft-metadata's `cr3` module,
+  reads `CMT1` orientation), which this crate also does. The CR3 container parser is bharat-metadata's `cr3` module,
   the one CR3 parser in this repository.
 - `sparse::header_plan` / `preview_plan` say which byte ranges of a file a header probe or preview read needs, so a
   caller on a slow drive can skip the sample data. `docs/coverage/` holds LightCraft's camera-coverage records
@@ -196,22 +196,22 @@ Written only from public specifications and from observation of files:
 
 No code from dcraw, LibRaw, rawspeed, rawloader/rawler, dnglab, darktable, RawTherapee, ExifTool's
 Perl or Adobe's SDKs was read or used, and no camera colour tables or profiles are shipped. The
-code was moved from the Craft apps (see `NOTICE`, *Source provenance*); nothing was added from
+code was moved from the Bharat apps (see `NOTICE`, *Source provenance*); nothing was added from
 another project to fill a gap. The derivation records of the maker formats that are not here yet
 (LightCraft's `docs/arw6-compression.md`, `docs/raf-compression.md`, `docs/orf-compression.md`,
 `docs/cr3.md` and their logs) move with those formats.
 
 ## Dependencies
 
-`craft-tiff` (IFD parsing and writing), `craft-crw` (feature `crw`), `miniz_oxide` (Deflate),
-`zune-jpeg` (the 8-bit baseline JPEG of lossy DNG tiles: `craft-jpeg` covers the JPEG processes
+`bharat-tiff` (IFD parsing and writing), `bharat-crw` (feature `crw`), `miniz_oxide` (Deflate),
+`zune-jpeg` (the 8-bit baseline JPEG of lossy DNG tiles: `bharat-jpeg` covers the JPEG processes
 baseline decoders lack and sends baseline frames to one), `jxl-oxide` (feature `jxl`), `rayon`,
 `serde`, `thiserror`, `chrono` (feature `crw`: the plausibility of a capture time).
 
 ## Tests
 
 No sample files are committed. Every storage variant is written by the crate's own DNG writer or by
-hand with `craft-tiff`'s `TiffWriter` and the lossless-JPEG encoder (`ljpeg::encode`), and must
+hand with `bharat-tiff`'s `TiffWriter` and the lossless-JPEG encoder (`ljpeg::encode`), and must
 decode bit-exactly; lossy tiles are made with `jpeg-encoder`, JPEG XL tiles with `zune-jpegxl`
 (tests only). Hostile input: every truncation of each sample, byte mutations across the
 header, 400 random mutations per property, random TIFF-like, lossless-JPEG, opcode-list and CIFF

@@ -12,12 +12,12 @@ const CJK: &[u8] = include_bytes!("../../tests/fonts/NotoSansCJKsc-test.otf");
 
 const OFFERED: &[&str] = &["en", "ar", "ja", "zh-CN", "zh-TW", "zh-HK", "ko", "th", "ka", "ru"];
 
-const fn face(family: &'static str, style: &'static str, scripts: &'static [&'static str]) -> CraftFace {
-    CraftFace { family, style, scripts, bytes: &[], index: 0 }
+const fn face(family: &'static str, style: &'static str, scripts: &'static [&'static str]) -> BharatFace {
+    BharatFace { family, style, scripts, bytes: &[], index: 0 }
 }
 
-/// craft-fonts' manifest today, plus the regional CJK faces and Georgian it is planned to have.
-const CRAFT: &[CraftFace] = &[
+/// bharat-fonts' manifest today, plus the regional CJK faces and Georgian it is planned to have.
+const BHARAT: &[BharatFace] = &[
     face("Shippori Mincho", "Regular", &["Jpan", "Latn"]),
     face("BIZ UDPGothic", "Regular", &["Jpan", "Latn"]),
     face("BIZ UDPGothic", "Bold", &["Jpan", "Latn"]),
@@ -34,7 +34,7 @@ fn fonts(ui_language: &str) -> UiFonts<'static> {
     UiFonts::new(&I18nScripts)
         .app_face("ui", FontData::from_static(&[]), &[FontFamily::Proportional])
         .app_face("mono", FontData::from_static(&[]), &[FontFamily::Monospace])
-        .craft_faces(CRAFT)
+        .bharat_faces(BHARAT)
         .languages(OFFERED)
         .ui_language(ui_language)
         .system_fonts(SystemFonts::Off)
@@ -53,7 +53,7 @@ fn ui_language_face_leads_when_the_app_face_lacks_its_script() {
         ("zh-TW", &["ui", "Noto Sans CJK TC Regular", "Noto Sans CJK HK Regular", "Noto Sans CJK SC Regular"]),
         ("zh-HK", &["ui", "Noto Sans CJK HK Regular", "Noto Sans CJK TC Regular", "Noto Sans CJK SC Regular"]),
         ("zh-CN", &["ui", "Noto Sans CJK SC Regular", "Noto Sans CJK TC Regular"]),
-        // craft-fonts' preference for BIZ UDPGothic orders Japanese faces only where they are
+        // bharat-fonts' preference for BIZ UDPGothic orders Japanese faces only where they are
         // the best region: for Korean they keep manifest order.
         ("ko", &["ui", "Noto Sans CJK KR Regular", "Shippori Mincho Regular", "BIZ UDPGothic Regular"]),
         ("th", &["Noto Sans Thai Regular", "ui"]),
@@ -97,13 +97,13 @@ fn families_without_app_faces_start_with_egui_defaults() {
 }
 
 fn fonts_without_faces(ui_language: &str) -> UiFonts<'static> {
-    UiFonts::new(&I18nScripts).craft_faces(CRAFT).languages(OFFERED).ui_language(ui_language).system_fonts(SystemFonts::Off)
+    UiFonts::new(&I18nScripts).bharat_faces(BHARAT).languages(OFFERED).ui_language(ui_language).system_fonts(SystemFonts::Off)
 }
 
 #[test]
-fn craft_preference_orders_the_best_region_only() {
+fn bharat_preference_orders_the_best_region_only() {
     // With only Japanese faces, they are the best Han region a Taiwanese UI has.
-    let stack = UiFonts::new(&I18nScripts).craft_faces(&CRAFT[..3]).ui_language("zh-TW").system_fonts(SystemFonts::Off).stack();
+    let stack = UiFonts::new(&I18nScripts).bharat_faces(&BHARAT[..3]).ui_language("zh-TW").system_fonts(SystemFonts::Off).stack();
     let chain = stack.chain(&FontFamily::Proportional);
     let at = |name: &str| chain.iter().position(|n| n == name);
     assert!(at("BIZ UDPGothic Regular") < at("Shippori Mincho Regular"), "{chain:?}");
@@ -114,7 +114,7 @@ fn every_shipped_face_is_in_every_stack() {
     for language in OFFERED {
         let stack = fonts(language).stack();
         let chain = stack.chain(&FontFamily::Proportional);
-        for face in CRAFT.iter().filter(|f| f.style == "Regular") {
+        for face in BHARAT.iter().filter(|f| f.style == "Regular") {
             assert!(chain.contains(&face.name()), "{language}: {} missing", face.name());
         }
         assert!(!chain.contains(&"BIZ UDPGothic Bold".to_owned()), "{language}: bold face in the regular chain");
@@ -199,9 +199,9 @@ fn test_fonts(ui_language: &str) -> UiFonts<'static> {
     let ubuntu = defaults.font_data.get("Ubuntu-Light").map(|d| (**d).clone()).expect("egui default_fonts in dev-dependencies");
     UiFonts::new(&I18nScripts)
         .app_face("ui", ubuntu, &[FontFamily::Proportional])
-        .craft_faces(&[
-            CraftFace { family: "Noto Sans Arabic", style: "Regular", scripts: &["Arab"], bytes: ARABIC, index: 0 },
-            CraftFace { family: "Noto Sans CJK SC", style: "Regular", scripts: &["Hans", "Latn"], bytes: CJK, index: 0 },
+        .bharat_faces(&[
+            BharatFace { family: "Noto Sans Arabic", style: "Regular", scripts: &["Arab"], bytes: ARABIC, index: 0 },
+            BharatFace { family: "Noto Sans CJK SC", style: "Regular", scripts: &["Hans", "Latn"], bytes: CJK, index: 0 },
         ])
         .languages(&["en", "ar", "ja", "ka"])
         .ui_language(ui_language)
@@ -209,9 +209,9 @@ fn test_fonts(ui_language: &str) -> UiFonts<'static> {
 }
 
 #[test]
-fn craft_faces_come_from_embedded_faces() {
-    let embedded = craft_fonts_build::EmbeddedFace { family: "Noto Sans Arabic", style: "Regular", scripts: &["Arab"], index: 2, bytes: ARABIC };
-    let face = CraftFace::from(embedded);
+fn bharat_faces_come_from_embedded_faces() {
+    let embedded = bharat_fonts_build::EmbeddedFace { family: "Noto Sans Arabic", style: "Regular", scripts: &["Arab"], index: 2, bytes: ARABIC };
+    let face = BharatFace::from(embedded);
     assert_eq!((face.name().as_str(), face.scripts, face.index, face.bytes.len()), ("Noto Sans Arabic Regular", &["Arab"][..], 2, ARABIC.len()));
 }
 
@@ -240,14 +240,14 @@ fn coverage_names_language_string_and_character() {
 #[test]
 fn a_latin_ui_takes_letters_its_face_lacks_from_a_latin_craft_face() {
     const NOTO_SANS: &[u8] = include_bytes!("../../tests/fonts/NotoSans-test.ttf");
-    let cjk = CraftFace { family: "Noto Sans CJK SC", style: "Regular", scripts: &["Hans", "Latn"], bytes: CJK, index: 0 };
-    let noto_sans = CraftFace { family: "Noto Sans", style: "Regular", scripts: &["Latn", "Cyrl", "Grek", "Deva"], bytes: NOTO_SANS, index: 0 };
+    let cjk = BharatFace { family: "Noto Sans CJK SC", style: "Regular", scripts: &["Hans", "Latn"], bytes: CJK, index: 0 };
+    let noto_sans = BharatFace { family: "Noto Sans", style: "Regular", scripts: &["Latn", "Cyrl", "Grek", "Deva"], bytes: NOTO_SANS, index: 0 };
     let defaults = FontDefinitions::default();
     let ubuntu = defaults.font_data.get("Ubuntu-Light").expect("egui default_fonts in dev-dependencies");
     assert!(!providers::has_char(ubuntu, 'ổ') && !providers::has_char(ubuntu, 'ạ'));
     let vietnamese = [Sample { language: "vi", key: "menu.file", text: "Tiếng Việt ổ ư ạ" }];
-    let stack = |faces: &[CraftFace]| {
-        UiFonts::new(&I18nScripts).craft_faces(faces).languages(&["en", "vi", "zh-CN"]).ui_language("vi").system_fonts(SystemFonts::Off).stack()
+    let stack = |faces: &[BharatFace]| {
+        UiFonts::new(&I18nScripts).bharat_faces(faces).languages(&["en", "vi", "zh-CN"]).ui_language("vi").system_fonts(SystemFonts::Off).stack()
     };
 
     let without = stack(&[cjk]);
@@ -344,7 +344,7 @@ fn variable_faces_draw_at_regular_weight() {
     let bold = wrapped.font_for(&FallbackRequest { cluster: "ع", family: &FontFamily::Name("bold".into()) }).expect("found");
     assert_eq!((bold.name.as_str(), wght(&bold.data)), ("system:Arabic @700", Some(700.0)));
 
-    // Craft faces get the same treatment, and a weight the app set stays.
+    // Bharat faces get the same treatment, and a weight the app set stays.
     let stack = test_stack("ar");
     assert_eq!(stack.definitions.font_data.get("Noto Sans Arabic Regular").map(|d| wght(d)), Some(Some(400.0)));
     let mut set = thin();
@@ -543,7 +543,7 @@ fn covers_language_checks_every_script_of_the_language() {
         assert!(stack.covers_language(language, false), "{language}");
     }
     assert!(!stack.covers_language("ka", false), "no Georgian face");
-    // Not offered: the scripts come from craft-i18n.
+    // Not offered: the scripts come from bharat-i18n.
     assert!(stack.covers_language("zh-CN", false));
     assert!(!stack.covers_language("th", false));
 }
@@ -556,16 +556,16 @@ const fn served(family: &'static str, style: &'static str, scripts: &'static [&'
 }
 
 fn coverage_of(font: &[u8]) -> &'static [u8] {
-    Box::leak(craft_fonts_build::coverage::of_face(font, 0).expect("a font").into_boxed_slice())
+    Box::leak(bharat_fonts_build::coverage::of_face(font, 0).expect("a font").into_boxed_slice())
 }
 
 fn coverage_of_chars(chars: &str) -> &'static [u8] {
     let mut ranges: Vec<(u32, u32)> = chars.chars().map(|c| (u32::from(c), u32::from(c))).collect();
     ranges.sort_unstable();
-    Box::leak(craft_fonts_build::coverage::encode(&ranges).into_boxed_slice())
+    Box::leak(bharat_fonts_build::coverage::encode(&ranges).into_boxed_slice())
 }
 
-/// craft-fonts' faces as a web build serves them; the CJK collection's faces share one file.
+/// bharat-fonts' faces as a web build serves them; the CJK collection's faces share one file.
 const SERVED: &[ServedFace] = &[
     served("BIZ UDPGothic", "Regular", &["Jpan", "Latn"], "fonts/biz-ud-pgothic/BIZUDPGothic-Regular.ttf", 0),
     served("BIZ UDPGothic", "Bold", &["Jpan", "Latn"], "fonts/biz-ud-pgothic/BIZUDPGothic-Bold.ttf", 0),
@@ -594,10 +594,10 @@ fn names(faces: Vec<&ServedFace>) -> Vec<String> {
 
 #[test]
 fn served_faces_take_the_places_of_embedded_ones_without_data() {
-    let embedded: Vec<CraftFace> = SERVED.iter().map(ServedFace::craft_face).collect();
+    let embedded: Vec<BharatFace> = SERVED.iter().map(ServedFace::bharat_face).collect();
     for language in ["en", "ar", "ja", "zh-TW", "th"] {
         let web = web_fonts(language, SERVED).stack();
-        let desktop = web_fonts(language, &[]).craft_faces(&embedded).stack();
+        let desktop = web_fonts(language, &[]).bharat_faces(&embedded).stack();
         for family in [FontFamily::Proportional, FontFamily::Monospace, FontFamily::Name("semibold".into())] {
             assert_eq!(web.chain(&family), desktop.chain(&family), "{language} {family:?}");
         }
@@ -698,8 +698,8 @@ fn fetched_cjk_faces_fit_the_latin_rows_as_embedded_ones_do() {
     const SC: &[ServedFace] = &[served("Noto Sans CJK SC", "Regular", &["Hans", "Latn"], "fonts/sc.otf", 0)];
     let mut web = web_fonts("zh-CN", SC).stack();
     web.provide("fonts/sc.otf", &(Arc::new(CJK.to_vec()) as egui::epaint::text::Blob));
-    let embedded = CraftFace { bytes: CJK, ..SC[0].craft_face() };
-    let desktop = web_fonts("zh-CN", &[]).craft_faces(&[embedded]).stack();
+    let embedded = BharatFace { bytes: CJK, ..SC[0].bharat_face() };
+    let desktop = web_fonts("zh-CN", &[]).bharat_faces(&[embedded]).stack();
     let tweak = |stack: &Stack| {
         let tweak = &stack.definitions.font_data.get("Noto Sans CJK SC Regular").expect("CJK face").tweak;
         (tweak.scale, tweak.y_offset_factor)
@@ -710,20 +710,20 @@ fn fetched_cjk_faces_fit_the_latin_rows_as_embedded_ones_do() {
 
 /// The CJK interface faces as `Embed::subset_to` embeds them, with Noto Sans CJK SC as the
 /// Simplified one.
-fn ui_faces(others: &'static [u8]) -> [CraftFace; 5] {
+fn ui_faces(others: &'static [u8]) -> [BharatFace; 5] {
     [
-        CraftFace { family: "Noto Sans SC UI", style: "Regular", scripts: &["Hans", "Latn"], bytes: CJK, index: 0 },
-        CraftFace { family: "Noto Sans TC UI", style: "Regular", scripts: &["Hant", "Latn"], bytes: others, index: 0 },
-        CraftFace { family: "Noto Sans HK UI", style: "Regular", scripts: &["Hant-HK", "Latn"], bytes: others, index: 0 },
-        CraftFace { family: "Noto Sans KR UI", style: "Regular", scripts: &["Kore", "Latn"], bytes: others, index: 0 },
-        CraftFace { family: "BIZ UDPGothic", style: "Regular", scripts: &["Jpan", "Latn"], bytes: others, index: 0 },
+        BharatFace { family: "Noto Sans SC UI", style: "Regular", scripts: &["Hans", "Latn"], bytes: CJK, index: 0 },
+        BharatFace { family: "Noto Sans TC UI", style: "Regular", scripts: &["Hant", "Latn"], bytes: others, index: 0 },
+        BharatFace { family: "Noto Sans HK UI", style: "Regular", scripts: &["Hant-HK", "Latn"], bytes: others, index: 0 },
+        BharatFace { family: "Noto Sans KR UI", style: "Regular", scripts: &["Kore", "Latn"], bytes: others, index: 0 },
+        BharatFace { family: "BIZ UDPGothic", style: "Regular", scripts: &["Jpan", "Latn"], bytes: others, index: 0 },
     ]
 }
 
 #[test]
 fn preferences_name_the_interface_faces_too() {
-    let order = |faces: &[CraftFace], prefer: Option<&str>| {
-        let mut fonts = UiFonts::new(&I18nScripts).craft_faces(faces).ui_language("ja").system_fonts(SystemFonts::Off);
+    let order = |faces: &[BharatFace], prefer: Option<&str>| {
+        let mut fonts = UiFonts::new(&I18nScripts).bharat_faces(faces).ui_language("ja").system_fonts(SystemFonts::Off);
         if let Some(family) = prefer {
             fonts = fonts.prefer("Jpan", family);
         }
@@ -732,7 +732,7 @@ fn preferences_name_the_interface_faces_too() {
     };
     let mincho = face("Shippori Mincho", "Regular", &["Jpan", "Latn"]);
     let gothic = ui_faces(&[])[4];
-    // craft-fonts' preference for BIZ UDPGothic.
+    // bharat-fonts' preference for BIZ UDPGothic.
     assert_eq!(order(&[mincho, gothic], None), ["BIZ UDPGothic Regular", "Shippori Mincho Regular"]);
     // The app's.
     let mincho_ui = face("Shippori Mincho UI", "Regular", &["Jpan", "Latn"]);
@@ -758,7 +758,7 @@ fn a_taiwanese_ui_takes_characters_no_interface_face_has_from_the_system_fonts()
         };
         UiFonts::new(&I18nScripts)
             .app_face("ui", FontData::from_static(NOTO_SANS), &[FontFamily::Proportional])
-            .craft_faces(&faces)
+            .bharat_faces(&faces)
             .languages(&["en", "zh-TW", "zh-CN", "ja", "ko"])
             .ui_language("zh-TW")
             .system_provider(Arc::new(system))
@@ -797,7 +797,7 @@ fn a_web_build_downloads_the_interface_face_for_its_language() {
     }
 }
 
-/// craft-fonts' faces for Latin, Greek and Cyrillic, symbols and emoji, as a web build serves them.
+/// bharat-fonts' faces for Latin, Greek and Cyrillic, symbols and emoji, as a web build serves them.
 const SERVED_SYMBOLS: &[ServedFace] = &[
     served("Noto Sans", "Regular", &["Latn", "Cyrl", "Grek", "Deva"], "fonts/noto-sans/NotoSans.ttf", 0),
     served("Noto Color Emoji", "Regular", &["Zsye"], "fonts/noto-color-emoji/NotoColorEmoji.ttf", 0),
@@ -900,7 +900,7 @@ fn web_context(fetch: &Arc<FakeFetch>) -> (egui::Context, impl Fn(char) -> bool)
     faces[2].coverage = coverage_of(SYMBOLS);
     faces[3].coverage = coverage_of(SYMBOLS_2);
     // Arrows and technical symbols, ⌥ and ⇥ among them; never served.
-    faces[4].coverage = craft_fonts_build::coverage::encode(&[(0x2190, 0x21FF), (0x2300, 0x23FF)]).leak();
+    faces[4].coverage = bharat_fonts_build::coverage::encode(&[(0x2190, 0x21FF), (0x2300, 0x23FF)]).leak();
     web_context_with("en", &faces, fetch)
 }
 

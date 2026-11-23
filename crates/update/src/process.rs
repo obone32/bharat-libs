@@ -1,4 +1,4 @@
-//! Starting programs: the Craft Apps themselves, the file manager, and helper tools.
+//! Starting programs: the Bharat Apps themselves, the file manager, and helper tools.
 
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
@@ -763,7 +763,7 @@ mod run_tests {
 
     #[test]
     fn a_detached_program_that_cannot_start_says_so() {
-        let result = spawn_detached(command("craft-update-test-no-such-program"));
+        let result = spawn_detached(command("bharat-update-test-no-such-program"));
         assert!(matches!(&result, Err(e) if e.starts_with("couldn't start it (")), "{result:?}");
     }
 
