@@ -1,6 +1,6 @@
 #![cfg(feature = "sbc")]
 
-use craft_audio::sbc::{
+use bharat_audio::sbc::{
     AllocationMethod, BlockCount, ChannelMode, Decoder, Encoder, Header, SYNCWORD_MSBC, SYNCWORD_SBC, SamplingFrequency, Subbands, decode, encode,
 };
 use std::process::Command;
@@ -170,10 +170,10 @@ fn test_invalid_and_corrupt_inputs() {
 
 #[test]
 fn test_oracle_ffmpeg_cross_verification() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else {
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else {
         return;
     };
-    let dir = craft_media_testkit::fixture_subdir("sbc");
+    let dir = bharat_media_testkit::fixture_subdir("sbc");
 
     // 1. FFmpeg decodes our encoded SBC files
     for &(sample_rate, channels) in &[(16_000u32, 1usize), (44_100, 2), (48_000, 2)] {

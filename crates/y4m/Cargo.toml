@@ -1,5 +1,5 @@
 [package]
-name = "craft-y4m"
+name = "bharat-y4m"
 description = "YUV4MPEG2 (.y4m) reader: stream header, colour space layouts, a frame index built without loading the file, and plane access."
 version.workspace = true
 edition.workspace = true

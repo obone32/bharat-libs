@@ -1,4 +1,4 @@
-# craft-ecproj-format
+# bharat-ecproj-format
 
 The envelope of EffectCraft `.ecproj` project files: the members around the project that
 EffectCraft writes and other apps read. The project model, the saved view and the schema 1
@@ -6,7 +6,7 @@ conversion stay in EffectCraft. No `unsafe`, no panics, and it builds for
 `wasm32-unknown-unknown`. The dependencies are `serde`, `serde_json` and `thiserror`.
 
 ```toml
-craft-ecproj-format = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-ecproj-format = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ## The file
@@ -20,7 +20,7 @@ Project ▸ Save Compact Project Files is on. The crate writes and reads both fo
 ## Use
 
 ```rust
-use craft_ecproj_format::{File, Head, check_schema};
+use bharat_ecproj_format::{File, Head, check_schema};
 
 // Writing
 check_schema(project.schema)?;

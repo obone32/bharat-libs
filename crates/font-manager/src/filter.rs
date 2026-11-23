@@ -1,6 +1,6 @@
 //! Searching the index: family names, category, language and script.
 
-use craft_i18n::Folder;
+use bharat_i18n::Folder;
 
 use crate::index::{Category, Index, categories};
 

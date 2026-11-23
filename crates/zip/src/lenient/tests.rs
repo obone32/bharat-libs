@@ -1,4 +1,4 @@
-//! The reader's tests, from Craft Anything's `zip.rs`.
+//! The reader's tests, from Bharat Anything's `zip.rs`.
 
 use super::*;
 

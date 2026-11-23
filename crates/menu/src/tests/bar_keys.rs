@@ -10,7 +10,7 @@ use crate::bar::{Labeled, is_focused, leave_for_shortcut};
 
 impl Bar {
     fn keys(&self) -> Keys {
-        Keys::current(&self.ctx, Id::unique("craft-menu-bar").with("keys"))
+        Keys::current(&self.ctx, Id::unique("bharat-menu-bar").with("keys"))
     }
 
     fn focus(&self) -> Option<usize> {
@@ -255,7 +255,7 @@ fn mnemonics_are_underlined_only_with_alt_or_a_keyboard_opened_menu() {
         let ctx = b.ctx.clone();
         // The rows' mnemonics are in AccessKit either way; the drawn text has the underline.
         b.node("New").and_then(|n| n.access_key().map(str::to_owned)).is_some()
-            && Nav::current(&ctx, Id::unique("craft-menu-bar").with("nav")).underline
+            && Nav::current(&ctx, Id::unique("bharat-menu-bar").with("nav")).underline
     };
     assert!(!underlined(&b));
     b.alt(true);

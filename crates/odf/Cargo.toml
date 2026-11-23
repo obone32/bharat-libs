@@ -1,5 +1,5 @@
 [package]
-name = "craft-odf"
+name = "bharat-odf"
 description = "OpenDocument packages: the ZIP container with its mimetype and manifest, password protection (AES-256-CBC, PBKDF2) and flat single-file documents, read and written."
 version.workspace = true
 edition.workspace = true
@@ -11,10 +11,10 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-xml = { workspace = true }
+bharat-xml = { workspace = true }
 thiserror = { workspace = true }
 # `test-support`: `zip_guard::zip64_entry_count_sample` is public here.
-craft-zip = { workspace = true, features = ["test-support"] }
+bharat-zip = { workspace = true, features = ["test-support"] }
 flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
 base64 = "0.23"
 # Password-protected packages (ODF 1.3 Part 2 section 3.4): AES-256-CBC, SHA-1/SHA-256, PBKDF2
@@ -27,22 +27,22 @@ getrandom = "0.3"
 zeroize = "1"
 
 [features]
-# ODT documents: read into and written from the craft-flow model and a craft-wordmodel Document.
-text = ["dep:craft-flow", "dep:craft-wordmodel", "dep:craft-math", "dep:craft-metafile", "dep:image", "dep:chrono", "dep:log", "dep:js-sys"]
+# ODT documents: read into and written from the bharat-flow model and a bharat-wordmodel Document.
+text = ["dep:bharat-flow", "dep:bharat-wordmodel", "dep:bharat-math", "dep:bharat-metafile", "dep:image", "dep:chrono", "dep:log", "dep:js-sys"]
 
-[dependencies.craft-flow]
+[dependencies.bharat-flow]
 workspace = true
 optional = true
 
-[dependencies.craft-wordmodel]
+[dependencies.bharat-wordmodel]
 workspace = true
 optional = true
 
-[dependencies.craft-math]
+[dependencies.bharat-math]
 workspace = true
 optional = true
 
-[dependencies.craft-metafile]
+[dependencies.bharat-metafile]
 workspace = true
 optional = true
 

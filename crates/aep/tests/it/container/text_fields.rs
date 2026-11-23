@@ -2,7 +2,7 @@
 //! run, the undecoded-slot check, damaged runs, the Source Text record and the text anchor rule.
 
 use crate::container::helpers::{first_comp, layer_named, open};
-use craft_aep::{Caps, LayerType, Project, TextDocument, ValueSource};
+use bharat_aep::{Caps, LayerType, Project, TextDocument, ValueSource};
 
 /// Every synthetic text case that has a fixture, with its text.
 const CASES: &[(&str, &str)] = &[

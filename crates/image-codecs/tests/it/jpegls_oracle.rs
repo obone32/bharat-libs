@@ -1,12 +1,12 @@
 //! JPEG-LS against ffmpeg as the reference (oracle; skipped when ffmpeg is absent, a failure with
-//! `CRAFT_MEDIA_REQUIRE_ORACLES=1`):
+//! `BHARAT_MEDIA_REQUIRE_ORACLES=1`):
 //! - files ffmpeg's encoder writes (8- and 16-bit gray: smooth, noisy and flat images, which
 //!   exercise the regular, run and escape-coded paths) decode to the pixels ffmpeg decodes;
 //! - files our encoder writes (gray 8 and 16 bits, RGB 8 bits) decode in ffmpeg to our pixels (ffmpeg
 //!   cannot decode 16-bit RGB JPEG-LS, so that case is only round-tripped through our own decoder);
 //! - ffmpeg writes RGB line-interleaved, which is reported as unsupported.
 
-use craft_image_codecs::{ChannelLayout, CodecError, EncodeOptions, Format, Image, SampleType, decode, encode};
+use bharat_image_codecs::{ChannelLayout, CodecError, EncodeOptions, Format, Image, SampleType, decode, encode};
 use std::path::Path;
 use std::process::Command;
 
@@ -32,8 +32,8 @@ fn sources() -> Vec<(&'static str, String)> {
 
 #[test]
 fn ffmpeg_files_decode_to_ffmpegs_pixels() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("jpegls");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("jpegls");
     for (name, src) in sources() {
         for (fmt, ext_bits) in [("gray", 8), ("gray16le", 16)] {
             let file = dir.join(format!("ffmpeg_{name}_{ext_bits}.jls"));
@@ -56,8 +56,8 @@ fn ffmpeg_files_decode_to_ffmpegs_pixels() {
 
 #[test]
 fn ffmpegs_rgb_is_line_interleaved_and_unsupported() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("jpegls");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("jpegls");
     let file = dir.join("ffmpeg_rgb.jls");
     run(
         &ffmpeg,
@@ -68,8 +68,8 @@ fn ffmpegs_rgb_is_line_interleaved_and_unsupported() {
 
 #[test]
 fn ffmpeg_decodes_our_files_to_our_pixels() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("jpegls");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("jpegls");
     for (name, src) in sources() {
         for (layout, fmt8, fmt16) in [(ChannelLayout::Gray, "gray", "gray16le"), (ChannelLayout::Rgb, "rgb24", "rgb48le")] {
             for bits in [8, 16] {

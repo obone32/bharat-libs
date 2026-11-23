@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Quit a Craft app the platform's own way.
+//! Quit a Bharat app the platform's own way.
 //!
 //! On macOS an eframe app must not leave by closing its window. eframe drops the window while
 //! AppKit's run loop is still running, and in the next display cycle AppKit's Touch Bar finder
@@ -25,7 +25,7 @@
 //!         ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
 //!         self.show_save_prompt = true;
 //!     }
-//!     craft_quit::on_close_request(ctx); // last, so it sees the app's `CancelClose`
+//!     bharat_quit::on_close_request(ctx); // last, so it sees the app's `CancelClose`
 //! }
 //!
 //! fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
@@ -65,8 +65,8 @@ pub use close::{QUIT_MENU_ID, on_close_request, on_menu_event};
 /// For apps without an app menu of their own. It replaces the whole menu and sets muda's
 /// process-wide menu-event handler, so an app that builds its own muda menu should not call it:
 /// give that menu's Quit item [`QUIT_MENU_ID`] and pass its events to [`on_menu_event`] instead.
-/// muda keeps the first handler set, so this and `craft_menu::mac::install` are alternatives: an
-/// app calls one of them. `craft_menu::mac::install_app_menu` builds the same menu on craft-menu's
+/// muda keeps the first handler set, so this and `bharat_menu::mac::install` are alternatives: an
+/// app calls one of them. `bharat_menu::mac::install_app_menu` builds the same menu on bharat-menu's
 /// menu event handler, which its full menu bar shares.
 ///
 /// On error winit's menu stays: the app still runs, but ⌘Q quits without asking. The app decides
@@ -74,7 +74,7 @@ pub use close::{QUIT_MENU_ID, on_close_request, on_menu_event};
 ///
 /// Other platforms: does nothing and returns `Ok`.
 #[cfg(feature = "menu")]
-#[deprecated(note = "use craft_menu::mac::install_app_menu")]
+#[deprecated(note = "use bharat_menu::mac::install_app_menu")]
 pub fn install_app_menu(ctx: &egui::Context, app_name: &str) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     #[cfg(target_os = "macos")]
     menu::install(ctx, app_name)?;

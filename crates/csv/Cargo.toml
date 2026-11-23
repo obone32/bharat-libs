@@ -1,5 +1,5 @@
 [package]
-name = "craft-csv"
+name = "bharat-csv"
 description = "Delimited text (CSV, TSV) and SYLK: encoding detection, delimiter sniffing, a bounded record parser, field quoting, and a SYLK (.slk) reader."
 version.workspace = true
 edition.workspace = true

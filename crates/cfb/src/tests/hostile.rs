@@ -22,9 +22,9 @@ fn exercise(d: &[u8]) {
 fn hostile_input_never_panics() {
     for (i, v) in [Version::V3, Version::V4].into_iter().enumerate() {
         let (bytes, _) = sample(v, 5);
-        craft_media_testkit::hostile::hammer(&format!("cfb seed {i}"), &bytes, 15_000, exercise);
+        bharat_media_testkit::hostile::hammer(&format!("cfb seed {i}"), &bytes, 15_000, exercise);
         // The header and directory are where the structure lives: hammer a prefix harder.
         let head = &bytes[..bytes.len().min(2048)];
-        craft_media_testkit::hostile::hammer(&format!("cfb head {i}"), head, 15_000, exercise);
+        bharat_media_testkit::hostile::hammer(&format!("cfb head {i}"), head, 15_000, exercise);
     }
 }

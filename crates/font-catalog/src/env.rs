@@ -66,7 +66,7 @@ pub struct FontEnv {
     pub windir: Option<PathBuf>,
     /// `LOCALAPPDATA`.
     pub local_app_data: Option<PathBuf>,
-    /// `CRAFT_FONT_STORE`: the font store folder instead of the platform's ([`font_store_dir`]).
+    /// `BHARAT_FONT_STORE`: the font store folder instead of the platform's ([`font_store_dir`]).
     pub font_store: Option<PathBuf>,
 }
 
@@ -88,7 +88,7 @@ impl FontEnv {
             flatpak: os == Os::Unix && Path::new("/.flatpak-info").exists(),
             windir: path("WINDIR"),
             local_app_data: path("LOCALAPPDATA"),
-            font_store: path("CRAFT_FONT_STORE"),
+            font_store: path("BHARAT_FONT_STORE"),
         }
     }
 
@@ -118,17 +118,17 @@ impl FontEnv {
 /// The folder name of the font store under the platform's per-user data folder, spelled as the
 /// suite's other per-user folders are (`ArtCraft Launcher`, `artcraft-launcher`).
 fn store_name(os: Os) -> &'static str {
-    if matches!(os, Os::MacOs | Os::Windows) { "Craft Fonts" } else { "craft-fonts" }
+    if matches!(os, Os::MacOs | Os::Windows) { "Bharat Fonts" } else { "bharat-fonts" }
 }
 
-/// The suite's font store: one per-user folder of fonts installed by Craft Font Manager or an
+/// The suite's font store: one per-user folder of fonts installed by Bharat Font Manager or an
 /// app's "install missing font", read by every app's catalog and by no other program.
 ///
-/// - macOS: `~/Library/Application Support/Craft Fonts`
-/// - Windows: `%LOCALAPPDATA%\Craft Fonts`
-/// - Linux, the BSDs and Haiku: `$XDG_DATA_HOME/craft-fonts` (`~/.local/share/craft-fonts`)
+/// - macOS: `~/Library/Application Support/Bharat Fonts`
+/// - Windows: `%LOCALAPPDATA%\Bharat Fonts`
+/// - Linux, the BSDs and Haiku: `$XDG_DATA_HOME/bharat-fonts` (`~/.local/share/bharat-fonts`)
 ///
-/// `CRAFT_FONT_STORE` ([`FontEnv::font_store`]) replaces it. `None` where there is no per-user
+/// `BHARAT_FONT_STORE` ([`FontEnv::font_store`]) replaces it. `None` where there is no per-user
 /// folder (the web), or when the variables it is built from are unset.
 pub fn font_store_dir(env: &FontEnv) -> Option<PathBuf> {
     if let Some(dir) = &env.font_store {

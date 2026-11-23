@@ -1,5 +1,5 @@
 [package]
-name = "craft-pcraft-bundle"
+name = "bharat-pcraft-bundle"
 description = "Bounded ZIP and directory storage for .pcraft manifests, previews and content-addressed objects"
 version.workspace = true
 edition.workspace = true
@@ -11,9 +11,9 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-pcraft-format = { workspace = true }
-craft-atomic = { workspace = true }
-craft-zip = { workspace = true }
+bharat-pcraft-format = { workspace = true }
+bharat-atomic = { workspace = true }
+bharat-zip = { workspace = true }
 thiserror = { workspace = true }
 ruzstd = { version = "0.9.1", default-features = false, features = ["std"] }
 blake3 = { version = "1.8", default-features = false, features = ["pure"] }

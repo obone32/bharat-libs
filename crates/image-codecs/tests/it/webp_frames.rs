@@ -1,6 +1,6 @@
 //! `decode_webp_frames`: every frame of an animated WebP, composited, with its duration (#1198).
 
-use craft_image_codecs::{
+use bharat_image_codecs::{
     AnimationFrame, ChannelLayout, CodecError, DecodeOptions, DecodeWarning, EncodeOptions, Format, Image, Limits, decode, decode_webp_frames,
     encode, webp_is_animated,
 };

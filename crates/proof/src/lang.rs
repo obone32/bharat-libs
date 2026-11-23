@@ -466,7 +466,7 @@ mod tests {
     #[test]
     fn tags_resolve_primary_languages() {
         assert_tags(&["pl", "pl-PL", "PL-pl", "pl_PL", "pl_PL.UTF-8", " pl-PL ", "pol", "pl@euro", "pl.UTF-8"], ProofLang::Pl);
-        // craft-libs#482 review: a POSIX charset or modifier with no region.
+        // bharat-libs#482 review: a POSIX charset or modifier with no region.
         assert_tags(&["en.UTF-8", "en@euro"], ProofLang::En);
         assert_tags(&["de.UTF-8"], ProofLang::De);
         let sr_latn = ProofLang::Pack(PackLocale::new("sr-latn").unwrap());
@@ -513,7 +513,7 @@ mod tests {
         assert_tags(&["de-CH", "de_CH.UTF-8", "de-LI"], de_ch);
         assert_eq!(de_ch.built_in(), ProofLang::De);
         assert_tags(&["ru", "ru-RU", "RU-ru", "ru_RU", "ru_RU.UTF-8", " ru-RU ", "rus"], ProofLang::Ru);
-        // German and Bulgarian are proofed when a dictionary is found (craft-libs#485 review: an
+        // German and Bulgarian are proofed when a dictionary is found (bharat-libs#485 review: an
         // installed hunspell-de-de must not fail this test), so only their locales are fixed here.
         assert_eq!(ProofLang::De.spelling_locale(), PackLocale::new("de-de"));
         assert_eq!(ProofLang::Bg.spelling_locale(), PackLocale::new("bg-bg"));

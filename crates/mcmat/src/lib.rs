@@ -8,11 +8,11 @@
 
 use std::collections::BTreeMap;
 
-use craft_zip::{Archive, Compression, Writer};
+use bharat_zip::{Archive, Compression, Writer};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-pub const FORMAT: &str = "craft-material";
+pub const FORMAT: &str = "bharat-material";
 pub const MANIFEST_ENTRY: &str = "material.json";
 
 /// A portable manifest; typed parameter values remain JSON so applications can adapt their own model.
@@ -66,12 +66,12 @@ pub enum Error {
     #[error("portable material limit: {0}")]
     Limit(String),
     #[error("portable material archive: {0}")]
-    Archive(#[from] craft_zip::Error),
+    Archive(#[from] bharat_zip::Error),
 }
 
 /// Whether a bounded ZIP index contains a material manifest. This does not validate the manifest.
 pub fn is_material(bytes: &[u8], max_entries: u64) -> bool {
-    Archive::open(bytes, craft_zip::Limits { max_entries, max_total_bytes: 0 })
+    Archive::open(bytes, bharat_zip::Limits { max_entries, max_total_bytes: 0 })
         .is_ok_and(|archive| !archive.has_duplicate_names() && archive.contains(MANIFEST_ENTRY))
 }
 
@@ -84,7 +84,7 @@ pub struct Material<'a> {
 
 impl<'a> Material<'a> {
     pub fn open(bytes: &'a [u8], limits: Limits) -> Result<Self, Error> {
-        let mut archive = Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })?;
+        let mut archive = Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })?;
         if archive.has_duplicate_names() {
             return Err(Error::Invalid("duplicate archive entries".into()));
         }
@@ -149,7 +149,7 @@ mod tests {
 
     fn sample(version: u32) -> Manifest {
         serde_json::from_value(serde_json::json!({
-            "format": "craft-material", "version": version, "name": "Stone", "graph": "Stone", "size": [64, 64],
+            "format": "bharat-material", "version": version, "name": "Stone", "graph": "Stone", "size": [64, 64],
             "maps": [{"usage": "baseColor", "file": "maps/base.png", "colorSpace": "srgb", "futureMap": true}],
             "parameters": [{"id": "rough", "value": {"t": "float", "v": 0.25}, "futureParam": 42}],
             "inputs": [{"identifier": "curvature", "kind": "gray"}], "presets": [],

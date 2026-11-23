@@ -115,7 +115,7 @@ mod tests {
 
     #[test]
     fn run_matches_direct_shaping_with_source_clusters_and_context() {
-        let Ok(dir) = std::env::var("CRAFT_FONTS_DIR") else { return };
+        let Ok(dir) = std::env::var("BHARAT_FONTS_DIR") else { return };
         let bytes = std::fs::read(std::path::Path::new(&dir).join("fonts/noto-sans-arabic/NotoSansArabic.ttf")).unwrap();
         check_run(&bytes);
     }

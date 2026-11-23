@@ -8,7 +8,7 @@
 //! - Slice-parallel encoding with rayon (opt-in feature `threads`).
 //!
 //! ```no_run
-//! use craft_video::h264::{Encoder, EncoderConfig, RateControl, YuvFrame};
+//! use bharat_video::h264::{Encoder, EncoderConfig, RateControl, YuvFrame};
 //! let mut cfg = EncoderConfig::new(1280, 720, 30, 1);
 //! cfg.rate = RateControl::Crf(20.0);
 //! let mut enc = Encoder::new(cfg).unwrap();
@@ -20,7 +20,7 @@
 
 #![allow(clippy::needless_range_loop)]
 
-use craft_media::{CodecId, CodecParams};
+use bharat_media::{CodecId, CodecParams};
 
 mod cabac;
 mod cabac_mb;
@@ -191,7 +191,7 @@ pub struct EncoderConfig {
     /// Every picture is an IDR (an all-intra intermediate): `keyint` and `bframes` are ignored, no
     /// reference frames are kept, and High 10 streams are signalled as High 10 Intra.
     pub intra_only: bool,
-    /// The program and version the identification SEI of the first picture names (`craft-h264enc`
+    /// The program and version the identification SEI of the first picture names (`bharat-h264enc`
     /// and this crate's version by default): an application sets its own.
     pub writer: String,
 }
@@ -222,7 +222,7 @@ impl EncoderConfig {
             level: None,
             bit_depth: 8,
             intra_only: false,
-            writer: format!("craft-h264enc {}", env!("CARGO_PKG_VERSION")),
+            writer: format!("bharat-h264enc {}", env!("CARGO_PKG_VERSION")),
         }
     }
 }
@@ -1351,7 +1351,7 @@ mod tests {
         assert_eq!(params.codec, CodecId::H264);
         assert_eq!(params.tag, Some(*b"avc1"));
         assert_eq!((params.width, params.height), (Some(320), Some(240)));
-        let parsed = craft_media::isobmff::AvcConfig::parse(&params.extradata).unwrap();
+        let parsed = bharat_media::isobmff::AvcConfig::parse(&params.extradata).unwrap();
         assert_eq!(parsed.length_size, 4);
         assert_eq!(parsed.sps.len(), 1);
         assert_eq!(parsed.pps.len(), 1);

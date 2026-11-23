@@ -1,6 +1,6 @@
 [package]
-name = "craft-web-api"
-description = "The page command API for Craft web builds: one window.<app> shape over the app's JSON control channel."
+name = "bharat-web-api"
+description = "The page command API for Bharat web builds: one window.<app> shape over the app's JSON control channel."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

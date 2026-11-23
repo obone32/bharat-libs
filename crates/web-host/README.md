@@ -1,6 +1,6 @@
-# craft-web-host
+# bharat-web-host
 
-The host messages between a Craft app's web build and the page that hosts it, as one contract and one bridge for every app (storytold/craft-libs#358). A page frames the app with `?host=parent`, or runs it directly with `data-host="page"` on its canvas; either way the same messages pass files in, saves out, and unsaved-changes state, so a page can host any of the apps the same way.
+The host messages between a Bharat app's web build and the page that hosts it, as one contract and one bridge for every app (obone32/bharat-libs#358). A page frames the app with `?host=parent`, or runs it directly with `data-host="page"` on its canvas; either way the same messages pass files in, saves out, and unsaved-changes state, so a page can host any of the apps the same way.
 
 The crate has two parts:
 
@@ -35,12 +35,12 @@ Compatibility with the bridges shipped before this crate:
 
 ```rust
 #[cfg(target_arch = "wasm32")]
-if let Some(host) = craft_web_host::web::Host::connect("pdfcraft", &canvas) {
+if let Some(host) = bharat_web_host::web::Host::connect("pdfcraft", &canvas) {
     host.listen(move |message| match message {
-        craft_web_host::web::Message::Open { name, data } => {
+        bharat_web_host::web::Message::Open { name, data } => {
             // Check data.size() against the app's limit before copying it in.
         }
-        craft_web_host::web::Message::Saved { id } => { /* clear dirty for that save */ }
+        bharat_web_host::web::Message::Saved { id } => { /* clear dirty for that save */ }
         _ => {}
     });
     let _ = host.post_ready(env!("CARGO_PKG_VERSION"), false);
@@ -48,4 +48,4 @@ if let Some(host) = craft_web_host::web::Host::connect("pdfcraft", &canvas) {
 }
 ```
 
-The page command API is [`craft-web-api`](../web-api/README.md) (storytold/craft-libs#413): `window.<app>.request` and the command functions. It sits beside these messages. Opening, saving, the document name and the dirty flag stay here.
+The page command API is [`bharat-web-api`](../web-api/README.md) (obone32/bharat-libs#413): `window.<app>.request` and the command functions. It sits beside these messages. Opening, saving, the document name and the dirty flag stay here.

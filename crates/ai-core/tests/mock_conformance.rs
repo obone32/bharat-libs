@@ -2,12 +2,12 @@
 //! end to end the way an app would use it: declare roles, resolve through the store, check
 //! consent, submit, poll, cancel. Also proves one library serves different modalities.
 
-use craft_ai_core::conformance::{run_cancel, run_lifecycle, run_rejects, run_unknown_job};
-use craft_ai_core::consent::Disclosure;
-use craft_ai_core::job::{Event, JobState, Output};
-use craft_ai_core::mock::{MockProvider, Outcome, Script};
-use craft_ai_core::role::{Binding, Role};
-use craft_ai_core::*;
+use bharat_ai_core::conformance::{run_cancel, run_lifecycle, run_rejects, run_unknown_job};
+use bharat_ai_core::consent::Disclosure;
+use bharat_ai_core::job::{Event, JobState, Output};
+use bharat_ai_core::mock::{MockProvider, Outcome, Script};
+use bharat_ai_core::role::{Binding, Role};
+use bharat_ai_core::*;
 
 fn cap(s: &str) -> CapabilityId {
     CapabilityId::parse(s).unwrap()

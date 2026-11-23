@@ -1,8 +1,8 @@
-//! What Craft Font Manager needs from the suite's font store: the download consent, installing a
+//! What Bharat Font Manager needs from the suite's font store: the download consent, installing a
 //! family from the index, removing one, and downloading a family's files for a preview without
 //! installing them.
 //!
-//! [`SuiteStore`] is craft-font-store's store; [`FakeStore`] stands in for it in tests.
+//! [`SuiteStore`] is bharat-font-store's store; [`FakeStore`] stands in for it in tests.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -10,9 +10,9 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Condvar, Mutex};
 
-use craft_font_catalog::Catalog;
-pub use craft_font_store::UserSource;
-use craft_font_store::{Cancel, Client, Face, FontStore, Network, PINNED_INDEX, verify_font};
+use bharat_font_catalog::Catalog;
+pub use bharat_font_store::UserSource;
+use bharat_font_store::{Cancel, Client, Face, FontStore, Network, PINNED_INDEX, verify_font};
 
 use crate::index::{Family, Index};
 
@@ -107,7 +107,7 @@ pub trait Installer: Send + Sync {
 
 const NO_FOLDER: &str = "there is no folder for the font store";
 
-/// craft-font-store's store, in the user's font store folder.
+/// bharat-font-store's store, in the user's font store folder.
 pub struct SuiteStore {
     store: FontStore,
     client: Client,
@@ -144,18 +144,18 @@ impl Installer for SuiteStore {
     }
 
     fn install(&self, index: &Index, family: &Family, progress: &mut dyn FnMut(Progress)) -> Result<(), StoreError> {
-        let mut report = |p: craft_font_store::Progress| progress(Progress { done: p.done, total: p.total });
+        let mut report = |p: bharat_font_store::Progress| progress(Progress { done: p.done, total: p.total });
         self.store.install_family(index, family, &Cancel::new(), &mut report).map(drop).map_err(err)
     }
 
     fn install_file(&self, index: &Index, family: &Family, path: &str, progress: &mut dyn FnMut(Progress)) -> Result<(), StoreError> {
         let file = family.files.iter().find(|f| f.path == path).ok_or_else(|| StoreError(format!("{path} isn't in the index")))?;
-        let mut report = |p: craft_font_store::Progress| progress(Progress { done: p.done, total: p.total });
+        let mut report = |p: bharat_font_store::Progress| progress(Progress { done: p.done, total: p.total });
         self.store.install_face(index, Face { family, file }, &Cancel::new(), &mut report).map(drop).map_err(err)
     }
 
     fn remove(&self, request: &RemoveRequest) -> Result<(), StoreError> {
-        let (source, name) = self.installed_name(request).ok_or_else(|| err(craft_font_store::Error::NotInstalled(request.family.clone())))?;
+        let (source, name) = self.installed_name(request).ok_or_else(|| err(bharat_font_store::Error::NotInstalled(request.family.clone())))?;
         if request.whole {
             return self.store.remove_family(&source, &name).map_err(err);
         }
@@ -165,7 +165,7 @@ impl Installer for SuiteStore {
 
     fn download(&self, index: &Index, family: &Family, progress: &mut dyn FnMut(Progress)) -> Result<Vec<Downloaded>, StoreError> {
         if !self.downloads_allowed() {
-            return Err(err(craft_font_store::Error::NetworkOff));
+            return Err(err(bharat_font_store::Error::NetworkOff));
         }
         let total = family.size();
         let cancel = Cancel::new();
@@ -451,7 +451,7 @@ impl Installer for FakeStore {
         let mut users = Vec::new();
         let mut problems = Vec::new();
         for source in self.user_sources() {
-            let problem = |error: String| craft_font_store::SourceProblem { source: source.url.clone(), name: source.url.clone(), error };
+            let problem = |error: String| bharat_font_store::SourceProblem { source: source.url.clone(), name: source.url.clone(), error };
             if !fetched.contains(&source.url) {
                 problems.push(problem("not downloaded yet".into()));
                 continue;

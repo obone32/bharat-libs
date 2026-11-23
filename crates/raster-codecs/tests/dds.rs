@@ -1,6 +1,6 @@
 //! Reading DDS textures.
 
-use craft_raster_codecs::{ChannelLayout, CodecError, Image, Limits, SampleType, dds};
+use bharat_raster_codecs::{ChannelLayout, CodecError, Image, Limits, SampleType, dds};
 
 fn decode(b: &[u8]) -> Result<Image, CodecError> {
     dds::decode(b, &Limits::default())

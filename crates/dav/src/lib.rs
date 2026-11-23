@@ -4,7 +4,7 @@
 //! WebDAV multistatus documents (RFC 4918 §13), what a server answers a `PROPFIND` or a CalDAV or
 //! CardDAV `REPORT` with.
 //!
-//! [`parse_multistatus`] reads the bytes into a [`craft_xml::El`] tree whose names carry fixed
+//! [`parse_multistatus`] reads the bytes into a [`bharat_xml::El`] tree whose names carry fixed
 //! prefixes whatever the document used: `d:` for `DAV:` ([`DAV`]), `c:` for CalDAV ([`CALDAV`]),
 //! `card:` for CardDAV ([`CARDDAV`]), `cs:` for CalendarServer ([`CALENDARSERVER`]), `oc:` and
 //! `nc:` for ownCloud and Nextcloud ([`OWNCLOUD`], [`NEXTCLOUD`]); a name in any other namespace
@@ -15,7 +15,7 @@
 //! text outside the root, a root that is not `d:multistatus` and anything past the limits make
 //! the whole document an error; a partial tree is never returned.
 
-use craft_xml::{Canonical, Doctype, El, Limits, Options};
+use bharat_xml::{Canonical, Doctype, El, Limits, Options};
 
 /// The WebDAV namespace.
 pub const DAV: &str = "DAV:";
@@ -45,7 +45,7 @@ const CANONICAL: Canonical<'static> = Canonical::new(&NAMESPACES);
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Error {
     /// Not well-formed XML within the limits, or refused (see the crate's documentation).
-    Xml(craft_xml::Error),
+    Xml(bharat_xml::Error),
     /// Text that is not UTF-8, or a character XML cannot carry.
     Characters,
     /// Well-formed, but its root is not `DAV:multistatus`.
@@ -68,10 +68,10 @@ impl std::error::Error for Error {}
 /// `d:multistatus`; namespace declarations are not kept as attributes.
 pub fn parse_multistatus(bytes: &[u8]) -> Result<El, Error> {
     if bytes.len() > MAX_BYTES {
-        return Err(Error::Xml(craft_xml::Error::TooLarge(MAX_BYTES)));
+        return Err(Error::Xml(bharat_xml::Error::TooLarge(MAX_BYTES)));
     }
     let text = std::str::from_utf8(bytes).map_err(|_| Error::Characters)?;
-    if !text.chars().all(craft_xml::is_xml_char) {
+    if !text.chars().all(bharat_xml::is_xml_char) {
         return Err(Error::Characters);
     }
     let limits = Limits {

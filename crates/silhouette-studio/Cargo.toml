@@ -1,5 +1,5 @@
 [package]
-name = "craft-silhouette-studio"
+name = "bharat-silhouette-studio"
 description = "Bounded, fail-closed reader for Silhouette Studio .studio (v2) and .studio3 (v3) documents: outlines, line colours and page size"
 version.workspace = true
 edition.workspace = true

@@ -4,7 +4,7 @@ use std::borrow::Cow;
 use std::collections::HashSet;
 use std::fmt::Write as _;
 
-use craft_xml::{esc, esc_attr, is_name};
+use bharat_xml::{esc, esc_attr, is_name};
 
 use crate::text::{valid_language_tag, w3cdtf};
 use crate::{Error, MIMETYPE};
@@ -372,8 +372,8 @@ pub fn write(book: &Book) -> Result<Vec<u8>, Error> {
     let opf = package_document(book, &modified);
     let nav = nav_document(book);
     let ncx = book.ncx.then(|| ncx_document(book));
-    let fail = |e: craft_zip::Error| Error::Invalid(e.to_string());
-    let mut z = craft_zip::Writer::new();
+    let fail = |e: bharat_zip::Error| Error::Invalid(e.to_string());
+    let mut z = bharat_zip::Writer::new();
     let mut own = vec![
         ("mimetype".to_string(), MIMETYPE.as_bytes(), true),
         ("META-INF/container.xml".to_string(), CONTAINER.as_bytes(), false),
@@ -385,7 +385,7 @@ pub fn write(book: &Book) -> Result<Vec<u8>, Error> {
     }
     let resources = book.resources.iter().map(|r| (format!("{ROOT}/{}", r.path), r.data.as_ref(), r.stored));
     for (name, data, store) in own.into_iter().chain(resources) {
-        z.add(&name, data, if store { craft_zip::Compression::Stored } else { craft_zip::Compression::Deflated }).map_err(fail)?;
+        z.add(&name, data, if store { bharat_zip::Compression::Stored } else { bharat_zip::Compression::Deflated }).map_err(fail)?;
     }
     z.finish().map_err(fail)
 }

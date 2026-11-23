@@ -5,9 +5,9 @@ use std::io::{Read, Write};
 
 use std::sync::Arc;
 
-use craft_wordmodel::props::{Align, Kashida, ParaProps};
-use craft_wordmodel::styles::{Style, StyleKind, StyleSheet};
-use craft_wordmodel::{Document, Paragraph, para_block};
+use bharat_wordmodel::props::{Align, Kashida, ParaProps};
+use bharat_wordmodel::styles::{Style, StyleKind, StyleSheet};
+use bharat_wordmodel::{Document, Paragraph, para_block};
 
 fn zip(entries: &[(&str, &[u8])]) -> Vec<u8> {
     let mut zw = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
@@ -52,7 +52,7 @@ fn kashida_jc_values_are_read() {
         jc_para("left", "left"),
     ]
     .join("");
-    let d = craft_docx::read(&docx(&body)).unwrap();
+    let d = bharat_docx::read(&docx(&body)).unwrap();
     let ps = paras(&d);
     let got: Vec<_> = ps.iter().map(|p| (p.props.align, p.props.kashida)).collect();
     assert_eq!(
@@ -81,10 +81,10 @@ fn kashida_length_round_trips() {
         p.props = ParaProps { align: Some(Align::Justify), kashida, ..Default::default() };
         let mut d = Document::new();
         d.body = vec![para_block(p.clone())];
-        let bytes = craft_docx::write(&d).unwrap();
+        let bytes = bharat_docx::write(&d).unwrap();
         let xml = document_xml(&bytes);
         assert!(xml.contains(token), "expected {token} in {xml}");
-        let r = craft_docx::read(&bytes).unwrap();
+        let r = bharat_docx::read(&bytes).unwrap();
         let q = paras(&r)[0];
         assert_eq!(q.props.align, Some(Align::Justify));
         assert_eq!(q.props.kashida, kashida, "round-trip of {token}");
@@ -111,8 +111,8 @@ fn style_kashida_length_survives_a_write_when_the_paragraph_has_no_direct_jc() {
     d.styles = Arc::new(body_style(Kashida::Short));
     d.body = vec![para_block(p)];
     assert_eq!(d.styles.resolve_para(&d.body[0].as_para().unwrap().props).kashida, Kashida::Short);
-    let bytes = craft_docx::write(&d).unwrap();
-    let r = craft_docx::read(&bytes).unwrap();
+    let bytes = bharat_docx::write(&d).unwrap();
+    let r = bharat_docx::read(&bytes).unwrap();
     let q = paras(&r)[0];
     assert_eq!(q.props.kashida, None, "no direct w:jc on the paragraph");
     assert_eq!(r.styles.resolve_para(&q.props).kashida, Kashida::Short);
@@ -125,10 +125,10 @@ fn writing_justify_without_a_local_kashida_keeps_the_style_length() {
     let mut d = Document::new();
     d.styles = Arc::new(body_style(Kashida::Medium));
     d.body = vec![para_block(p)];
-    let bytes = craft_docx::write(&d).unwrap();
+    let bytes = bharat_docx::write(&d).unwrap();
     let xml = document_xml(&bytes);
     assert!(xml.contains("w:val=\"mediumKashida\""), "expected mediumKashida in {xml}");
-    let r = craft_docx::read(&bytes).unwrap();
+    let r = bharat_docx::read(&bytes).unwrap();
     let q = paras(&r)[0];
     assert_eq!(q.props.align, Some(Align::Justify));
     assert_eq!(q.props.kashida, Some(Kashida::Medium));

@@ -8,7 +8,7 @@
 use crate::hevc::decode::Decoder;
 use crate::hevc::decode::cabac::{Contexts, NEXT_STATE, RANGE_TAB_LPS, init_contexts};
 use crate::hevc::decode::spec_tables::*;
-use craft_media::bitstream::{BitWriter, escape_rbsp};
+use bharat_media::bitstream::{BitWriter, escape_rbsp};
 
 const W: usize = 96;
 const H: usize = 64;
@@ -568,10 +568,10 @@ fn as_u8(p: &crate::hevc::decode::Plane) -> &[u8] {
 
 /// Compare with ffmpeg's decode of the same stream (skipped when ffmpeg is absent).
 fn check_ffmpeg(name: &str, stream: &[u8], pics: &[crate::hevc::decode::Picture]) {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip(name) else { return };
-    let dir = craft_media_testkit::fixtures_dir("hevc");
-    let src = craft_media_testkit::temp_path(&dir.join(format!("synth_{name}.hevc")));
-    let yuv = craft_media_testkit::temp_path(&dir.join(format!("synth_{name}.yuv")));
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip(name) else { return };
+    let dir = bharat_media_testkit::fixtures_dir("hevc");
+    let src = bharat_media_testkit::temp_path(&dir.join(format!("synth_{name}.hevc")));
+    let yuv = bharat_media_testkit::temp_path(&dir.join(format!("synth_{name}.yuv")));
     std::fs::write(&src, stream).unwrap();
     let st = std::process::Command::new(ff)
         .args(["-hide_banner", "-loglevel", "error", "-y", "-i"])
@@ -683,7 +683,7 @@ fn decodes_within(stream: &[u8], budget: u64) -> bool {
 fn picture_store_is_checked_against_the_memory_budget() {
     let (stream, _) = sequence(&None, true, whole(WC * HC));
     let sps_nal = sps(true);
-    let parsed = crate::hevc::decode::params::Sps::parse(&craft_media::bitstream::unescape_rbsp(&sps_nal[6..])).unwrap();
+    let parsed = crate::hevc::decode::params::Sps::parse(&bharat_media::bitstream::unescape_rbsp(&sps_nal[6..])).unwrap();
     // 96x64 4:2:0 in 16-bit samples; the decoder holds the DPB, the current picture and up to
     // threads + 2 in flight.
     let one = (W * H + 2 * (W / 2) * (H / 2)) as u64 * 2;

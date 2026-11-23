@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Exact media time for the Craft suite.
+//! Exact media time for the Bharat suite.
 //!
 //! All time is an integer number of [`Tick`]s at [`TICKS_PER_SECOND`] = 254 016 000 000/s. That
 //! rate divides evenly into every broadcast frame duration (23.976, 24, 25, 29.97, 30, 48, 50,
@@ -16,7 +16,7 @@ use std::fmt;
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Rem, Sub, SubAssign};
 
 /// SoundCraft's sample-index, tempo-map, grid, and display-time API, retained verbatim for
-/// session-format compatibility while sharing the broader Craft time primitives above.
+/// session-format compatibility while sharing the broader Bharat time primitives above.
 pub mod soundcraft;
 
 /// Clock ticks per second: 254 016 000 000.
@@ -331,7 +331,7 @@ impl FrameRate {
     /// Returns this frame rate if positive, or the default rate ([`FrameRate::FPS_23_976`]).
     ///
     /// ### Application Compatibility Note
-    /// For non-positive or zero rates (e.g. `{0, 0}`), `craft-time` falls back to
+    /// For non-positive or zero rates (e.g. `{0, 0}`), `bharat-time` falls back to
     /// [`FrameRate::FPS_23_976`] (timecode base 24), providing a standard broadcast default.
     /// In contrast, EffectCraft falls back to timecode base 1.
     pub fn sane(self) -> FrameRate {
@@ -601,7 +601,7 @@ impl std::error::Error for ParseError {}
 /// and relative offsets (`+15`, `-1.00`).
 ///
 /// ### Application Compatibility Note
-/// For oversized timecodes whose frame calculations exceed 64-bit limits, `craft-time`
+/// For oversized timecodes whose frame calculations exceed 64-bit limits, `bharat-time`
 /// saturates to `i64::MAX` (or `i64::MIN`) to keep calculations total without errors.
 /// In contrast, EffectCraft returns `Err(ParseError("timecode too large"))`.
 pub fn parse_timecode(input: &str, rate: FrameRate, drop_frame: bool, current: i64) -> Result<i64, ParseError> {

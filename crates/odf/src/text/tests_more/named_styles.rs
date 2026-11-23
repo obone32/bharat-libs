@@ -4,8 +4,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::props::{LineSpacing, TextColor};
-use craft_wordmodel::{Document, Rgb};
+use bharat_wordmodel::props::{LineSpacing, TextColor};
+use bharat_wordmodel::{Document, Rgb};
 
 fn open() -> Document {
     let styles = format!(
@@ -42,7 +42,7 @@ fn paragraphs_keep_their_custom_style() {
     let (_, cp) = d.styles.para_style_props(&custom);
     assert_eq!((cp.bold, cp.color), (Some(true), Some(TextColor::Rgb(Rgb(0, 0, 0xaa)))));
     // The automatic style's own formatting is direct.
-    assert_eq!(d.body[2].as_para().unwrap().props.align, Some(craft_wordmodel::Align::Center));
+    assert_eq!(d.body[2].as_para().unwrap().props.align, Some(bharat_wordmodel::Align::Center));
 }
 
 #[test]

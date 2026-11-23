@@ -1,15 +1,15 @@
-# craft-metadata
+# bharat-metadata
 
 Photo metadata: EXIF, IPTC-IIM, XMP packets and GPX track logs, the blocks that carry them in image
 files, and one `Metadata` model they all read into. From LightCraft (`lightcraft-meta`). TIFF
-structure comes from `craft-tiff`.
+structure comes from `bharat-tiff`.
 
 One module per format; they share `Metadata`, `DateTime`, `Gps` and `Orientation`, which is why they
 are one crate.
 
 | Function | Purpose |
 |---|---|
-| `read_exif(&[u8]) -> Metadata` | A TIFF-structured Exif block: a whole TIFF/DNG/raw file, or a JPEG APP1 payload with or without `Exif\0\0`. `try_read_exif` reports header errors, `try_read_exif_with` takes `craft_tiff::ParseOptions`. |
+| `read_exif(&[u8]) -> Metadata` | A TIFF-structured Exif block: a whole TIFF/DNG/raw file, or a JPEG APP1 payload with or without `Exif\0\0`. `try_read_exif` reports header errors, `try_read_exif_with` takes `bharat_tiff::ParseOptions`. |
 | `from_tiff(&Tiff) -> Metadata` | The same from an already parsed stream. |
 | `write_exif(&Metadata) -> Vec<u8>` | An Exif block for an exported file. |
 | `tags::tag_rows`, `tags::file_tag_rows` | Every tag with its name and value as text, maker notes included. |
@@ -29,7 +29,7 @@ are one crate.
 | `mpf::images`, `mpf::write` | The Multi-Picture Format index (CIPA DC-007) of a JPEG: the images stored after the primary one (a gain map, a preview), and writing an index plus appending the images. `mpf::markers` lists the marker segments before the first scan. |
 | `extract(&[u8]) -> Metadata` | All of it for a whole file. Precedence: EXIF, then IPTC fills gaps, then XMP overrides the user fields (rating, label, title, caption, artist, copyright, keywords, GPS) and fills the rest. `from_embedded` does the same for blocks already located. |
 
-HEIF, PSD and MRW files are read by `craft-heif`, `craft-psd` and `craft-raw`. Put the blocks they
+HEIF, PSD and MRW files are read by `bharat-heif`, `bharat-psd` and `bharat-raw`. Put the blocks they
 return into an `Embedded` and call `from_embedded`.
 
 ## Validation
@@ -58,7 +58,7 @@ A foreign namespace that uses a recognised prefix cannot supply recognised prope
 
 XMP: 64 levels, 200 000 nodes, 512 namespace declarations in scope, 1 MiB of flattened keys and 8 MiB of opaque names per packet
 (`XmpError::TooComplex`). GPX: 64 levels, 5 000 000 points. MPF: 16 index entries. CR3 and JPEG XL: 4096 boxes; a `brob` box inflates to at most 32 MiB. JPEG ICC is returned only when its APP2 chunks form a
-complete, consistent, uniquely numbered sequence. TIFF limits are `craft-tiff`'s. No input panics:
+complete, consistent, uniquely numbered sequence. TIFF limits are `bharat-tiff`'s. No input panics:
 proptests feed random bytes to every container walker and random text to the XMP parser, and a sample
 JPEG is cut at every byte.
 

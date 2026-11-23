@@ -717,8 +717,8 @@ fn check(cfg: Cfg) {
         (out, d.errors())
     };
     assert_eq!(errors, 0, "{}: our decoder reports slice errors", cfg.name);
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip(cfg.name) else { return };
-    let path = craft_media_testkit::fixtures_dir("mpeg2v").join(format!("{}_{:x}.m2v", cfg.name, cfg.seed));
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip(cfg.name) else { return };
+    let path = bharat_media_testkit::fixtures_dir("mpeg2v").join(format!("{}_{:x}.m2v", cfg.name, cfg.seed));
     std::fs::write(&path, &es).unwrap();
     let fmt = if cfg.chroma == 2 { "yuv422p" } else { "yuv420p" };
     let o = std::process::Command::new(ff)

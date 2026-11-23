@@ -133,7 +133,7 @@ pub(crate) fn sttb_strings_max(table: &[u8], fc: u32, lcb: u32, max: usize) -> O
             // UTF-16: a surrogate pair is one character; a lone surrogate becomes U+FFFD.
             char::decode_utf16(chars.as_chunks::<2>().0.iter().map(|c| u16::from_le_bytes(*c))).take(max).map(|c| c.unwrap_or('\u{FFFD}')).collect()
         } else {
-            chars.iter().take(max).map(|&c| craft_codepage::cp1252(c)).collect()
+            chars.iter().take(max).map(|&c| bharat_codepage::cp1252(c)).collect()
         };
         out.push(s);
     }

@@ -5,7 +5,7 @@
 mod common;
 
 use common::{store, zip};
-use craft_doc::{Error, LayerPixels, Limits, Samples, pcraft_layer_rgba};
+use bharat_doc::{Error, LayerPixels, Limits, Samples, pcraft_layer_rgba};
 
 const TILE: usize = 256;
 

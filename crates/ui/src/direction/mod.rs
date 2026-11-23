@@ -13,9 +13,9 @@
 //!
 //! # Setting the direction
 //!
-//! [`resolve`] picks the direction for the UI language: the `CRAFT_UI_DIRECTION` environment
+//! [`resolve`] picks the direction for the UI language: the `BHARAT_UI_DIRECTION` environment
 //! variable first (`rtl` or `ltr`, for checking a mirrored layout before a right-to-left catalog
-//! exists), then the app's [`Setting`], then the language's script ([`craft_i18n::direction`]).
+//! exists), then the app's [`Setting`], then the language's script ([`bharat_i18n::direction`]).
 //! [`apply`] stores it on the context; call it at startup and whenever the language changes.
 //! Every helper reads it from a [`HasDirection`]: a `Context`, a `Ui`, or a [`Direction`] itself.
 //! Tests force a direction by calling [`apply`] on their own context.
@@ -29,10 +29,10 @@
 
 use egui::{Align, Align2, AsIdSalt, Context, Id, InnerResponse, Key, Layout, Panel, Rect, RectAlign, Ui, pos2, vec2};
 
-pub use craft_i18n::Direction;
+pub use bharat_i18n::Direction;
 
 /// The environment variable that forces a direction whatever the language and setting.
-pub const ENV_VAR: &str = "CRAFT_UI_DIRECTION";
+pub const ENV_VAR: &str = "BHARAT_UI_DIRECTION";
 
 /// Where the interface direction comes from: an app setting, usually hidden in a debug section.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -51,7 +51,7 @@ impl Setting {
     /// The direction this setting gives for a UI language tag.
     pub fn direction(self, ui_language: &str) -> Direction {
         match self {
-            Setting::Language => craft_i18n::direction(ui_language),
+            Setting::Language => bharat_i18n::direction(ui_language),
             Setting::Ltr => Direction::Ltr,
             Setting::Rtl => Direction::Rtl,
         }
@@ -80,7 +80,7 @@ fn env_setting() -> Option<Setting> {
 }
 
 fn key() -> Id {
-    Id::unique("craft_ui::direction")
+    Id::unique("bharat_ui::direction")
 }
 
 /// Draw the interface on `ctx` in `dir` from the next layout on.

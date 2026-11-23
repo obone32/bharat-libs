@@ -1,8 +1,8 @@
-# craft-ipc
+# bharat-ipc
 
-`craft-ipc` is how a Craft app talks to another Craft app on the same machine. It has a server, a client, instance discovery, launch on demand and focus hand-off. It has no async runtime. The wire protocol is in [PROTOCOL.md](PROTOCOL.md). The crate depends on no app and on no other Craft crate.
+`bharat-ipc` is how a Bharat app talks to another Bharat app on the same machine. It has a server, a client, instance discovery, launch on demand and focus hand-off. It has no async runtime. The wire protocol is in [PROTOCOL.md](PROTOCOL.md). The crate depends on no app and on no other Bharat crate.
 
-**Native only.** `craft-ipc` does not build for `wasm32-unknown-unknown`, because `interprocess` (local sockets and named pipes) has no wasm32 build. An app gates the dependency by target. The pure data modules (`moniker`, `record`, `payload`, `asset`, `ids`) use only `std` and `serde`.
+**Native only.** `bharat-ipc` does not build for `wasm32-unknown-unknown`, because `interprocess` (local sockets and named pipes) has no wasm32 build. An app gates the dependency by target. The pure data modules (`moniker`, `record`, `payload`, `asset`, `ids`) use only `std` and `serde`.
 
 ## Boundaries
 

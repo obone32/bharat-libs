@@ -6,7 +6,7 @@
 
 use crate::text::tests::{NS_T, entry, paras, zip_of};
 use crate::text::{export, import, parse};
-use craft_flow::Inline;
+use bharat_flow::Inline;
 
 const NS_D: &str = r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink""#;
 
@@ -37,10 +37,10 @@ fn package() -> Vec<u8> {
 fn an_embedded_spreadsheet_is_kept_with_a_placeholder_picture() {
     let flow = parse(&package()).unwrap();
     let inlines: Vec<&Inline> = paras(&flow).into_iter().flat_map(|p| &p.inlines).collect();
-    let imgs: Vec<&craft_flow::Img> = inlines.iter().filter_map(|i| if let Inline::Image(img) = i { Some(img) } else { None }).collect();
+    let imgs: Vec<&bharat_flow::Img> = inlines.iter().filter_map(|i| if let Inline::Image(img) = i { Some(img) } else { None }).collect();
     assert_eq!(imgs.len(), 2, "both objects are shown");
     // A placeholder WordCraft can draw, at the frame's size.
-    assert!(imgs.iter().all(|i| craft_flow::sniff_image(&i.data).is_some()));
+    assert!(imgs.iter().all(|i| bharat_flow::sniff_image(&i.data).is_some()));
     assert_eq!((imgs[0].w, imgs[0].h), (216.0, 72.0));
     let sheet = imgs[0].object.as_deref().expect("the spreadsheet is kept");
     assert_eq!((sheet.mime.as_str(), sheet.ole), ("application/vnd.oasis.opendocument.spreadsheet", false));
@@ -85,7 +85,7 @@ fn embedded_objects_are_saved_back_whole() {
 #[test]
 fn a_docx_save_writes_the_objects_pictures_only() {
     let doc = import(&package()).unwrap();
-    let flow = craft_flow::from_doc(&doc);
+    let flow = bharat_flow::from_doc(&doc);
     // Formats without ODF objects (and so DOCX) get the picture alone.
     assert!(paras(&flow).into_iter().flat_map(|p| &p.inlines).all(|i| !matches!(i, Inline::Image(img) if img.object.is_some())));
     assert!(doc.passthrough.keys().any(|k| k.contains("Object") || k.starts_with("odf-object")));
@@ -105,7 +105,7 @@ fn hostile_objects_are_bounded() {
     }
     let refs: Vec<(&str, &[u8])> = files.iter().map(|(n, d)| (n.as_str(), d.as_slice())).collect();
     let flow = parse(&zip_of(&refs)).unwrap();
-    let objects: Vec<&craft_flow::OdfObject> = paras(&flow)
+    let objects: Vec<&bharat_flow::OdfObject> = paras(&flow)
         .into_iter()
         .flat_map(|p| &p.inlines)
         .filter_map(|i| if let Inline::Image(img) = i { img.object.as_deref() } else { None })

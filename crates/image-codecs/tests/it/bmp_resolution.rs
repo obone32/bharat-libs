@@ -3,7 +3,7 @@
 //! document saved as BMP opened at 72 ppi elsewhere, and an opened BMP's resolution was ignored.
 
 use crate::common::test_image;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 /// The DIB header's size and its pixels per metre, horizontal then vertical (file offsets 14, 38
 /// and 42, little-endian).

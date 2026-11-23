@@ -1,7 +1,7 @@
 //! Writing DDS textures: every storage read back through the reader, the header fields, sizes
 //! that aren't a multiple of four, the mip chain, and the block-compression error on ramps.
 
-use craft_image_codecs::{
+use bharat_image_codecs::{
     ChannelLayout, DdsCompression, DdsOptions, EncodeOptions, FidelityWarning, Format, Image, decode, encode, fidelity_warnings_with,
 };
 
@@ -391,7 +391,7 @@ fn bc4_and_bc5_are_written_with_the_dx10_header() {
             // DXGI format, a 2D texture, no misc flags, one texture, alpha mode unknown.
             assert_eq!([le32(&b, 128), le32(&b, 132), le32(&b, 136), le32(&b, 140), le32(&b, 144)], [dxgi, 3, 0, 1, 0]);
             assert_eq!(b.len(), 148 + linear as usize);
-            assert!(!craft_image_codecs::has_unretained_source_data(&b).unwrap());
+            assert!(!bharat_image_codecs::has_unretained_source_data(&b).unwrap());
             let back = decode(&b).unwrap();
             assert_eq!((back.dimensions(), back.layout()), ((w, h), layout), "{compression:?} {w}x{h}");
         }
@@ -474,7 +474,7 @@ fn compression_names_round_trip() {
 /// Encode timings on a synthetic ~30 MP texture (6336×4752). Ignored by default; run in release:
 ///
 /// ```sh
-/// cargo test --release -p craft-image-codecs --test it -- dds_write:: --ignored --nocapture
+/// cargo test --release -p bharat-image-codecs --test it -- dds_write:: --ignored --nocapture
 /// ```
 #[test]
 #[ignore]
@@ -509,7 +509,7 @@ fn texture_30_mp() -> Image {
 /// one slow run doesn't decide. Ignored by default; run in release:
 ///
 /// ```sh
-/// cargo test --release -p craft-image-codecs --test it -- dds_write:: --ignored --nocapture
+/// cargo test --release -p bharat-image-codecs --test it -- dds_write:: --ignored --nocapture
 /// ```
 #[test]
 #[ignore]

@@ -25,7 +25,7 @@
 //! [`move_to`] calls and a [`release`].
 //!
 //! ```no_run
-//! use craft_ui::testing::input;
+//! use bharat_ui::testing::input;
 //! use egui::{Modifiers, PointerButton, pos2, vec2};
 //!
 //! let mut harness = egui_kittest::Harness::new_ui(|ui| _ = ui.button("Open"));

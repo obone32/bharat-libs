@@ -1,6 +1,6 @@
-use craft_psd::PsdError;
-use craft_psd::atn;
-use craft_psd::descriptor::{Class, Descriptor, Id, MAX_DEPTH, ObjectArray, ReferenceItem as R, UnicodeString, Value as V};
+use bharat_psd::PsdError;
+use bharat_psd::atn;
+use bharat_psd::descriptor::{Class, Descriptor, Id, MAX_DEPTH, ObjectArray, ReferenceItem as R, UnicodeString, Value as V};
 
 const STOP: &[u8] = include_bytes!("../fixtures/atn/v12-stop.atn");
 const VALUES: &[u8] = include_bytes!("../fixtures/atn/v12-values.atn");

@@ -1,6 +1,6 @@
 //! `decode_gif_frames`: every frame of an animated GIF, composited, with its delay.
 
-use craft_image_codecs::{AnimationFrame, CodecError, DecodeOptions, DecodeWarning, Format, Limits, decode, decode_gif_frames};
+use bharat_image_codecs::{AnimationFrame, CodecError, DecodeOptions, DecodeWarning, Format, Limits, decode, decode_gif_frames};
 
 const RED: [u8; 4] = [255, 0, 0, 255];
 const GREEN: [u8; 4] = [0, 255, 0, 255];

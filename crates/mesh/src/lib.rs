@@ -25,8 +25,8 @@
 //! (an OBJ material library, a glTF buffer or image) is listed in [`Scene::external`] and asked
 //! of the caller's [`Resolver`], which may decline.
 //!
-//! Depends on no other Craft crate, except that `threemf` opens its package with `craft-opc`
-//! and reads its XML with `craft-xml`.
+//! Depends on no other Bharat crate, except that `threemf` opens its package with `bharat-opc`
+//! and reads its XML with `bharat-xml`.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 // The helpers the formats share are not all used by every subset of them.

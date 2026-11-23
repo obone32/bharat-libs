@@ -3,7 +3,7 @@
 
 use std::sync::Arc;
 
-use craft_pptx::{Defaults, Plain, Presentation, Slide, SlideId};
+use bharat_pptx::{Defaults, Plain, Presentation, Slide, SlideId};
 
 /// A deck with [`Plain`]'s master and one slide on its layout.
 pub fn deck() -> Presentation {
@@ -24,15 +24,15 @@ pub fn add_slide(p: &mut Presentation) -> &mut Slide {
 }
 
 pub fn export(p: &Presentation) -> Vec<u8> {
-    craft_pptx::export(p, &Plain).unwrap()
+    bharat_pptx::export(p, &Plain).unwrap()
 }
 
 pub fn import(bytes: &[u8]) -> Presentation {
-    craft_pptx::import(bytes, &Plain).unwrap()
+    bharat_pptx::import(bytes, &Plain).unwrap()
 }
 
 pub fn bytes_of(pptx: &[u8], name: &str) -> Vec<u8> {
-    craft_opc::Package::open(pptx, &craft_pptx::LIMITS).unwrap().get(name).unwrap_or_else(|| panic!("no part {name}")).to_vec()
+    bharat_opc::Package::open(pptx, &bharat_pptx::LIMITS).unwrap().get(name).unwrap_or_else(|| panic!("no part {name}")).to_vec()
 }
 
 pub fn part(pptx: &[u8], name: &str) -> String {
@@ -41,22 +41,22 @@ pub fn part(pptx: &[u8], name: &str) -> String {
 
 /// The package with each part passed through `f`: `None` drops it. `extra` parts are added.
 pub fn rewrite(pptx: &[u8], f: impl Fn(&str, &[u8]) -> Option<Vec<u8>>, extra: &[(&str, &str)]) -> Vec<u8> {
-    let pkg = craft_opc::Package::open(pptx, &craft_pptx::LIMITS).unwrap();
-    let mut out = craft_opc::ZipOut::new();
+    let pkg = bharat_opc::Package::open(pptx, &bharat_pptx::LIMITS).unwrap();
+    let mut out = bharat_opc::ZipOut::new();
     for name in pkg.names() {
         if let Some(data) = f(name, pkg.get(name).unwrap()) {
-            out.add(name, &data, craft_opc::Compression::Deflate).unwrap();
+            out.add(name, &data, bharat_opc::Compression::Deflate).unwrap();
         }
     }
     for (name, data) in extra {
-        out.add(name, data.as_bytes(), craft_opc::Compression::Deflate).unwrap();
+        out.add(name, data.as_bytes(), bharat_opc::Compression::Deflate).unwrap();
     }
     out.finish().unwrap()
 }
 
 /// Every element and attribute prefix in `xml` is declared on it or an ancestor.
 pub fn assert_prefixes_bound(name: &str, xml: &[u8]) {
-    fn rec(e: &craft_xml::El, scope: &mut Vec<String>, name: &str) {
+    fn rec(e: &bharat_xml::El, scope: &mut Vec<String>, name: &str) {
         let n = scope.len();
         scope.extend(e.attrs.iter().filter_map(|(k, _)| k.strip_prefix("xmlns:").map(str::to_string)));
         let bound = |q: &str, scope: &Vec<String>| q.split_once(':').is_none_or(|(p, _)| p == "xml" || p == "xmlns" || scope.iter().any(|s| s == p));
@@ -69,6 +69,6 @@ pub fn assert_prefixes_bound(name: &str, xml: &[u8]) {
         }
         scope.truncate(n);
     }
-    let root = craft_xml::Options::default().strict().parse(xml).unwrap_or_else(|e| panic!("{name}: not well-formed: {e}"));
+    let root = bharat_xml::Options::default().strict().parse(xml).unwrap_or_else(|e| panic!("{name}: not well-formed: {e}"));
     rec(&root, &mut vec![], name);
 }

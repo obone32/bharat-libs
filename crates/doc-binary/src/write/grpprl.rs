@@ -2,11 +2,11 @@
 //! section (SEPX) formatting. The opcodes are the ones the reader decodes (`fmt.rs`,
 //! `sections.rs`, `table.rs`), so a saved file reads back with the same properties.
 
-use craft_wordmodel::Rgb;
-use craft_wordmodel::props::{
+use bharat_wordmodel::Rgb;
+use bharat_wordmodel::props::{
     Align, Border, BorderStyle, Borders, CharProps, Highlight, LineSpacing, ParaProps, TabAlign, TabLeader, TextColor, Underline, VertAlign,
 };
-use craft_wordmodel::section::{NumFormat, PageVAlign, SectionProps, SectionStart};
+use bharat_wordmodel::section::{NumFormat, PageVAlign, SectionProps, SectionStart};
 
 /// A grpprl being built: Prls appended one by one.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Hash)]
@@ -594,7 +594,7 @@ pub(crate) fn brc(b: &Border) -> [u8; 8] {
 
 /// The paragraph's own tab stops as a `PChgTabsPapxOperand`: the cleared stops in `rgdxaDel`,
 /// the others (with their alignment and leader) in `rgdxaAdd`, each list ascending.
-fn tab_stops(g: &mut Grpprl, tabs: &[craft_wordmodel::props::TabStop]) {
+fn tab_stops(g: &mut Grpprl, tabs: &[bharat_wordmodel::props::TabStop]) {
     let mut del: Vec<i16> = tabs.iter().filter(|t| t.align == TabAlign::Clear).map(|t| twips(t.pos)).collect();
     let mut add: Vec<(i16, u8)> = tabs
         .iter()
@@ -709,9 +709,9 @@ pub(crate) fn sepx(s: &SectionProps) -> Grpprl {
         g.u8(
             S_LNC,
             match ln.restart {
-                craft_wordmodel::section::LineNumberRestart::Page => 0,
-                craft_wordmodel::section::LineNumberRestart::Section => 1,
-                craft_wordmodel::section::LineNumberRestart::Continuous => 2,
+                bharat_wordmodel::section::LineNumberRestart::Page => 0,
+                bharat_wordmodel::section::LineNumberRestart::Section => 1,
+                bharat_wordmodel::section::LineNumberRestart::Continuous => 2,
             },
         );
         g.u16(S_NLNN_MOD, ln.count_by.clamp(1, 100) as u16);

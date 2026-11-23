@@ -1,11 +1,11 @@
-//! Reading system package lists (dpkg, rpm, pacman, Flatpak) and matching them to Craft Apps.
+//! Reading system package lists (dpkg, rpm, pacman, Flatpak) and matching them to Bharat Apps.
 //!
 //! Pure functions over the tools' text output, so they're tested on every platform; only Linux
 //! runs the tools (`detect::linux`).
 
 use crate::{App, InstallSource, version};
 
-/// One installed package that belongs to a Craft App.
+/// One installed package that belongs to a Bharat App.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Package {
     pub manager: InstallSource,
@@ -86,7 +86,7 @@ pub fn parse_flatpak_info(text: &str) -> Option<String> {
     text.lines().find_map(|l| l.trim().strip_prefix("Version:").map(|v| v.trim().to_string())).filter(|v| !v.is_empty())
 }
 
-/// The package names a Craft App may be installed under with `manager`. On Arch the AUR carries
+/// The package names a Bharat App may be installed under with `manager`. On Arch the AUR carries
 /// each app three ways: built from source (`photocraft`), the release binary (`photocraft-bin`)
 /// and the latest commit (`photocraft-git`). Debian and RPM packages may use either the short stem
 /// (`photocraft`) or the reverse-DNS bundle id (`ai.storyteller.photocraft`).

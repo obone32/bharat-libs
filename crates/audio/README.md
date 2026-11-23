@@ -1,6 +1,6 @@
-# craft-audio
+# bharat-audio
 
-Audio file I/O and codecs for the Craft apps. Native implementations: WAV and AIFF read/write,
+Audio file I/O and codecs for the Bharat apps. Native implementations: WAV and AIFF read/write,
 FLAC encoder, AAC and ALAC decoders/encoders, AC-3/E-AC-3 decoder/encoder, MP3 decoder/encoder, Opus
 decoder/encoder, MP1/MP2 decoders.
 Formats without a native decoder are decoded by [symphonia](#symphonia), which is to be replaced
@@ -17,7 +17,7 @@ by native decoders.
   conformance vectors.
   Builds for `wasm32-unknown-unknown`.
 - Containers (MP4/MOV, Matroska/WebM, Ogg), bit I/O and the `Container`/`CodecId`/`CodecParams`
-  types come from [`craft-media`](../media/README.md). This crate never depends on video codecs.
+  types come from [`bharat-media`](../media/README.md). This crate never depends on video codecs.
 
 ## Cargo features
 
@@ -27,23 +27,23 @@ No default features. The shared types (`AudioBuffer`, `AudioInfo`, `ChannelLayou
 | Feature | Provides | Pulls in |
 |---|---|---|
 | `decode` | `decode`, `probe`, `Decoder`, `tracks`, `TrackDecoder`; every format in [Format support](#format-support) | `decode-native`, `symphonia` |
-| `decode-native` | the same, native formats only (others are `Unsupported`); `wav_pcm`, `aiff_pcm` (a file's integer PCM bit for bit, as `RawPcm`) | the six decoders below, craft-media `isobmff`/`matroska`/`ogg`, `log` |
+| `decode-native` | the same, native formats only (others are `Unsupported`); `wav_pcm`, `aiff_pcm` (a file's integer PCM bit for bit, as `RawPcm`) | the six decoders below, bharat-media `isobmff`/`matroska`/`ogg`, `log` |
 | `symphonia` | the fallback for formats with no native decoder; turning it on is the same as `decode` | `decode-native`, symphonia |
 | `encode` | every encoder, and every format of `encode` and `FileEncoder` | `lossless-encode`, `aac-encode`, `alac-encode`, `ac3-encode`, `eac3-encode`, `mp3-encode`, `opus-encode`, `vorbis-encode` |
 | `lossless-encode` | WAV, AIFF and FLAC writing | `pcm-encode`, `flac-encode` |
 | `pcm-encode` | `encode`, `FileEncoder` for WAV and AIFF; `wav_float_header`; `pcm_wav_file`, `pcm_wav_header`, `pcm_aiff_file`, `pcm_aiff_header` (minimal files around integer PCM bytes, for essence embedded in AAF / OMF) | none |
 | `flac-decode` | `flac::decode` (whole `.flac` files) and `flac::Decoder` (single frames, for callers that demux FLAC themselves); native, CRC-checked, 4 to 32 bits. `decode` still uses symphonia for FLAC files | none |
-| `flac-encode` | `encode`, `FileEncoder` for FLAC; `flac::Encoder`, the packet encoder for callers that mux FLAC themselves | craft-media `bitstream` |
-| `aac-decode`, `aac-encode` | `aac::Decoder`, `aac::Encoder`; with `aac-decode`, `aac::latm_config` / `latm_split` for LOAS / LATM frames (AAC in MPEG transport streams); with `aac-encode`, `encode`, `FileEncoder` for AAC in M4A | craft-media `bitstream`; `aac-encode` also `isobmff` |
+| `flac-encode` | `encode`, `FileEncoder` for FLAC; `flac::Encoder`, the packet encoder for callers that mux FLAC themselves | bharat-media `bitstream` |
+| `aac-decode`, `aac-encode` | `aac::Decoder`, `aac::Encoder`; with `aac-decode`, `aac::latm_config` / `latm_split` for LOAS / LATM frames (AAC in MPEG transport streams); with `aac-encode`, `encode`, `FileEncoder` for AAC in M4A | bharat-media `bitstream`; `aac-encode` also `isobmff` |
 | `alac-decode` | `alac::Decoder` | none |
-| `alac-encode` | `alac::Encoder`; `encode`, `FileEncoder` for ALAC in M4A | craft-media `isobmff` |
+| `alac-encode` | `alac::Encoder`; `encode`, `FileEncoder` for ALAC in M4A | bharat-media `isobmff` |
 | `opus-decode`, `opus-encode` | `opus::Decoder`/`StreamDecoder`, `opus::Encoder` | none |
-| `vorbis-encode` | `vorbis::encoder::Encoder` (pure Rust); `encode_ogg_vorbis`, `encode_ogg` and `encode` for Ogg Vorbis files (whole buffer; not `FileEncoder`) | craft-media `ogg` |
-| `ac3-decode` | `ac3::Decoder`, `ac3::ProgrammeDecoder` | craft-media `bitstream` |
-| `ac3-encode`, `eac3-encode` | `ac3::encoder::Encoder`; `encode`, `FileEncoder` for AC-3 and E-AC-3 streams | craft-media `bitstream` |
-| `mpa-decode` | `mpa::Decoder` | craft-media `bitstream` |
+| `vorbis-encode` | `vorbis::encoder::Encoder` (pure Rust); `encode_ogg_vorbis`, `encode_ogg` and `encode` for Ogg Vorbis files (whole buffer; not `FileEncoder`) | bharat-media `ogg` |
+| `ac3-decode` | `ac3::Decoder`, `ac3::ProgrammeDecoder` | bharat-media `bitstream` |
+| `ac3-encode`, `eac3-encode` | `ac3::encoder::Encoder`; `encode`, `FileEncoder` for AC-3 and E-AC-3 streams | bharat-media `bitstream` |
+| `mpa-decode` | `mpa::Decoder` | bharat-media `bitstream` |
 | `mp3-decode` | `mp3::Decoder`, `mp3::InfoTag` | `mpa-decode` |
-| `mp3-encode` | `mp3::Encoder`; `encode`, `FileEncoder` for MP3 | craft-media `bitstream` |
+| `mp3-encode` | `mp3::Encoder`; `encode`, `FileEncoder` for MP3 | bharat-media `bitstream` |
 | `gsm-decode`, `gsm-encode` (`gsm`) | `gsm::Decoder`, `gsm::Encoder`, `gsm::decode`, `gsm::encode`: GSM 06.10 full-rate speech, bit-exact, raw `.gsm` and WAV (GSM 6.10) packings | none |
 | `peaks` | `peaks::Peaks` | none |
 | `rayon` | parallel AAC encoding (with `aac-encode`) | `rayon` |
@@ -59,26 +59,26 @@ An app that decodes 32-bit FLAC with `decode` needs a profile override in its wo
 WAV, AIFF and FLAC export only (no decoders, no demuxers, no symphonia):
 
 ```toml
-craft-audio = { git = "https://github.com/storytold/craft-libs", rev = "<commit>", features = ["lossless-encode"] }
+bharat-audio = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>", features = ["lossless-encode"] }
 ```
 
 Decode, every encoder and waveform overviews:
 
 ```toml
-craft-audio = { git = "https://github.com/storytold/craft-libs", rev = "<commit>", features = ["decode", "encode", "peaks"] }
+bharat-audio = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>", features = ["decode", "encode", "peaks"] }
 ```
 
 Packets from an app's own demuxer, AAC both ways:
 
 ```toml
-craft-audio = { git = "https://github.com/storytold/craft-libs", rev = "<commit>", features = ["aac-decode", "aac-encode"] }
+bharat-audio = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>", features = ["aac-decode", "aac-encode"] }
 ```
 
-craft-audio re-exports the craft-media types its API uses (`ByteSource`, `ReadSeekSource`,
-`CodecParams`, …), and craft-media itself as `craft_audio::craft_media`. Use that to reach the
+bharat-audio re-exports the bharat-media types its API uses (`ByteSource`, `ReadSeekSource`,
+`CodecParams`, …), and bharat-media itself as `bharat_audio::bharat_media`. Use that to reach the
 containers directly (for example to pass an `isobmff::Track`'s `codec_params()` to
-`TrackDecoder`); `decode-native` turns on all three. A separate craft-media dependency must use
-the **same `rev`** as craft-audio: with two revisions Cargo builds two copies, and their types do
+`TrackDecoder`); `decode-native` turns on all three. A separate bharat-media dependency must use
+the **same `rev`** as bharat-audio: with two revisions Cargo builds two copies, and their types do
 not match.
 
 ## Usage
@@ -86,19 +86,19 @@ not match.
 Runnable versions are in `examples/`:
 
 ```bash
-cargo run -p craft-audio --example info --features decode -- take.m4a
+cargo run -p bharat-audio --example info --features decode -- take.m4a
 ```
 
 ```bash
-cargo run -p craft-audio --example encode --features lossless-encode,aac-encode -- out
+cargo run -p bharat-audio --example encode --features lossless-encode,aac-encode -- out
 ```
 
 ```bash
-cargo run -p craft-audio --example stream --features decode -- long-recording.m4a 60
+cargo run -p bharat-audio --example stream --features decode -- long-recording.m4a 60
 ```
 
 ```bash
-cargo run -p craft-audio --example packets --features decode -- take.m4a
+cargo run -p bharat-audio --example packets --features decode -- take.m4a
 ```
 
 `stream` takes a file and a start time in seconds; `packets` takes an MP4 file. The entry points
@@ -108,7 +108,7 @@ functions around them have rustdoc examples.
 ### Decode a file
 
 ```rust
-use craft_audio::{decode, probe};
+use bharat_audio::{decode, probe};
 
 let bytes = std::fs::read("take.m4a")?;
 
@@ -130,7 +130,7 @@ count per run of them), so the audio after them stays in place.
 ### Choose a track
 
 ```rust
-use craft_audio::{DecodeOptions, decode_with, tracks};
+use bharat_audio::{DecodeOptions, decode_with, tracks};
 
 let list = tracks(&bytes, None)?;                 // codec, rate and channels of every audio track
 if let Some(second) = list.get(1) {
@@ -151,7 +151,7 @@ file extensions of the formats `decode` reads, for a file picker's filter.
 ### Stream and seek
 
 ```rust
-use craft_audio::{DecodeOptions, Decoder};
+use bharat_audio::{DecodeOptions, Decoder};
 
 let file = std::fs::File::open("long-recording.m4a")?;
 let mut dec = Decoder::open(file, Some("m4a"), &DecodeOptions::default())?;
@@ -184,15 +184,15 @@ each block's frames, and `seek` to that position.
 ### Decode packets from your own demuxer
 
 `TrackDecoder` takes a track's `CodecParams` and the first packets. The parameters come from any
-craft-media demuxer's `codec_params()` (see
-[craft-media's codec parameters](../media/README.md#containers-codecs-and-codec-parameters)), or
+bharat-media demuxer's `codec_params()` (see
+[bharat-media's codec parameters](../media/README.md#containers-codecs-and-codec-parameters)), or
 are built with `CodecParams::new` for another container:
 
 ```rust
-use craft_audio::{CodecId, CodecParams, TrackDecoder};
+use bharat_audio::{CodecId, CodecParams, TrackDecoder};
 
 let params = CodecParams::new(CodecId::Aac).with_extradata(asc).with_sample_rate(48_000);
-let lookahead: Vec<&[u8]> = packets.iter().take(craft_audio::LOOKAHEAD_PACKETS).map(Vec::as_slice).collect();
+let lookahead: Vec<&[u8]> = packets.iter().take(bharat_audio::LOOKAHEAD_PACKETS).map(Vec::as_slice).collect();
 let mut dec = TrackDecoder::new(&params, &lookahead)?;
 for p in &packets {
     let block = dec.decode(p).or_else(|_| dec.conceal(Some(p)))?;
@@ -217,7 +217,7 @@ WAV order. `ac3::Decoder` and `mpa::Decoder` output WAV order.
 ### Encode a file
 
 ```rust
-use craft_audio::{AudioBuffer, BitDepth, ChannelLayout, EncodeFormat, EncodeOptions, FileEncoder, encode};
+use bharat_audio::{AudioBuffer, BitDepth, ChannelLayout, EncodeFormat, EncodeOptions, FileEncoder, encode};
 
 // One Vec of samples per channel, full scale ±1. `AudioBuffer::new(rate, channels, frames)`
 // makes a silent one to fill.
@@ -315,8 +315,8 @@ For an `.m4a` file, use `EncodeFormat::Aac` above. `aac::Encoder` is the packet 
 for muxing into a container of your own:
 
 ```rust
-use craft_audio::AudioError;
-use craft_audio::aac::{Encoder, EncoderConfig, aac_order};
+use bharat_audio::AudioError;
+use bharat_audio::aac::{Encoder, EncoderConfig, aac_order};
 
 let mut enc = Encoder::new(EncoderConfig::cbr(48_000, 6, 384_000))?;
 let order = aac_order(6).ok_or_else(|| AudioError::Unsupported("no AAC order for 6 channels".into()))?;
@@ -334,13 +334,13 @@ front left and right of centre, front left and right, surrounds). A WAV 7.1 buff
 Ls Rs) has no equivalent in that layout; passed unchanged, its channels go to the wrong speakers.
 
 `EncoderConfig::cbr(..).with_adts(true)` makes every access unit an ADTS frame; concatenated, they
-are a playable `.aac` file. To write MP4 or Matroska, pass the access units to craft-media's
+are a playable `.aac` file. To write MP4 or Matroska, pass the access units to bharat-media's
 muxers ([MP4](../media/README.md#muxing), [Matroska](../media/README.md#muxing-1)).
 
 ### Encode Opus
 
 ```rust
-use craft_audio::opus::Encoder;
+use bharat_audio::opus::Encoder;
 
 let mut enc = Encoder::new(2, 128_000)?;            // channels, bits per second
 let frame_len = Encoder::FRAME_SIZE * 2;            // 20 ms, interleaved stereo
@@ -356,11 +356,11 @@ let head = enc.opus_head();     // Matroska's CodecPrivate
 let pre_skip = enc.pre_skip();  // samples the player drops at the start
 ```
 
-The encoder takes 48 kHz only, and craft-audio has no resampler.
+The encoder takes 48 kHz only, and bharat-audio has no resampler.
 
 Opus goes into Ogg, Matroska/WebM or MP4:
 
-- **Ogg (`.opus`):** `craft_media::ogg::PageWriter` with `head` and `opus_tags` as the two header
+- **Ogg (`.opus`):** `bharat_media::ogg::PageWriter` with `head` and `opus_tags` as the two header
   packets, each packet's granule position the samples decoded so far (pre-skip included, as
   the input above starts with it), and `finish(Some(pre_skip + length))` to trim the end
   (RFC 7845 §4).
@@ -378,7 +378,7 @@ Opus goes into Ogg, Matroska/WebM or MP4:
 ### Encode Ogg Vorbis
 
 ```rust
-use craft_audio::{OggVorbisOptions, encode_ogg_vorbis};
+use bharat_audio::{OggVorbisOptions, encode_ogg_vorbis};
 
 // 1–8 channels in Vorbis order (5.1: L C R Ls Rs LFE), any sample rate.
 let opts = OggVorbisOptions::new(6.0).with_tag("TITLE", "Take 3").with_tag("ARTIST", "Me");
@@ -390,7 +390,7 @@ runs from -1 to 10 at a variable bit rate: about 18 kbit/s per channel at -1, 10
 at 10 on music. `encode` with `EncodeFormat::Ogg` takes a WAV-order layout and writes it in
 Vorbis order; its `RateControl::Bitrate` (64–500 kbit/s) picks the quality whose nominal rate
 that is (`quality_for_bitrate`), and `RateControl::Quality` 0.0–1.0 is quality -1 to 10. For
-streaming, feed `vorbis::encoder::Encoder` and write its packets with `craft_media::ogg::PageWriter`
+streaming, feed `vorbis::encoder::Encoder` and write its packets with `bharat_media::ogg::PageWriter`
 (identification, `vorbis_comment`, setup, then the audio with each packet's granule position).
 
 Not yet: short blocks (transients may pre-echo), channel coupling (stereo costs
@@ -399,7 +399,7 @@ about twice mono) and bit-rate management.
 ### Waveform overviews
 
 ```rust
-use craft_audio::peaks::Peaks;
+use bharat_audio::peaks::Peaks;
 
 let peaks = Peaks::build(&left);                         // once per channel
 // Start sample, samples per column, overlap, columns; pass the same samples each time. One
@@ -412,7 +412,7 @@ exact, O(log n). `rms_spans` returns one RMS value per column.
 
 ### Errors
 
-Functions return `craft_audio::Result<T>`. The codec modules have their own `Error` types, which
+Functions return `bharat_audio::Result<T>`. The codec modules have their own `Error` types, which
 convert into `AudioError` with `?`.
 
 | `AudioError` | Cause |
@@ -426,9 +426,9 @@ convert into `AudioError` with `?`.
 `AudioError` is `#[non_exhaustive]`, so a `match` needs a `_` arm:
 
 ```rust
-match craft_audio::decode(&bytes, None) {
+match bharat_audio::decode(&bytes, None) {
     Ok((info, buf)) => { /* … */ }
-    Err(craft_audio::AudioError::Unsupported(what)) => eprintln!("cannot decode: {what}"),
+    Err(bharat_audio::AudioError::Unsupported(what)) => eprintln!("cannot decode: {what}"),
     Err(e) => eprintln!("{e}"),
 }
 ```
@@ -452,9 +452,9 @@ match craft_audio::decode(&bytes, None) {
 
 | Container | Demuxer | Timing |
 |---|---|---|
-| MP4, M4A, MOV | `craft_media::isobmff` for native codecs; symphonia for the others (FLAC) | edit lists (AAC priming, Opus pre-skip) |
-| Matroska, WebM | `craft_media::matroska` for native codecs; symphonia for the others (Vorbis, FLAC) | `CodecDelay`, `DiscardPadding` |
-| Ogg | `craft_media::ogg` (Opus); symphonia (Vorbis, FLAC) | pre-skip, end trimming |
+| MP4, M4A, MOV | `bharat_media::isobmff` for native codecs; symphonia for the others (FLAC) | edit lists (AAC priming, Opus pre-skip) |
+| Matroska, WebM | `bharat_media::matroska` for native codecs; symphonia for the others (Vorbis, FLAC) | `CodecDelay`, `DiscardPadding` |
+| Ogg | `bharat_media::ogg` (Opus); symphonia (Vorbis, FLAC) | pre-skip, end trimming |
 | Raw ADTS AAC, AC-3, E-AC-3, MP1/MP2 | native frame sync | — |
 | Raw MP3 | native frame sync; symphonia for the free format | Xing / Info / VBRI frame skipped; LAME tag encoder delay and padding |
 | FLAC | symphonia | — |
@@ -505,9 +505,9 @@ match craft_audio::decode(&bytes, None) {
   ffmpeg and `flac -d` ignore that mask and use their default layout for the channel count.
 - Not decoded at all: Speex.
 - `TrackDecoder` returns `Unsupported` for FLAC and Vorbis; `decode` and `Decoder` read
-  those through symphonia. ALAC in CAF still goes through symphonia (craft-media has no CAF
+  those through symphonia. ALAC in CAF still goes through symphonia (bharat-media has no CAF
   demuxer).
-- ALAC: craft-media's MP4 muxer writes no `chan` box, so an M4A of more than two channels (from
+- ALAC: bharat-media's MP4 muxer writes no `chan` box, so an M4A of more than two channels (from
   `EncodeFormat::Alac` or muxed from `alac::Encoder` packets) carries no explicit layout; decoders
   then use the standard ALAC layout for the count, which is the one written.
 - `EncodeFormat::Mp3`, `Ac3` and `Eac3` write raw streams, which cannot signal the codec's delay or
@@ -573,7 +573,7 @@ Each codec module's rustdoc lists the coding tools it implements.
 ### MP3 encoding
 
 ```rust
-use craft_audio::mp3::{Config, DELAY, Encoder};
+use bharat_audio::mp3::{Config, DELAY, Encoder};
 
 let mut enc = Encoder::new(Config::cbr(48_000, 2, 192))?;
 let mut mp3 = enc.encode(&[&left, &right]); // whole frames as they complete
@@ -665,7 +665,7 @@ qualification remain separate checks. Lossy ringing can exceed the source PCM pe
 
 ## symphonia
 
-symphonia 0.6 (MPL-2.0, used unmodified as the Craft licensing rules require) decodes the formats
+symphonia 0.6 (MPL-2.0, used unmodified as the Bharat licensing rules require) decodes the formats
 marked "symphonia" in [Format support](#format-support). Each is to be replaced by a native
 decoder, after which the dependency is removed. The native path is tried first, so a new native
 decoder takes its formats over without an API change. Build with `decode-native` instead of
@@ -684,7 +684,7 @@ Notes while symphonia is in use:
   an app built with `panic = "abort"`, such a panic aborts. The native decoders do not panic.
 - `symphonia-bundle-flac` overflows an `i32` add on 32-bit LPC FLAC; the wrapped value is correct.
   Release builds decode correctly; debug builds panic (returned as `Malformed`). Apps that decode
-  32-bit FLAC need this in the workspace `Cargo.toml` (craft-libs has it):
+  32-bit FLAC need this in the workspace `Cargo.toml` (bharat-libs has it):
 
   ```toml
   [profile.dev.package.symphonia-bundle-flac]
@@ -693,29 +693,29 @@ Notes while symphonia is in use:
 
 ## Tests
 
-Both integration test binaries need features, so a plain `cargo test -p craft-audio` runs only
+Both integration test binaries need features, so a plain `cargo test -p bharat-audio` runs only
 the unit tests. Run everything with:
 
 ```bash
-cargo test -p craft-audio --all-features
+cargo test -p bharat-audio --all-features
 ```
 
 Tests that need ffmpeg or the Opus vectors are skipped when those are missing. To fail instead,
-set `CRAFT_MEDIA_REQUIRE_ORACLES=1`. The helpers and their variables are shared with craft-media
+set `BHARAT_MEDIA_REQUIRE_ORACLES=1`. The helpers and their variables are shared with bharat-media
 (see [its tests](../media/README.md#tests)). The test files describe what they check;
 `tests/codecs/routing_oracle.rs` is the end-to-end check of containers, codecs, timing, seeking
 and track choice against ffmpeg.
 
 The Opus conformance test needs the RFC 8251 vectors (75 MB, not committed). Run the script from
 the repository root; it fetches them into `target/fixtures/opus/vectors`. With
-`CRAFT_MEDIA_FIXTURES_DIR` set, pass the directory:
+`BHARAT_MEDIA_FIXTURES_DIR` set, pass the directory:
 
 ```bash
 scripts/fetch-opus-vectors.sh
 ```
 
 ```bash
-scripts/fetch-opus-vectors.sh "$CRAFT_MEDIA_FIXTURES_DIR/opus/vectors"
+scripts/fetch-opus-vectors.sh "$BHARAT_MEDIA_FIXTURES_DIR/opus/vectors"
 ```
 
 CI (`.github/workflows/audio.yml`) runs clippy for each feature on its own, rustdoc with warnings
@@ -748,7 +748,7 @@ tests of both:
 For the apps switching from their own code; to be removed once all three have switched.
 
 The codec modules' public items keep their names, so apps can re-export them
-(`pub use craft_audio::aac::*;`). Names kept only for that are `#[doc(hidden)]`:
+(`pub use bharat_audio::aac::*;`). Names kept only for that are `#[doc(hidden)]`:
 `ac3::Decoded` (now `ac3::Frame`), `opus::encoder::OpusEncoder` (now `opus::Encoder`),
 `aac::Upsample2x`, `aac::ProgramConfig::parse`,
 `aac::config_layout` and `aac::sample_rate_index`. What else an app adjusts:
@@ -785,7 +785,7 @@ The codec modules' public items keep their names, so apps can re-export them
 - `FileEncoder::write` takes any per-channel slices, but refuses a block with missing channels or
   short slices instead of filling them with silence.
 - `DecodeOptions` is not `Copy`.
-- The FLAC encoder's vendor string is `craft-audio <version>`.
+- The FLAC encoder's vendor string is `bharat-audio <version>`.
 - `decode` tries native decoders first. AAC, ALAC, Opus, AC-3 and MP2 no longer go through symphonia, except AAC in
   CAF.
   MP4 and Matroska files decode to presentation length. A packet that fails is concealed, not

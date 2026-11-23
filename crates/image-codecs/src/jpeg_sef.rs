@@ -16,7 +16,7 @@ pub fn repair(bytes: &[u8]) -> Cow<'_, [u8]> {
     let mut fixed = Vec::with_capacity(image.len().saturating_add(2));
     fixed.extend_from_slice(image);
     fixed.extend_from_slice(&[0xff, 0xd9]);
-    let in_scan = craft_metadata::inspect_jpeg(&fixed).is_some_and(|m| m.first_scan_components > 0) && reaches_eoi(&fixed);
+    let in_scan = bharat_metadata::inspect_jpeg(&fixed).is_some_and(|m| m.first_scan_components > 0) && reaches_eoi(&fixed);
     if in_scan { Cow::Owned(fixed) } else { Cow::Borrowed(bytes) }
 }
 

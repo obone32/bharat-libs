@@ -38,7 +38,7 @@ pub fn decode(bytes: &[u8], label: &str) -> String {
 fn dos(label: &str) -> Option<(&'static [char; 128], bool)> {
     let number = ["ibm-", "ibm", "cp-", "cp"].iter().find_map(|p| label.strip_prefix(p)).unwrap_or(label);
     let page: u16 = number.parse().ok().filter(|p| *p != 866)?;
-    craft_codepage::dos_upper(page).map(|t| (t, page == 864))
+    bharat_codepage::dos_upper(page).map(|t| (t, page == 864))
 }
 
 fn dos_decode(bytes: &[u8], (table, arabic_percent): (&[char; 128], bool)) -> String {

@@ -5,12 +5,12 @@
 use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
 
-use craft_pdf::interpret::font::OutlineGlyph;
-use craft_pdf::write::backend::geom::Point;
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::backend::text::{Font, GlyphId, KrillaGlyph};
-use craft_pdf::write::backend::{Data, SerializeSettings};
-use craft_pdf::write::{Metadata, WriteError, Writer, guard};
+use bharat_pdf::interpret::font::OutlineGlyph;
+use bharat_pdf::write::backend::geom::Point;
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::backend::text::{Font, GlyphId, KrillaGlyph};
+use bharat_pdf::write::backend::{Data, SerializeSettings};
+use bharat_pdf::write::{Metadata, WriteError, Writer, guard};
 
 use super::{FontBytes, TextFont};
 
@@ -173,7 +173,7 @@ pub(crate) fn wrap_cff(cff: &[u8], advances: &BTreeMap<u32, f32>) -> Option<Vec<
 #[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
-    use craft_pdf::interpret::font::StandardFont;
+    use bharat_pdf::interpret::font::StandardFont;
 
     #[test]
     fn bare_cff_is_wrapped_in_an_opentype_font_with_the_pdf_widths() {

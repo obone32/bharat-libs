@@ -1,4 +1,4 @@
-use craft_audio::{AudioBuffer, AudioError, BitDepth, BwfInfo, ChannelLayout, EncodeFormat, EncodeOptions, FileEncoder, encode};
+use bharat_audio::{AudioBuffer, AudioError, BitDepth, BwfInfo, ChannelLayout, EncodeFormat, EncodeOptions, FileEncoder, encode};
 use std::io::{Cursor, Seek, SeekFrom, Write};
 
 fn tone(channels: usize, frames: usize) -> AudioBuffer {
@@ -131,7 +131,7 @@ struct FlakySource {
     fail_from: u64,
 }
 
-use craft_media::ByteSource;
+use bharat_media::ByteSource;
 
 impl ByteSource for FlakySource {
     fn len(&self) -> u64 {
@@ -147,8 +147,8 @@ impl ByteSource for FlakySource {
 
 #[test]
 fn decoder_reads_any_read_seek_source_and_reports_source_failures() {
-    use craft_audio::{DecodeOptions, Decoder};
-    use craft_media::ReadSeekSource;
+    use bharat_audio::{DecodeOptions, Decoder};
+    use bharat_media::ReadSeekSource;
     let wav = encode(&tone(2, 48_000), &EncodeOptions::new(EncodeFormat::Wav)).unwrap();
 
     // `ReadSeekSource` (any `Read + Seek`) is accepted, so a `BufReader<File>` works the same way.
@@ -172,7 +172,7 @@ fn decoder_reads_any_read_seek_source_and_reports_source_failures() {
 
 #[test]
 fn seeking_to_or_past_the_end_ends_the_stream() {
-    use craft_audio::{DecodeOptions, Decoder};
+    use bharat_audio::{DecodeOptions, Decoder};
     let buf = tone(2, 4800);
     for format in [EncodeFormat::Wav, EncodeFormat::Aiff, EncodeFormat::Flac] {
         let file = encode(&buf, &EncodeOptions::new(format).with_bit_depth(BitDepth::Int16)).unwrap();
@@ -198,7 +198,7 @@ fn seeking_to_or_past_the_end_ends_the_stream() {
 
 #[test]
 fn single_track_files_refuse_other_track_indexes() {
-    use craft_audio::{DecodeOptions, decode_with};
+    use bharat_audio::{DecodeOptions, decode_with};
     let buf = tone(1, 1000);
     for format in [EncodeFormat::Wav, EncodeFormat::Aiff] {
         let file = encode(&buf, &EncodeOptions::new(format)).unwrap();
@@ -219,13 +219,13 @@ fn short_or_missing_channels_are_refused_without_writing() {
     // The encoder is still usable.
     enc.write(&[&left, &left], 4).unwrap();
     let wav = enc.finish().unwrap().into_inner();
-    assert_eq!(craft_audio::probe(&wav, None).unwrap().frames, 4);
+    assert_eq!(bharat_audio::probe(&wav, None).unwrap().frames, 4);
 }
 
 /// A 48 kHz mono float PCM Matroska file: ten 10 ms blocks from `first_ns`, with block durations
 /// when `durations` is set (otherwise its length is unknown), and a `CodecDelay` of `delay_ns`.
 fn pcm_mkv(first_ns: i64, durations: bool, delay_ns: u64) -> Vec<u8> {
-    use craft_media::matroska::{LacingMode, MkvWriter, MuxOptions, TrackKind, TrackSpec};
+    use bharat_media::matroska::{LacingMode, MkvWriter, MuxOptions, TrackKind, TrackSpec};
     let mut spec = TrackSpec::new(TrackKind::Audio, "A_PCM/FLOAT/IEEE");
     spec.audio = Some((48_000.0, 1, Some(32)));
     spec.codec_delay_ns = delay_ns;
@@ -240,7 +240,7 @@ fn pcm_mkv(first_ns: i64, durations: bool, delay_ns: u64) -> Vec<u8> {
 
 #[test]
 fn a_matroska_track_that_starts_late_counts_only_its_own_frames() {
-    use craft_audio::{DecodeOptions, Decoder};
+    use bharat_audio::{DecodeOptions, Decoder};
     let file = pcm_mkv(1_000_000_000, true, 0);
     let dec = Decoder::from_bytes(&file, None, &DecodeOptions::default()).unwrap();
     assert!(dec.length_known());
@@ -251,7 +251,7 @@ fn a_matroska_track_that_starts_late_counts_only_its_own_frames() {
 
 #[test]
 fn a_matroska_codec_delay_is_taken_off_the_length() {
-    use craft_audio::{decode, probe};
+    use bharat_audio::{decode, probe};
     // `probe` reports the length the container gives, before anything is decoded; `decode`
     // reports what it presented. 100 ms are decoded and the 20 ms of codec delay dropped, wherever
     // the first block is stored.
@@ -264,7 +264,7 @@ fn a_matroska_codec_delay_is_taken_off_the_length() {
 
 #[test]
 fn seeking_far_past_an_unknown_end_does_not_overflow() {
-    use craft_audio::{DecodeOptions, Decoder};
+    use bharat_audio::{DecodeOptions, Decoder};
     let file = pcm_mkv(0, false, 1_000_000);
     let mut dec = Decoder::from_bytes(&file, None, &DecodeOptions::default()).unwrap();
     assert!(!dec.length_known());

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Craft contributors
+// SPDX-FileCopyrightText: Bharat contributors
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 //! Mail protocols without sockets.
@@ -33,7 +33,7 @@ pub const MAX_LITERAL: usize = 64 * 1024 * 1024;
 /// Longest user name and access token, together, that one sign-in may carry.
 const MAX_XOAUTH2: usize = 32 * 1024;
 
-/// What went wrong. Each holds the reason as a [`Text`]: Craft's own words are a template
+/// What went wrong. Each holds the reason as a [`Text`]: Bharat's own words are a template
 /// displayed in its language ([`said!`]), and what a server or the system said is kept as
 /// it said it ([`Text::verbatim`]). The English ([`Display`](std::fmt::Display)) is what the CLI, MCP
 /// and the log read, and it is the same either way.

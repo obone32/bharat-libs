@@ -1,11 +1,11 @@
 //! Print the actions and steps of `.atn` files, one event per line, with the top-level keys of
-//! each step's descriptor: `cargo run -p craft-psd --example atn_dump -- set.atn…`
+//! each step's descriptor: `cargo run -p bharat-psd --example atn_dump -- set.atn…`
 //!
 //! Handy when adding a Photoshop event to the engine's `.atn` import table: it shows the event
 //! id, the panel name and the parameter keys Photoshop recorded.
 
-use craft_psd::atn;
-use craft_psd::descriptor::{Descriptor, ReferenceItem, Value};
+use bharat_psd::atn;
+use bharat_psd::descriptor::{Descriptor, ReferenceItem, Value};
 
 /// Escapes control characters so a file's names cannot drive the terminal.
 fn clean(s: &str) -> String {
@@ -29,7 +29,7 @@ fn summary(v: &Value) -> String {
     }
 }
 
-fn id(i: &craft_psd::descriptor::Id) -> String {
+fn id(i: &bharat_psd::descriptor::Id) -> String {
     String::from_utf8_lossy(i.as_bytes()).trim().to_string()
 }
 

@@ -1,4 +1,4 @@
-# craft-http-url
+# bharat-http-url
 
 HTTP/HTTPS URL parsing, dot-segment removal, relative redirects, HTTPS downgrade rejection,
 and query-redacted display. No dependencies or network operations. Parsing rejects inputs

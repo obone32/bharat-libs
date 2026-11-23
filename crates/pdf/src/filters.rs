@@ -9,7 +9,7 @@
 //! ([`decode_ccitt_within`], [`decode_jbig2_within`]), each spending from an allowance the
 //! caller shares across a run of images.
 //!
-//! The codecs themselves are `craft-stream-codecs`, re-exported here; this module adds Flate,
+//! The codecs themselves are `bharat-stream-codecs`, re-exported here; this module adds Flate,
 //! the chain (stage order, limits across stages, strict and tolerant decoding) and its
 //! accounting. 1-bit samples can be encoded as CCITT Group 4 ([`encode_g4`]) or lossless JBIG2
 //! ([`encode_jbig2`]), a group of images sharing their marks through `/JBIG2Globals`
@@ -22,12 +22,12 @@ mod flate;
 
 use std::borrow::Cow;
 
-pub use craft_stream_codecs::{
+pub use bharat_stream_codecs::{
     CcittParams, CodecError as FilterError, MAX_CCITT_COLUMNS, MAX_G4_COLUMNS, MAX_JBIG2_COLUMNS, MAX_JBIG2_PIXELS, Params, SharedJbig2,
     decode_ccitt_within, decode_jbig2_within, encode_g4, encode_jbig2, encode_jbig2_generic, encode_jbig2_shared,
 };
-use craft_stream_codecs::{Failure, Step, pay};
-use craft_stream_codecs::{ascii85, asciihex, lzw, predictor, runlength};
+use bharat_stream_codecs::{Failure, Step, pay};
+use bharat_stream_codecs::{ascii85, asciihex, lzw, predictor, runlength};
 
 /// A PDF stream filter, identified by its `/Filter` name.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]

@@ -13,7 +13,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
 use crate::{
-    self as craft_midi, CtrlEvent as CraftCtrlEvent, Note as CraftNote, Smf as CraftSmf, SmfTrack as CraftSmfTrack, read_smf_lenient, write_smf,
+    self as bharat_midi, CtrlEvent as BharatCtrlEvent, Note as BharatNote, Smf as BharatSmf, SmfTrack as BharatSmfTrack, read_smf_lenient, write_smf,
 };
 use std::collections::VecDeque;
 
@@ -226,44 +226,44 @@ fn trim_text(s: &str) -> String {
     s.trim_matches(|c: char| c.is_control() || c.is_whitespace()).to_string()
 }
 
-fn map_midi_error(e: craft_midi::MidiError) -> Error {
+fn map_midi_error(e: bharat_midi::MidiError) -> Error {
     match e {
-        craft_midi::MidiError::NotSmf => Error::NotMidi,
-        craft_midi::MidiError::Truncated(_) | craft_midi::MidiError::BadChunkLength { .. } => Error::Truncated,
-        craft_midi::MidiError::Unsupported(_) => Error::Unsupported("unknown"),
+        bharat_midi::MidiError::NotSmf => Error::NotMidi,
+        bharat_midi::MidiError::Truncated(_) | bharat_midi::MidiError::BadChunkLength { .. } => Error::Truncated,
+        bharat_midi::MidiError::Unsupported(_) => Error::Unsupported("unknown"),
         _ => Error::NotMidi,
     }
 }
 
 // ---------------------------------------------------------------------------
-// Adapter: source-timed types ↔ normalized craft-midi types
+// Adapter: source-timed types ↔ normalized bharat-midi types
 // ---------------------------------------------------------------------------
 
-fn change_from_craft(c: &CraftCtrlEvent, ppq: u16) -> Change {
+fn change_from_craft(c: &BharatCtrlEvent, ppq: u16) -> Change {
     let what = match c.kind {
-        craft_midi::CtrlKind::Cc(n) => What::Control(n),
-        craft_midi::CtrlKind::Program => What::Program,
-        craft_midi::CtrlKind::PitchBend => What::Bend,
-        craft_midi::CtrlKind::ChannelPressure => What::Pressure,
+        bharat_midi::CtrlKind::Cc(n) => What::Control(n),
+        bharat_midi::CtrlKind::Program => What::Program,
+        bharat_midi::CtrlKind::PitchBend => What::Bend,
+        bharat_midi::CtrlKind::ChannelPressure => What::Pressure,
         // Polyphonic aftertouch is not represented in the compatibility reader's Change; skip it.
-        craft_midi::CtrlKind::PolyPressure(_) => return Change { tick: 0, channel: 0, what: What::Control(0), value: 0 },
+        bharat_midi::CtrlKind::PolyPressure(_) => return Change { tick: 0, channel: 0, what: What::Control(0), value: 0 },
     };
-    // craft-midi converts to 960 PPQ; scale back to source ppq.
-    let tick = ((i128::from(c.tick) * i128::from(ppq.max(1)) + i128::from(craft_midi::PPQ) / 2) / i128::from(craft_midi::PPQ))
+    // bharat-midi converts to 960 PPQ; scale back to source ppq.
+    let tick = ((i128::from(c.tick) * i128::from(ppq.max(1)) + i128::from(bharat_midi::PPQ) / 2) / i128::from(bharat_midi::PPQ))
         .try_into()
         .unwrap_or(u32::MAX);
     Change { tick, channel: c.channel, what, value: c.value as i16 }
 }
 
-fn smf_to_craft(craft_smf: &CraftSmf, ppq: u16) -> Smf {
-    let mut smf = Smf { format: craft_smf.format, ..Default::default() };
+fn smf_to_craft(bharat_smf: &BharatSmf, ppq: u16) -> Smf {
+    let mut smf = Smf { format: bharat_smf.format, ..Default::default() };
 
-    // Craft-midi converts ticks to 960 PPQ when reading. Scale back to source ppq.
-    let (from, to) = (i128::from(craft_midi::PPQ.max(1)), i128::from(ppq.max(1)));
+    // Bharat-midi converts ticks to 960 PPQ when reading. Scale back to source ppq.
+    let (from, to) = (i128::from(bharat_midi::PPQ.max(1)), i128::from(ppq.max(1)));
 
     smf.ppq = ppq;
     // Scale tempo ticks from 960 PPQ back to source ppq.
-    smf.tempos = craft_smf
+    smf.tempos = bharat_smf
         .tempos
         .iter()
         .map(|(tick, bpm)| {
@@ -272,7 +272,7 @@ fn smf_to_craft(craft_smf: &CraftSmf, ppq: u16) -> Smf {
         })
         .collect();
     // Scale meter ticks.
-    smf.time_signatures = craft_smf
+    smf.time_signatures = bharat_smf
         .meters
         .iter()
         .map(|(tick, beats, unit)| {
@@ -281,7 +281,7 @@ fn smf_to_craft(craft_smf: &CraftSmf, ppq: u16) -> Smf {
         })
         .collect();
     // Scale key signature ticks.
-    smf.key_signatures = craft_smf
+    smf.key_signatures = bharat_smf
         .key_sigs
         .iter()
         .map(|(tick, sharps, minor)| {
@@ -290,7 +290,7 @@ fn smf_to_craft(craft_smf: &CraftSmf, ppq: u16) -> Smf {
         })
         .collect();
     // Scale marker ticks.
-    smf.markers = craft_smf
+    smf.markers = bharat_smf
         .markers
         .iter()
         .map(|(tick, name)| {
@@ -299,7 +299,7 @@ fn smf_to_craft(craft_smf: &CraftSmf, ppq: u16) -> Smf {
         })
         .collect();
 
-    for ct in &craft_smf.tracks {
+    for ct in &bharat_smf.tracks {
         let mut track = Track { name: trim_text(&ct.name), ..Default::default() };
 
         for n in &ct.sequence.notes {
@@ -325,14 +325,14 @@ fn smf_to_craft(craft_smf: &CraftSmf, ppq: u16) -> Smf {
     smf
 }
 
-fn smf_from_craft(smf: &Smf) -> CraftSmf {
-    let mut craft_smf = CraftSmf { format: smf.format, ..Default::default() };
+fn smf_from_craft(smf: &Smf) -> BharatSmf {
+    let mut bharat_smf = BharatSmf { format: smf.format, ..Default::default() };
 
     // Scale from source PPQ to 960 when writing.
-    let (from, to) = (i128::from(smf.ppq.max(1)), i128::from(craft_midi::PPQ));
+    let (from, to) = (i128::from(smf.ppq.max(1)), i128::from(bharat_midi::PPQ));
 
     // Build tempo/meter/key/marker lists (scaled to 960 PPQ)
-    craft_smf.tempos = smf
+    bharat_smf.tempos = smf
         .tempos
         .iter()
         .map(|t| {
@@ -340,7 +340,7 @@ fn smf_from_craft(smf: &Smf) -> CraftSmf {
             (tick, t.bpm)
         })
         .collect();
-    craft_smf.meters = smf
+    bharat_smf.meters = smf
         .time_signatures
         .iter()
         .map(|t| {
@@ -348,7 +348,7 @@ fn smf_from_craft(smf: &Smf) -> CraftSmf {
             (tick, t.beats, u8::try_from(t.unit).unwrap_or(1))
         })
         .collect();
-    craft_smf.key_sigs = smf
+    bharat_smf.key_sigs = smf
         .key_signatures
         .iter()
         .map(|k| {
@@ -356,7 +356,7 @@ fn smf_from_craft(smf: &Smf) -> CraftSmf {
             (tick, k.sharps, k.minor)
         })
         .collect();
-    craft_smf.markers = smf
+    bharat_smf.markers = smf
         .markers
         .iter()
         .map(|m| {
@@ -366,7 +366,7 @@ fn smf_from_craft(smf: &Smf) -> CraftSmf {
         .collect();
 
     for track in &smf.tracks {
-        let mut ct = CraftSmfTrack::default();
+        let mut ct = BharatSmfTrack::default();
         if !track.name.is_empty() {
             ct.name = track.name.clone();
         }
@@ -375,29 +375,29 @@ fn smf_from_craft(smf: &Smf) -> CraftSmf {
             let start = ((i128::from(n.start) * to + from / 2) / from).try_into().unwrap_or(i64::MAX);
             let end = ((i128::from(n.start.saturating_add(n.len)) * to + from / 2) / from).try_into().unwrap_or(i64::MAX);
             let length = end.saturating_sub(start).max(1);
-            ct.sequence.notes.push(CraftNote { pitch: n.key, velocity: n.vel, release_velocity: 64, channel: n.channel, start, length });
+            ct.sequence.notes.push(BharatNote { pitch: n.key, velocity: n.vel, release_velocity: 64, channel: n.channel, start, length });
         }
 
         for c in &track.changes {
             let kind = match c.what {
-                What::Control(n) => craft_midi::CtrlKind::Cc(n),
-                What::Program => craft_midi::CtrlKind::Program,
-                What::Bend => craft_midi::CtrlKind::PitchBend,
-                What::Pressure => craft_midi::CtrlKind::ChannelPressure,
+                What::Control(n) => bharat_midi::CtrlKind::Cc(n),
+                What::Program => bharat_midi::CtrlKind::Program,
+                What::Bend => bharat_midi::CtrlKind::PitchBend,
+                What::Pressure => bharat_midi::CtrlKind::ChannelPressure,
             };
             let tick = ((i128::from(c.tick) * to + from / 2) / from).try_into().unwrap_or(i64::MAX);
-            ct.sequence.ctrls.push(CraftCtrlEvent { tick, channel: c.channel, kind, value: c.value as i32 });
+            ct.sequence.ctrls.push(BharatCtrlEvent { tick, channel: c.channel, kind, value: c.value as i32 });
         }
 
         ct.sequence.sort();
-        craft_smf.tracks.push(ct);
+        bharat_smf.tracks.push(ct);
     }
 
-    craft_smf
+    bharat_smf
 }
 
 // ---------------------------------------------------------------------------
-// Public API: read/write delegate to craft-midi
+// Public API: read/write delegate to bharat-midi
 // ---------------------------------------------------------------------------
 
 /// Reads a file of any format. Tracks without notes or channel messages (the tempo track) are
@@ -423,32 +423,32 @@ pub fn read(data: &[u8]) -> Result<Smf, Error> {
     }
 
     // SMPTE time division has the high bit set (raw & 0x8000 != 0).
-    // craft-midi doesn't handle SMPTE correctly, so use the legacy reader.
+    // bharat-midi doesn't handle SMPTE correctly, so use the legacy reader.
     if ppq_raw & 0x8000 != 0 {
         return read_legacy(data);
     }
 
     // Check if the file looks truncated/damaged (no valid End of Track at end).
-    // Craft-midi doesn't handle truncation the same way as the legacy reader,
+    // Bharat-midi doesn't handle truncation the same way as the legacy reader,
     // so fall back to it for damaged files.
     let is_damaged = !has_end_of_track(data);
 
-    // Also check for markers at tick 0 (craft-midi may not include them).
+    // Also check for markers at tick 0 (bharat-midi may not include them).
     let has_tick_zero = has_tick_zero_marker(data);
 
     if is_damaged || has_tick_zero {
         return read_legacy(data);
     }
 
-    // For standard PPQ files, use craft-midi directly (no scaling needed).
+    // For standard PPQ files, use bharat-midi directly (no scaling needed).
     let lr = read_smf_lenient(data).map_err(map_midi_error)?;
-    let craft_smf = &lr.smf;
+    let bharat_smf = &lr.smf;
 
-    // Extract ppq from the raw data (craft-midi doesn't expose it directly).
+    // Extract ppq from the raw data (bharat-midi doesn't expose it directly).
     let ppq = if data.len() >= 14 { u16::from_be_bytes([data[12], data[13]]) } else { 96u16 };
 
-    let mut smf = smf_to_craft(craft_smf, ppq);
-    // Copy warnings and instrument names from craft-midi's result.
+    let mut smf = smf_to_craft(bharat_smf, ppq);
+    // Copy warnings and instrument names from bharat-midi's result.
     smf.warnings = lr.warnings.clone();
     for (i, inst) in lr.instruments.iter().enumerate() {
         if i < smf.tracks.len() && !inst.is_empty() {
@@ -456,20 +456,20 @@ pub fn read(data: &[u8]) -> Result<Smf, Error> {
         }
     }
 
-    // Cap tracks to the compatibility reader's MAX_TRACKS (craft-midi allows 4096, same limit).
+    // Cap tracks to the compatibility reader's MAX_TRACKS (bharat-midi allows 4096, same limit).
     // Count actual MTrk chunks in the file to detect if we exceeded the limit.
     let mtrk_count = count_mtrk_chunks(data);
     if smf.tracks.len() > MAX_TRACKS {
         smf.tracks.truncate(MAX_TRACKS);
     } else if mtrk_count > MAX_TRACKS {
-        // Craft-midi may have dropped some tracks; add a warning.
+        // Bharat-midi may have dropped some tracks; add a warning.
         smf.warnings.push(format!("more than {MAX_TRACKS} tracks: the rest was left out"));
     }
 
     // Drop empty tracks (no notes or changes) to match legacy reader behavior.
     smf.tracks.retain(|t| !t.notes.is_empty() || !t.changes.is_empty());
 
-    // Truncate long names to MAX_TEXT (craft-midi may not truncate).
+    // Truncate long names to MAX_TEXT (bharat-midi may not truncate).
     for track in &mut smf.tracks {
         if track.name.len() > MAX_TEXT {
             let mut end = MAX_TEXT;
@@ -480,7 +480,7 @@ pub fn read(data: &[u8]) -> Result<Smf, Error> {
         }
     }
 
-    // Cap events to the compatibility reader's MAX_EVENTS (craft-midi allows 5M).
+    // Cap events to the compatibility reader's MAX_EVENTS (bharat-midi allows 5M).
     let total_notes: usize = smf.tracks.iter().map(|t| t.notes.len()).sum();
     let total_changes: usize = smf.tracks.iter().map(|t| t.changes.len()).sum();
     let total = total_notes + total_changes;
@@ -529,7 +529,7 @@ fn has_end_of_track(data: &[u8]) -> bool {
 }
 
 /// Check if the file has a marker/cue point at tick 0 (first event).
-/// Craft-midi may not include these, so we fall back to the legacy reader.
+/// Bharat-midi may not include these, so we fall back to the legacy reader.
 fn has_tick_zero_marker(data: &[u8]) -> bool {
     // Simple heuristic: scan track chunks for the pattern 0x00 0xFF 0x06/0x07
     // (delta=0 followed by marker/cue meta event).
@@ -577,20 +577,20 @@ fn count_mtrk_chunks(data: &[u8]) -> usize {
 /// for production exports so an error cannot silently truncate the destination.
 /// Format 0 is one track that holds everything; any other format is written as
 /// format 1: a track for the tempo map, signatures and markers, then one per [`Track`].
-/// Delegates to craft-midi when the source PPQ is 960 (craft-midi's default); otherwise uses
+/// Delegates to bharat-midi when the source PPQ is 960 (bharat-midi's default); otherwise uses
 /// the source-timed shared writer to preserve the source PPQ.
 pub fn write(smf: &Smf) -> Vec<u8> {
     try_write(smf).unwrap_or_default()
 }
 
 /// Fallible export path. Call this before opening/truncating a destination file.
-pub fn try_write(smf: &Smf) -> Result<Vec<u8>, craft_midi::MidiError> {
-    if u32::from(smf.ppq) == craft_midi::PPQ { write_smf(&smf_from_craft(smf)) } else { try_write_source_timed(smf, 512 * 1024 * 1024) }
+pub fn try_write(smf: &Smf) -> Result<Vec<u8>, bharat_midi::MidiError> {
+    if u32::from(smf.ppq) == bharat_midi::PPQ { write_smf(&smf_from_craft(smf)) } else { try_write_source_timed(smf, 512 * 1024 * 1024) }
 }
 
 // ---------------------------------------------------------------------------
 // Legacy compatibility: keep the old read/write implementations as fallback
-// (The above delegates to craft-midi; these are kept for reference.)
+// (The above delegates to bharat-midi; these are kept for reference.)
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
@@ -620,12 +620,12 @@ const NOTE_OFF: u8 = 1;
 const CHANGE: u8 = 2;
 const NOTE_ON: u8 = 3;
 
-fn meta(tick: u32, kind: u8, data: &[u8]) -> Result<Message, craft_midi::MidiError> {
-    Ok((tick, META, craft_midi::encode_meta_event(kind, data)?))
+fn meta(tick: u32, kind: u8, data: &[u8]) -> Result<Message, bharat_midi::MidiError> {
+    Ok((tick, META, bharat_midi::encode_meta_event(kind, data)?))
 }
 
 /// The tempo map, the signatures and the markers.
-fn conductor(smf: &Smf) -> Result<Vec<Message>, craft_midi::MidiError> {
+fn conductor(smf: &Smf) -> Result<Vec<Message>, bharat_midi::MidiError> {
     let tempo = |t: &Tempo| {
         let bpm = if t.bpm.is_finite() { t.bpm.clamp(1.0, 2000.0) } else { 120.0 };
         meta(t.tick, 0x51, &((60_000_000.0 / bpm).round() as u32).min(0x00FF_FFFF).to_be_bytes()[1..])
@@ -640,7 +640,7 @@ fn conductor(smf: &Smf) -> Result<Vec<Message>, craft_midi::MidiError> {
         .collect()
 }
 
-fn messages(track: &Track) -> Result<Vec<Message>, craft_midi::MidiError> {
+fn messages(track: &Track) -> Result<Vec<Message>, bharat_midi::MidiError> {
     let mut out = vec![meta(0, 0x03, track.name.as_bytes())?];
     if !track.instrument.is_empty() {
         out.push(meta(0, 0x04, track.instrument.as_bytes())?);
@@ -676,7 +676,7 @@ pub fn write_legacy(smf: &Smf) -> Vec<u8> {
 
 /// Preserve Loop's source-tick/event policy while propagating framing failures.
 /// The byte limit is conservative and does not bound caller-owned model memory.
-pub fn try_write_source_timed(smf: &Smf, max_bytes: usize) -> Result<Vec<u8>, craft_midi::MidiError> {
+pub fn try_write_source_timed(smf: &Smf, max_bytes: usize) -> Result<Vec<u8>, bharat_midi::MidiError> {
     let single = smf.format == 0;
     let mut events = vec![conductor(smf)?];
     for track in smf.tracks.iter().take(u16::MAX as usize - 1) {
@@ -691,9 +691,9 @@ pub fn try_write_source_timed(smf: &Smf, max_bytes: usize) -> Result<Vec<u8>, cr
     }
     let events = events
         .into_iter()
-        .map(|track| track.into_iter().map(|(tick, order, bytes)| craft_midi::TimedEvent { tick: u64::from(tick), order, bytes }).collect())
+        .map(|track| track.into_iter().map(|(tick, order, bytes)| bharat_midi::TimedEvent { tick: u64::from(tick), order, bytes }).collect())
         .collect();
-    craft_midi::write_timed_smf(u16::from(!single), smf.ppq.clamp(1, 0x7fff), events, true, max_bytes)
+    bharat_midi::write_timed_smf(u16::from(!single), smf.ppq.clamp(1, 0x7fff), events, true, max_bytes)
 }
 
 struct Reader<'a> {
@@ -912,7 +912,7 @@ impl Parse {
     }
 }
 
-/// Legacy read: reads a file of any format without craft-midi.
+/// Legacy read: reads a file of any format without bharat-midi.
 pub fn read_legacy(data: &[u8]) -> Result<Smf, Error> {
     let mut r = Reader { data, pos: 0 };
     if r.take(4).map_err(|_| Error::NotMidi)? != b"MThd" {
@@ -1100,7 +1100,7 @@ mod tests {
         chunk(out, b"MTrk", &body);
     }
 
-    /// Legacy write: writes the file directly without craft-midi.
+    /// Legacy write: writes the file directly without bharat-midi.
     fn legacy_writer_oracle(smf: &Smf) -> Vec<u8> {
         let tracks = || smf.tracks.iter().take(u16::MAX as usize - 1);
         let single = smf.format == 0;

@@ -224,10 +224,10 @@ mod tests {
         clean("Zhou ficou em 5. lugar no séc. XX.");
         clean("Esperei... e ele apareceu.");
         clean("— Vai — disse ele. — Amanhã eu volto.");
-        // craft-libs#488 review: no space after the dash.
+        // bharat-libs#488 review: no space after the dash.
         clean("—Vai? —disse ele.");
         clean("— Vai? — disse ele.");
-        // craft-libs#496 review: a closing quote after the mark.
+        // bharat-libs#496 review: a closing quote after the mark.
         clean("\"Vai?\" disse ele.");
         clean("«Vai!» gritou ela.");
         assert!(!messages("Vai? \"sim\".").is_empty(), "a bare question still ends the sentence");

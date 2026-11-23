@@ -1,4 +1,4 @@
-use craft_dds::{DdsCompression, DdsOptions, Layout, Texture, encode};
+use bharat_dds::{DdsCompression, DdsOptions, Layout, Texture, encode};
 #[test]
 fn metadata_requires_a_complete_header() {
     for (compression, layout, channels, header) in [(DdsCompression::None, Layout::Gray, 1, 128), (DdsCompression::Bc4, Layout::Gray, 1, 148)] {
@@ -19,7 +19,7 @@ fn empty_dimensions_are_not_textures() {
 fn decoded_output_respects_explicit_budget() {
     let data = encode(4, 4, Layout::Rgba, &[7; 64], DdsOptions { compression: DdsCompression::Bc1, mipmaps: false }).unwrap();
     let texture = Texture::parse(&data).unwrap();
-    assert!(matches!(texture.decode_with_limit(63), Err(craft_dds::DdsError::LimitExceeded { required: 64, limit: 63 })));
+    assert!(matches!(texture.decode_with_limit(63), Err(bharat_dds::DdsError::LimitExceeded { required: 64, limit: 63 })));
     assert_eq!(texture.decode_with_limit(64).unwrap().len(), 64);
     assert_eq!(texture.decode().unwrap(), texture.decode_with_limit(u64::MAX).unwrap());
 }
@@ -41,6 +41,6 @@ fn default_budget_rejects_oversized_header_before_payload_or_allocation() {
     data[16..20].copy_from_slice(&32768u32.to_le_bytes());
     data[20..24].copy_from_slice(&32768u32.to_le_bytes());
     let texture = Texture::parse(&data).unwrap();
-    assert!(matches!(texture.decode(), Err(craft_dds::DdsError::LimitExceeded { limit: craft_dds::DEFAULT_MAX_DECODE_BYTES, .. })));
-    assert!(matches!(texture.decode_with_limit(u64::MAX), Err(craft_dds::DdsError::Malformed(_))));
+    assert!(matches!(texture.decode(), Err(bharat_dds::DdsError::LimitExceeded { limit: bharat_dds::DEFAULT_MAX_DECODE_BYTES, .. })));
+    assert!(matches!(texture.decode_with_limit(u64::MAX), Err(bharat_dds::DdsError::Malformed(_))));
 }

@@ -2194,7 +2194,7 @@ impl Contours {
     pub fn grouped(&self) -> Vec<Vec<ContourIdx>> {
         let mut children = vec![Vec::new(); self.contours.len()];
         let mut top_level = Vec::new();
-        // Craft patch (clippy lints): iterate over the contours instead of indexing them.
+        // Bharat patch (clippy lints): iterate over the contours instead of indexing them.
         for (i, contour) in self.contours.iter().enumerate() {
             if let Some(parent) = contour.parent {
                 children[parent.0].push(ContourIdx(i));

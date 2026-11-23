@@ -1,4 +1,4 @@
-# craft-mesh
+# bharat-mesh
 
 3D mesh file formats behind one neutral model. A reader turns bytes into a `Scene`; a writer turns
 a `Scene` into bytes. One Cargo feature per format, all on by default.
@@ -9,7 +9,7 @@ a `Scene` into bytes. One Cargo feature per format, all on by default.
 | `obj` | Wavefront OBJ with MTL | yes | OBJ and MTL | none |
 | `ply` | PLY, ASCII and both binary byte orders | yes | no (no app writes PLY) | none |
 | `gltf` | glTF 2.0 (`.gltf`) and GLB | yes | GLB | `serde_json` |
-| `threemf` | 3MF, core and materials extension | yes | no | `craft-opc`, `craft-xml` |
+| `threemf` | 3MF, core and materials extension | yes | no | `bharat-opc`, `bharat-xml` |
 | `fbx` | FBX 6.x and 7.x, binary and ASCII | yes | no | `miniz_oxide` |
 
 USD, Alembic and COLLADA are not here yet.
@@ -85,7 +85,7 @@ cameras; `KHR_lights_punctual`. Primitives of a mesh that name the same accessor
 vertices. `write_glb` writes nodes, meshes (positions, normals, UV sets, colours), materials with
 their texture transforms, and images. The other formats' writers do not write texture transforms.
 
-**3MF.** The package is opened with `craft-opc` and the model part found through its `3dmodel`
+**3MF.** The package is opened with `bharat-opc` and the model part found through its `3dmodel`
 relationship; `threemf::read_model_part` reads a model part's XML on its own. Mesh objects,
 component objects and build items with their transforms (every build item a root node, every
 component a child node, an object placed several times one mesh), the unit (`Model::unit`; the
@@ -155,7 +155,7 @@ animations and skinning; file-size limits before reading.
 
 ## Origin
 
-All code is from Craft apps (MIT OR Apache-2.0), written from the public format descriptions. No
+All code is from Bharat apps (MIT OR Apache-2.0), written from the public format descriptions. No
 sample files are shipped: every test generates its input.
 
 | Module | Base | Ported in |

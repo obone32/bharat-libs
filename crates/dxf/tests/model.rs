@@ -1,7 +1,7 @@
 //! The drawing model: sections, header variables, tables, blocks, layouts.
 
-use craft_dxf::model::{Color, Dictionary, Document, Groups, Lineweight, Transparency, aci, dim_var_code, dim_var_name, ocs_to_wcs, parse_handle};
-use craft_dxf::{Tag, Version, parse};
+use bharat_dxf::model::{Color, Dictionary, Document, Groups, Lineweight, Transparency, aci, dim_var_code, dim_var_name, ocs_to_wcs, parse_handle};
+use bharat_dxf::{Tag, Version, parse};
 
 /// The tags of `text`, whose lines alternate group code and value; `|` also ends a line, so a
 /// record fits on one, and `~` is an empty value.
@@ -273,7 +273,7 @@ fn subclass_groups_and_application_groups() {
     assert_eq!(g.subclass("AcDbOther").f(10), Some(2.0));
     assert!(g.subclass("AcDbNone").0.is_empty());
     // The owner is the 330 outside the reactors group.
-    let d = craft_dxf::model::records(&t);
+    let d = bharat_dxf::model::records(&t);
     assert_eq!((d[0].handle(), d[0].owner()), (Some(0x1F), Some(0xBB)));
 }
 

@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Crash-safe file replacement: the unified atomic save engine for the Craft suite.
+//! Crash-safe file replacement: the unified atomic save engine for the Bharat suite.
 //!
 //! [`atomic_write`] never truncates the destination file in place. It writes a temporary file
 //! in the **same directory** as the destination, flushes it to non-volatile storage (`sync_all`),
@@ -202,7 +202,7 @@ pub enum NewFilePermissions {
 /// for settings and other private data. Existing files always stage privately before replacement.
 ///
 /// ```
-/// use craft_atomic::{NewFilePermissions, WriteOptions};
+/// use bharat_atomic::{NewFilePermissions, WriteOptions};
 /// let private = WriteOptions::default().with_new_file_permissions(NewFilePermissions::Private);
 /// # let _ = private;
 /// ```
@@ -597,7 +597,7 @@ pub fn temp_name(file: &str) -> String {
     let pid = std::process::id();
     #[cfg(target_arch = "wasm32")]
     let pid = 0;
-    format!(".{stem}.{pid}-{n}.craft_tmp")
+    format!(".{stem}.{pid}-{n}.bharat_tmp")
 }
 
 /// The end of an error message: whether an original file was left as it was.
@@ -664,7 +664,7 @@ mod tests {
             let pid = std::process::id();
             #[cfg(target_arch = "wasm32")]
             let pid = 0;
-            let d = std::env::temp_dir().join(format!("craft-atomic-{tag}-{pid}-{}", N.fetch_add(1, Ordering::Relaxed)));
+            let d = std::env::temp_dir().join(format!("bharat-atomic-{tag}-{pid}-{}", N.fetch_add(1, Ordering::Relaxed)));
             let _ = std::fs::remove_dir_all(&d);
             std::fs::create_dir_all(&d).ok();
             Self(d)
@@ -684,7 +684,7 @@ mod tests {
     fn assert_no_temp(dir: &Path) {
         let leftovers: Vec<_> = std::fs::read_dir(dir)
             .ok()
-            .map(|entries| entries.flatten().map(|e| e.file_name().to_string_lossy().into_owned()).filter(|n| n.ends_with(".craft_tmp")).collect())
+            .map(|entries| entries.flatten().map(|e| e.file_name().to_string_lossy().into_owned()).filter(|n| n.ends_with(".bharat_tmp")).collect())
             .unwrap_or_default();
         assert!(leftovers.is_empty(), "temporary files left behind: {leftovers:?}");
     }
@@ -1093,7 +1093,7 @@ mod tests {
     fn normal_creation_needs_no_chmod_even_when_hard_links_fail() -> io::Result<()> {
         use std::os::unix::fs::PermissionsExt;
         use std::process::Command;
-        if std::env::var_os("CRAFT_ATOMIC_COPY_CHILD").is_none() {
+        if std::env::var_os("BHARAT_ATOMIC_COPY_CHILD").is_none() {
             // Test both publication paths under real umasks without changing the test runner's
             // process-global mask. In particular, 002 must produce a shared 0664 final file.
             for mask in ["000", "002", "022", "027", "077"] {
@@ -1105,7 +1105,7 @@ mod tests {
                         mask,
                     ])
                     .arg(std::env::current_exe()?)
-                    .env("CRAFT_ATOMIC_COPY_CHILD", "1")
+                    .env("BHARAT_ATOMIC_COPY_CHILD", "1")
                     .output()?;
                 assert!(output.status.success(), "umask {mask}: {}", String::from_utf8_lossy(&output.stdout));
                 assert!(String::from_utf8_lossy(&output.stdout).contains("1 passed"));
@@ -1337,7 +1337,7 @@ mod tests {
     fn temp_name_format_is_valid() {
         let name = temp_name("document.craft");
         assert!(name.starts_with(".document.craft."));
-        assert!(name.ends_with(".craft_tmp"));
+        assert!(name.ends_with(".bharat_tmp"));
     }
 
     #[cfg(target_arch = "wasm32")]

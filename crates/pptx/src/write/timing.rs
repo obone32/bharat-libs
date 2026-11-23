@@ -5,9 +5,9 @@ use crate::{Shape, ShapeId, ShapeKind};
 
 use super::shapes::IdMap;
 use super::{Exp, Out};
-use craft_drawingml::write as dml;
-use craft_drawingml::xmlx::{A, TagExt};
-use craft_xml::Writer;
+use bharat_drawingml::write as dml;
+use bharat_drawingml::xmlx::{A, TagExt};
+use bharat_xml::Writer;
 
 use super::{NS_MC, NS_P14};
 
@@ -46,7 +46,7 @@ pub fn transition(w: &mut Writer, x: &mut Exp, o: &mut Out, t: &Transition) {
             if let Some(raw) = &t.raw
                 && let Ok(d) = crate::package::parse(raw.as_bytes())
                 && let Some(e) = d.root.elements().find(|e| !matches!(e.local(), "sndAc" | "extLst"))
-                && !craft_drawingml::xmlx::has_rel_refs(e)
+                && !bharat_drawingml::xmlx::has_rel_refs(e)
             {
                 let prefix = e.prefix().to_string();
                 let mut ns_decl = d.ns_decls();
@@ -378,7 +378,7 @@ fn behaviors(w: &mut Writer, x: &mut Exp, ids: &mut Ids, e: &Eff) {
             "colorPulse" => {
                 // As PowerPoint writes it: text and fill go to the colour and back (autoRev). The behaviour
                 // duration is the one import reads as the effect duration.
-                let c = a.color.clone().unwrap_or(crate::ColorRef::rgb(craft_drawingml::color::Rgba::rgb(0xC0, 0x00, 0x00)));
+                let c = a.color.clone().unwrap_or(crate::ColorRef::rgb(bharat_drawingml::color::Rgba::rgb(0xC0, 0x00, 0x00)));
                 for (attr, child) in [("style.color", true), ("fillcolor", false)] {
                     w.tag("p:animClr").attr("clrSpc", "rgb").attr("dir", "cw").open();
                     w.tag("p:cBhvr").attr_opt("override", child.then_some("childStyle")).open();
@@ -412,7 +412,7 @@ fn behaviors(w: &mut Writer, x: &mut Exp, ids: &mut Ids, e: &Eff) {
                     "lineColor" => "stroke.color",
                     _ => "fillcolor",
                 };
-                let c = a.color.clone().unwrap_or(crate::ColorRef::scheme(craft_drawingml::color::SchemeSlot::Accent2));
+                let c = a.color.clone().unwrap_or(crate::ColorRef::scheme(bharat_drawingml::color::SchemeSlot::Accent2));
                 w.tag("p:animClr").attr("clrSpc", "rgb").attr("dir", "cw").open();
                 cbhvr(w, ids, e, dur, None, &[attr], None);
                 w.open("p:to", &[]);

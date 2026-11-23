@@ -4,8 +4,8 @@
 
 use crate::text::tests::{NS_T, content_of, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::para::{InlineObject, ShapeKind, Wrap};
+use bharat_wordmodel::Document;
+use bharat_wordmodel::para::{InlineObject, ShapeKind, Wrap};
 
 const NS_D: &str =
     r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0""#;
@@ -80,7 +80,7 @@ fn a_group_opens_as_one_object_with_its_members_in_place() {
         ]
     );
     // The members' text isn't the paragraph's.
-    assert_eq!(d.body[0].as_para().unwrap().text.replace(craft_wordmodel::para::OBJ, "#"), "Before# after.");
+    assert_eq!(d.body[0].as_para().unwrap().text.replace(bharat_wordmodel::para::OBJ, "#"), "Before# after.");
 }
 
 #[test]
@@ -105,7 +105,7 @@ fn hostile_groups_do_not_panic() {
         let content = format!(r#"<office:document-content {NS_T} {NS_D}><office:body><office:text><text:p>x{inner}</text:p></office:text></office:body></office:document-content>"#);
         let d = import(&package(&content, None)).unwrap();
         for g in groups(&d) {
-            assert!(g.0.0.is_finite() && g.0.1.is_finite() && g.3.len() <= craft_wordmodel::para::MAX_GROUP_CHILDREN, "{g:?}");
+            assert!(g.0.0.is_finite() && g.0.1.is_finite() && g.3.len() <= bharat_wordmodel::para::MAX_GROUP_CHILDREN, "{g:?}");
         }
         let _ = export(&d).unwrap();
     }
@@ -115,8 +115,8 @@ fn hostile_groups_do_not_panic() {
 fn a_diagram_is_saved_as_a_group_of_its_drawing() {
     // A SmartArt diagram (ODF has none): saved as a group of its shapes and its text in text
     // boxes, so every reader draws it; WordCraft opens it back as a group.
-    use craft_wordmodel::graphic::{Graphic, GraphicItem, GraphicKind, TextAlign};
-    use craft_wordmodel::props::Rgb;
+    use bharat_wordmodel::graphic::{Graphic, GraphicItem, GraphicKind, TextAlign};
+    use bharat_wordmodel::props::Rgb;
     let blue = Rgb(0x15, 0x60, 0x82);
     let graphic = Graphic {
         kind: GraphicKind::Diagram,
@@ -153,10 +153,10 @@ fn a_diagram_is_saved_as_a_group_of_its_drawing() {
         ..Graphic::default()
     };
     let mut d = Document::new();
-    let mut p = craft_wordmodel::Paragraph::new();
+    let mut p = bharat_wordmodel::Paragraph::new();
     let obj = InlineObject::Graphic { w: 216.0, h: 72.0, alt: "Steps".into(), float: Default::default(), graphic: std::sync::Arc::new(graphic) };
     p.insert_object(0, obj, &Default::default()).unwrap();
-    d.body = vec![craft_wordmodel::para_block(p)];
+    d.body = vec![bharat_wordmodel::para_block(p)];
     let saved = export(&d).unwrap();
     assert!(content_of(&saved).contains("<draw:g"), "{}", content_of(&saved));
     let g = groups(&import(&saved).unwrap());

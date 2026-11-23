@@ -1,10 +1,10 @@
-# craft-xlsx
+# bharat-xlsx
 
 Excel workbooks: `.xlsx`, `.xlsm`, `.xltx`, `.xltm` (SpreadsheetML in an OPC package,
 transitional and strict) and `.xlsb` (the same package with binary parts). Clean-room, from
 ECMA-376 Part 1 (SpreadsheetML), [MS-XLSB] and observed files. No `unsafe`.
 
-This is the part layer. `Package::open` opens the container through `craft-opc` and reads:
+This is the part layer. `Package::open` opens the container through `bharat-opc` and reads:
 
 | Call | Gives |
 |---|---|
@@ -45,15 +45,15 @@ and the note shapes of the VML drawing (`NoteShape`). A sheet that gains comment
 drawing gets one (`notes_vml`, in a shape block no kept drawing uses); an existing VML drawing is
 kept as read. Extensions in `extLst` are carried through unchanged.
 
-Drawings and charts, on `craft-drawingml`: `Package::drawing` reads a sheet's `xdr:wsDr` into a
+Drawings and charts, on `bharat-drawingml`: `Package::drawing` reads a sheet's `xdr:wsDr` into a
 `Drawing` of `Anchor`s, each with a typed `Placement` (two-cell, one-cell, absolute, with EMU
 offsets) and its object kept as written; `Anchor` names the object's kind, its `cNvPr`, its chart
-or image relationship and its `a:xfrm`, and `craft_drawingml::read` reads its fill, line and text.
+or image relationship and its `a:xfrm`, and `bharat_drawingml::read` reads its fill, line and text.
 `mc:AlternateContent` items (Office 2016 charts, ink) are kept in place, and
 `Drawing::alternate_anchors` reads the anchors inside them. `Package::chart` reads a chart part
-(`c:` or `cx:`) into `craft_drawingml::chart::Chart`; `Package::theme` reads the theme. A
+(`c:` or `cx:`) into `bharat_drawingml::chart::Chart`; `Package::theme` reads the theme. A
 `Document` worksheet holds its `DrawingPart` (regenerated, its relationships kept by id);
-`Document::add_chart` and `Document::add_picture` add a chart part written by `craft-drawingml`
+`Document::add_chart` and `Document::add_picture` add a chart part written by `bharat-drawingml`
 (a `chartEx` part behind `mc:AlternateContent` for the Office 2016 types) or an image, with its
 anchor. Chart parts and media are kept parts.
 
@@ -125,16 +125,16 @@ formula (`PtgList`) is spelled as `.xlsx` has it (`Sales[Val]`, `Sales[[#Headers
 workbook-wide: the workbook's table parts are indexed when its workbook part is read. A reference to
 a table that can't be read, to a deleted table or into another workbook keeps the cell's saved
 result. The XLSB function table (`xlsb/ftab.rs`) and the expression printer are this crate's own,
-apart from `craft-xls`'s.
+apart from `bharat-xls`'s.
 
 ## Hostile input
 
-- `Limits.package`: ZIP entries, bytes per part and in all (`craft-opc`).
+- `Limits.package`: ZIP entries, bytes per part and in all (`bharat-opc`).
 - `Limits.xml`: one XML part. Rows and shared strings are streamed, so this bounds one row, one
   string and what is left of a part, not a sheet's length.
 - `Limits.binary_records`, `binary_cells`, `binary_text`: a binary workbook, over all its parts
   (40 million records, 4 million cells and as many shared strings, 256 MiB of text, as
-  `craft-xls` allows). `binary_formula_text`: decoded formula text over the workbook (128 MiB);
+  `bharat-xls` allows). `binary_formula_text`: decoded formula text over the workbook (128 MiB);
   past it, formulas keep their saved results. A formula's tokens are bounded at 16 KB, its
   nesting at 256 levels and its array constants at 65,536 values in all, each charged before
   it is held; once the formula text allowance is spent, no formula is decoded. Fixed caps: 1024
@@ -146,5 +146,5 @@ SpreadsheetML is read leniently: a damaged optional part is a warning, a damaged
 the rows before the damage. A binary part that does not parse fails the read, since skipping a
 record would lose data without a trace.
 
-Shared with `craft-xls` and `craft-ods` through `craft-sheet`: `CellRef`, `Range`, `Value`,
+Shared with `bharat-xls` and `bharat-ods` through `bharat-sheet`: `CellRef`, `Range`, `Value`,
 `CellError`, `Visibility`, sheet-name quoting, built-in number formats and the palette.

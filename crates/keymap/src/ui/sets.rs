@@ -2,8 +2,8 @@
 //! Revert Set, Export, Import… and Summarize…; actions that do not fit go into a More menu. New
 //! Set… and Rename… open an inline form under the row.
 
-use craft_ui::ComboBox;
-use craft_ui::layout::fit_toolbar;
+use bharat_ui::ComboBox;
+use bharat_ui::layout::fit_toolbar;
 use egui::{Key as EguiKey, RichText, TextEdit, Ui};
 
 use super::{Draw, FIELD_W};
@@ -17,7 +17,7 @@ enum Act {
     Delete,
     Save,
     Revert,
-    /// Export as craft-keymap JSON; with app formats the item is a menu.
+    /// Export as bharat-keymap JSON; with app formats the item is a menu.
     Export,
     ExportAs(&'static str),
     Import,

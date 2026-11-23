@@ -6,7 +6,7 @@
 use std::f64::consts::PI;
 use std::sync::OnceLock;
 
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 use super::huffman_tables::{LINBITS, QUAD_A_CODES, QUAD_A_LENS, pair_table};
 use super::tables;
@@ -811,7 +811,7 @@ impl InfoTag {
 /// frame decodes like any other (to silence); [`InfoTag::parse`] tells it apart.
 ///
 /// ```
-/// use craft_audio::mp3::Decoder;
+/// use bharat_audio::mp3::Decoder;
 ///
 /// // three silent frames: MPEG-1 Layer III, 128 kbit/s, 44.1 kHz, stereo
 /// let mut frame = vec![0u8; 417];

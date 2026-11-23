@@ -1,6 +1,6 @@
 # Versioning and releases
 
-craft-libs releases give applications a fixed dependency baseline. Consumers decide when to
+bharat-libs releases give applications a fixed dependency baseline. Consumers decide when to
 upgrade; development on `main` is not a reason to refresh a working application's pins.
 
 ## One workspace, one release
@@ -8,7 +8,7 @@ upgrade; development on `main` is not a reason to refresh a working application'
 All crates inherit `workspace.package.version` and ship together under an annotated `vX.Y.Z`
 Git tag. A release contains the crates listed in that tag's README, not proposed crates in
 open pull requests. A crate can keep the same implementation across several workspace releases.
-Use the same tag or commit for every craft-libs dependency in a consumer's dependency graph;
+Use the same tag or commit for every bharat-libs dependency in a consumer's dependency graph;
 mixing Git sources can create duplicate crate instances and incompatible Rust types.
 
 Tags identify reviewed commits and are never moved, deleted or reused to fix a release.
@@ -71,7 +71,7 @@ their own save/close flows, accessibility, rendering and printing where they use
    when behavior changes; unit tests and cross-compilation cannot establish GUI or physical
    printer acceptance. Record limitations instead of extending the support claim beyond evidence.
 5. Merge the preparation PR and verify the checks for the actual release commit. Create an
-   annotated tag on that exact commit (`git tag -a vX.Y.Z FULL_SHA -m "craft-libs vX.Y.Z"`),
+   annotated tag on that exact commit (`git tag -a vX.Y.Z FULL_SHA -m "bharat-libs vX.Y.Z"`),
    push only that tag, and create a GitHub Release using that version's changelog entry.
    Tag-triggered CI should also pass. Do not publish crates as part of this Git-only release.
 6. Verify that the remote tag resolves to the intended commit, the release notes are visible,

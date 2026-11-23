@@ -1,13 +1,13 @@
-# Craft plate test
+# Bharat plate test
 
-`craft-plate-test` holds print-color test scenes for the Craft apps and the tools to check PDFs
+`bharat-plate-test` holds print-color test scenes for the Bharat apps and the tools to check PDFs
 against them. A scene is an app-neutral JSON description of one page (spot inks, CMYK fills,
 transparency, overprint, soft masks, placed PDFs), the ink each plate must carry at sample points,
 and the PDF structure a correct print export has.
 
 - `scene`: serde types for the scene files in `scenes/`, and `Scene::validate` for the checks a
   schema can't make (declared inks, geometry fields per object type, plates named by points).
-- `reference`: writes a scene to PDF with krilla through craft-pdf. It tests the shared writer on
+- `reference`: writes a scene to PDF with krilla through bharat-pdf. It tests the shared writer on
   its own. A feature the writer can't express yet returns `Error::Unsupported`.
 - `structure`: summarizes a PDF with hayro-syntax (page and form transparency groups with `/S /CS
   /I /K`; graphics states with `OP op OPM BM SMask`; color space families; DeviceRGB use;
@@ -40,7 +40,7 @@ Ink values are percentages (0 = no ink, 100 = solid). Plates use separation name
 | `id`, `title`, `source`, `note` | Identity and origin (research case, app regression) |
 | `page` | `[width, height]` in pt |
 | `inks` | Spot inks, each `{"name", "cmyk": [c, m, y, k]}` or `"lab": [L, a, b]`; their order is the DeviceN colorant order after the process inks |
-| `settings` | `group_cs` (`"rgb"` or `"cmyk"`: the transparency blending space), `output_intent` (`"fogra39"`: writes the scene with craft-pdf `write::print` settings and craft-cms's `COATED_FOGRA39_ICC`; `tests/scenes.rs` also writes every non-pending scene this way) |
+| `settings` | `group_cs` (`"rgb"` or `"cmyk"`: the transparency blending space), `output_intent` (`"fogra39"`: writes the scene with bharat-pdf `write::print` settings and bharat-cms's `COATED_FOGRA39_ICC`; `tests/scenes.rs` also writes every non-pending scene this way) |
 | `objects` | Drawn in order (below) |
 | `expect` | `plates`: every plate the separation must produce, process plates included, and no others. `points`: `{at, kind: "area" or "text", region (text), plate (text, default Black), inks: {plate: value or [lo, hi]}, tol, info, note}`; unlisted plates expect 0, `info` points are measured but not judged |
 | `structure` | Expected PDF structure (below) |
@@ -102,9 +102,9 @@ block.
    files or other third-party test files.
 2. Add `pending` when the writer can't express the scene yet, and remove it in the change that
    adds the feature.
-3. Run `cargo test -p craft-plate-test`.
+3. Run `cargo test -p bharat-plate-test`.
 
-Text uses `Inter-Regular.ttf` from `CRAFT_PDF_TEST_FONT_DIR`
+Text uses `Inter-Regular.ttf` from `BHARAT_PDF_TEST_FONT_DIR`
 (`python scripts/fetch-pdf-test-fonts.py <dir outside the checkout>`). Without it, text objects
 are skipped with a printed note.
 
@@ -116,10 +116,10 @@ app document, export it through the app's own print path, and check the result w
 skipped by the adapter, not edited.
 
 ```rust
-let scenes = craft_plate_test::scene::load_dir(&craft_plate_test::scene::scenes_dir())?;
+let scenes = bharat_plate_test::scene::load_dir(&bharat_plate_test::scene::scenes_dir())?;
 for scene in scenes.iter().filter(|s| s.pending.is_none()) {
     let pdf = my_app_export(scene)?; // the app's adapter
-    let summary = craft_plate_test::structure::summarize(&pdf)?;
+    let summary = bharat_plate_test::structure::summarize(&pdf)?;
     assert!(scene.structure.check(&summary).is_empty());
 }
 ```
@@ -146,16 +146,16 @@ is reported as such: its plates don't show the missing feature under Ghostscript
 the harness errors.
 
 `scripts/plate-check.sh --flatten` runs the same check on each scene's page flattened by
-craft-prepress (`flatten_page` at 300 dpi; the test is `flatten_plates` in craft-prepress, since
-craft-prepress dev-depends on this crate). The flattened page must also have no transparency
+bharat-prepress (`flatten_page` at 300 dpi; the test is `flatten_plates` in bharat-prepress, since
+bharat-prepress dev-depends on this crate). The flattened page must also have no transparency
 left (`structure::transparency`: transparency groups, soft masks in graphics states, blend modes
 other than Normal, `ca`/`CA` below 1). Its report goes to `plate-test/flattened/` and shows both
 pages side by side, with the flattener's time per scene.
 
 The results go to `plate-test/report.md` and `results.json` in Cargo's target directory
-(`CARGO_TARGET_DIR` is respected). The script sets `CRAFT_PDF_TEST_FONT_DIR` to
-`~/.cache/craft-pdf-test-fonts` when the font is there; without the font, text points are skipped.
+(`CARGO_TARGET_DIR` is respected). The script sets `BHARAT_PDF_TEST_FONT_DIR` to
+`~/.cache/bharat-pdf-test-fonts` when the font is there; without the font, text points are skipped.
 
 Ghostscript is AGPL. It runs only as an external program on developer machines (`gs` on `PATH`, or
-`CRAFT_PLATE_TEST_GS`), never in CI. Don't link it, copy its code, or commit its output. Without
+`BHARAT_PLATE_TEST_GS`), never in CI. Don't link it, copy its code, or commit its output. Without
 Ghostscript the test returns with a note.

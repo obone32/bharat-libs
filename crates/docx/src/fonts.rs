@@ -6,7 +6,7 @@
 
 use std::collections::HashSet;
 
-use craft_wordmodel::Document;
+use bharat_wordmodel::Document;
 
 use crate::package::{EMBEDDED_PARTS, EmbeddedManifest};
 

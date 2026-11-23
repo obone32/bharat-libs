@@ -1,5 +1,5 @@
 use super::{Align, Cell, Document, FBlock, FTable, Fmt, Inline, Kind, Para, Rgb, model};
-use craft_math::latex_text::linear_to_latex;
+use bharat_math::latex_text::linear_to_latex;
 
 /// Text width of the exported article in points (`\linewidth` when reading widths).
 pub(super) const LINE_WIDTH: f32 = 345.0;
@@ -316,7 +316,7 @@ impl Writer {
                 Some(target) => format!("\\hyperlink{{{}}}{{{s}}}", escape_url(target)),
                 // A script, `file:`, UNC or other non-web target becomes plain text: a `\href`
                 // compiles to a PDF `/URI` action the reader would otherwise follow on click.
-                None if craft_wordmodel::link::is_safe_href(l) => format!("\\href{{{}}}{{{s}}}", escape_url(l)),
+                None if bharat_wordmodel::link::is_safe_href(l) => format!("\\href{{{}}}{{{s}}}", escape_url(l)),
                 None => s,
             };
         }
@@ -324,7 +324,7 @@ impl Writer {
     }
 
     pub(super) fn table(&mut self, t: &FTable) {
-        let cols = t.cols().clamp(1, craft_wordmodel::table::MAX_COLS);
+        let cols = t.cols().clamp(1, bharat_wordmodel::table::MAX_COLS);
         let widths: Vec<f32> = if t.widths.len() == cols && t.widths.iter().all(|w| w.is_finite() && *w > 1.0) {
             let total: f32 = t.widths.iter().sum();
             // Scale a table wider than the page to fit.

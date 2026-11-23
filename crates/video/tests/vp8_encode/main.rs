@@ -1,7 +1,7 @@
 //! The VP8 encoder's frames read back by this crate's own decoder: the decode must reproduce the
 //! encoder's reconstruction exactly (loop filter off) and read as a picture close to the source.
 
-use craft_video::vp8::{Decoder, Picture, Vp8Frame, Vp8Params, encode_rgba};
+use bharat_video::vp8::{Decoder, Picture, Vp8Frame, Vp8Params, encode_rgba};
 
 /// A test picture with something for every mode: flat areas, gradients, hard edges, diagonal
 /// stripes, fine noise, colour.

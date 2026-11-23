@@ -131,7 +131,7 @@ pub fn inspect_raster(bytes: &[u8]) -> Result<Option<RasterInspection>, CodecErr
         }
         Format::Jpeg => {
             let Some((w, h, channels)) = crate::codecs::jpeg::scan_metadata(bytes).frame else { return Ok(None) };
-            let depth = craft_jpeg::frame(bytes).map_or(8, |f| f.precision);
+            let depth = bharat_jpeg::frame(bytes).map_or(8, |f| f.precision);
             let color = match channels {
                 1 => RasterColorType::Gray,
                 3 => RasterColorType::Rgb,

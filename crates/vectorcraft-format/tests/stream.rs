@@ -1,4 +1,4 @@
-use craft_vectorcraft_format::stream::{Envelope, Indent, KeyScan};
+use bharat_vectorcraft_format::stream::{Envelope, Indent, KeyScan};
 use std::io::{self, Write};
 
 #[test]
@@ -56,7 +56,7 @@ fn forwards_writer_errors() {
 
 #[test]
 fn tail_calls_hook_in_order_and_propagates_errors() {
-    use craft_vectorcraft_format::{BLOB_MAGIC, INLINE_MAX, Tail};
+    use bharat_vectorcraft_format::{BLOB_MAGIC, INLINE_MAX, Tail};
     let first = vec![1; INLINE_MAX];
     let second = vec![2; INLINE_MAX];
     let mut tail = Tail::new(4);
@@ -84,7 +84,7 @@ fn tail_calls_hook_in_order_and_propagates_errors() {
 
 #[test]
 fn native_schema_order_and_versions() {
-    use craft_vectorcraft_format::stream::{FileHeader, write_file_json};
+    use bharat_vectorcraft_format::stream::{FileHeader, write_file_json};
     let profiles = Default::default();
     for (version, name) in [(1, "drawcraft"), (4, "vectorcraft")] {
         for pretty in [false, true] {
@@ -111,7 +111,7 @@ fn native_schema_order_and_versions() {
 // indented and appended. Compare decoded file bytes, not backend-dependent gzip bytes.
 #[test]
 fn streamed_native_file_matches_previous_framing() {
-    use craft_vectorcraft_format::{
+    use bharat_vectorcraft_format::{
         Tail,
         stream::{FileHeader, write_file_json},
     };
@@ -130,7 +130,7 @@ fn streamed_native_file_matches_previous_framing() {
         indent.write_all(&json).unwrap();
     }
 
-    let payload = vec![42; craft_vectorcraft_format::INLINE_MAX];
+    let payload = vec![42; bharat_vectorcraft_format::INLINE_MAX];
     for version in [1, 3, 4] {
         for pretty in [false, true] {
             let mut tail = Tail::new(version);

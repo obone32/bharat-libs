@@ -17,7 +17,7 @@
 //! here panics on any bytes.
 //!
 //! ```
-//! use craft_odf::{Limits, Package, PackageWriter, mime};
+//! use bharat_odf::{Limits, Package, PackageWriter, mime};
 //!
 //! let mut w = PackageWriter::new(mime::TEXT);
 //! w.file("content.xml", "text/xml", b"<office:document-content/>");
@@ -27,7 +27,7 @@
 //! assert_eq!(p.mimetype().as_deref(), Some(mime::TEXT));
 //! assert_eq!(p.read("content.xml")?.as_deref(), Some(b"<office:document-content/>".as_slice()));
 //! assert_eq!(p.manifest().media_type("content.xml"), Some("text/xml"));
-//! # Ok::<(), craft_odf::Error>(())
+//! # Ok::<(), bharat_odf::Error>(())
 //! ```
 
 #[cfg(doctest)]

@@ -127,7 +127,7 @@ struct ReaderContextData<'a> {
 #[derive(Clone, Debug)]
 enum ReaderContextInner<'a> {
     Shared(Arc<ReaderContextData<'a>>),
-    /// Craft patch: the default limits with `max_decoded_stream` (other limits are in a
+    /// Bharat patch: the default limits with `max_decoded_stream` (other limits are in a
     /// `ControlledDummy`), so the context stays the size of an object's fields.
     Dummy { in_content_stream: bool, max_decoded_stream: usize },
     ControlledDummy(Arc<ControlledDummy>),

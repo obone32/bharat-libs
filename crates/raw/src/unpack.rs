@@ -5,7 +5,7 @@
 
 #[cfg(feature = "dng")]
 use crate::{RawError, Result};
-use craft_tiff::ByteOrder;
+use bharat_tiff::ByteOrder;
 
 /// Unpack `out.len()` MSB-first packed samples of `bits` (1..=16) from `src` (TIFF bit order).
 pub fn unpack_msb(src: &[u8], bits: u32, out: &mut [u16]) {

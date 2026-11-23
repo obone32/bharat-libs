@@ -1,4 +1,4 @@
-use craft_timeline::preflight::{json_depth, xml_depth};
+use bharat_timeline::preflight::{json_depth, xml_depth};
 
 #[test]
 fn xml_skips_markup_inside_quotes_comments_and_cdata() {

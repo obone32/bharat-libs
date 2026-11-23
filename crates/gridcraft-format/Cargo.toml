@@ -1,5 +1,5 @@
 [package]
-name = "craft-gridcraft-format"
+name = "bharat-gridcraft-format"
 description = "GridCraft's native JSON workbook file: its extensions, reader and pretty writer"
 version.workspace = true
 edition.workspace = true

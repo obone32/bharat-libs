@@ -86,7 +86,7 @@ pub fn spec(name: &str) -> Option<Vec<String>> {
             ],
         ]),
         "prores_pcm.mkv" => cat(&[V, A, &["-t", "1", "-c:v", "prores_ks", "-profile:v", "2", "-c:a", "pcm_s24le"]]),
-        "mjpeg_ac3.mkv" => cat(&[V, A, &["-t", "1", "-c:v", "mjpeg", "-q:v", "5", "-c:a", "ac3", "-metadata", "title=craft-media test"]]),
+        "mjpeg_ac3.mkv" => cat(&[V, A, &["-t", "1", "-c:v", "mjpeg", "-q:v", "5", "-c:a", "ac3", "-metadata", "title=bharat-media test"]]),
         "av1.mkv" => cat(&[V, &["-t", "1", "-c:v", "libsvtav1", "-preset", "12", "-g", "10"]]),
         "live.mkv" => return None,
         _ => panic!("unknown fixture {name}"),
@@ -94,7 +94,7 @@ pub fn spec(name: &str) -> Option<Vec<String>> {
 }
 
 /// Generate (once) and return the path of a fixture; `None` after printing `SKIPPED` if
-/// generation failed (a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// generation failed (a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 pub fn fixture(ffmpeg: &Path, name: &str) -> Option<PathBuf> {
     let dir = fixture_dir();
     let out = dir.join(name);

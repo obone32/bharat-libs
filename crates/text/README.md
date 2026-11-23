@@ -1,6 +1,6 @@
-# Craft Text
+# Bharat Text
 
-`craft-text` holds the text processing that sits below each app's composer: functions that take
+`bharat-text` holds the text processing that sits below each app's composer: functions that take
 plain text and a language and return what layout needs before it shapes and places glyphs.
 
 | Module | Feature | Provides |
@@ -16,7 +16,7 @@ out all modules and data.
 
 ## Hyphenation
 
-`craft_text::hyphen` finds hyphenation points. It returns byte offsets into the word: a hyphen
+`bharat_text::hyphen` finds hyphenation points. It returns byte offsets into the word: a hyphen
 may go before the char that starts at each offset. Line breaking, discretionary hyphens and
 exception lists stay in each application.
 
@@ -42,14 +42,14 @@ Each has a cargo feature named as in hypher (`spanish`, `german`, `norwegian`, �
 enables 46 of them. Patterns for languages whose feature is off are not compiled in.
 
 Slovak's patterns are under the GPL, version 2 or later; the patterns of every other language are
-under a permissive license. craft-text asks for Slovak through the feature `slovak-gpl`, which
+under a permissive license. bharat-text asks for Slovak through the feature `slovak-gpl`, which
 `all-languages` leaves out; a build that enables it ships GPL-licensed data. Cargo unifies features,
 so another dependency that enables hypher's `slovak` feature (hypher's default features do) embeds
 the same data. A build that must exclude it checks its dependency graph
 (`cargo tree -e features -i hypher`).
 
 ```rust
-use craft_text::hyphen::{Lang, Limits, hyphen_points_in};
+use bharat_text::hyphen::{Lang, Limits, hyphen_points_in};
 
 fn points(word: &str, language: &str) -> Vec<usize> {
     match Lang::for_language(language) {
@@ -79,17 +79,17 @@ and the pattern trainer (`hyphen::patgen`); applications don't need it.
 
 ```sh
 curl -LO https://www.gutenberg.org/files/3204/files/mhyph.txt
-cargo run --release -p craft-text --features generator --example hyphgen -- mhyph.txt crates/text/assets/hyphen --validate
+cargo run --release -p bharat-text --features generator --example hyphgen -- mhyph.txt crates/text/assets/hyphen --validate
 ```
 
 ## Segmentation
 
-`craft_text::segment` finds where a line may break. It takes plain text and returns byte offsets;
+`bharat_text::segment` finds where a line may break. It takes plain text and returns byte offsets;
 measuring, choosing breaks and hanging punctuation stay in each application's composer.
 Consolidated from vectorcraft, wordcraft, deckcraft and designcraft.
 
 ```rust
-use craft_text::segment::{Kinsoku, Options, line_breaks};
+use bharat_text::segment::{Kinsoku, Options, line_breaks};
 
 let options = Options { kinsoku: Kinsoku::Soft, ..Options::default() };
 for b in line_breaks("日本語のテキスト。", &options) {
@@ -182,7 +182,7 @@ LSTM models are slower to run and split a few words differently, mostly compound
 syllables (Lao ລາດ|ຊະການ, Burmese မြန်|မာ), which are still valid line breaks.
 ## Bidi
 
-`craft_text::bidi` runs the Unicode Bidirectional Algorithm (UAX #9, through
+`bharat_text::bidi` runs the Unicode Bidirectional Algorithm (UAX #9, through
 [unicode-bidi](https://crates.io/crates/unicode-bidi)) on document text. It works on plain text and
 needs no fonts; shaping, glyph mirroring and caret placement stay in each application.
 
@@ -221,7 +221,7 @@ per-byte levels, the run-level reordering test cases and the hostile-input check
 WordCraft's layout; overrides and mirroring follow DesignCraft's composer.
 ## Line breaking
 
-`craft_text::linebreak` breaks paragraphs into lines on Knuth and Plass's box/glue/penalty model.
+`bharat_text::linebreak` breaks paragraphs into lines on Knuth and Plass's box/glue/penalty model.
 It knows nothing about fonts: the composer turns shaped glyphs into `Item`s, calls a breaker and
 places the glyphs of each returned `Line`. Widths are in the caller's units, and `width(k)` gives
 the measure of line `k`, so first-line indents and shaped frames work. The core comes from
@@ -251,7 +251,7 @@ greedy and balanced lines come from designcraft's breaker.
   each tier used and the width left over, so the composer can distribute the space.
 
 ```rust
-use craft_text::linebreak::{Item, Params, Rag, break_paragraph};
+use bharat_text::linebreak::{Item, Params, Rag, break_paragraph};
 
 let space = Item::glue(0.5, 0.0, 0.0);
 let items = [Item::boxed(3.0), space, Item::boxed(3.0), space, Item::boxed(5.0), Item::fill(), Item::forced()];
@@ -309,5 +309,5 @@ hyph-utf8 under their own permissive licenses (LPPL, MPL, MIT, BSD-3); see the r
 Some tests depend on language features, so run the suite with them on:
 
 ```sh
-cargo test -p craft-text --all-features
+cargo test -p bharat-text --all-features
 ```

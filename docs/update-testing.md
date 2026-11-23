@@ -1,9 +1,9 @@
 # Testing update prompts
 
-Every native Craft App accepts an environment variable derived from its app id:
+Every native Bharat App accepts an environment variable derived from its app id:
 uppercase, hyphens replaced with underscores, followed by `_PRETEND_VERSION`.
-Run each command from the corresponding app checkout, with a `craft-update` pin that
-includes this fix. These app packages are not part of the `craft-libs` workspace.
+Run each command from the corresponding app checkout, with a `bharat-update` pin that
+includes this fix. These app packages are not part of the `bharat-libs` workspace.
 For example:
 
 ```sh
@@ -23,7 +23,7 @@ compiled package version. Leave the variables unset for normal version detection
 The restart helper clears both settings for the app so a newly installed copy reports
 its real version.
 
-`CRAFT_UPDATE_DEV=1` separately lets a development executable be treated as an installed
+`BHARAT_UPDATE_DEV=1` separately lets a development executable be treated as an installed
 copy for testing installation. It is unnecessary to preview a prompt. Download/install
 buttons perform a real update; a pretend version does not simulate installation.
 The explicit override also applies to the installation version check, allowing tests

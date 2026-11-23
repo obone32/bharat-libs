@@ -8,7 +8,7 @@ use crate::ns::{NS_A, NS_C, NS_R};
 
 /// The Office 2016 chart namespace.
 pub const NS_CX: &str = "http://schemas.microsoft.com/office/drawing/2014/chartex";
-use craft_xml::{El, Local, Node, Writer};
+use bharat_xml::{El, Local, Node, Writer};
 
 use crate::write as dml;
 use crate::xmlx::{A, TagExt};

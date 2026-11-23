@@ -68,7 +68,7 @@ pub(in crate::fonts) fn loading(ctx: &egui::Context) -> bool {
 }
 
 fn id() -> egui::Id {
-    egui::Id::unique("craft_ui::fonts::served")
+    egui::Id::unique("bharat_ui::fonts::served")
 }
 
 /// Make egui ask the providers again for the characters it found no face for. egui remembers those

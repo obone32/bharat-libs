@@ -1,4 +1,4 @@
-//! Reading one catalog. The rules are craft-i18n's `docs/catalog-format.md`; craft-i18n's CI
+//! Reading one catalog. The rules are bharat-i18n's `docs/catalog-format.md`; bharat-i18n's CI
 //! applies them strictly, and here a row that breaks one is skipped and reported, so an app built
 //! against a newer catalog still runs, with that string in English.
 
@@ -15,7 +15,7 @@ pub(crate) struct Entry {
 const RESERVED: &[&str] = &["@plural", "@id", "@msg"];
 
 /// The rows of a catalog whose locale has `forms` plural forms, and one problem (`line N: …`) per
-/// row skipped. Of a row defined twice, the first is kept, as in craft-i18n's checker.
+/// row skipped. Of a row defined twice, the first is kept, as in bharat-i18n's checker.
 pub(crate) fn parse(text: &str, forms: usize) -> (Vec<Entry>, Vec<String>) {
     let text = text.strip_prefix('\u{feff}').unwrap_or(text);
     let mut rows = Vec::new();

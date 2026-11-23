@@ -21,7 +21,7 @@
 
 pub(crate) mod tables;
 
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 use tables::AllocTable;
 
 /// Errors from header parsing and decoding.

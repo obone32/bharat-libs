@@ -1,5 +1,5 @@
 use super::*;
-use craft_tiff::{Entry, IfdBuilder, ImageData, TiffWriter};
+use bharat_tiff::{Entry, IfdBuilder, ImageData, TiffWriter};
 
 fn ifd(tags: Vec<(u16, Value)>) -> Ifd {
     let mut entries: Vec<_> = tags.into_iter().map(|(tag, value)| Entry { tag, value, offset: 0 }).collect();

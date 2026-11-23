@@ -1,6 +1,6 @@
 //! CAVLC residual coding (§9.2) and macroblock-layer syntax for Baseline streams.
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use crate::h264::encode::mbinfo::{MbKind, Part};
 use crate::h264::encode::nal::SliceType;

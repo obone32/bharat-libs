@@ -9,7 +9,7 @@
 //! the two or three steps an app's own test takes), and set the theme on the builder.
 //!
 //! ```no_run
-//! use craft_ui::testing::snapshot;
+//! use bharat_ui::testing::snapshot;
 //!
 //! let dir = snapshot::snapshot_dir(snapshot::DEFAULT_DIR_VAR);
 //! let builder = snapshot::with_snapshot_renderer(egui_kittest::Harness::builder(), dir.as_deref())?;
@@ -33,7 +33,7 @@ use std::path::{Path, PathBuf};
 use egui_kittest::{Harness, HarnessBuilder};
 
 /// The variable [`snapshot_dir`] reads when an app has no name of its own for it.
-pub const DEFAULT_DIR_VAR: &str = "CRAFT_UI_SNAPSHOT_DIR";
+pub const DEFAULT_DIR_VAR: &str = "BHARAT_UI_SNAPSHOT_DIR";
 
 /// The longest name [`save`] takes, in bytes.
 pub const MAX_NAME_LEN: usize = 120;

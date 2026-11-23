@@ -12,7 +12,7 @@
 //! The reader is bounded and fails closed: input size and shape/point counts are capped, every
 //! length is checked against the bytes that are really there, and a body that is not in the
 //! plain layout known here (for example a protected store design) is rejected instead of
-//! guessed at. Records it does not understand are skipped. Depends on no other Craft crate.
+//! guessed at. Records it does not understand are skipped. Depends on no other Bharat crate.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 

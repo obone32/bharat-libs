@@ -17,7 +17,7 @@ fn conformance_vectors() {
 }
 
 /// The wider libaom set (slow: many downloads and decodes):
-/// `cargo test -p craft-video --features av1-decode,threads --test av1_decode conformance:: -- --ignored`; `AV1_VECTORS=a,b` overrides it.
+/// `cargo test -p bharat-video --features av1-decode,threads --test av1_decode conformance:: -- --ignored`; `AV1_VECTORS=a,b` overrides it.
 #[test]
 #[ignore]
 fn conformance_vectors_extended() {

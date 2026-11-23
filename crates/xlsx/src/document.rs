@@ -1,9 +1,9 @@
 //! A whole workbook held in memory and written back: the parts this crate reads, regenerated,
 //! and every other part carried through as it was.
 
-use craft_opc::{ContentTypes, PackageOut, RT_BASE, Rel, RelOut, Rels, RelsOut, relative, rels_path};
+use bharat_opc::{ContentTypes, PackageOut, RT_BASE, Rel, RelOut, Rels, RelsOut, relative, rels_path};
 
-use craft_drawingml::chart::Chart;
+use bharat_drawingml::chart::Chart;
 
 use crate::drawing::{Anchor, Drawing, Item, Placement};
 use crate::features::{Comments, NoteShape, Table, notes_vml};
@@ -314,15 +314,15 @@ impl Document {
     }
 
     /// Adds a chart to worksheet `sheet` (an index into [`Workbook::sheets`]): a new chart part
-    /// written by `craft-drawingml` (an Office 2016 `chartEx` part for the chart types that need
+    /// written by `bharat-drawingml` (an Office 2016 `chartEx` part for the chart types that need
     /// one, behind an `mc:AlternateContent` so older readers skip it), and an anchor for it in
     /// the sheet's drawing, made when the sheet has none.
     pub fn add_chart(&mut self, sheet: usize, placement: Placement, chart: &Chart, name: &str) -> Result<(), Error> {
         let taken = self.part_names();
-        let ex = craft_drawingml::chart::write::chartex_part(chart);
+        let ex = bharat_drawingml::chart::write::chartex_part(chart);
         let (part, ct, bytes) = match ex {
             Some((bytes, _)) => (fresh(&taken, |n| format!("xl/charts/chartEx{n}.xml")), CT_CHARTEX, bytes),
-            None => (fresh(&taken, |n| format!("xl/charts/chart{n}.xml")), CT_CHART, craft_drawingml::chart::write::chart_xml(chart).0),
+            None => (fresh(&taken, |n| format!("xl/charts/chart{n}.xml")), CT_CHART, bharat_drawingml::chart::write::chart_xml(chart).0),
         };
         let d = self.drawing_of(sheet)?;
         let id = d.next_shape_id();
@@ -335,10 +335,10 @@ impl Document {
                     c.name = "cx:chart".into();
                 }
             }
-            let choice = craft_xml::El::new("mc:Choice").with_attr("Requires", "cx1").with_child(anchor.to_el());
+            let choice = bharat_xml::El::new("mc:Choice").with_attr("Requires", "cx1").with_child(anchor.to_el());
             d.drawing
                 .items
-                .push(Item::Other(craft_xml::El::new("mc:AlternateContent").with_child(choice).with_child(craft_xml::El::new("mc:Fallback"))));
+                .push(Item::Other(bharat_xml::El::new("mc:AlternateContent").with_child(choice).with_child(bharat_xml::El::new("mc:Fallback"))));
         } else {
             let rel = d.add_rel("chart", &part);
             d.drawing.items.push(Item::Anchor(Anchor::chart(placement, id, name, &rel)));
@@ -530,7 +530,7 @@ impl Document {
 
         let mut root = workbook.to_el();
         crate::ns::declare(&mut root);
-        let mut w = craft_xml::Writer::document();
+        let mut w = bharat_xml::Writer::document();
         w.tree(&root);
         out.xml_part(book_part, self.kind.main_content_type(), w.into_bytes());
         out.rels(book_part, &rels);
@@ -547,7 +547,7 @@ impl Document {
         if let Some(name) = &strings {
             let count: usize =
                 sheet_parts.iter().flat_map(|(_, ws)| &ws.rows).flat_map(|r| &r.cells).filter(|c| matches!(c.value, CellValue::Shared(_))).count();
-            let mut w = craft_xml::Writer::document();
+            let mut w = bharat_xml::Writer::document();
             w.tag("sst").attr("xmlns", crate::ns::MAIN).attr("count", count).attr("uniqueCount", self.shared_strings.len()).open();
             for s in &self.shared_strings {
                 w.tree(&s.to_el("si"));

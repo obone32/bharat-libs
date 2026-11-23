@@ -1,4 +1,4 @@
-use craft_image_codecs::legacy_tiff_raw_hint;
+use bharat_image_codecs::legacy_tiff_raw_hint;
 
 fn tiff(tag: u16, ty: u16, value: u32) -> Vec<u8> {
     let mut b = b"II\x2a\0\x08\0\0\0\x01\0".to_vec();

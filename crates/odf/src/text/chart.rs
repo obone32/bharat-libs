@@ -9,7 +9,7 @@
 
 use std::collections::HashMap;
 
-use craft_wordmodel::chart::{ChartSeries, ChartSpec, ChartType, LegendPos, MAX_CELLS, MAX_POINTS, MAX_SERIES, MAX_TEXT};
+use bharat_wordmodel::chart::{ChartSeries, ChartSpec, ChartType, LegendPos, MAX_CELLS, MAX_POINTS, MAX_SERIES, MAX_TEXT};
 
 use super::xml::Attrs;
 use super::{Ev, events, get};
@@ -250,7 +250,7 @@ impl Reader {
         let title = self.title.as_deref().map(str::trim).filter(|t| !t.is_empty()).map(str::to_string);
         // ODF axis formatting is not read; the value axis keeps the look every chart had before
         // axes were formattable (gridlines, no axis line), a round chart has none.
-        let val_axis = if kind.is_round() { Default::default() } else { craft_wordmodel::chart::value_axis() };
+        let val_axis = if kind.is_round() { Default::default() } else { bharat_wordmodel::chart::value_axis() };
         Some(ChartSpec { kind, categories, series, title, legend, data_labels, val_axis, ..Default::default() }.sanitized())
     }
 }

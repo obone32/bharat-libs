@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: MailCraft contributors
 // SPDX-License-Identifier: MIT OR Apache-2.0
 //! What checking a message's Digital signature found (#30), whichever format it is in: S/MIME
-//! (`craft-smime`) or OpenPGP. One of four results ([`Verdict`]), why when it isn't the
+//! (`bharat-smime`) or OpenPGP. One of four results ([`Verdict`]), why when it isn't the
 //! first ([`Why`]), and what is known of who signed it ([`Signer`]). Worked out from the bytes the
 //! message came as, in memory, and never written to the mailbox file: it is checked again when
 //! the message is next looked at, against the trust and the clock of that moment.

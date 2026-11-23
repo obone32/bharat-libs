@@ -1,6 +1,6 @@
 //! The header's profile ID (ICC.1:2022 §7.2.18).
 
-use craft_cms::{Builtin, CmsError, Profile, builtin, profile_id};
+use bharat_cms::{Builtin, CmsError, Profile, builtin, profile_id};
 
 fn hex(id: [u8; 16]) -> String {
     id.iter().map(|b| format!("{b:02x}")).collect()

@@ -1,4 +1,4 @@
-use craft_testkit::{Finding, predefined_quit, std_instant, wgsl_float_literals, wgsl_float_literals_in};
+use bharat_testkit::{Finding, predefined_quit, std_instant, wgsl_float_literals, wgsl_float_literals_in};
 
 /// A scratch folder under the system temporary folder that this test made and removes on drop,
 /// also when the test panics. A folder that already exists is never emptied or reused.
@@ -10,7 +10,7 @@ impl ScratchDir {
     fn new(tag: &str) -> Self {
         let base = std::env::temp_dir();
         for n in 0..1000u32 {
-            let path = base.join(format!("craft_testkit_{tag}_{}_{n}", std::process::id()));
+            let path = base.join(format!("bharat_testkit_{tag}_{}_{n}", std::process::id()));
             match std::fs::create_dir(&path) {
                 Ok(()) => return Self(path),
                 Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => continue,
@@ -107,7 +107,7 @@ fn test_historical_filmcraft_native_menu_quit_regression() {
     assert_eq!(findings[0].line, 5);
     assert_eq!(findings[0].text, "(quit_label, PredefinedMenuItem::quit(Some(app.ui.language.tr(quit_label)))),");
 
-    // Corrected source wires Quit via MenuItem::with_id and craft-quit lifecycle
+    // Corrected source wires Quit via MenuItem::with_id and bharat-quit lifecycle
     let corrected_source = r#"
     let quit = MenuItem::with_id("app.quit", label("app.quit", "Quit FilmCraft"), true, None);
     let predefined = [
@@ -1708,7 +1708,7 @@ fn wgsl_digits_inside_unicode_identifiers_are_not_literals() {
 #[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn test_rust_sources_filtering() {
-    use craft_testkit::rust_sources;
+    use bharat_testkit::rust_sources;
 
     let dir = ScratchDir::new("filtering");
     dir.write("src/lib.rs", "pub fn lib() {}");
@@ -1735,7 +1735,7 @@ fn test_rust_sources_filtering() {
 fn rust_sources_lists_a_root_inside_a_folder_named_tests() {
     let dir = ScratchDir::new("root_in_tests");
     dir.write("tests/app/src/lib.rs", "pub fn lib() {}");
-    let sources = craft_testkit::rust_sources(dir.path().join("tests").join("app")).expect("rust_sources");
+    let sources = bharat_testkit::rust_sources(dir.path().join("tests").join("app")).expect("rust_sources");
     assert_eq!(file_names(&sources), vec!["lib.rs"]);
 }
 
@@ -1748,7 +1748,7 @@ fn rust_sources_skips_build_output_folders_marked_with_cachedir_tag() {
     dir.write("out/debug/build/gen.rs", "pub fn generated() {}");
     dir.write("notes/CACHEDIR.TAG", "not a cache tag\n");
     dir.write("notes/kept.rs", "pub fn kept() {}");
-    let sources = craft_testkit::rust_sources(dir.path()).expect("rust_sources");
+    let sources = bharat_testkit::rust_sources(dir.path()).expect("rust_sources");
     assert_eq!(file_names(&sources), vec!["kept.rs", "lib.rs"]);
 }
 
@@ -1761,7 +1761,7 @@ fn rust_sources_does_not_read_a_cachedir_tag_through_a_symlink() {
     dir.write("src/lib.rs", "pub fn lib() {}");
     dir.write("linked/kept.rs", "pub fn kept() {}");
     std::os::unix::fs::symlink(outside.path().join("CACHEDIR.TAG"), dir.path().join("linked").join("CACHEDIR.TAG")).expect("symlink marker");
-    let sources = craft_testkit::rust_sources(dir.path()).expect("rust_sources");
+    let sources = bharat_testkit::rust_sources(dir.path()).expect("rust_sources");
     assert_eq!(file_names(&sources), vec!["kept.rs", "lib.rs"]);
 }
 
@@ -1784,7 +1784,7 @@ fn rust_sources_does_not_open_a_cachedir_tag_fifo() {
     // without blocking.
     let mut pipe = std::fs::OpenOptions::new().read(true).write(true).open(&fifo).expect("open FIFO");
     std::io::Write::write_all(&mut pipe, b"Signature: 8a477f597d28d172789f06886806bc55\n").expect("write signature");
-    let sources = craft_testkit::rust_sources(dir.path()).expect("rust_sources");
+    let sources = bharat_testkit::rust_sources(dir.path()).expect("rust_sources");
     drop(pipe);
     assert_eq!(file_names(&sources), vec!["kept.rs", "lib.rs"]);
 }
@@ -1798,7 +1798,7 @@ fn rust_sources_does_not_follow_a_symlink_out_of_the_root() {
     dir.write("src/lib.rs", "pub fn lib() {}");
     std::os::unix::fs::symlink(outside.path(), dir.path().join("src").join("linked")).expect("symlink folder");
     std::os::unix::fs::symlink(outside.path().join("evil.rs"), dir.path().join("src").join("evil.rs")).expect("symlink file");
-    let sources = craft_testkit::rust_sources(dir.path()).expect("rust_sources");
+    let sources = bharat_testkit::rust_sources(dir.path()).expect("rust_sources");
     assert_eq!(file_names(&sources), vec!["lib.rs"]);
 }
 
@@ -1808,7 +1808,7 @@ fn rust_sources_does_not_loop_on_a_symlink_cycle() {
     let dir = ScratchDir::new("symlink_cycle");
     dir.write("src/lib.rs", "pub fn lib() {}");
     std::os::unix::fs::symlink(dir.path().join("src"), dir.path().join("src").join("again")).expect("symlink cycle");
-    let sources = craft_testkit::rust_sources(dir.path()).expect("rust_sources");
+    let sources = bharat_testkit::rust_sources(dir.path()).expect("rust_sources");
     assert_eq!(file_names(&sources), vec!["lib.rs"]);
 }
 
@@ -1819,14 +1819,14 @@ fn rust_sources_skips_a_broken_symlink() {
     dir.write("src/lib.rs", "pub fn lib() {}");
     std::os::unix::fs::symlink(dir.path().join("missing.rs"), dir.path().join("src").join("gone.rs")).expect("symlink file");
     std::os::unix::fs::symlink(dir.path().join("missing"), dir.path().join("src").join("gone")).expect("symlink folder");
-    let sources = craft_testkit::rust_sources(dir.path()).expect("rust_sources");
+    let sources = bharat_testkit::rust_sources(dir.path()).expect("rust_sources");
     assert_eq!(file_names(&sources), vec!["lib.rs"]);
 }
 
 #[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn scratch_dirs_leave_existing_folders_alone_and_clean_up_on_panic() {
-    let taken = std::env::temp_dir().join(format!("craft_testkit_sentinel_{}_0", std::process::id()));
+    let taken = std::env::temp_dir().join(format!("bharat_testkit_sentinel_{}_0", std::process::id()));
     std::fs::create_dir(&taken).expect("create the folder the helper would pick first");
     std::fs::write(taken.join("sentinel"), "keep").expect("write sentinel");
 

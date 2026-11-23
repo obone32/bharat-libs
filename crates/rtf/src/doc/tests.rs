@@ -96,10 +96,10 @@ fn oldpprops_keep_the_old_paragraph_direction() {
 
 #[test]
 fn tracked_rtl_to_ltr_change_from_a_document_keeps_the_old_direction() {
-    use craft_wordmodel::props::{CharProps, ParaProps, PropChange};
-    use craft_wordmodel::{Revision, RevisionKind};
+    use bharat_wordmodel::props::{CharProps, ParaProps, PropChange};
+    use bharat_wordmodel::{Revision, RevisionKind};
     // Document origin (not RTF): now LTR, before RTL.
-    let mut p = craft_wordmodel::Paragraph::with_text("A", CharProps::default());
+    let mut p = bharat_wordmodel::Paragraph::with_text("A", CharProps::default());
     p.props.bidi = Some(false);
     p.props.fmt_change = PropChange::boxed(0, ParaProps { bidi: Some(true), ..Default::default() });
     let doc = doc_with(vec![p], vec![Revision::new(RevisionKind::Format, "Bob", "2025-01-02T08:05:00Z")]);
@@ -211,7 +211,7 @@ fn unicode_fallback_uses_the_declared_count() {
         (br"{\rtf1\uc-1\u233X}", "éX"),
     ] {
         let doc = import(rtf).unwrap();
-        assert_eq!(doc.plain_text(craft_wordmodel::StoryRef::Body).trim(), expected, "{rtf:?}");
+        assert_eq!(doc.plain_text(bharat_wordmodel::StoryRef::Body).trim(), expected, "{rtf:?}");
     }
 }
 
@@ -226,7 +226,7 @@ fn unicode_fallback_info_words_preserve_following_metadata() {
         let doc = import(rtf).unwrap();
         assert_eq!(doc.core.title, title, "{rtf:?}");
         assert_eq!(doc.core.creator, "Alice", "{rtf:?}");
-        assert_eq!(doc.plain_text(craft_wordmodel::StoryRef::Body).trim(), body, "{rtf:?}");
+        assert_eq!(doc.plain_text(bharat_wordmodel::StoryRef::Body).trim(), body, "{rtf:?}");
     }
 }
 
@@ -259,21 +259,21 @@ fn paragraph_borders() {
     // \pard resets them.
     assert!(paras[1].borders.is_none());
     let b = paras[2].borders.unwrap();
-    assert_eq!(b.top.map(|x| x.style), Some(craft_wordmodel::props::BorderStyle::Double));
+    assert_eq!(b.top.map(|x| x.style), Some(bharat_wordmodel::props::BorderStyle::Double));
     assert!(b.left.is_some() && b.right.is_some() && b.bottom.is_none());
     // An empty paragraph with only a bottom border is still a rule.
     assert_eq!(paras[3].kind, Kind::Rule);
     // The document's paragraph carries them.
     let d = import(rtf).unwrap();
-    let first = d.body.iter().find_map(|b| if let craft_wordmodel::Block::Para(p) = &**b { Some(p) } else { None }).unwrap();
+    let first = d.body.iter().find_map(|b| if let bharat_wordmodel::Block::Para(p) = &**b { Some(p) } else { None }).unwrap();
     assert!(first.props.borders.and_then(|b| b.bottom).is_some());
     // Paragraph borders round-trip through export and import.
     let exported = export(&d);
     assert!(exported.contains("\\brdrb\\brdrs\\brdrw10\\brdrcf1"), "{exported}");
     let back = import(exported.as_bytes()).unwrap();
-    let first = back.body.iter().find_map(|b| if let craft_wordmodel::Block::Para(p) = &**b { Some(p) } else { None }).unwrap();
+    let first = back.body.iter().find_map(|b| if let bharat_wordmodel::Block::Para(p) = &**b { Some(p) } else { None }).unwrap();
     let b = first.props.borders.unwrap().bottom.unwrap();
-    assert_eq!((b.style, b.width, b.color), (craft_wordmodel::props::BorderStyle::Single, 0.5, Some(Rgb(216, 216, 216))));
+    assert_eq!((b.style, b.width, b.color), (bharat_wordmodel::props::BorderStyle::Single, 0.5, Some(Rgb(216, 216, 216))));
 }
 
 #[test]
@@ -292,7 +292,7 @@ fn headers_and_footers() {
         let p = id.and_then(|id| d.parts.get(&id)).unwrap();
         p.blocks
             .iter()
-            .filter_map(|b| if let craft_wordmodel::Block::Para(p) = &**b { Some(p.text.clone()) } else { None })
+            .filter_map(|b| if let bharat_wordmodel::Block::Para(p) = &**b { Some(p.text.clone()) } else { None })
             .collect::<Vec<_>>()
             .join("|")
     };
@@ -313,7 +313,7 @@ fn headers_and_footers() {
 
 #[test]
 fn paragraph_spacing_and_indents() {
-    use craft_wordmodel::props::LineSpacing;
+    use bharat_wordmodel::props::LineSpacing;
     let rtf = br"{\rtf1\ansi
 \pard\sb120\sa150\sl360\slmult1\li720\ri360\fi-360 a\par
 \pard\sl-280 b\par
@@ -333,7 +333,7 @@ fn paragraph_spacing_and_indents() {
     let d = import(rtf).unwrap();
     assert_eq!(d.styles.default_para.space_after, Some(0.0));
     assert_eq!(d.styles.default_para.line_spacing, Some(LineSpacing::Multiple(1.0)));
-    let first = d.body.iter().find_map(|b| if let craft_wordmodel::Block::Para(p) = &**b { Some(p) } else { None }).unwrap();
+    let first = d.body.iter().find_map(|b| if let bharat_wordmodel::Block::Para(p) = &**b { Some(p) } else { None }).unwrap();
     assert_eq!(first.props.space_after, Some(7.5));
     assert_eq!(first.props.indent_first, Some(-18.0));
 }
@@ -347,7 +347,7 @@ fn default_font_is_deff_or_font_zero() {
     assert_eq!(d.styles.default_chr.font.as_deref(), Some("Arial"));
     // No font table: our default stays.
     let d = import(br"{\rtf1\ansi x\par}").unwrap();
-    assert_eq!(d.styles.default_chr.font, craft_wordmodel::StyleSheet::builtin().default_chr.font);
+    assert_eq!(d.styles.default_chr.font, bharat_wordmodel::StyleSheet::builtin().default_chr.font);
 }
 
 #[test]
@@ -386,7 +386,7 @@ fn page_size_and_margins() {
     assert!(exported.contains("\\landscape"), "exported RTF must include \\landscape: {exported}");
     // Nonsense keeps Word's defaults.
     let d = import(br"{\rtf1\ansi\paperw0\margl99999 x\par}").unwrap();
-    assert_eq!(d.last_section, craft_wordmodel::SectionProps::default());
+    assert_eq!(d.last_section, bharat_wordmodel::SectionProps::default());
 }
 
 #[test]
@@ -397,7 +397,7 @@ fn narrow_grid_columns_keep_their_width() {
 \trowd\cellx400\cellx800 \pard\intbl a\cell b\cell\row
 \trowd\cellx80\cellx480\cellx800 \pard\intbl c\cell d\cell e\cell\row
 \pard after\par}";
-    let table = |doc: &Document| match doc.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t.clone()) } else { None })
+    let table = |doc: &Document| match doc.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t.clone()) } else { None })
     {
         Some(t) => t,
         None => panic!("no table"),
@@ -431,7 +431,7 @@ fn table_grid_from_cell_edges_and_borders() {
     let b = t.rows[0][0].borders.unwrap();
     assert!(b.top.is_none() && b.left.is_none() && b.right.is_none());
     let bottom = b.bottom.unwrap();
-    assert_eq!((bottom.style, bottom.width, bottom.color), (craft_wordmodel::props::BorderStyle::Single, 0.75, Some(Rgb(174, 174, 174))));
+    assert_eq!((bottom.style, bottom.width, bottom.color), (bharat_wordmodel::props::BorderStyle::Single, 0.75, Some(Rgb(174, 174, 174))));
     // Every side, in different styles, per cell.
     let f = parse(
         br"{\rtf1\ansi\trowd\clbrdrt\brdrdb\clbrdrl\brdrs\brdrw10\clbrdrb\brdrdot\clbrdrr\brdrth\cellx2000\cellx4000\pard\intbl a\cell b\cell\row}",
@@ -439,7 +439,7 @@ fn table_grid_from_cell_edges_and_borders() {
     .unwrap();
     let FBlock::Table(t) = &f.blocks[0] else { panic!() };
     let b = t.rows[0][0].borders.unwrap();
-    use craft_wordmodel::props::BorderStyle as S;
+    use bharat_wordmodel::props::BorderStyle as S;
     assert_eq!(
         [b.top.map(|x| x.style), b.left.map(|x| x.style), b.bottom.map(|x| x.style), b.right.map(|x| x.style)],
         [Some(S::Double), Some(S::Single), Some(S::Dotted), Some(S::Thick)]
@@ -452,7 +452,7 @@ fn table_grid_from_cell_edges_and_borders() {
     assert!(t.rows[0][0].borders.is_none());
     // The document's cells carry them.
     let d = import(br"{\rtf1\ansi\trowd\clbrdrb\brdrs\cellx2000\pard\intbl a\cell\row}").unwrap();
-    let t = d.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
+    let t = d.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
     assert!(t.props.style.is_none());
     assert!(t.rows[0].cells[0].props.borders.and_then(|b| b.bottom).is_some());
     // Borderless tables export without cell borders and round-trip borderless.
@@ -460,7 +460,7 @@ fn table_grid_from_cell_edges_and_borders() {
     let exported = export(&d);
     assert!(!exported.contains("\\clbrdr"), "{exported}");
     let back = import(exported.as_bytes()).unwrap();
-    let tb = back.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
+    let tb = back.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
     assert!(tb.props.style.is_none());
     assert!(tb.rows[0].cells[0].props.borders.is_none());
 
@@ -470,13 +470,13 @@ fn table_grid_from_cell_edges_and_borders() {
     let exported = export(&d);
     assert!(exported.contains("\\clbrdrb\\brdrdb\\brdrw15\\brdrcf1"), "{exported}");
     let back = import(exported.as_bytes()).unwrap();
-    let tb = back.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
+    let tb = back.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
     let b = tb.rows[0].cells[0].props.borders.unwrap().bottom.unwrap();
-    assert_eq!((b.style, b.width, b.color), (craft_wordmodel::props::BorderStyle::Double, 0.75, Some(Rgb(174, 174, 174))));
+    assert_eq!((b.style, b.width, b.color), (bharat_wordmodel::props::BorderStyle::Double, 0.75, Some(Rgb(174, 174, 174))));
 
     // The table sizes to the document's page, not Letter.
     let d = import(br"{\rtf1\ansi\paperw11906\margl1134\margr1134\trowd\cellx4818\cellx9638\pard\intbl a\cell b\cell\row}").unwrap();
-    let t = d.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
+    let t = d.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
     assert_eq!(t.grid, [240.9, 241.0]);
 }
 
@@ -516,7 +516,7 @@ fn table_grid_survives_more_than_63_edges() {
 
     // The same through import: the document table has the grid, not equal columns.
     let d = import(rtf.as_bytes()).unwrap();
-    let t = d.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
+    let t = d.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
     assert_eq!(t.grid.len(), widths.len());
     let w = t.rows[0].cells[0].props.width.unwrap();
     assert!((w - 300.0).abs() <= 5.0, "title cell {w} pt");
@@ -596,7 +596,7 @@ fn table_grid_keeps_narrow_columns_at_their_width() {
     let (widths, _) = grid_of(rtf.as_bytes());
     assert_eq!(widths, [3.0; 20], "{widths:?}");
     let d = import(rtf.as_bytes()).unwrap();
-    let t = d.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
+    let t = d.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t) } else { None }).unwrap();
     assert_eq!(t.grid.iter().sum::<f32>(), 60.0, "{:?}", t.grid);
 
     // A row that needs them keeps them, narrow as they are.
@@ -927,17 +927,17 @@ type Stamp = (String, String);
 
 /// (text, insertion (author, date), deletion (author, date)) of each run of the first paragraph.
 fn tracked_runs(doc: &Document) -> Vec<(String, Option<Stamp>, Option<Stamp>)> {
-    let rev = |i: Option<u32>, kind: craft_wordmodel::RevisionKind| {
+    let rev = |i: Option<u32>, kind: bharat_wordmodel::RevisionKind| {
         i.map(|i| {
             let r = doc.revisions.get(i as usize).unwrap();
             assert_eq!(r.kind, kind);
             (r.author.clone(), r.date.clone())
         })
     };
-    let Some(craft_wordmodel::Block::Para(p)) = doc.body.first().map(|b| &**b) else { panic!("no paragraph") };
+    let Some(bharat_wordmodel::Block::Para(p)) = doc.body.first().map(|b| &**b) else { panic!("no paragraph") };
     p.run_ranges()
         .map(|(r, cp)| {
-            (p.text[r].to_string(), rev(cp.ins, craft_wordmodel::RevisionKind::Insert), rev(cp.del, craft_wordmodel::RevisionKind::Delete))
+            (p.text[r].to_string(), rev(cp.ins, bharat_wordmodel::RevisionKind::Insert), rev(cp.del, bharat_wordmodel::RevisionKind::Delete))
         })
         .collect()
 }
@@ -1043,45 +1043,45 @@ fn pard_keeps_revision_marks() {
     // Revision marks are character formatting: `\pard` resets paragraph formatting only.
     let rtf = br"{\rtf1{\*\revtbl {Unknown;}{Bob;}}\deleted\revauthdel1 gone\par\pard more\par}";
     let doc = import(rtf).unwrap();
-    let Some(craft_wordmodel::Block::Para(p)) = doc.body.get(1).map(|b| &**b) else { panic!("no second paragraph") };
+    let Some(bharat_wordmodel::Block::Para(p)) = doc.body.get(1).map(|b| &**b) else { panic!("no second paragraph") };
     assert_eq!(p.text, "more");
     let del = p.props_of_char(0).del.and_then(|i| doc.revisions.get(i as usize));
-    assert_eq!(del.map(|r| (r.kind, r.author.as_str())), Some((craft_wordmodel::RevisionKind::Delete, "Bob")));
+    assert_eq!(del.map(|r| (r.kind, r.author.as_str())), Some((bharat_wordmodel::RevisionKind::Delete, "Bob")));
 }
 
 /// The body's paragraphs.
-fn doc_paras(doc: &Document) -> Vec<&craft_wordmodel::Paragraph> {
+fn doc_paras(doc: &Document) -> Vec<&bharat_wordmodel::Paragraph> {
     doc.body
         .iter()
         .filter_map(|b| match &**b {
-            craft_wordmodel::Block::Para(p) => Some(p),
+            bharat_wordmodel::Block::Para(p) => Some(p),
             _ => None,
         })
         .collect()
 }
 
 /// A document of `paras` with `revisions`.
-fn doc_with(paras: Vec<craft_wordmodel::Paragraph>, revisions: Vec<craft_wordmodel::Revision>) -> Document {
+fn doc_with(paras: Vec<bharat_wordmodel::Paragraph>, revisions: Vec<bharat_wordmodel::Revision>) -> Document {
     let mut doc = Document::new();
-    doc.body = paras.into_iter().map(craft_wordmodel::para_block).collect();
+    doc.body = paras.into_iter().map(bharat_wordmodel::para_block).collect();
     doc.revisions = revisions;
     doc
 }
 
 /// Kind, author and date of revision `i`.
-fn rev_of(doc: &Document, i: Option<u32>) -> Option<(craft_wordmodel::RevisionKind, String, String)> {
+fn rev_of(doc: &Document, i: Option<u32>) -> Option<(bharat_wordmodel::RevisionKind, String, String)> {
     i.and_then(|i| doc.revisions.get(i as usize)).map(|r| (r.kind, r.author.clone(), r.date.clone()))
 }
 
 #[test]
 fn character_formatting_change_round_trips() {
-    use craft_wordmodel::props::{CharProps, PropChange};
-    use craft_wordmodel::{Revision, RevisionKind};
+    use bharat_wordmodel::props::{CharProps, PropChange};
+    use bharat_wordmodel::{Revision, RevisionKind};
     // "Bold" was made bold by Alice; before, it was plain italic.
     let old = CharProps { italic: Some(true), ..Default::default() };
     let cp = CharProps { bold: Some(true), fmt_change: PropChange::boxed(0, old), ..Default::default() };
     let doc =
-        doc_with(vec![craft_wordmodel::Paragraph::with_text("Bold", cp)], vec![Revision::new(RevisionKind::Format, "Alice", "2024-03-15T10:30:00Z")]);
+        doc_with(vec![bharat_wordmodel::Paragraph::with_text("Bold", cp)], vec![Revision::new(RevisionKind::Format, "Alice", "2024-03-15T10:30:00Z")]);
     let rtf = export(&doc);
     assert!(rtf.contains("\\crauth1\\crdate-1480361314"), "{rtf}");
     assert!(rtf.contains("{\\*\\oldcprops"), "{rtf}");
@@ -1099,10 +1099,10 @@ fn character_formatting_change_round_trips() {
 
 #[test]
 fn paragraph_formatting_change_round_trips() {
-    use craft_wordmodel::props::{CharProps, ParaProps, PropChange};
-    use craft_wordmodel::{Align, Revision, RevisionKind};
+    use bharat_wordmodel::props::{CharProps, ParaProps, PropChange};
+    use bharat_wordmodel::{Align, Revision, RevisionKind};
     // Bob centred a right-aligned paragraph.
-    let mut p = craft_wordmodel::Paragraph::with_text("Centred", CharProps::default());
+    let mut p = bharat_wordmodel::Paragraph::with_text("Centred", CharProps::default());
     p.props.align = Some(Align::Center);
     p.props.fmt_change = PropChange::boxed(0, ParaProps { align: Some(Align::Right), ..Default::default() });
     let doc = doc_with(vec![p], vec![Revision::new(RevisionKind::Format, "Bob", "2025-01-02T08:05:00Z")]);
@@ -1121,14 +1121,14 @@ fn paragraph_formatting_change_round_trips() {
 
 #[test]
 fn paragraph_mark_revisions_round_trip() {
-    use craft_wordmodel::props::CharProps;
-    use craft_wordmodel::{Revision, RevisionKind};
+    use bharat_wordmodel::props::CharProps;
+    use bharat_wordmodel::{Revision, RevisionKind};
     // Bob deleted the mark after "One" (joining it to "Two"); Alice inserted the one after "Two".
-    let mut one = craft_wordmodel::Paragraph::with_text("One", CharProps::default());
+    let mut one = bharat_wordmodel::Paragraph::with_text("One", CharProps::default());
     one.mark.del = Some(0);
-    let mut two = craft_wordmodel::Paragraph::with_text("Two", CharProps::default());
+    let mut two = bharat_wordmodel::Paragraph::with_text("Two", CharProps::default());
     two.mark.ins = Some(1);
-    let three = craft_wordmodel::Paragraph::with_text("Three", CharProps::default());
+    let three = bharat_wordmodel::Paragraph::with_text("Three", CharProps::default());
     let doc = doc_with(
         vec![one, two, three],
         vec![
@@ -1155,7 +1155,7 @@ fn paragraph_mark_revisions_round_trip() {
 
 #[test]
 fn formatting_revisions_read_as_the_spec_writes_them() {
-    use craft_wordmodel::{Align, RevisionKind};
+    use bharat_wordmodel::{Align, RevisionKind};
     // RTF 1.9.1 "Revision Marks": `\crauth`/`\crdate` with `{\*\oldcprops …}` on a run,
     // `\prauth`/`\prdate` with `{\*\oldpprops …}` on a paragraph, and a `\par` inside a
     // `\revised` group.
@@ -1264,7 +1264,7 @@ fn heading_formatting_change_has_no_style_formatting_in_the_old_formatting() {
 
 #[test]
 fn word_oldcprops_hold_only_the_changed_properties() {
-    use craft_wordmodel::RevisionKind;
+    use bharat_wordmodel::RevisionKind;
     // Word for Mac 16.113 saving tracked formatting changes as RTF: "beta" made bold,
     // "gamma" (bold) grown from 12 to 16 pt. `\oldcprops` holds only what changed, with
     // `\crauth`/`\crdate` inside the group; the rest of the old formatting is the run's.
@@ -1293,7 +1293,7 @@ fn word_oldcprops_hold_only_the_changed_properties() {
 
 #[test]
 fn word_oldpprops_hold_the_full_old_paragraph_formatting() {
-    use craft_wordmodel::{Align, RevisionKind};
+    use bharat_wordmodel::{Align, RevisionKind};
     // Word for Mac 16.113: a paragraph centred with tracking on. `\oldpprops` is the full
     // old set from `\pard`; `\prauth`/`\prdate` are on the paragraph.
     let rtf = br"{\rtf1\ansi\deff0{\fonttbl{\f0 Times New Roman;}}{\*\revtbl {Unknown;}{Alice;}}
@@ -1313,20 +1313,20 @@ fn word_oldpprops_hold_the_full_old_paragraph_formatting() {
 
 #[test]
 fn oldcprops_are_written_as_the_differences() {
-    use craft_wordmodel::props::{CharProps, PropChange};
-    use craft_wordmodel::{Revision, RevisionKind};
+    use bharat_wordmodel::props::{CharProps, PropChange};
+    use bharat_wordmodel::{Revision, RevisionKind};
     let rev = || vec![Revision::new(RevisionKind::Format, "Alice", "2024-03-15T10:30:00Z")];
     // Made bold: the group holds `\b0` and who changed it, nothing else.
     let old = CharProps { font: Some("Arial".into()), size: Some(14.0), ..Default::default() };
     let cp =
         CharProps { bold: Some(true), font: Some("Arial".into()), size: Some(14.0), fmt_change: PropChange::boxed(0, old), ..Default::default() };
-    let rtf = export(&doc_with(vec![craft_wordmodel::Paragraph::with_text("Bold", cp)], rev()));
+    let rtf = export(&doc_with(vec![bharat_wordmodel::Paragraph::with_text("Bold", cp)], rev()));
     assert!(rtf.contains("{\\*\\oldcprops \\b0\\crauth1\\crdate-1480361314}"), "{rtf}");
     // Several changes, on and off, round-trip.
-    let red = craft_wordmodel::props::TextColor::Rgb(craft_wordmodel::props::Rgb(255, 0, 0));
+    let red = bharat_wordmodel::props::TextColor::Rgb(bharat_wordmodel::props::Rgb(255, 0, 0));
     let old = CharProps {
         italic: Some(true),
-        underline: Some(craft_wordmodel::props::Underline::Single),
+        underline: Some(bharat_wordmodel::props::Underline::Single),
         size: Some(14.0),
         color: Some(red),
         font: Some("Arial".into()),
@@ -1339,7 +1339,7 @@ fn oldcprops_are_written_as_the_differences() {
         fmt_change: PropChange::boxed(0, old.clone()),
         ..Default::default()
     };
-    let rtf = export(&doc_with(vec![craft_wordmodel::Paragraph::with_text("Mixed", cp)], rev()));
+    let rtf = export(&doc_with(vec![bharat_wordmodel::Paragraph::with_text("Mixed", cp)], rev()));
     let back = import(rtf.as_bytes()).unwrap();
     let paras = doc_paras(&back);
     let cp = paras.first().unwrap().props_of_char(0);
@@ -1727,7 +1727,7 @@ fn hostile_formatting_revisions_never_panic() {
     let f = parse(br"{\rtf1\ansi\trowd\clbrdrt\brdrs\brdrw10{\*\oldpprops \brdrdb\brdrw120\brdrcf1}\cellx2000\pard\intbl a\cell\row}").unwrap();
     let FBlock::Table(t) = &f.blocks[0] else { panic!() };
     let top = t.rows[0][0].borders.and_then(|b| b.top).unwrap();
-    assert_eq!((top.style, top.width, top.color), (craft_wordmodel::props::BorderStyle::Single, 0.5, None));
+    assert_eq!((top.style, top.width, top.color), (bharat_wordmodel::props::BorderStyle::Single, 0.5, None));
     // Unterminated groups and deep nesting.
     for bad in [
         &br"{\rtf1\pard\prauth1\prdate5{\*\oldpprops \pard\qc"[..],
@@ -1767,7 +1767,7 @@ fn sections_keep_their_page_columns_numbering_and_headers() {
     let d = import(rtf).unwrap();
     let secs = d.sections();
     assert_eq!(secs.len(), 4, "{secs:?}");
-    let s: Vec<&craft_wordmodel::SectionProps> = secs.iter().map(|(_, s)| *s).collect();
+    let s: Vec<&bharat_wordmodel::SectionProps> = secs.iter().map(|(_, s)| *s).collect();
     assert_section_geometry(&s);
     assert_section_breaks_and_layout(&s);
     assert_section_headers_and_footers(&d, &s);
@@ -1775,7 +1775,7 @@ fn sections_keep_their_page_columns_numbering_and_headers() {
     assert_section_page_defaults();
 }
 
-fn assert_section_geometry(s: &[&craft_wordmodel::SectionProps]) {
+fn assert_section_geometry(s: &[&bharat_wordmodel::SectionProps]) {
     // Page size and orientation; the document's margins apply to every section.
     for (i, land) in [(0, false), (1, true), (2, true), (3, false)] {
         assert_eq!(s[i].landscape, land, "section {i}");
@@ -1786,8 +1786,8 @@ fn assert_section_geometry(s: &[&craft_wordmodel::SectionProps]) {
     }
 }
 
-fn assert_section_breaks_and_layout(s: &[&craft_wordmodel::SectionProps]) {
-    use craft_wordmodel::section::{NumFormat, SectionStart};
+fn assert_section_breaks_and_layout(s: &[&bharat_wordmodel::SectionProps]) {
+    use bharat_wordmodel::section::{NumFormat, SectionStart};
     assert_eq!(
         s.iter().map(|s| s.start).collect::<Vec<_>>(),
         [SectionStart::NextPage, SectionStart::NextPage, SectionStart::Continuous, SectionStart::OddPage]
@@ -1804,12 +1804,12 @@ fn assert_section_breaks_and_layout(s: &[&craft_wordmodel::SectionProps]) {
     assert!(!s[0].title_page && s[1].title_page && !s[3].title_page);
 }
 
-fn assert_section_headers_and_footers(d: &craft_wordmodel::Document, s: &[&craft_wordmodel::SectionProps]) {
+fn assert_section_headers_and_footers(d: &bharat_wordmodel::Document, s: &[&bharat_wordmodel::SectionProps]) {
     let text = |id: Option<u32>| {
         let p = id.and_then(|id| d.parts.get(&id)).unwrap();
         p.blocks
             .iter()
-            .filter_map(|b| if let craft_wordmodel::Block::Para(p) = &**b { Some(p.text.clone()) } else { None })
+            .filter_map(|b| if let bharat_wordmodel::Block::Para(p) = &**b { Some(p.text.clone()) } else { None })
             .collect::<Vec<_>>()
             .join("|")
     };
@@ -1824,10 +1824,10 @@ fn assert_section_headers_and_footers(d: &craft_wordmodel::Document, s: &[&craft
     }
 }
 
-fn assert_section_body_boundaries(d: &craft_wordmodel::Document, secs: &[(usize, &craft_wordmodel::SectionProps)]) {
+fn assert_section_body_boundaries(d: &bharat_wordmodel::Document, secs: &[(usize, &bharat_wordmodel::SectionProps)]) {
     // Each section ends on its own paragraph, after the text it holds.
     let body_text = |i: usize| match d.body.get(i).map(|b| &**b) {
-        Some(craft_wordmodel::Block::Para(p)) => p.text.clone(),
+        Some(bharat_wordmodel::Block::Para(p)) => p.text.clone(),
         _ => "<table>".into(),
     };
     assert_eq!(body_text(secs[0].0 - 1), "First");
@@ -1847,9 +1847,9 @@ fn assert_section_page_defaults() {
 
 #[test]
 fn export_writes_every_section() {
-    use craft_wordmodel::section::{NumFormat, SectionStart};
-    use craft_wordmodel::{Block, SectionProps};
-    let mut d = craft_wordmodel::Document::from_text("one\ntwo\nthree");
+    use bharat_wordmodel::section::{NumFormat, SectionStart};
+    use bharat_wordmodel::{Block, SectionProps};
+    let mut d = bharat_wordmodel::Document::from_text("one\ntwo\nthree");
     let s1 = SectionProps { margin_left: 90.0, header: 30.0, footer: 40.0, ..Default::default() };
     let mut s2 = SectionProps { start: SectionStart::Continuous, page_w: 792.0, page_h: 612.0, landscape: true, ..Default::default() };
     s2.columns.count = 2;
@@ -1894,14 +1894,14 @@ fn export_writes_every_section() {
     // Each section keeps its text.
     assert_eq!(secs.iter().map(|(i, _)| *i).collect::<Vec<_>>(), [0, 1, 2]);
     // One section: no section break.
-    let one = export(&craft_wordmodel::Document::from_text("a\nb"));
+    let one = export(&bharat_wordmodel::Document::from_text("a\nb"));
     assert!(!one.contains("\\sect\n") && !one.contains("\\sect\\"), "{one}");
 }
 
 #[test]
 fn export_keeps_a_single_sections_formatting() {
-    use craft_wordmodel::SectionProps;
-    let mut d = craft_wordmodel::Document::from_text("a\nb");
+    use bharat_wordmodel::SectionProps;
+    let mut d = bharat_wordmodel::Document::from_text("a\nb");
     d.last_section = SectionProps { title_page: true, ..Default::default() };
     d.last_section.columns.count = 2;
     d.last_section.columns.space = 20.0;
@@ -1913,8 +1913,8 @@ fn export_keeps_a_single_sections_formatting() {
 
 #[test]
 fn export_keeps_a_section_that_ends_the_body() {
-    use craft_wordmodel::{Block, SectionProps};
-    let mut d = craft_wordmodel::Document::from_text("a\nb");
+    use bharat_wordmodel::{Block, SectionProps};
+    let mut d = bharat_wordmodel::Document::from_text("a\nb");
     let s1 = SectionProps { landscape: true, page_w: 792.0, page_h: 612.0, ..Default::default() };
     if let Some(Block::Para(p)) = d.body.get_mut(1).map(std::sync::Arc::make_mut) {
         p.section = Some(Box::new(s1));
@@ -1929,9 +1929,9 @@ fn export_keeps_a_section_that_ends_the_body() {
 
 #[test]
 fn export_writes_no_section_break_inside_a_table() {
-    use craft_wordmodel::{Block, SectionProps};
-    let mut d = craft_wordmodel::Document::from_text("a");
-    let mut t = craft_wordmodel::Table::new(1, 1, 400.0);
+    use bharat_wordmodel::{Block, SectionProps};
+    let mut d = bharat_wordmodel::Document::from_text("a");
+    let mut t = bharat_wordmodel::Table::new(1, 1, 400.0);
     if let Some(Block::Para(p)) =
         t.rows.first_mut().and_then(|r| r.cells.first_mut()).and_then(|c| c.blocks.first_mut()).map(std::sync::Arc::make_mut)
     {
@@ -2015,7 +2015,7 @@ fn backslashes_in_a_link_round_trip() {
     for target in [r"docs\", r"a\\b", r"..\up\f.doc"] {
         let mut d = import(br#"{\rtf1\ansi{\field{\*\fldinst{HYPERLINK "x"}}{\fldrslt{link}}}\par}"#).unwrap();
         for b in d.body.iter_mut() {
-            if let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
+            if let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
                 p.runs.iter_mut().filter(|r| r.props.link.is_some()).for_each(|r| r.props.link = Some(target.into()));
             }
         }
@@ -2050,7 +2050,7 @@ fn distributed_alignment_round_trips() {
 fn table_cell_vertical_alignment() {
     let rtf = br"{\rtf1\ansi\trowd\clvertalt\cellx1000\clvertalc\cellx2000\clvertalb\cellx3000\intbl top\cell center\cell bottom\cell\row}";
     let doc = import(rtf).unwrap();
-    let craft_wordmodel::Block::Table(t) = &*doc.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(t) = &*doc.body[0] else { panic!() };
     assert_eq!(t.rows[0].cells[0].props.valign, Some(VAlign::Top));
     assert_eq!(t.rows[0].cells[1].props.valign, Some(VAlign::Center));
     assert_eq!(t.rows[0].cells[2].props.valign, Some(VAlign::Bottom));
@@ -2070,7 +2070,7 @@ fn rtf_backslash_space_and_special_breaks() {
 
 #[test]
 fn compound_borders_round_trip() {
-    use craft_wordmodel::props::BorderStyle;
+    use bharat_wordmodel::props::BorderStyle;
     let lines = [
         ("brdrtnthsg", BorderStyle::ThinThickSmallGap),
         ("brdrthtnsg", BorderStyle::ThickThinSmallGap),
@@ -2084,7 +2084,7 @@ fn compound_borders_round_trip() {
     ];
     let body: String = lines.iter().map(|(w, _)| format!("\\pard\\brdrt\\{w}\\brdrw30 {w}\\par\n")).collect();
     let rtf = format!("{{\\rtf1\\ansi\n{body}}}");
-    let tops = |d: &craft_wordmodel::Document| -> Vec<Option<BorderStyle>> {
+    let tops = |d: &bharat_wordmodel::Document| -> Vec<Option<BorderStyle>> {
         d.body
             .iter()
             .filter_map(|b| b.as_para())
@@ -2146,7 +2146,7 @@ fn alignment_survives_an_export_import_round_trip() {
 /// a font name is (a `;` would end the group's text early), and a blank name leaves the group out.
 #[test]
 fn the_generator_names_the_writing_application() {
-    let doc = craft_wordmodel::Document::from_text("Hello");
+    let doc = bharat_wordmodel::Document::from_text("Hello");
     assert!(export(&doc).contains(r"{\*\generator WordCraft;}"));
     let pdf = export_with_generator(&doc, "PdfCraft 1.2");
     assert!(pdf.contains(r"{\*\generator PdfCraft 1.2;}") && !pdf.contains("WordCraft"), "{pdf}");

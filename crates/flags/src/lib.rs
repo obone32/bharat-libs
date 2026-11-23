@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Feature flags shared by the Craft apps and the ArtCraft Launcher.
+//! Feature flags shared by the Bharat apps and the ArtCraft Launcher.
 //!
 //! A flag lets a feature land on `main` and ship in every app while it stays off until a person
 //! (or a release) turns it on. Every flag is **off by default**. One per-user file holds the
@@ -12,7 +12,7 @@
 //! | macOS | `~/Library/Application Support/ArtCraft/flags.toml` |
 //! | Linux | `$XDG_CONFIG_HOME/ArtCraft/flags.toml` (default `~/.config/ArtCraft/flags.toml`) |
 //!
-//! beside the AI layer's `ArtCraft/ai`. `CRAFT_FLAGS_FILE` names another file (tests, portable
+//! beside the AI layer's `ArtCraft/ai`. `BHARAT_FLAGS_FILE` names another file (tests, portable
 //! installs). The file looks like this; keys and comments the reader does not know are kept when
 //! a flag is changed:
 //!
@@ -21,13 +21,13 @@
 //! AI-MCP = true
 //! ```
 //!
-//! `CRAFT_FLAGS` overrides the file for one run: `CRAFT_FLAGS=AI-MCP,-AI-MODELS` turns `AI-MCP`
+//! `BHARAT_FLAGS` overrides the file for one run: `BHARAT_FLAGS=AI-MCP,-AI-MODELS` turns `AI-MCP`
 //! on and `AI-MODELS` off (`AI-MCP=1` and `AI-MODELS=0` work too).
 //!
 //! ```
-//! let flags = craft_flags::Flags::from_parts(Some("[flags]\nAI-MCP = true\n"), None);
-//! assert!(flags.enabled(&craft_flags::AI_MCP));
-//! assert!(!flags.enabled(&craft_flags::AI_MODELS));
+//! let flags = bharat_flags::Flags::from_parts(Some("[flags]\nAI-MCP = true\n"), None);
+//! assert!(flags.enabled(&bharat_flags::AI_MCP));
+//! assert!(!flags.enabled(&bharat_flags::AI_MODELS));
 //! ```
 //!
 //! Loading never fails: a missing file means every flag is at its default, and a damaged one is
@@ -46,22 +46,22 @@ pub use store::{FlagError, load, set};
 /// same one by the same constant.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Flag {
-    /// The key in the file and in `CRAFT_FLAGS` (upper case, digits and `-`).
+    /// The key in the file and in `BHARAT_FLAGS` (upper case, digits and `-`).
     pub id: &'static str,
     /// A short name a person reads.
     pub title: &'static str,
     /// What turning it on does.
     pub description: &'static str,
-    /// Its value when neither the file nor `CRAFT_FLAGS` names it.
+    /// Its value when neither the file nor `BHARAT_FLAGS` names it.
     pub default: bool,
 }
 
-/// AI agents reach the Craft apps through MCP: the launcher's AI agents settings, the
-/// `craft-ai-mcp` gateway and the apps' agent connection settings.
+/// AI agents reach the Bharat apps through MCP: the launcher's AI agents settings, the
+/// `bharat-ai-mcp` gateway and the apps' agent connection settings.
 pub const AI_MCP: Flag = Flag {
     id: "AI-MCP",
     title: "AI agents (MCP)",
-    description: "Let AI agents such as Claude, Cursor or LM Studio use the Craft apps through MCP.",
+    description: "Let AI agents such as Claude, Cursor or LM Studio use the Bharat apps through MCP.",
     default: false,
 };
 
@@ -78,9 +78,9 @@ pub const AI_MODELS: Flag = Flag {
 pub const ALL: &[Flag] = &[AI_MCP, AI_MODELS];
 
 /// The environment variable that overrides the file for one run.
-pub const ENV: &str = "CRAFT_FLAGS";
+pub const ENV: &str = "BHARAT_FLAGS";
 /// The environment variable that names another flags file.
-pub const FILE_ENV: &str = "CRAFT_FLAGS_FILE";
+pub const FILE_ENV: &str = "BHARAT_FLAGS_FILE";
 /// The file's name in the `ArtCraft` folder.
 pub const FILE_NAME: &str = "flags.toml";
 /// Largest flags file read; anything bigger is not a flags file.
@@ -95,7 +95,7 @@ pub fn valid_id(id: &str) -> bool {
     !id.is_empty() && id.len() <= MAX_ID_LEN && id.bytes().all(|b| b.is_ascii_uppercase() || b.is_ascii_digit() || b == b'-')
 }
 
-/// The flags file: `CRAFT_FLAGS_FILE`, otherwise `ArtCraft/flags.toml` in the per-user local
+/// The flags file: `BHARAT_FLAGS_FILE`, otherwise `ArtCraft/flags.toml` in the per-user local
 /// configuration folder. `None` when there is no such folder (and always in the browser).
 pub fn default_path() -> Option<PathBuf> {
     #[cfg(target_arch = "wasm32")]
@@ -111,18 +111,18 @@ pub fn default_path() -> Option<PathBuf> {
     }
 }
 
-/// The flags as read: what the file says, what `CRAFT_FLAGS` says, and what could not be read.
+/// The flags as read: what the file says, what `BHARAT_FLAGS` says, and what could not be read.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Flags {
     file: BTreeMap<String, bool>,
     env: BTreeMap<String, bool>,
     /// What was left out and why (a damaged file, an entry that is not `true` or `false`, a word
-    /// in `CRAFT_FLAGS` that is not a flag). For logs; never fatal.
+    /// in `BHARAT_FLAGS` that is not a flag). For logs; never fatal.
     pub problems: Vec<String>,
 }
 
 impl Flags {
-    /// Flags from a file's text and a `CRAFT_FLAGS` value. Either may be absent.
+    /// Flags from a file's text and a `BHARAT_FLAGS` value. Either may be absent.
     pub fn from_parts(file: Option<&str>, env: Option<&str>) -> Self {
         let mut flags = Flags::default();
         if let Some(text) = file {
@@ -184,7 +184,7 @@ impl Flags {
         }
     }
 
-    /// Whether `flag` is on: `CRAFT_FLAGS` first, then the file, then the flag's default.
+    /// Whether `flag` is on: `BHARAT_FLAGS` first, then the file, then the flag's default.
     pub fn enabled(&self, flag: &Flag) -> bool {
         self.lookup(flag.id).unwrap_or(flag.default)
     }
@@ -197,7 +197,7 @@ impl Flags {
         }
     }
 
-    /// Whether `CRAFT_FLAGS` decides `id` for this run, so a switch in a settings page would have
+    /// Whether `BHARAT_FLAGS` decides `id` for this run, so a switch in a settings page would have
     /// no effect until the variable is gone.
     pub fn forced(&self, id: &str) -> Option<bool> {
         self.env.get(id).copied()

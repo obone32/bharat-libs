@@ -4,8 +4,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::section::NumFormat;
+use bharat_wordmodel::Document;
+use bharat_wordmodel::section::NumFormat;
 
 const NS_X: &str = r#"xmlns:xml="http://www.w3.org/XML/1998/namespace""#;
 
@@ -154,7 +154,7 @@ fn list_level_positions_are_read_and_written() {
         d.numbering.level(n.num, n.level).unwrap().clone()
     };
     let (a, b) = (level(0), level(1));
-    assert_eq!((a.indent, a.hanging, a.align), (36.0, 18.0, craft_wordmodel::Align::Right));
+    assert_eq!((a.indent, a.hanging, a.align), (36.0, 18.0, bharat_wordmodel::Align::Right));
     assert_eq!((b.indent, b.hanging), (14.4, 7.2));
     let back = import(&export(&d).unwrap()).unwrap();
     let again = |i: usize| {

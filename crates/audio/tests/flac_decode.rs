@@ -1,9 +1,9 @@
 //! The native FLAC decoder: round trips through this crate's encoder over bit depths, channel
 //! counts, block sizes and effort levels; hostile input; and ffmpeg as the reference (oracle;
-//! skipped when ffmpeg is absent, a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`) for files
+//! skipped when ffmpeg is absent, a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`) for files
 //! ffmpeg's encoder writes at every compression level.
 
-use craft_audio::flac::{DecodeError, Decoder, Encoder, EncoderConfig, STREAMINFO_OFFSET, StreamInfo, decode};
+use bharat_audio::flac::{DecodeError, Decoder, Encoder, EncoderConfig, STREAMINFO_OFFSET, StreamInfo, decode};
 use std::process::Command;
 
 fn signal(channels: usize, frames: usize, bits: u32, seed: u32) -> Vec<Vec<i32>> {
@@ -97,7 +97,7 @@ fn hostile_input_is_an_error_not_a_panic() {
         }
     }
     // A sample limit stops a stream that claims too much.
-    assert_eq!(craft_audio::flac::decode_with_limit(&file, 1000), Err(DecodeError::TooLarge));
+    assert_eq!(bharat_audio::flac::decode_with_limit(&file, 1000), Err(DecodeError::TooLarge));
     assert!(decode(b"nope").is_err());
     assert!(decode(b"fLaC").is_err());
 }
@@ -127,8 +127,8 @@ fn ffmpeg_run(ff: &std::path::Path, args: &[&str]) -> Vec<u8> {
 
 #[test]
 fn ffmpeg_files_decode_to_ffmpegs_samples() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("flac_decode");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("flac_decode");
     let tones = "aevalsrc=exprs=0.4*sin(2*PI*441*t)+0.2*sin(2*PI*3100*t)|0.3*sin(2*PI*660*t)*sin(2*PI*3*t):s=44100:d=1.3";
     let noise = "anoisesrc=d=1.3:c=white:r=44100:a=0.5:s=3";
     for (src, name) in [(tones, "tones"), (noise, "noise")] {
@@ -158,8 +158,8 @@ fn ffmpeg_files_decode_to_ffmpegs_samples() {
 
 #[test]
 fn ffmpeg_decodes_our_files_to_our_samples() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("flac_decode");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("flac_decode");
     for (channels, bits) in [(1usize, 16u8), (2, 16), (2, 24), (6, 16)] {
         let src = signal(channels, 20_000, u32::from(bits), 99);
         let file = dir.join(format!("ours_{channels}ch_{bits}.flac"));

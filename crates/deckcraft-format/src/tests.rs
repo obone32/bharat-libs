@@ -52,7 +52,7 @@ fn a_package_holds_mimetype_then_manifest_then_members_in_order() {
             .map(|(n, m)| (n.to_string(), m))
     );
     // The mimetype is the first, stored member, readable in place.
-    assert_eq!(craft_zip::stored_mimetype(&bytes), Some(MIMETYPE.as_bytes()));
+    assert_eq!(bharat_zip::stored_mimetype(&bytes), Some(MIMETYPE.as_bytes()));
     let (m, mut p) = Package::open_manifest::<Deck>(&bytes, MAX_MANIFEST).unwrap();
     assert_eq!((m.format.as_str(), m.version, m.generator.as_str(), m.presentation.width), (FORMAT, VERSION, "Test 1", 960.0));
     assert_eq!(p.read(&media_entry(8)).unwrap(), svg);
@@ -120,13 +120,13 @@ fn what_is_not_a_package_is_not_ours() {
         assert!(matches!(Package::open_manifest::<Deck>(bytes, MAX_MANIFEST), Err(FormatError::NotOurs(_))));
     }
     // A ZIP without the manifest, and one from another app.
-    let mut z = craft_zip::Writer::new();
-    z.add("mimetype", b"application/zip", craft_zip::Compression::Stored).unwrap();
+    let mut z = bharat_zip::Writer::new();
+    z.add("mimetype", b"application/zip", bharat_zip::Compression::Stored).unwrap();
     let no_manifest = z.finish().unwrap();
     let err = Package::open_manifest::<Deck>(&no_manifest, MAX_MANIFEST).err().unwrap();
     assert_eq!(err.to_string(), "not a DeckCraft file: no presentation.json");
-    let mut z = craft_zip::Writer::new();
-    z.add(MANIFEST_ENTRY, br#"{"format":"other","version":1,"generator":"x","presentation":{}}"#, craft_zip::Compression::Deflated).unwrap();
+    let mut z = bharat_zip::Writer::new();
+    z.add(MANIFEST_ENTRY, br#"{"format":"other","version":1,"generator":"x","presentation":{}}"#, bharat_zip::Compression::Deflated).unwrap();
     let other = z.finish().unwrap();
     let err = Package::open_manifest::<Deck>(&other, MAX_MANIFEST).err().unwrap();
     assert_eq!(err.to_string(), "not a DeckCraft file: other");
@@ -138,8 +138,8 @@ fn what_is_not_a_package_is_not_ours() {
 
 #[test]
 fn legacy_slidecraft_packages_are_recognised() {
-    let mut z = craft_zip::Writer::new();
-    z.add(MIMETYPE_ENTRY, LEGACY_MIMETYPE.as_bytes(), craft_zip::Compression::Stored).unwrap();
+    let mut z = bharat_zip::Writer::new();
+    z.add(MIMETYPE_ENTRY, LEGACY_MIMETYPE.as_bytes(), bharat_zip::Compression::Stored).unwrap();
     assert!(sniff(&z.finish().unwrap()));
     assert!(!sniff(b"PK\x03\x04 application/zip"));
     assert!(!sniff(MIMETYPE.as_bytes()));

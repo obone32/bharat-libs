@@ -1,7 +1,7 @@
 //! Number widgets that write numbers the way the user's region does (its digits, decimal mark and
 //! grouping) and read back any digits with the region's separators.
 //!
-//! [`LocaleNumbers`] wraps a [`craft_i18n::Format`], which writes and reads the numbers.
+//! [`LocaleNumbers`] wraps a [`bharat_i18n::Format`], which writes and reads the numbers.
 //! [`LocalizedDragValue`] puts them on an [`egui::DragValue`]; [`NumberField`] is a text field for
 //! apps that edit numbers in a [`egui::TextEdit`], with the apps' panel-field behaviour: a
 //! [`Recessed`] box, scrubbing by the label, stepping to multiples of the step, a blank field for
@@ -14,7 +14,7 @@ use std::ops::RangeInclusive;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use craft_i18n::{Format, I18n, Lang, NumberError};
+use bharat_i18n::{Format, I18n, Lang, NumberError};
 use egui::emath::{Numeric, round_to_decimals};
 use egui::response::Flags;
 use egui::text::{CCursor, CCursorRange};
@@ -123,7 +123,7 @@ pub fn message(error: NumberError) -> &'static str {
     }
 }
 
-/// A unit around a number, from a craft-i18n unit template with the number as `{n}`: `{n} px`,
+/// A unit around a number, from a bharat-i18n unit template with the number as `{n}`: `{n} px`,
 /// `{n}%`, Turkish `%{n}`. Typed text may include it; it is removed before parsing.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Unit {
@@ -182,7 +182,7 @@ struct Rejected {
 }
 
 fn rejected_id(id: Id) -> Id {
-    id.with("craft_ui::localized::rejected")
+    id.with("bharat_ui::localized::rejected")
 }
 
 /// Outlines `response` in the error color and, with `tell`, shows `text` beside it.
@@ -206,7 +206,7 @@ fn mark_invalid(ui: &Ui, response: &Response, radius: CornerRadius, text: String
 ///
 /// ```
 /// # egui::__run_test_ui(|ui| {
-/// use craft_ui::localized::{LocaleNumbers, LocalizedDragValue, Unit};
+/// use bharat_ui::localized::{LocaleNumbers, LocalizedDragValue, Unit};
 /// let numbers = LocaleNumbers::from_tag("de");
 /// let mut width = 1.5;
 /// ui.add(LocalizedDragValue::new(egui::DragValue::new(&mut width).speed(0.1), &numbers).unit(Unit::new("{n} px")));
@@ -377,7 +377,7 @@ impl Recessed {
 }
 
 fn first_field_id() -> Id {
-    Id::unique("craft_ui::localized::focus_first_field")
+    Id::unique("bharat_ui::localized::focus_first_field")
 }
 
 /// While `on`, the next enabled [`NumberField`] drawn takes the keyboard focus with its text
@@ -415,7 +415,7 @@ struct Scrub {
 ///
 /// ```
 /// # egui::__run_test_ui(|ui| {
-/// use craft_ui::localized::{LocaleNumbers, NumberField, Recessed, Unit};
+/// use bharat_ui::localized::{LocaleNumbers, NumberField, Recessed, Unit};
 /// let numbers = LocaleNumbers::from_tag("fr");
 /// let mut gap = 12.0;
 /// let label = ui.label("Gap");
@@ -707,7 +707,7 @@ fn take_steps(ui: &Ui, id: Id, wheel: bool) -> Vec<(Modifiers, f64)> {
     // The wheel turns in notches: a line each, or `line` points of a trackpad. What is left of a
     // notch carries over to the next turn.
     let line = ui.ctx().options(|o| o.input_options.line_scroll_speed).max(1.0);
-    let notch_id = id.with("craft_ui::localized::notches");
+    let notch_id = id.with("bharat_ui::localized::notches");
     let mut notches: f32 = if wheel { ui.data(|d| d.get_temp(notch_id)).unwrap_or(0.0) } else { 0.0 };
     let mut steps = Vec::new();
     ui.input_mut(|i| {
@@ -747,7 +747,7 @@ fn take_steps(ui: &Ui, id: Id, wheel: bool) -> Vec<(Modifiers, f64)> {
 /// `value` to with `step` (value, modifiers, steps).
 fn scrub(ui: &Ui, id: Id, label: Rect, value: f64, step: impl Fn(f64, Modifiers, f64) -> f64) -> (Response, Option<f64>) {
     // On top of the label, which may sense clicks itself (selectable text).
-    let drag = ui.interact(label, id.with("craft_ui::localized::scrub"), Sense::click_and_drag());
+    let drag = ui.interact(label, id.with("bharat_ui::localized::scrub"), Sense::click_and_drag());
     if drag.hovered() || drag.dragged() {
         ui.ctx().set_cursor_icon(CursorIcon::ResizeHorizontal);
     }

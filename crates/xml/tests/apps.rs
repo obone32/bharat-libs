@@ -1,7 +1,7 @@
-//! The tests the Craft apps had for their own XML helpers, against this crate: each app's
+//! The tests the Bharat apps had for their own XML helpers, against this crate: each app's
 //! expectations, read the way that app reads (see the migration table in the README).
 
-use craft_xml::{Canonical, Doctype, El, Error, Event, Limits, Local, Node, NsName, Options, Scope, Writer, esc, esc_attr, parse, to_utf8, unescape};
+use bharat_xml::{Canonical, Doctype, El, Error, Event, Limits, Local, Node, NsName, Options, Scope, Writer, esc, esc_attr, parse, to_utf8, unescape};
 
 // ------------------------------------------------------------------ WordCraft: canonical prefixes
 
@@ -213,7 +213,7 @@ fn word_writer() {
 // ------------------------------------------------------------------ GridCraft: local names, streaming
 
 fn grid(bytes: &[u8]) -> Result<El, Error> {
-    Options { unknown_entity: craft_xml::UnknownEntity::Literal, ..Options::local() }.parse(bytes)
+    Options { unknown_entity: bharat_xml::UnknownEntity::Literal, ..Options::local() }.parse(bytes)
 }
 
 #[test]
@@ -352,12 +352,12 @@ fn grid_escaping() {
                 '<' => reference.push_str("&lt;"),
                 '>' => reference.push_str("&gt;"),
                 '\r' => reference.push_str("&#13;"),
-                c if craft_xml::is_xml_char(c) => reference.push(c),
+                c if bharat_xml::is_xml_char(c) => reference.push(c),
                 _ => {}
             }
         }
         let mut s = String::from("x");
-        craft_xml::push_esc(&mut s, t);
+        bharat_xml::push_esc(&mut s, t);
         assert_eq!(s, format!("x{reference}"), "{t:?}");
         assert_eq!(esc(t), reference);
     }
@@ -386,7 +386,7 @@ fn deck_parse_basic_and_entities() {
 
 #[test]
 fn deck_lossy_integers_and_booleans() {
-    use craft_xml::value::{to_bool, to_i32_lossy, to_i64_lossy, to_u32_lossy};
+    use bharat_xml::value::{to_bool, to_i32_lossy, to_i64_lossy, to_u32_lossy};
     let e = parse(b"<a:off x='12.7' y='-3' big='1e40' on='on' t='t'/>").unwrap();
     assert_eq!(e.attr_local("x").and_then(to_i64_lossy), Some(12));
     assert_eq!(e.attr_local("y").and_then(to_u32_lossy), Some(0));
@@ -499,7 +499,7 @@ fn design_unbalanced_documents_are_errors() {
 // ------------------------------------------------------------------ AniCraft: strict, indentation dropped, mixed content
 
 fn ani() -> Options<'static> {
-    Options { strict: true, drop_blank_text: true, unknown_entity: craft_xml::UnknownEntity::Literal, ..Options::default() }
+    Options { strict: true, drop_blank_text: true, unknown_entity: bharat_xml::UnknownEntity::Literal, ..Options::default() }
 }
 
 #[test]
@@ -567,7 +567,7 @@ fn light_references_are_resolved_once_and_strictly() {
     assert_eq!(unescape("C&#0000000097;non &#x0000041; &#000000065; &#X42;"), "Canon A A B");
     assert_eq!(unescape("&abc&#xyz;&;"), "&abc&#xyz;&;");
     assert_eq!(unescape("a &unknown; b &amp c"), "a &unknown; b &amp c");
-    use craft_xml::entity;
+    use bharat_xml::entity;
     assert_eq!((entity("#+65"), entity("#x+41"), entity("#"), entity("#x"), entity("#-1")), (None, None, None, None, None));
     assert_eq!((entity("#65"), entity("#x41"), entity("apos"), entity("nbsp")), (Some('A'), Some('A'), Some('\''), None));
     assert_eq!((entity("#0"), entity("#1"), entity("#xD800"), entity("#x110000"), entity("#99999999999999999999")), (None, None, None, None, None));

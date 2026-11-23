@@ -1,5 +1,5 @@
 use super::*;
-use craft_metadata::XmpValue;
+use bharat_metadata::XmpValue;
 
 /// A hand-written settings file laid out as Photoshop 26's Camera Raw Filter saves one (the
 /// field set and order follow Camera Raw 18; the values are synthetic), plus element-form
@@ -78,7 +78,7 @@ fn structures_other_prefixes_and_other_namespaces() {
     assert_eq!(masks.items().first().and_then(|m| m.field("crs:What")).and_then(XmpValue::text), Some("Correction"));
     assert_eq!(s.get("Empty"), Some(&Value::Text(String::new())));
     assert_eq!(s.get("format"), None);
-    // A repeated name keeps its first value, as `craft_metadata` reads every packet: an empty
+    // A repeated name keeps its first value, as `bharat_metadata` reads every packet: an empty
     // repeat must not hide what an earlier description said.
     let second = format!("/><rdf:Description xmlns:crs=\"{CRS_NS}\" crs:Texture=\"2\"/></rdf:RDF>");
     let twice = with("crs:Texture=\"1\"").replace("/></rdf:RDF>", &second);
