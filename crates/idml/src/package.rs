@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use craft_xml::El;
+use bharat_xml::El;
 
 use crate::value::percent_decode;
 use crate::{Error, MIMETYPE, Result, part};
@@ -17,7 +17,7 @@ pub struct Limits {
     /// Most bytes all the parts read from one package may expand to together. Default 2 GiB.
     pub max_total_bytes: u64,
     /// The limits of one part's XML ([`crate::xml_limits`]).
-    pub xml: craft_xml::Limits,
+    pub xml: bharat_xml::Limits,
 }
 
 impl Limits {
@@ -33,7 +33,7 @@ impl Default for Limits {
 /// An IDML package whose parts are decompressed only when asked for, within byte budgets that
 /// don't trust the sizes the archive claims.
 pub struct Package<'a> {
-    zip: craft_zip::Archive<'a>,
+    zip: bharat_zip::Archive<'a>,
     /// Normalised part name → entry name, first entry wins (zip order, so the choice is stable).
     lenient: HashMap<String, String>,
     limits: Limits,
@@ -64,9 +64,9 @@ impl<'a> Package<'a> {
     /// is indexed.
     pub fn open_with(bytes: &'a [u8], limits: Limits) -> Result<Self> {
         let zip =
-            craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries as u64, max_total_bytes: limits.max_total_bytes })
+            bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries as u64, max_total_bytes: limits.max_total_bytes })
                 .map_err(|e| match e {
-                    craft_zip::Error::TooManyEntries { declared, limit } => Error::TooManyEntries {
+                    bharat_zip::Error::TooManyEntries { declared, limit } => Error::TooManyEntries {
                         found: usize::try_from(declared).unwrap_or(usize::MAX),
                         limit: usize::try_from(limit).unwrap_or(usize::MAX),
                     },
@@ -90,8 +90,8 @@ impl<'a> Package<'a> {
         let limit = self.limits.max_part_bytes.min(self.zip.budget().remaining());
         let stored = stored.to_string();
         self.zip.read(&stored, self.limits.max_part_bytes).map_err(|e| match e {
-            craft_zip::Error::EntryTooLarge { .. } | craft_zip::Error::BudgetSpent { .. } => Error::TooLarge { part: stored.clone(), limit },
-            craft_zip::Error::Entry { msg, .. } => Error::Part { part: stored.clone(), msg },
+            bharat_zip::Error::EntryTooLarge { .. } | bharat_zip::Error::BudgetSpent { .. } => Error::TooLarge { part: stored.clone(), limit },
+            bharat_zip::Error::Entry { msg, .. } => Error::Part { part: stored.clone(), msg },
             e => Error::NotIdml(e.to_string()),
         })
     }
@@ -134,7 +134,7 @@ impl<'a> Package<'a> {
                     continue;
                 };
                 top.extend(el.children.into_iter().filter_map(|n| match n {
-                    craft_xml::Node::El(e) => Some(e),
+                    bharat_xml::Node::El(e) => Some(e),
                     _ => None,
                 }));
             } else {
@@ -166,9 +166,9 @@ fn normalize_part_name(name: &str) -> String {
 /// Zips an IDML package: the stored `mimetype` first, then `parts` in order as (name, bytes).
 /// Equal parts give equal bytes.
 pub fn write_package<N: AsRef<str>, D: AsRef<[u8]>>(parts: &[(N, D)]) -> Result<Vec<u8>> {
-    use craft_zip::Compression;
-    let fail = |e: craft_zip::Error| Error::Write(e.to_string());
-    let mut w = craft_zip::Writer::new();
+    use bharat_zip::Compression;
+    let fail = |e: bharat_zip::Error| Error::Write(e.to_string());
+    let mut w = bharat_zip::Writer::new();
     w.add("mimetype", MIMETYPE.as_bytes(), Compression::Stored).map_err(fail)?;
     for (name, data) in parts {
         w.add(name.as_ref(), data.as_ref(), Compression::Deflated).map_err(fail)?;

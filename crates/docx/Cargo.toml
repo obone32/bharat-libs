@@ -1,6 +1,6 @@
 [package]
-name = "craft-docx"
-description = "DOCX (OOXML WordprocessingML) reader and writer on the craft-wordmodel document model, with Word XML (Flat OPC) and Word 2003 XML, password-protected packages and Restrict Editing hashes."
+name = "bharat-docx"
+description = "DOCX (OOXML WordprocessingML) reader and writer on the bharat-wordmodel document model, with Word XML (Flat OPC) and Word 2003 XML, password-protected packages and Restrict Editing hashes."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,25 +11,25 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-drawingml = { workspace = true }
-craft-math = { workspace = true }
-craft-offcrypto = { workspace = true }
-craft-opc = { workspace = true }
-craft-wordmodel = { workspace = true }
-craft-xml = { workspace = true }
+bharat-drawingml = { workspace = true }
+bharat-math = { workspace = true }
+bharat-offcrypto = { workspace = true }
+bharat-opc = { workspace = true }
+bharat-wordmodel = { workspace = true }
+bharat-xml = { workspace = true }
 base64 = "0.23"
 chrono = { version = "0.4.45", default-features = false, features = ["std"] }
 log = "0.4"
-# The streaming readers of the Flat OPC file and of kept parts (not yet on craft-xml's pull reader).
+# The streaming readers of the Flat OPC file and of kept parts (not yet on bharat-xml's pull reader).
 quick-xml = { version = "0.41", default-features = false }
 thiserror = { workspace = true }
 unicode-bidi = "0.3"
 zeroize = "1"
 
 [dev-dependencies]
-craft-cfb = { workspace = true }
-craft-opc = { workspace = true, features = ["test-support"] }
-craft-wordmodel = { workspace = true, features = ["test-support"] }
+bharat-cfb = { workspace = true }
+bharat-opc = { workspace = true, features = ["test-support"] }
+bharat-wordmodel = { workspace = true, features = ["test-support"] }
 image = { version = "0.25", default-features = false, features = ["png"] }
 proptest = "1"
 serde_json = "1"

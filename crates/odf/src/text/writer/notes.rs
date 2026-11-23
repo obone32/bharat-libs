@@ -81,8 +81,8 @@ impl Writer {
         *nth = nth.saturating_add(1);
         let (fmt, start) = match self.note_numbers {
             Some(n) => n[usize::from(endnote)],
-            None if endnote => (craft_wordmodel::section::NumFormat::LowerRoman, 1),
-            None => (craft_wordmodel::section::NumFormat::Decimal, 1),
+            None if endnote => (bharat_wordmodel::section::NumFormat::LowerRoman, 1),
+            None => (bharat_wordmodel::section::NumFormat::Decimal, 1),
         };
         let number = fmt.format(start.max(1).saturating_add(*nth - 1));
         let (label, citation) = if custom.is_empty() { (String::new(), number) } else { (format!(" text:label=\"{}\"", x(custom)), x(custom)) };

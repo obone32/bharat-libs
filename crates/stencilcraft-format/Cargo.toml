@@ -1,5 +1,5 @@
 [package]
-name = "craft-stencilcraft-format"
+name = "bharat-stencilcraft-format"
 description = "Reader and writer for the versioned StencilCraft JSON document format"
 version.workspace = true
 edition.workspace = true

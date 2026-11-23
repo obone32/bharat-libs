@@ -1,9 +1,9 @@
 //! Pictures and drawings: OfficeArt records ([MS-ODRAW]) hand-built for these tests from the
 //! specification, with tiny pictures generated in code. No file produced by Word is used.
 
-use craft_wordmodel::fill::Fill;
-use craft_wordmodel::para::{Anchor, InlineObject, ShapeKind, Wrap};
-use craft_wordmodel::props::Rgb;
+use bharat_wordmodel::fill::Fill;
+use bharat_wordmodel::para::{Anchor, InlineObject, ShapeKind, Wrap};
+use bharat_wordmodel::props::Rgb;
 use proptest::prelude::*;
 
 use super::{StructSpec, grpprl, plc, read, struct_doc, structured_spec};
@@ -179,7 +179,7 @@ fn shapes_keep_kind_colours_wrap_and_text_box_text() {
     let Some(InlineObject::Shape { kind, fill, float, story, .. }) = p0.objects.get(1) else { panic!("{:?}", p0.objects) };
     assert_eq!((*kind, fill.clone(), float.wrap), (ShapeKind::TextBox, None, Wrap::TopAndBottom));
     let part = story.and_then(|id| doc.parts.get(&id)).expect("text box story part");
-    assert_eq!(part.kind, craft_wordmodel::PartKind::TextBox);
+    assert_eq!(part.kind, bharat_wordmodel::PartKind::TextBox);
     assert_eq!(part.blocks.first().and_then(|b| b.as_para()).map(|p| p.text.as_str()), Some("Inside"));
 }
 
@@ -431,7 +431,7 @@ fn a_floating_copy_is_charged_its_alt_text() {
     };
     let bare = crate::object_cost(&image(String::new()));
     assert_eq!(crate::object_cost(&image("€".repeat(4096))), bare + 3 * 4096);
-    let member = |obj| craft_wordmodel::para::GroupChild { x: 0.0, y: 0.0, obj };
+    let member = |obj| bharat_wordmodel::para::GroupChild { x: 0.0, y: 0.0, obj };
     let group = InlineObject::Group {
         w: 1.0,
         h: 1.0,

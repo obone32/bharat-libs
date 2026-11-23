@@ -2,12 +2,12 @@
 //! release:
 //!
 //! ```sh
-//! cargo test --release -p craft-image-codecs --test it -- tiff_bench:: --ignored --nocapture
+//! cargo test --release -p bharat-image-codecs --test it -- tiff_bench:: --ignored --nocapture
 //! ```
 
 use crate::common;
 use common::tiffgen::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 use std::time::Instant;
 
 const W: u32 = 6336;

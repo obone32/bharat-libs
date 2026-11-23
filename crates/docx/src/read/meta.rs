@@ -343,7 +343,7 @@ pub(crate) const PROTECTION_HASH_ATTRS: [&str; 16] = [
 /// Restrict Editing (`w:documentProtection`, §17.15.1.29): the editing restriction, whether
 /// formatting is limited to unlocked styles, and the password hash. Only enforced protection is
 /// kept; a hostile attribute value can't be longer than a hash needs.
-fn read_protection(k: &El, s: &mut craft_wordmodel::Settings) {
+fn read_protection(k: &El, s: &mut bharat_wordmodel::Settings) {
     let on = |v: &str| !matches!(v, "0" | "false" | "off");
     // Word enforces protection when `w:enforcement` is missing ([MS-OI29500] §2.1.402 (c)), the
     // opposite of the standard's literal reading, so only an explicit off value unlocks the

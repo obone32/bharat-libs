@@ -1,5 +1,5 @@
-use craft_psd::ImageResource;
-use craft_psd::resources::{ids, unique_exif_xmp};
+use bharat_psd::ImageResource;
+use bharat_psd::resources::{ids, unique_exif_xmp};
 
 #[test]
 fn metadata_resources_reject_duplicates_and_invalid_xmp() {

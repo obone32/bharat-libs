@@ -31,7 +31,7 @@ fn in_range(code: &[u8], lo: &[u8], hi: &[u8]) -> bool {
 
 impl Interp {
     fn cmap_of(&self, d: &PDict) -> Option<usize> {
-        match d.get_name(b"CraftPsCMap") {
+        match d.get_name(b"BharatPsCMap") {
             Some(Obj::Int(i)) => usize::try_from(i).ok(),
             _ => None,
         }
@@ -48,7 +48,7 @@ impl Interp {
         }
         self.cmaps.push(CMap::default());
         let i = self.cmaps.len() - 1;
-        d.put_name(b"CraftPsCMap", Obj::Int(i as i64));
+        d.put_name(b"BharatPsCMap", Obj::Int(i as i64));
         Ok(i)
     }
 
@@ -187,7 +187,7 @@ fn identity(ip: &mut Interp, n: &[u8]) -> PDict {
     d.put_name(b"CMapName", Obj::lit(n));
     let vertical = n.ends_with(b"-V");
     ip.cmaps.push(CMap { codespace: vec![(vec![0, 0], vec![0xff, 0xff])], identity: true, vertical, ..Default::default() });
-    d.put_name(b"CraftPsCMap", Obj::Int(ip.cmaps.len() as i64 - 1));
+    d.put_name(b"BharatPsCMap", Obj::Int(ip.cmaps.len() as i64 - 1));
     d.put_name(b"WMode", Obj::Int(i64::from(n.ends_with(b"-V"))));
     d
 }
@@ -214,7 +214,7 @@ fn find_cmap(ip: &mut Interp, o: &Obj) -> R<usize> {
         None => {
             let i = ip.cmaps.len();
             ip.cmaps.push(CMap { identity: true, codespace: vec![(vec![0, 0], vec![0xff, 0xff])], ..Default::default() });
-            d.put_name(b"CraftPsCMap", Obj::Int(i as i64));
+            d.put_name(b"BharatPsCMap", Obj::Int(i as i64));
             Ok(i)
         }
     }
@@ -292,7 +292,7 @@ pub fn startdata(ip: &mut Interp) -> R {
     for (k, f) in set.fonts.iter().enumerate() {
         let d = PDict::new(16);
         let reference = Obj::Array(PArr::new(vec![Obj::Int(si as i64), Obj::Int(k as i64)]), false);
-        d.put_name(b"CraftPsCff", reference);
+        d.put_name(b"BharatPsCff", reference);
         d.put_name(b"FontMatrix", nums(&f.matrix));
         d.put_name(b"FontBBox", nums(&f.bbox));
         d.put_name(b"PaintType", Obj::Int(0));
@@ -333,7 +333,7 @@ pub fn startdata(ip: &mut Interp) -> R {
 
 /// The CFF font set and font index behind a font dictionary.
 pub fn cff_of(ip: &Interp, d: &PDict) -> Option<(Rc<crate::read::cff::FontSet>, usize)> {
-    let Some(Obj::Array(a, _)) = d.get_name(b"CraftPsCff") else { return None };
+    let Some(Obj::Array(a, _)) = d.get_name(b"BharatPsCff") else { return None };
     let si = a.get(0)?.num()? as usize;
     let k = a.get(1)?.num()? as usize;
     Some((ip.cff.get(si)?.clone(), k))
@@ -370,7 +370,7 @@ fn compose(ip: &mut Interp, n: &Obj, cmap: &Obj, descendants: Vec<Obj>) -> R<PDi
     d.put_name(b"Encoding", Obj::Array(PArr::new(vec![Obj::Int(0)]), false));
     d.put_name(b"FDepVector", Obj::Array(PArr::new(desc), false));
     let cm = PDict::new(2);
-    cm.put_name(b"CraftPsCMap", Obj::Int(i as i64));
+    cm.put_name(b"BharatPsCMap", Obj::Int(i as i64));
     d.put_name(b"CMap", Obj::Dict(cm));
     let vertical = ip.cmaps.get(i).is_some_and(|m| m.vertical);
     d.put_name(b"WMode", Obj::Int(i64::from(vertical)));

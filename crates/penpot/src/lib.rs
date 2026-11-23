@@ -148,7 +148,7 @@ pub struct FileEntry {
 /// An opened Penpot export.
 pub struct Archive<'b> {
     /// Counts the bytes read against [`MAX_DECOMPRESSED`].
-    zip: craft_zip::Archive<'b>,
+    zip: bharat_zip::Archive<'b>,
     /// Member names in archive order.
     names: Vec<String>,
     budget: Budget,
@@ -165,9 +165,9 @@ impl<'b> Archive<'b> {
         if bytes.len() > MAX_ARCHIVE {
             return Err(corrupt("archive exceeds 512 MiB"));
         }
-        let mut zip = craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: MAX_ENTRIES as u64, max_total_bytes: MAX_DECOMPRESSED })
+        let mut zip = bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: MAX_ENTRIES as u64, max_total_bytes: MAX_DECOMPRESSED })
             .map_err(|e| match e {
-                craft_zip::Error::TooManyEntries { .. } | craft_zip::Error::TooManyEndRecords(_) => corrupt("too many ZIP members"),
+                bharat_zip::Error::TooManyEntries { .. } | bharat_zip::Error::TooManyEndRecords(_) => corrupt("too many ZIP members"),
                 e => corrupt(format!("invalid ZIP: {e}")),
             })?;
         // The ZIP reader keeps one member per name: reject duplicates instead of guessing which
@@ -281,8 +281,8 @@ impl<'b> Archive<'b> {
         match self.zip.read(path, max) {
             Ok(Some(data)) => Ok(data),
             Ok(None) => Err(corrupt(format!("{path}: not in the archive"))),
-            Err(craft_zip::Error::EntryTooLarge { .. }) => Err(too_large()),
-            Err(craft_zip::Error::BudgetSpent { .. }) => {
+            Err(bharat_zip::Error::EntryTooLarge { .. }) => Err(too_large()),
+            Err(bharat_zip::Error::BudgetSpent { .. }) => {
                 self.budget.exceeded = true;
                 Err(corrupt("Penpot decompression budget exhausted"))
             }
@@ -368,7 +368,7 @@ impl<'b> Archive<'b> {
         for name in names {
             match self.zip.read_head(&name, 4) {
                 Ok(Some(header)) if matches!(header.as_slice(), b"OTTO" | b"true" | b"ttcf" | b"wOFF" | b"wOF2" | [0, 1, 0, 0]) => count += 1,
-                Err(craft_zip::Error::BudgetSpent { .. }) => self.budget.exceeded = true,
+                Err(bharat_zip::Error::BudgetSpent { .. }) => self.budget.exceeded = true,
                 _ => {}
             }
         }
@@ -385,13 +385,13 @@ pub fn manifest(generated_by: &str, files: &[(&str, &str, Value)]) -> Value {
 /// A Penpot archive of `members` (path, bytes), deflated, in the order given. Paths must be safe
 /// and distinct, as [`Archive::open`] requires of what it reads.
 pub fn write_archive<'a>(members: impl IntoIterator<Item = (&'a str, &'a [u8])>) -> Result<Vec<u8>, Error> {
-    let mut z = craft_zip::Writer::new();
+    let mut z = bharat_zip::Writer::new();
     let mut seen = BTreeSet::new();
     for (path, bytes) in members {
         if path.is_empty() || !safe_name(path) || !seen.insert(path) {
             return Err(Error::Io(format!("unsafe or repeated member path: {}", path.chars().take(200).collect::<String>())));
         }
-        z.add(path, bytes, craft_zip::Compression::Level(3)).map_err(|e| Error::Io(e.to_string()))?;
+        z.add(path, bytes, bharat_zip::Compression::Level(3)).map_err(|e| Error::Io(e.to_string()))?;
     }
     z.finish().map_err(|e| Error::Io(e.to_string()))
 }

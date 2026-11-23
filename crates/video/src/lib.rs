@@ -1,5 +1,5 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
-//! Clean-room pure-Rust video codecs for the Craft apps, one feature per codec. Input and output
+//! Clean-room pure-Rust video codecs for the Bharat apps, one feature per codec. Input and output
 //! are byte slices and planar sample buffers (no filesystem access of its own); builds for
 //! `wasm32-unknown-unknown`.
 //!
@@ -12,7 +12,7 @@
 //! | `mpeg4` | [`mpeg4`] | MPEG-4 Part 2 video (ISO/IEC 14496-2, Xvid/DivX): Simple profile encoder (`mpeg4-encode`) |
 //! | `ffv1` | [`ffv1`] | FFV1 lossless video (RFC 9043): version 3, range coder, decoder and encoder |
 //! | `hap` | [`hap`] | Vidvox Hap, Hap Alpha, Hap Q, Hap Q Alpha, Hap Alpha-Only: decoder and encoder |
-//! | `mjpeg` | [`mjpeg`] | Motion JPEG: frame-level decoder and baseline encoder over `craft-jpeg` |
+//! | `mjpeg` | [`mjpeg`] | Motion JPEG: frame-level decoder and baseline encoder over `bharat-jpeg` |
 //! | `prores` | [`prores`] | Apple ProRes (SMPTE RDD 36): decoder and encoder |
 //! | `h264` | [`h264`] | ITU-T H.264 / AVC: decoder (`h264-decode`) and encoder (`h264-encode`) |
 //! | `hevc` | [`hevc`] | ITU-T H.265 / HEVC: decoder (`hevc-decode`) and encoder (`hevc-encode`) |
@@ -27,8 +27,8 @@
 //! Each decoder returns its own picture type. [`frame::VideoFrame`] is the codec-agnostic form
 //! they all convert into (`VideoFrame::try_from`).
 //!
-//! Containers and bit-level I/O are in `craft-media`; the codecs here share its `bitstream`
-//! module and describe their streams with `craft_media::CodecParams`.
+//! Containers and bit-level I/O are in `bharat-media`; the codecs here share its `bitstream`
+//! module and describe their streams with `bharat_media::CodecParams`.
 
 pub mod budget;
 pub mod frame;

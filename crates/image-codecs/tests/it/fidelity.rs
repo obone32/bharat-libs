@@ -3,7 +3,7 @@
 use crate::common;
 use FidelityWarning as W;
 use common::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 fn warns(img: &Image, f: Format) -> Vec<FidelityWarning> {
     fidelity_warnings(img, f)

@@ -4,7 +4,7 @@
 //! [`cmyk_blending`] blends transparency in CMYK and writes no output intent, like a plain
 //! print PDF; [`settings`] also writes the profile as the `GTS_PDFX` output intent, through
 //! which DeviceCMYK content and the CMYK blending groups are interpreted, as PDF/X needs. This module takes the profile bytes and has no
-//! color-management dependency; craft-cms's `builtin::COATED_FOGRA39_ICC` is a suitable
+//! color-management dependency; bharat-cms's `builtin::COATED_FOGRA39_ICC` is a suitable
 //! default profile, described by [`PrintColor::fogra39`].
 //!
 //! The settings carry no PDF/X version and are not checked against PDF/X: callers that claim
@@ -31,7 +31,7 @@ pub struct PrintColor<'a> {
 
 impl<'a> PrintColor<'a> {
     /// A profile for the registered FOGRA39 condition (ISO 12647-2:2004 coated paper), such
-    /// as craft-cms's `builtin::COATED_FOGRA39_ICC`.
+    /// as bharat-cms's `builtin::COATED_FOGRA39_ICC`.
     pub fn fogra39(profile: &'a [u8]) -> Self {
         Self {
             profile,

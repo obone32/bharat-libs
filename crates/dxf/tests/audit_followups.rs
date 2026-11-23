@@ -2,7 +2,7 @@
 //! `format_real`, and the escape and integer writers that were rewritten without a change of
 //! behaviour.
 
-use craft_dxf::{Tag, Value, decode_code_page, format_real, parse, write_ascii, write_binary};
+use bharat_dxf::{Tag, Value, decode_code_page, format_real, parse, write_ascii, write_binary};
 
 #[test]
 fn group_code_255_is_an_ordinary_code_in_binary_dxf() {

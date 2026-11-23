@@ -1,4 +1,4 @@
-//! Archive builders and damage generators for the tests, from Craft Anything's testkit.
+//! Archive builders and damage generators for the tests, from Bharat Anything's testkit.
 
 #![allow(clippy::indexing_slicing, clippy::cast_possible_truncation)]
 

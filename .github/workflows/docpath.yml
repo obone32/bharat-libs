@@ -37,5 +37,5 @@ jobs:
           toolchain: stable
           components: rustfmt, clippy
       - run: cargo fmt --check
-      - run: cargo clippy -p craft-docpath --all-targets --locked -- -D warnings
-      - run: cargo test -p craft-docpath --locked -- --nocapture
+      - run: cargo clippy -p bharat-docpath --all-targets --locked -- -D warnings
+      - run: cargo test -p bharat-docpath --locked -- --nocapture

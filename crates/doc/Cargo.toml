@@ -1,5 +1,5 @@
 [package]
-name = "craft-doc"
+name = "bharat-doc"
 description = "Read-only access to PhotoCraft, VectorCraft and EffectCraft documents: format detection, version, embedded previews and PDF, and the layer and page outline."
 version.workspace = true
 edition.workspace = true
@@ -16,9 +16,9 @@ default = []
 pcraft-pixels = ["dep:blake3", "dep:ruzstd"]
 
 [dependencies]
-craft-ecproj-format = { workspace = true }
-craft-pcraft-format = { workspace = true }
-craft-vectorcraft-format = { workspace = true }
+bharat-ecproj-format = { workspace = true }
+bharat-pcraft-format = { workspace = true }
+bharat-vectorcraft-format = { workspace = true }
 flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
 serde = { workspace = true }
 # `unbounded_depth`: PhotoCraft manifests nest deeper than serde_json's 128 levels; the crate

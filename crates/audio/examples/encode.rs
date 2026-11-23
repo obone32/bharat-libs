@@ -1,8 +1,8 @@
 //! Write a tone as WAV, FLAC and AAC in M4A, whole and streamed, and as AAC packets.
 //!
-//! `cargo run -p craft-audio --example encode --features lossless-encode,aac-encode -- out`
+//! `cargo run -p bharat-audio --example encode --features lossless-encode,aac-encode -- out`
 
-use craft_audio::{AudioBuffer, BitDepth, ChannelLayout, EncodeFormat, EncodeOptions, FileEncoder, encode};
+use bharat_audio::{AudioBuffer, BitDepth, ChannelLayout, EncodeFormat, EncodeOptions, FileEncoder, encode};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let dir = std::path::PathBuf::from(std::env::args().nth(1).unwrap_or_else(|| ".".into()));
@@ -33,7 +33,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     std::fs::write(dir.join("tone.m4a"), m4a)?;
 
     // AAC packets for a muxer of your own, with the configuration its sample entry needs.
-    let mut aac = craft_audio::aac::Encoder::new(craft_audio::aac::EncoderConfig::cbr(rate as u32, 2, 128_000))?;
+    let mut aac = bharat_audio::aac::Encoder::new(bharat_audio::aac::EncoderConfig::cbr(rate as u32, 2, 128_000))?;
     let mut units = aac.encode(&[&tone, &tone]);
     units.extend(aac.flush());
     println!("{} AAC access units, AudioSpecificConfig {:02x?}, priming {}", units.len(), aac.audio_specific_config(), aac.priming_samples());

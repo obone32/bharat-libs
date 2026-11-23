@@ -1,13 +1,13 @@
 //! Writes multi-gigabyte PSB files (and the 2 GB PSD) for large-file tests (photocraft#375, photocraft#216), straight
 //! from the Adobe PSD spec and independent of this crate's writer, so the fixtures don't inherit
-//! its limits. The generator is `craft_psd::fixtures` (feature `testgen`).
+//! its limits. The generator is `bharat_psd::fixtures` (feature `testgen`).
 //!
-//! `cargo run --release -p craft-psd --example big_psb -- <out dir> [case...]`
+//! `cargo run --release -p bharat-psd --example big_psb -- <out dir> [case...]`
 //!
 //! Every sample follows `fixtures::sample`, so a reader can check any pixel without the file. RLE
 //! cases keep each row constant (tiny files, full decoded size); raw cases vary along x too.
 
-use craft_psd::fixtures::{PSB_CASES, PSD_2GB};
+use bharat_psd::fixtures::{PSB_CASES, PSD_2GB};
 
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -21,7 +21,7 @@ fn main() -> std::io::Result<()> {
         None => {
             let mut n = 0u32;
             loop {
-                let dir = std::env::temp_dir().join(format!("craft-psd-big-psb-{}-{n}", std::process::id()));
+                let dir = std::env::temp_dir().join(format!("bharat-psd-big-psb-{}-{n}", std::process::id()));
                 #[cfg_attr(not(unix), allow(unused_mut))]
                 let mut builder = std::fs::DirBuilder::new();
                 #[cfg(unix)]

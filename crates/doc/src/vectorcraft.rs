@@ -12,15 +12,15 @@
 //! member gives `"blob": [offset, length]` (from the end of the marker) instead of `data`. In a
 //! compressed file, the marker and the data after it are inside the gzip stream too. Files
 //! written before the rename say `"format": "drawcraft"`. The envelope's members are those of
-//! [`craft_vectorcraft_format::File`], read as [`craft_vectorcraft_format::File::read`] reads
-//! them, and [`craft_vectorcraft_format::Image`].
+//! [`bharat_vectorcraft_format::File`], read as [`bharat_vectorcraft_format::File::read`] reads
+//! them, and [`bharat_vectorcraft_format::Image`].
 
 use std::borrow::Cow;
 use std::fmt;
 use std::io::Read;
 use std::marker::PhantomData;
 
-use craft_vectorcraft_format::{BLOB_MAGIC, Image, entry, is_compressed, marker_at};
+use bharat_vectorcraft_format::{BLOB_MAGIC, Image, entry, is_compressed, marker_at};
 use flate2::read::GzDecoder;
 use serde::Deserialize;
 use serde::de::{self, Deserializer, IgnoredAny, MapAccess, SeqAccess, Visitor};
@@ -34,7 +34,7 @@ use crate::{
 const CHUNK: u64 = 64 << 10;
 
 pub(crate) fn sniff(head: &[u8]) -> bool {
-    if craft_vectorcraft_format::sniff(head) {
+    if bharat_vectorcraft_format::sniff(head) {
         return true;
     }
     if !is_compressed(head) {
@@ -45,7 +45,7 @@ pub(crate) fn sniff(head: &[u8]) -> bool {
     let mut unpacked = Vec::new();
     let head = head.get(..64 * 1024).unwrap_or(head);
     let _ = gzip_decoder(head, 1, None).take(256).read_to_end(&mut unpacked);
-    !is_compressed(&unpacked) && craft_vectorcraft_format::sniff(&unpacked)
+    !is_compressed(&unpacked) && bharat_vectorcraft_format::sniff(&unpacked)
 }
 
 struct GzipInput<'a> {
@@ -86,7 +86,7 @@ pub(crate) fn sniff_checked(head: &[u8], control: Option<&crate::cancel::Control
 /// Where the JSON ends and the data after the marker starts, when `text` holds a NUL. JSON holds
 /// no raw NUL and the marker's second byte is one, so the JSON ends right before the first NUL.
 /// The marker must follow the JSON's closing `}`, `]` or `"`, as
-/// [`craft_vectorcraft_format::marker_at`] requires; any other NUL makes the file malformed.
+/// [`bharat_vectorcraft_format::marker_at`] requires; any other NUL makes the file malformed.
 fn marker(text: &[u8], nul: usize) -> Result<(usize, usize), Error> {
     // Start at the byte before the marker so the shared check inspects a bounded suffix,
     // rather than scanning the already searched JSON again.
@@ -421,7 +421,7 @@ impl<'de, T: Container> de::DeserializeSeed<'de> for Contained<T> {
 
 /// The format name, the version, the writer and, when `IMAGES` is true, the preview and the PDF,
 /// read without the rest of the file, so that a file of a newer version still reports them. The
-/// members are read as [`craft_vectorcraft_format::File::read`] reads them: a missing or repeated
+/// members are read as [`bharat_vectorcraft_format::File::read`] reads them: a missing or repeated
 /// `format` or `version` is refused, and a `generator`, `preview` or `pdf` of the wrong shape
 /// reads as `None` and a repeated one as its last value. When `IMAGES` is true, a missing or
 /// repeated `document` is refused too; its value is skipped. `PREVIEW` and `PDF` choose which
@@ -493,11 +493,11 @@ fn stamp<const IMAGES: bool, const PREVIEW: bool, const PDF: bool>(
     newer: bool,
 ) -> Result<Stamp<IMAGES, PREVIEW, PDF>, Error> {
     let s: Stamp<IMAGES, PREVIEW, PDF> = if newer { parse(json, budget)? } else { parse_versioned(json, budget, Kind::VectorCraft)? };
-    match craft_vectorcraft_format::check(&s.format, s.version) {
+    match bharat_vectorcraft_format::check(&s.format, s.version) {
         Ok(()) => Ok(s),
-        Err(craft_vectorcraft_format::Error::Format(format)) => Err(malformed(format!("format is `{format}`"))),
-        Err(craft_vectorcraft_format::Error::TooNew(_)) if newer => Ok(s),
-        Err(craft_vectorcraft_format::Error::TooNew(version)) => Err(too_new(Kind::VectorCraft, version)),
+        Err(bharat_vectorcraft_format::Error::Format(format)) => Err(malformed(format!("format is `{format}`"))),
+        Err(bharat_vectorcraft_format::Error::TooNew(_)) if newer => Ok(s),
+        Err(bharat_vectorcraft_format::Error::TooNew(version)) => Err(too_new(Kind::VectorCraft, version)),
         Err(e) => Err(malformed(e)),
     }
 }
@@ -801,7 +801,7 @@ mod tests {
         ];
         for shape in shapes {
             let json = format!(r#"{{"format":"vectorcraft","version":4,"generator":{shape},"preview":{shape},"pdf":{shape},"document":0}}"#);
-            let file = craft_vectorcraft_format::File::<IgnoredAny>::read(json.as_bytes()).unwrap();
+            let file = bharat_vectorcraft_format::File::<IgnoredAny>::read(json.as_bytes()).unwrap();
             let stamp: Stamp<true, true, true> = crate::parse(json.as_bytes(), &crate::Budget::new(&crate::Limits::default())).unwrap();
             assert_eq!((&stamp.generator, &stamp.preview, &stamp.pdf), (&file.generator, &file.preview, &file.pdf), "{shape}");
         }

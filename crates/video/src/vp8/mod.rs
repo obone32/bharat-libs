@@ -15,7 +15,7 @@
 //! (`refresh_entropy_probs`), golden / altref copies and hidden (altref) frames.
 //!
 //! ```no_run
-//! let mut dec = craft_video::vp8::Decoder::new();
+//! let mut dec = bharat_video::vp8::Decoder::new();
 //! let frame: Vec<u8> = Vec::new(); // one IVF / WebM frame
 //! if let Some(pic) = dec.decode(&frame, 0).unwrap() {
 //!     println!("{}x{}", pic.width, pic.height);

@@ -20,7 +20,7 @@ pub struct PackageLimits {
 
 /// An open FBX package. Reads are charged to its cumulative decompression budget.
 pub struct Package<'a> {
-    zip: craft_zip::Archive<'a>,
+    zip: bharat_zip::Archive<'a>,
     limits: PackageLimits,
     name: String,
     /// Textures read so far by name: a texture several materials share is read, and charged, once.
@@ -29,7 +29,7 @@ pub struct Package<'a> {
 
 impl<'a> Package<'a> {
     pub fn open(bytes: &'a [u8], limits: PackageLimits) -> Result<Self> {
-        let zip = craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })
+        let zip = bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })
             .map_err(|e| malformed(KIND, format!("package: {e}")))?;
         let name = zip
             .names()
@@ -152,9 +152,9 @@ pub fn write(
     // the package is found by its `.fbx` entry, so the model always carries that extension
     let leaf = if leaf.rsplit_once('.').is_some_and(|(_, ext)| ext.eq_ignore_ascii_case("fbx")) { leaf.to_string() } else { format!("{leaf}.fbx") };
     let leaf = leaf.as_str();
-    let mut writer = craft_zip::Writer::new();
+    let mut writer = bharat_zip::Writer::new();
     for (name, data) in std::iter::once((leaf, bytes)).chain(files.iter().map(|(n, b)| (n.as_str(), b.as_slice()))) {
-        writer.add(name, data, craft_zip::Compression::Stored).map_err(|e| Error::Malformed(format!("FBX package: {e}")))?;
+        writer.add(name, data, bharat_zip::Compression::Stored).map_err(|e| Error::Malformed(format!("FBX package: {e}")))?;
     }
     Ok((Some(writer.finish().map_err(|e| Error::Malformed(format!("FBX package: {e}")))?), missing))
 }

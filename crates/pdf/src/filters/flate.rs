@@ -15,7 +15,7 @@ use std::io::Write;
 
 use flate2::{Compression, Decompress, FlushDecompress, Status};
 
-use craft_stream_codecs::{Failure, Step};
+use bharat_stream_codecs::{Failure, Step};
 
 use super::FilterError;
 

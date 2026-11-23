@@ -2,8 +2,8 @@
 //! [`Styles`] the XML part gives: what Excel writes in `styles.xml` for the same workbook. Table
 //! styles, recent colours and future records are not read.
 
-use craft_sheet::{BorderStyle, HAlign, Pattern, Script, Underline, VAlign};
-use craft_xml::El;
+use bharat_sheet::{BorderStyle, HAlign, Pattern, Script, Underline, VAlign};
+use bharat_xml::El;
 
 use super::{Budget, Bytes, Records, invalid};
 use crate::styles::{

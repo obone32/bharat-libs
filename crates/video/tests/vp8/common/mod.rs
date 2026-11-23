@@ -2,7 +2,7 @@
 //! and the decode helpers.
 #![allow(dead_code)]
 
-use craft_video::vp8::{Decoder, Picture};
+use bharat_video::vp8::{Decoder, Picture};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -69,7 +69,7 @@ pub fn fixture(name: &str) -> &'static Fixture {
 }
 
 pub fn ffmpeg() -> Option<PathBuf> {
-    craft_media_testkit::ffmpeg_or_skip("VP8 conformance tests")
+    bharat_media_testkit::ffmpeg_or_skip("VP8 conformance tests")
 }
 
 pub fn fixtures_dir() -> PathBuf {
@@ -114,8 +114,8 @@ pub fn ensure(f: &Fixture) -> Option<(PathBuf, PathBuf)> {
     let ivf = dir.join(format!("{}.ivf", f.name));
     let yuv = dir.join(format!("{}.yuv", f.name));
     if !ivf.exists() {
-        if !craft_media_testkit::ffmpeg_has_encoder(&ff, "libvpx") {
-            return craft_media_testkit::skip(&format!("VP8 fixture {} requires ffmpeg's libvpx encoder", f.name));
+        if !bharat_media_testkit::ffmpeg_has_encoder(&ff, "libvpx") {
+            return bharat_media_testkit::skip(&format!("VP8 fixture {} requires ffmpeg's libvpx encoder", f.name));
         }
         let tmp = dir.join(format!("{}.tmp.{}.ivf", f.name, unique()));
         // the source at an even size, scaled to the fixture's (possibly odd) size
@@ -146,13 +146,13 @@ pub fn ensure(f: &Fixture) -> Option<(PathBuf, PathBuf)> {
             c
         };
         if two_pass && !run(&mut enc(Some(1))) {
-            return craft_media_testkit::skip(&format!("VP8 fixture {} first-pass encode failed", f.name));
+            return bharat_media_testkit::skip(&format!("VP8 fixture {} first-pass encode failed", f.name));
         }
         if !run(&mut enc(two_pass.then_some(2))) {
-            return craft_media_testkit::skip(&format!("VP8 fixture {} encode failed", f.name));
+            return bharat_media_testkit::skip(&format!("VP8 fixture {} encode failed", f.name));
         }
         if std::fs::rename(&tmp, &ivf).is_err() && !ivf.exists() {
-            return craft_media_testkit::skip(&format!("could not publish VP8 fixture {}", f.name));
+            return bharat_media_testkit::skip(&format!("could not publish VP8 fixture {}", f.name));
         }
     }
     if !yuv.exists() {
@@ -161,10 +161,10 @@ pub fn ensure(f: &Fixture) -> Option<(PathBuf, PathBuf)> {
         c.args(["-hide_banner", "-loglevel", "error", "-y", "-c:v", "libvpx", "-i"]).arg(&ivf);
         c.args(["-fps_mode", "passthrough", "-f", "rawvideo", "-pix_fmt", "yuv420p"]).arg(&tmp);
         if !run(&mut c) {
-            return craft_media_testkit::skip(&format!("VP8 fixture {} reference decode failed", f.name));
+            return bharat_media_testkit::skip(&format!("VP8 fixture {} reference decode failed", f.name));
         }
         if std::fs::rename(&tmp, &yuv).is_err() && !yuv.exists() {
-            return craft_media_testkit::skip(&format!("could not publish VP8 reference {}", f.name));
+            return bharat_media_testkit::skip(&format!("could not publish VP8 reference {}", f.name));
         }
     }
     Some((ivf, yuv))

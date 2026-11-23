@@ -2,7 +2,7 @@
 //! plates of a scene and of its flattened page match at the scene's sample points, and the
 //! flattened page has no transparency left.
 //!
-//! D10 needs Inter from `CRAFT_PDF_TEST_FONT_DIR` or `~/.cache/craft-pdf-test-fonts`, and is
+//! D10 needs Inter from `BHARAT_PDF_TEST_FONT_DIR` or `~/.cache/bharat-pdf-test-fonts`, and is
 //! skipped when it is missing.
 #![cfg(feature = "flatten")]
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
@@ -11,21 +11,21 @@ use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};
 use std::time::Instant;
 
-use craft_pdf::write::backend::SerializeSettings;
-use craft_pdf::write::backend::configure::PdfVersion;
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::print::{self, PrintColor};
-use craft_pdf::write::{Metadata, Writer, configuration};
-use craft_plate_test::reference::{self, Context};
-use craft_plate_test::{scene, structure};
-use craft_prepress::flatten::kurbo::{Affine, BezPath, Point, Rect, Shape};
-use craft_prepress::flatten::raster::Rasterizer;
-use craft_prepress::flatten::write::{WriteError, page_pdf, write_flattened};
-use craft_prepress::flatten::{
+use bharat_pdf::write::backend::SerializeSettings;
+use bharat_pdf::write::backend::configure::PdfVersion;
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::print::{self, PrintColor};
+use bharat_pdf::write::{Metadata, Writer, configuration};
+use bharat_plate_test::reference::{self, Context};
+use bharat_plate_test::{scene, structure};
+use bharat_prepress::flatten::kurbo::{Affine, BezPath, Point, Rect, Shape};
+use bharat_prepress::flatten::raster::Rasterizer;
+use bharat_prepress::flatten::write::{WriteError, page_pdf, write_flattened};
+use bharat_prepress::flatten::{
     BlendMode, ComplexReason, ComplexRegion, DisplayList, FillItem, FillRule, FlattenOptions, FlattenPageOptions, Flattened, GradientGeometry,
     GroupItem, Item, Paint, flatten, flatten_page,
 };
-use craft_prepress::{Alternate, CmsConversion, Fallback, Ink, InkColor, InkId, InkSet, Options, Overprint, Plates, Process, Spot, plates};
+use bharat_prepress::{Alternate, CmsConversion, Fallback, Ink, InkColor, InkId, InkSet, Options, Overprint, Plates, Process, Spot, plates};
 
 const C: InkId = InkId::process(Process::Cyan);
 const K: InkId = InkId::process(Process::Black);
@@ -33,7 +33,7 @@ const K: InkId = InkId::process(Process::Black);
 fn settings() -> SerializeSettings {
     // Reading the profile takes a quarter second in a debug build.
     static SETTINGS: OnceLock<SerializeSettings> = OnceLock::new();
-    SETTINGS.get_or_init(|| print::settings(PrintColor::fogra39(craft_cms::builtin::COATED_FOGRA39_ICC)).unwrap()).clone()
+    SETTINGS.get_or_init(|| print::settings(PrintColor::fogra39(bharat_cms::builtin::COATED_FOGRA39_ICC)).unwrap()).clone()
 }
 
 fn separate(pdf: &[u8], dpi: f32) -> Plates {
@@ -55,7 +55,7 @@ fn assert_opaque(pdf: &[u8]) {
 fn font() -> Option<Arc<Vec<u8>>> {
     let dir = std::env::var_os(reference::FONT_DIR_ENV)
         .map(PathBuf::from)
-        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".cache/craft-pdf-test-fonts")))?;
+        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".cache/bharat-pdf-test-fonts")))?;
     std::fs::read(dir.join(reference::FONT_FILE)).ok().map(Arc::new)
 }
 
@@ -178,7 +178,7 @@ fn d10_text_over_transparency_stays_live() {
     let s = scenes.iter().find(|s| s.id == "D10").unwrap();
     let pdf = reference::write(s, &Context { scenes: &scenes, font: font() }).unwrap().pdf;
     let (flat, _) = flatten_page(&pdf, 0, &FlattenPageOptions::default()).unwrap();
-    let doc = craft_pdf::open_slice(&flat, None).unwrap();
+    let doc = bharat_pdf::open_slice(&flat, None).unwrap();
     let pages = doc.pages();
     let mut ops = Vec::new();
     let mut it = pages.first().unwrap().operations();
@@ -392,7 +392,7 @@ fn a_degenerate_group_is_an_opaque_image_over_paper() {
 }
 
 fn kurbo_circle(c: Point, r: f64) -> BezPath {
-    craft_prepress::flatten::kurbo::Circle::new(c, r).to_path(0.01)
+    bharat_prepress::flatten::kurbo::Circle::new(c, r).to_path(0.01)
 }
 
 #[test]

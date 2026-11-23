@@ -6,7 +6,7 @@ use std::net::TcpListener;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use craft_update::http::{Fetched, Http};
+use bharat_update::http::{Fetched, Http};
 
 /// A plain-HTTP server on loopback that answers every request with `{}`; counts the requests.
 fn serve() -> (String, Arc<AtomicUsize>) {
@@ -32,7 +32,7 @@ fn serve() -> (String, Arc<AtomicUsize>) {
 #[test]
 fn the_remote_agents_take_plain_http_only_with_a_local_mirror() {
     let (base, seen) = serve();
-    let http = Http::new("craft-update-tests/0").unwrap();
+    let http = Http::new("bharat-update-tests/0").unwrap();
     // `get_api` and `redirect_target` always use the agents for remote hosts.
     let api = http.get_api(&format!("{base}/repos/storytold/x/releases"), None);
     let redirect = http.redirect_target(&format!("{base}/releases/latest"));

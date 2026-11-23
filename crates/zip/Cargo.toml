@@ -1,5 +1,5 @@
 [package]
-name = "craft-zip"
+name = "bharat-zip"
 description = "ZIP archives from untrusted files: a preflight of the end records and central directory before anything is indexed, entry reads that don't trust declared sizes, duplicate-name detection, and a deterministic writer."
 version.workspace = true
 edition.workspace = true
@@ -12,7 +12,7 @@ workspace = true
 
 [dependencies]
 thiserror = { workspace = true }
-# `deflate-flate2` with flate2's default miniz_oxide backend, as craft-update pins it (zip's own
+# `deflate-flate2` with flate2's default miniz_oxide backend, as bharat-update pins it (zip's own
 # `deflate` feature would switch a whole app's flate2 to zlib-rs).
 zip = { version = "9", default-features = false, features = ["deflate-flate2"] }
 # The backend of zip's deflate: `deflate-flate2` leaves the choice to the build.
@@ -29,7 +29,7 @@ serde = { workspace = true, optional = true }
 [features]
 # `zip64_entry_count_sample`, the regression input for a reader's own entry-count test.
 test-support = []
-# `craft_zip::lenient`: the raw-bytes reader for inspectors (from Craft Anything), without `zip`.
+# `bharat_zip::lenient`: the raw-bytes reader for inspectors (from Bharat Anything), without `zip`.
 lenient = ["dep:miniz_oxide"]
 # Method 12.
 lenient-bzip2 = ["lenient", "dep:bzip2-rs"]
@@ -40,5 +40,5 @@ lenient-zstd = ["lenient", "dep:ruzstd"]
 serde = ["dep:serde"]
 
 [dev-dependencies]
-craft-zip = { path = ".", features = ["test-support", "lenient-bzip2", "lenient-lzma", "lenient-zstd", "serde"] }
+bharat-zip = { path = ".", features = ["test-support", "lenient-bzip2", "lenient-lzma", "lenient-zstd", "serde"] }
 serde_json = { workspace = true }

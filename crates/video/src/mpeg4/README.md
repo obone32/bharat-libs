@@ -1,11 +1,11 @@
-# MPEG-4 Part 2 video encoder (`craft_video::mpeg4`, feature `mpeg4`)
+# MPEG-4 Part 2 video encoder (`bharat_video::mpeg4`, feature `mpeg4`)
 
 Clean-room MPEG-4 Visual (ISO/IEC 14496-2) encoder in pure Rust: the format Xvid and DivX write.
-It writes Simple profile streams. Depends on `craft-media` (`bitstream`, `CodecParams`) and
+It writes Simple profile streams. Depends on `bharat-media` (`bitstream`, `CodecParams`) and
 `thiserror`. No `unsafe`, no panics. No Xvid, DivX, FFmpeg or other MPEG-4 implementation was
 read. ffmpeg and ffprobe are used only as external decoders in the tests.
 
-There is no MPEG-4 Part 2 decoder in this crate. `craft-media` names the stream (`CodecId::Mpeg4Video`)
+There is no MPEG-4 Part 2 decoder in this crate. `bharat-media` names the stream (`CodecId::Mpeg4Video`)
 in MP4, Matroska, AVI and MXF.
 
 ## Specifications
@@ -17,7 +17,7 @@ in MP4, Matroska, AVI and MXF.
 ## API
 
 ```rust
-use craft_video::mpeg4::{Encoder, EncoderConfig, RateControl, YuvFrame};
+use bharat_video::mpeg4::{Encoder, EncoderConfig, RateControl, YuvFrame};
 
 let mut cfg = EncoderConfig::new(1280, 720, 30000, 1001);
 cfg.rate = RateControl::Bitrate { kbps: 2500 }; // or RateControl::Quant(1..=31)
@@ -114,4 +114,4 @@ for frame in frames {
   - the bitrate mode within 15% of its target.
 - ffprobe reads the size, aspect ratio, colour description and profile.
 
-The oracle tests skip when ffmpeg is absent, unless `CRAFT_MEDIA_REQUIRE_ORACLES=1` is set.
+The oracle tests skip when ffmpeg is absent, unless `BHARAT_MEDIA_REQUIRE_ORACLES=1` is set.

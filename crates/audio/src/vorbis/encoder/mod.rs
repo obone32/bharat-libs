@@ -13,12 +13,12 @@
 //!
 //! From FilmCraft's `filmcraft-vorbis` by @JordyUSA (storytold/filmcraft#4481).
 //!
-//! The packets go into Ogg with [`craft_media::ogg::PageWriter`] and a comment header from
-//! [`craft_media::ogg::vorbis_comment`]; [`crate::encode_ogg_vorbis`] does all of it for a
+//! The packets go into Ogg with [`bharat_media::ogg::PageWriter`] and a comment header from
+//! [`bharat_media::ogg::vorbis_comment`]; [`crate::encode_ogg_vorbis`] does all of it for a
 //! whole buffer.
 //!
 //! ```
-//! use craft_audio::vorbis::encoder::{Encoder, EncoderConfig};
+//! use bharat_audio::vorbis::encoder::{Encoder, EncoderConfig};
 //!
 //! let mut enc = Encoder::new(EncoderConfig::new(48_000, 2, 5.0))?;
 //! let tone: Vec<f32> = (0..4_800).map(|i| (i as f32 * 0.05).sin() * 0.5).collect();
@@ -27,7 +27,7 @@
 //! // the last granule position is the input's length, so a decoder trims the padding
 //! assert_eq!(packets.last().map(|p| p.1), Some(4_800));
 //! assert_eq!(&enc.identification()[1..7], b"vorbis");
-//! # Ok::<(), craft_audio::vorbis::encoder::Error>(())
+//! # Ok::<(), bharat_audio::vorbis::encoder::Error>(())
 //! ```
 
 // Index loops follow the specification, as in FilmCraft (which allows this lint workspace-wide).

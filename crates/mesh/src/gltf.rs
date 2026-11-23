@@ -1141,7 +1141,7 @@ pub fn write_glb(scene: &Scene, limits: &Limits) -> Result<Vec<u8>> {
         Wrap::Mirror => 33648,
     };
     let mut root = Map::new();
-    root.insert("asset".into(), json!({ "version": "2.0", "generator": "craft-mesh" }));
+    root.insert("asset".into(), json!({ "version": "2.0", "generator": "bharat-mesh" }));
     root.insert("scene".into(), json!(0));
     root.insert("scenes".into(), json!([{ "nodes": scene.roots }]));
     // glTF does not allow empty arrays.

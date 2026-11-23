@@ -2,7 +2,7 @@
 //! decode the reference) is used only as an external process.
 #![allow(dead_code)]
 
-use craft_video::av1::decode::{Decoder, Picture};
+use bharat_video::av1::decode::{Decoder, Picture};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -23,12 +23,12 @@ pub fn ffmpeg_libaom() -> Option<PathBuf> {
 
 /// Builds such as the Windows "essentials" ones lack these libraries; skip rather than fail.
 fn ffmpeg_with(needs: &[(&str, &str)]) -> Option<PathBuf> {
-    let ff = craft_media_testkit::ffmpeg_or_skip("av1 oracle")?;
+    let ff = bharat_media_testkit::ffmpeg_or_skip("av1 oracle")?;
     for &(list, lib) in needs {
         let out =
             Command::new(&ff).args(["-hide_banner", list]).output().map(|o| String::from_utf8_lossy(&o.stdout).into_owned()).unwrap_or_default();
         if !out.contains(lib) {
-            craft_media_testkit::skip_test("av1 oracle", &format!("ffmpeg has no {lib} (see `ffmpeg {list}`)"));
+            bharat_media_testkit::skip_test("av1 oracle", &format!("ffmpeg has no {lib} (see `ffmpeg {list}`)"));
             return None;
         }
     }
@@ -36,7 +36,7 @@ fn ffmpeg_with(needs: &[(&str, &str)]) -> Option<PathBuf> {
 }
 
 pub fn fixture_dir() -> PathBuf {
-    craft_media_testkit::fixtures_dir("av1")
+    bharat_media_testkit::fixtures_dir("av1")
 }
 
 pub fn run(ff: &Path, args: &[&str]) {
@@ -70,7 +70,7 @@ impl Spec {
 pub fn make(ff: &Path, spec: &Spec) -> PathBuf {
     let path = fixture_dir().join(format!("{}.ivf", spec.name));
     if !path.exists() {
-        let tmp = craft_media_testkit::temp_path(&path);
+        let tmp = bharat_media_testkit::temp_path(&path);
         let frames = spec.frames.to_string();
         let t = tmp.to_str().unwrap().to_string();
         let mut args: Vec<&str> =
@@ -78,7 +78,7 @@ pub fn make(ff: &Path, spec: &Spec) -> PathBuf {
         args.extend(spec.enc.iter().map(String::as_str));
         args.extend(["-f", "ivf", t.as_str()]);
         run(ff, &args);
-        craft_media_testkit::fixtures::publish(&tmp, &path).unwrap();
+        bharat_media_testkit::fixtures::publish(&tmp, &path).unwrap();
     }
     path
 }
@@ -235,12 +235,12 @@ pub fn test_vector(name: &str) -> Option<PathBuf> {
     if path.exists() {
         return Some(path);
     }
-    let tmp = craft_media_testkit::temp_path(&path);
+    let tmp = bharat_media_testkit::temp_path(&path);
     let url = format!("https://storage.googleapis.com/aom-test-data/{name}");
     let ok = Command::new("curl").args(["-sfL", "--max-time", "120", "-o"]).arg(&tmp).arg(&url).status().map(|s| s.success()).unwrap_or(false);
     if !ok {
         let _ = std::fs::remove_file(&tmp);
-        craft_media_testkit::skip_test("av1 conformance", &format!("could not download {url}"));
+        bharat_media_testkit::skip_test("av1 conformance", &format!("could not download {url}"));
         return None;
     }
     std::fs::rename(&tmp, &path).ok()?;

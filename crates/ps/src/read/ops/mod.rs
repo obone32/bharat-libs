@@ -179,7 +179,7 @@ pub fn install(ip: &mut Interp) {
         ip.systemdict.put_name(n, Obj::Dict(d));
     }
     ip.systemdict.put_name(b"version", Obj::str(b"3010"));
-    ip.systemdict.put_name(b"product", Obj::str(b"craft-ps"));
+    ip.systemdict.put_name(b"product", Obj::str(b"bharat-ps"));
     ip.systemdict.put_name(b"revision", Obj::Int(1));
     ip.systemdict.put_name(b"serialnumber", Obj::Int(0));
     ip.systemdict.put_name(b"StandardEncoding", encoding(crate::read::encodings::standard()));
@@ -219,7 +219,7 @@ pub fn install(ip: &mut Interp) {
         ip.errordict.put_name(e.as_bytes(), Obj::proc(vec![stop]));
     }
     ip.dollar_error.put_name(b"newerror", Obj::Bool(false));
-    ip.statusdict.put_name(b"product", Obj::str(b"craft-ps"));
+    ip.statusdict.put_name(b"product", Obj::str(b"bharat-ps"));
     ip.statusdict.put_name(b"processcolors", Obj::proc(vec![Obj::Int(4)]));
     ip.userdict.put_name(b"#copies", Obj::Int(1));
     let cats = PDict::new(4);

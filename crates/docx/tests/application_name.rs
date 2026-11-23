@@ -5,13 +5,13 @@ use std::io::Read;
 
 #[test]
 fn the_embedding_app_names_itself_in_app_xml() {
-    assert_eq!(craft_docx::application_name(), "WordCraft", "the default");
-    craft_docx::set_application_name("Example Writer");
-    craft_docx::set_application_name("Other");
-    assert_eq!(craft_docx::application_name(), "Example Writer", "only the first call counts");
-    let mut d = craft_wordmodel::Document::new();
-    d.body = vec![craft_wordmodel::para_block(craft_wordmodel::Paragraph::with_text("Text", Default::default()))];
-    let bytes = craft_docx::write(&d).unwrap();
+    assert_eq!(bharat_docx::application_name(), "WordCraft", "the default");
+    bharat_docx::set_application_name("Example Writer");
+    bharat_docx::set_application_name("Other");
+    assert_eq!(bharat_docx::application_name(), "Example Writer", "only the first call counts");
+    let mut d = bharat_wordmodel::Document::new();
+    d.body = vec![bharat_wordmodel::para_block(bharat_wordmodel::Paragraph::with_text("Text", Default::default()))];
+    let bytes = bharat_docx::write(&d).unwrap();
     let mut z = zip::ZipArchive::new(std::io::Cursor::new(&bytes)).unwrap();
     let mut app = String::new();
     z.by_name("docProps/app.xml").unwrap().read_to_string(&mut app).unwrap();

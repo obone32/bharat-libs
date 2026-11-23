@@ -16,9 +16,9 @@ use crate::nefc;
 use crate::shared::white_from_data_sourced;
 use crate::tiffraw::{Packing, check_image, read_image};
 use crate::{BlackLevel, Camera, Cfa, ColorData, Limits, Mode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result};
-use craft_tiff::image::ImageInfo;
-use craft_tiff::tags::{self as t, photometric};
-use craft_tiff::{ByteOrder, Ifd, Tiff, makernote};
+use bharat_tiff::image::ImageInfo;
+use bharat_tiff::tags::{self as t, photometric};
+use bharat_tiff::{ByteOrder, Ifd, Tiff, makernote};
 
 const WB_RB_LEVELS: u16 = 0x000c;
 const BLACK_LEVEL: u16 = 0x003d;
@@ -553,7 +553,7 @@ fn packed(bytes: &[u8], info: &ImageInfo, rows: usize, stated: bool, limits: &Li
     let (Some(layout), [c]) = (layout, chunks.as_slice()) else {
         return Err(RawError::Unsupported("Nikon compressed NEF without a linearization table (maker note 0x96)".into()));
     };
-    let src = craft_tiff::image::chunk_bytes(bytes, c)
+    let src = bharat_tiff::image::chunk_bytes(bytes, c)
         .filter(|src| u64::try_from(src.len()).ok() == Some(c.len))
         .ok_or_else(|| RawError::Corrupt("NEF: incomplete image strip".into()))?;
     if (w as u64).saturating_mul(h as u64) > limits.samples() as u64 {
@@ -591,7 +591,7 @@ const SMALL_RAW_B_GAIN: f32 = 4.4;
 
 /// The strip of a small raw: compression 34713, 12 bits, no maker note `0x0096`, one strip of exactly
 /// `3 * width * height` bytes (even width).
-fn small_raw_strip(info: &ImageInfo, file_len: usize, mn: Option<&makernote::MakerNote>) -> Option<craft_tiff::image::Chunk> {
+fn small_raw_strip(info: &ImageInfo, file_len: usize, mn: Option<&makernote::MakerNote>) -> Option<bharat_tiff::image::Chunk> {
     if info.compression != t::compression::NIKON || info.bits() != 12 || info.samples_per_pixel != 1 {
         return None;
     }
@@ -637,12 +637,12 @@ fn small_raw_row(src: &[u8], w: usize, out: &mut [u16]) {
     }
 }
 
-fn small_raw(bytes: &[u8], tiff: &Tiff, info: &ImageInfo, strip: craft_tiff::image::Chunk, mode: Mode, limits: &Limits) -> Result<RawImage> {
+fn small_raw(bytes: &[u8], tiff: &Tiff, info: &ImageInfo, strip: bharat_tiff::image::Chunk, mode: Mode, limits: &Limits) -> Result<RawImage> {
     use rayon::prelude::*;
     let (w, h) = (info.width as usize, info.height as usize);
     let stride = w.checked_mul(3).ok_or(RawError::Limit("image too large"))?;
     let count = stride.checked_mul(h).filter(|n| *n > 0 && *n <= limits.samples()).ok_or(RawError::Limit("image too large"))?;
-    let src = craft_tiff::image::chunk_bytes(bytes, &strip)
+    let src = bharat_tiff::image::chunk_bytes(bytes, &strip)
         .filter(|src| u64::try_from(src.len()).ok() == Some(strip.len))
         .ok_or_else(|| RawError::Corrupt("NEF: incomplete image strip".into()))?;
     let data = match mode {
@@ -688,7 +688,7 @@ fn small_raw(bytes: &[u8], tiff: &Tiff, info: &ImageInfo, strip: craft_tiff::ima
 #[cfg(test)]
 mod tests {
     use super::*;
-    use craft_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
+    use bharat_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
 
     fn nef(compression: u16, bits: u16, strips: Vec<Vec<u8>>, w: u32, h: u32, rps: u32) -> Vec<u8> {
         nef_with_note(compression, bits, strips, w, h, rps, None)
@@ -1530,7 +1530,7 @@ mod tests {
         let raw = raw_ifd(&tiff).unwrap();
         let info = raw.image().unwrap();
         let chunk = info.chunks(bytes.len() as u64)[0];
-        let data = craft_tiff::image::chunk_bytes(&bytes, &chunk).unwrap().to_vec();
+        let data = bharat_tiff::image::chunk_bytes(&bytes, &chunk).unwrap().to_vec();
         let offset_entry = raw.get(t::STRIP_OFFSETS).unwrap().offset as usize;
         let start = bytes.len() as u32;
         bytes[offset_entry..offset_entry + 4].copy_from_slice(&start.to_be_bytes());

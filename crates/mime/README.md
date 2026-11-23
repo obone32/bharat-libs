@@ -1,4 +1,4 @@
-# craft-mime
+# bharat-mime
 
 Internet messages and MIME, read and written: `.eml` files, what a mail server hands over, MHT /
 MHTML web archives and mbox files.
@@ -25,10 +25,10 @@ Written from the public RFCs: 5322 (messages), 2045–2049 (MIME), 2047 (encoded
 (parameter values), 2387 and 2557 (`multipart/related`, MHTML), 4155 (mbox, `mboxrd` quoting).
 
 ```rust
-use craft_mime::{Limits, Resources, parse, start_part};
+use bharat_mime::{Limits, Resources, parse, start_part};
 
 let message = parse(bytes, &Limits::default());
-let subject = message.root.headers.get("subject").map(craft_mime::decode_words);
+let subject = message.root.headers.get("subject").map(bharat_mime::decode_words);
 for part in message.root.leaves() {
     println!("{} {:?} {} bytes", part.media_type(), part.file_name(), part.data().len());
 }
@@ -101,7 +101,7 @@ No app uses this crate yet. These tables say what replaces what.
 
 ### MailCraft (`crates/mime`, `crates/charset`)
 
-| MailCraft | craft-mime |
+| MailCraft | bharat-mime |
 |---|---|
 | `header::split(bytes, top)` | `split_headers(bytes, top, &limits)`; the Exchange stamp fields go in `Limits::reserved_fields` |
 | `header::Headers`, `Field`, `Params`, `parse_params` | the same names |
@@ -133,7 +133,7 @@ No app uses this crate yet. These tables say what replaces what.
 
 ### WordCraft (`crates/formats/src/mht.rs`)
 
-| WordCraft | craft-mime |
+| WordCraft | bharat-mime |
 |---|---|
 | `split_headers`, `header` | `parse`, `Headers::get` |
 | `param` | `parse_params` / `Part::content_type` (comments and quoted strings handled the same) |

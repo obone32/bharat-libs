@@ -9,7 +9,7 @@
 use std::collections::{BTreeMap, HashSet};
 use std::io::{self, Read, Write};
 
-use craft_zip::Budget;
+use bharat_zip::Budget;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -27,7 +27,7 @@ pub enum Error {
     #[error("TCTX version {0} is newer than supported")]
     NewerVersion(u32),
     #[error("TCTX budget: {0}")]
-    Budget(#[from] craft_zip::Exceeded),
+    Budget(#[from] bharat_zip::Exceeded),
     #[error("TCTX limit: {0}")]
     Limit(String),
     #[error("TCTX I/O: {0}")]

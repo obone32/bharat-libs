@@ -2,7 +2,7 @@
 //! reader (`crates/xlsx/src/omml.rs`) gave for its test cases, so GridCraft can read equations in
 //! drawings through this crate. The LaTeX is compared by what it reads back as, not byte for byte.
 
-use craft_math::{math, math_latex, omml};
+use bharat_math::{math, math_latex, omml};
 fn tex(inner: &str) -> String {
     let x = format!(r#"<m:oMath xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math">{inner}</m:oMath>"#);
     math_latex::to_latex(&omml::read_str(&x).unwrap().nodes)

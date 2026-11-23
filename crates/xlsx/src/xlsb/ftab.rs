@@ -1,8 +1,8 @@
 //! The XLSB function table ([MS-XLSB] 2.5.98.10, `Ftab`): the functions a `PtgFunc` or
 //! `PtgFuncVar` token calls by number. Up to 379 (0x17B) it is the table of [MS-XLS] 2.5.198.17,
-//! which craft-xls also carries. The entries from 380 (0x17C) on are the rest of the XLSB table:
+//! which bharat-xls also carries. The entries from 380 (0x17C) on are the rest of the XLSB table:
 //! XLSB files call these functions by number, where `.xls` files call them by name. Kept apart from
-//! craft-xls's copy: the two formats follow separate specifications.
+//! bharat-xls's copy: the two formats follow separate specifications.
 //!
 //! One entry is not in the specification's table: 468 (0x1D4) is CONVERT. The table has no row
 //! for it, but its grammar lists `convert-params` among the fixed-argument functions, and Excel

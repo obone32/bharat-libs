@@ -7,7 +7,7 @@
 use crate::common;
 use common::Rng;
 use common::tiffgen::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 const ORDERS: [(bool, bool); 4] = [(true, false), (false, false), (true, true), (false, true)];
 

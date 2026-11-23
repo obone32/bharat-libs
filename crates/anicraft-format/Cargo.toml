@@ -1,5 +1,5 @@
 [package]
-name = "craft-anicraft-format"
+name = "bharat-anicraft-format"
 description = "Versioned JSON envelope codec for AniCraft native documents"
 version.workspace = true
 edition.workspace = true

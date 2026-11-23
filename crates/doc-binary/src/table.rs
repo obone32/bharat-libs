@@ -3,11 +3,11 @@
 
 use std::sync::Arc;
 
-use craft_wordmodel::Rgb;
-use craft_wordmodel::para::Paragraph;
-use craft_wordmodel::props::{Align, Borders, CellProps, HeightRule, RowProps, TableProps, VAlign, VMerge};
-use craft_wordmodel::table::{Cell, Row, Table};
-use craft_wordmodel::{Block, Blocks, para_block};
+use bharat_wordmodel::Rgb;
+use bharat_wordmodel::para::Paragraph;
+use bharat_wordmodel::props::{Align, Borders, CellProps, HeightRule, RowProps, TableProps, VAlign, VMerge};
+use bharat_wordmodel::table::{Cell, Row, Table};
+use bharat_wordmodel::{Block, Blocks, para_block};
 
 use crate::fmt;
 use crate::sprm::{self, Prl};

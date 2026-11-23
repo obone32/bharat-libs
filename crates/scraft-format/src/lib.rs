@@ -17,8 +17,8 @@ mod session;
 mod source;
 mod track;
 
-pub use craft_midi as soundcraft_midi;
-pub use craft_time::soundcraft as soundcraft_time;
+pub use bharat_midi as soundcraft_midi;
+pub use bharat_time::soundcraft as soundcraft_time;
 
 pub use automation::{AutoParam, AutomationLane, AutomationMode, AutomationPoint};
 pub use bundle::{BUNDLE_EXTENSION, BundleError, BundleLimits, DEFAULT_BUNDLE_LIMITS, check_session_size, read_bundle, write_bundle};

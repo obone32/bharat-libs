@@ -99,9 +99,9 @@ fn inlines_md_table(inlines: &[Inline]) -> String {
 fn inlines_md_impl(inlines: &[Inline], in_table: bool) -> String {
     // Split into (text, fmt) pieces with whitespace moved outside emphasis.
     let mut pieces: Vec<(String, Fmt, Option<String>)> = Vec::new();
-    let eq = craft_flow::equations_as_text(inlines);
+    let eq = bharat_flow::equations_as_text(inlines);
     // Markdown keeps no ruby: its base text goes through the text path below.
-    let inlines = craft_flow::ruby_as_text(&eq);
+    let inlines = bharat_flow::ruby_as_text(&eq);
     for i in inlines.iter() {
         match i {
             Inline::Text(t, f) => {
@@ -132,7 +132,7 @@ fn inlines_md_impl(inlines: &[Inline], in_table: bool) -> String {
                 let safe: String = a.chars().filter(|c| c.is_alphanumeric() || matches!(c, '_' | '-' | '.' | ':')).collect();
                 pieces.push((String::new(), Fmt::default(), Some(format!("<a id=\"{safe}\"></a>"))));
             }
-            Inline::Figure(alt) | Inline::Chart(craft_flow::Chart { alt, .. }) => {
+            Inline::Figure(alt) | Inline::Chart(bharat_flow::Chart { alt, .. }) => {
                 pieces.push((String::new(), Fmt::default(), Some(format!("![{}]()", escape(alt)))))
             }
             Inline::Equation { .. } => {}
@@ -161,7 +161,7 @@ fn inlines_md_impl(inlines: &[Inline], in_table: bool) -> String {
     };
     for (text, f, raw) in pieces {
         // Links are the outermost construct; a script or other non-web target is plain text.
-        let f_link = f.link.clone().filter(|l| craft_wordmodel::link::is_safe_href(l));
+        let f_link = f.link.clone().filter(|l| bharat_wordmodel::link::is_safe_href(l));
         if f_link != link || raw.is_some() {
             close_all(&mut out, &mut stack);
             if let Some(l) = &link {

@@ -2,7 +2,7 @@
 //! with FilmCraft's spec-derived decoder, delay-searched SNR and an Ogg Opus writer for ffmpeg.
 #![allow(dead_code)]
 
-use craft_audio::opus::encoder::OpusEncoder;
+use bharat_audio::opus::encoder::OpusEncoder;
 
 pub const SR: f64 = 48_000.0;
 pub const FRAME: usize = OpusEncoder::FRAME_SIZE;
@@ -127,7 +127,7 @@ pub fn encode(mut enc: OpusEncoder, planar: &[Vec<f32>]) -> (OpusEncoder, Vec<Ve
 
 /// Decodes with filmcraft-opus, drops the pre-skip and returns planar channels (full length).
 pub fn decode(head: &[u8], packets: &[Vec<u8>]) -> Vec<Vec<f32>> {
-    let mut dec = craft_audio::opus::Decoder::new(head).expect("OpusHead");
+    let mut dec = bharat_audio::opus::Decoder::new(head).expect("OpusHead");
     dec.set_trim_pre_skip(true);
     let mut out: Vec<Vec<f32>> = vec![Vec::new(); dec.channels()];
     for p in packets {

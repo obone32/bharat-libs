@@ -6,7 +6,7 @@
 
 use crate::h264::decode::Decoder;
 use crate::h264::decode::cabac::{Cabac, NEXT_STATE, RANGE_TAB_LPS};
-use craft_media::bitstream::{BitWriter, escape_rbsp};
+use bharat_media::bitstream::{BitWriter, escape_rbsp};
 
 const MB_W: usize = 4;
 const MB_H: usize = 3;
@@ -439,10 +439,10 @@ type Planes3 = (Vec<u8>, Vec<u8>, Vec<u8>);
 
 /// Validate the hand-built stream and its expected output with ffmpeg when available.
 fn cross_check_ffmpeg(stream: &[u8], expected: &[Planes3], name: &str) {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip(name) else { return };
-    let dir = craft_media_testkit::fixtures_dir("h264");
-    let src = craft_media_testkit::temp_path(&dir.join(format!("{name}.h264")));
-    let dst = craft_media_testkit::temp_path(&dir.join(format!("{name}.yuv")));
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip(name) else { return };
+    let dir = bharat_media_testkit::fixtures_dir("h264");
+    let src = bharat_media_testkit::temp_path(&dir.join(format!("{name}.h264")));
+    let dst = bharat_media_testkit::temp_path(&dir.join(format!("{name}.yuv")));
     std::fs::write(&src, stream).unwrap();
     let ok = std::process::Command::new(&ff)
         .args(["-hide_banner", "-loglevel", "error", "-y", "-i"])
@@ -687,7 +687,7 @@ fn decodes_within(stream: &[u8], budget: u64) -> bool {
 fn picture_store_is_checked_against_the_memory_budget() {
     let stream = idr_stream(4);
     let sps_nal = sps(66, 4, false, PocType::T2);
-    let parsed = crate::h264::decode::params::Sps::parse(&craft_media::bitstream::unescape_rbsp(&sps_nal[5..])).unwrap();
+    let parsed = crate::h264::decode::params::Sps::parse(&bharat_media::bitstream::unescape_rbsp(&sps_nal[5..])).unwrap();
     // 4:2:0, 8-bit: luma plus two quarter-size chroma planes per picture; the DPB, the current
     // picture and threads + 2 in flight.
     let one = (NMB * 256 + 2 * NMB * 64) as u64;
@@ -767,7 +767,7 @@ fn overlapping_slices_are_not_reconstructed_twice() {
 fn output_queue_counts_against_the_memory_budget() {
     let (head, ps) = skip_stream(40);
     let sps_nal = sps(66, 2, false, PocType::T2);
-    let parsed = crate::h264::decode::params::Sps::parse(&craft_media::bitstream::unescape_rbsp(&sps_nal[5..])).unwrap();
+    let parsed = crate::h264::decode::params::Sps::parse(&bharat_media::bitstream::unescape_rbsp(&sps_nal[5..])).unwrap();
     let one = (NMB * 256 + 2 * NMB * 64) as u64;
     let budget = (parsed.max_dpb_frames() + 1 + 3) as u64 * one;
     // One access unit per call: output drains as it goes, and the stream fits.

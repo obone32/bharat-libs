@@ -6,7 +6,7 @@ use crate::common;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::process::{Command, Stdio};
 
-use craft_video::h264::decode::Decoder;
+use bharat_video::h264::decode::Decoder;
 
 struct Rng(u64);
 impl Rng {
@@ -31,8 +31,8 @@ const SEEDS: &[(&str, &str, &str)] = &[
 ];
 
 fn make(ff: &std::path::Path, name: &str, args: &str, pix: &str) -> Option<Vec<u8>> {
-    let out = craft_media_testkit::fixtures_dir("h264").join(format!("{name}.h264"));
-    let p = craft_media_testkit::fixtures::generate(&out, |tmp| {
+    let out = bharat_media_testkit::fixtures_dir("h264").join(format!("{name}.h264"));
+    let p = bharat_media_testkit::fixtures::generate(&out, |tmp| {
         let a: Vec<&str> = args.split_whitespace().collect();
         matches!(
             Command::new(ff)
@@ -62,7 +62,7 @@ fn count_panics() {
 }
 
 fn run_all(d: &[u8], label: &str) {
-    craft_media_testkit::set_progress(label);
+    bharat_media_testkit::set_progress(label);
     count_panics();
     let before = PANICS.load(std::sync::atomic::Ordering::SeqCst);
     let res = catch_unwind(AssertUnwindSafe(|| {
@@ -85,15 +85,15 @@ const DEADLINE_SECS: u64 = 600;
 /// CI runs a rotating share of every part of the sweep; `FILMCRAFT_FUZZ_ITERS=400` runs all of it (see [`Depth`]).
 #[test]
 fn hostile_streams_never_panic() {
-    craft_media_testkit::with_deadline(DEADLINE_SECS, sweep);
+    bharat_media_testkit::with_deadline(DEADLINE_SECS, sweep);
 }
 
 fn sweep() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("h264 fuzz") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("h264 fuzz") else { return };
     let depth = Depth::from_env();
     for &(name, args, pix) in SEEDS {
-        if !craft_media_testkit::ffmpeg_has_encoder(&ff, "libx264") {
-            craft_media_testkit::skip_test("h264 fuzz", &format!("this ffmpeg has no libx264 encoder (seed {name})"));
+        if !bharat_media_testkit::ffmpeg_has_encoder(&ff, "libx264") {
+            bharat_media_testkit::skip_test("h264 fuzz", &format!("this ffmpeg has no libx264 encoder (seed {name})"));
             continue;
         }
         let Some(seed) = make(&ff, name, args, pix) else {

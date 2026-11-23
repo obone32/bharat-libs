@@ -1,6 +1,6 @@
 //! RFC 9924 APV frame and tile decoder.
 
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 use crate::apv::dct::{scale_and_idct8x8, scale_and_idct8x8_dc_only};
 use crate::apv::header::{

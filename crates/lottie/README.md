@@ -1,4 +1,4 @@
-# craft-lottie
+# bharat-lottie
 
 Lottie (Bodymovin) JSON: the document as the file has it, and the encodings its values use. Bytes
 in, a neutral model out, and back. Which layer, shape, effect and text feature becomes what in an

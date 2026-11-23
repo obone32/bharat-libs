@@ -1,4 +1,4 @@
-use craft_cms::spi1d::{MAX_ENTRIES, Table, parse};
+use bharat_cms::spi1d::{MAX_ENTRIES, Table, parse};
 
 #[test]
 fn monochrome_and_three_component_samples_preserve_domain() {

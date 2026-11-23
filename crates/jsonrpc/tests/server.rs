@@ -1,4 +1,4 @@
-use craft_jsonrpc::{Limits, ParseError, RpcError, parse_error_response, parse_json, process};
+use bharat_jsonrpc::{Limits, ParseError, RpcError, parse_error_response, parse_json, process};
 use serde_json::{Value, json};
 
 #[test]
@@ -124,12 +124,12 @@ fn invalid_utf8_and_excessive_nesting_are_rejected() {
 fn bounded_line_read_handles_chunks_empty_lines_and_eof() {
     use std::io::{BufReader, Cursor};
     let mut reader = BufReader::with_capacity(2, Cursor::new(b"abc\n\nxy"));
-    assert_eq!(craft_jsonrpc::read_line(&mut reader, 3).unwrap(), Some(b"abc".to_vec()));
-    assert_eq!(craft_jsonrpc::read_line(&mut reader, 3).unwrap(), Some(Vec::new()));
-    assert_eq!(craft_jsonrpc::read_line(&mut reader, 3).unwrap(), Some(b"xy".to_vec()));
-    assert_eq!(craft_jsonrpc::read_line(&mut reader, 3).unwrap(), None);
+    assert_eq!(bharat_jsonrpc::read_line(&mut reader, 3).unwrap(), Some(b"abc".to_vec()));
+    assert_eq!(bharat_jsonrpc::read_line(&mut reader, 3).unwrap(), Some(Vec::new()));
+    assert_eq!(bharat_jsonrpc::read_line(&mut reader, 3).unwrap(), Some(b"xy".to_vec()));
+    assert_eq!(bharat_jsonrpc::read_line(&mut reader, 3).unwrap(), None);
     let mut too_long = BufReader::with_capacity(2, Cursor::new(b"abcd\n"));
-    assert!(matches!(craft_jsonrpc::read_line(&mut too_long, 3), Err(craft_jsonrpc::LineError::TooLong)));
+    assert!(matches!(bharat_jsonrpc::read_line(&mut too_long, 3), Err(bharat_jsonrpc::LineError::TooLong)));
 }
 
 #[test]
@@ -141,19 +141,19 @@ fn bounded_line_read_propagates_io_errors() {
         }
     }
     let mut reader = std::io::BufReader::new(Broken);
-    assert!(matches!(craft_jsonrpc::read_line(&mut reader, 1), Err(craft_jsonrpc::LineError::Io(_))));
+    assert!(matches!(bharat_jsonrpc::read_line(&mut reader, 1), Err(bharat_jsonrpc::LineError::Io(_))));
 }
 
 #[test]
 fn inspect_single_request_distinguishes_null_ids_and_invalid_envelopes() {
     let request = json!({"jsonrpc":"2.0", "id":null, "method":"ping"});
-    let parsed = craft_jsonrpc::request(&request, Limits::default()).unwrap();
+    let parsed = bharat_jsonrpc::request(&request, Limits::default()).unwrap();
     assert_eq!(parsed.id, Some(&Value::Null));
     assert_eq!(parsed.method, "ping");
     let notification = json!({"jsonrpc":"2.0", "method":"ping"});
-    assert!(craft_jsonrpc::request(&notification, Limits::default()).unwrap().id.is_none());
-    assert!(craft_jsonrpc::request(&json!({"jsonrpc":"2.0", "id":false, "method":"ping"}), Limits::default()).is_none());
-    assert!(craft_jsonrpc::request(&json!({"method":"ping"}), Limits::default()).is_none());
+    assert!(bharat_jsonrpc::request(&notification, Limits::default()).unwrap().id.is_none());
+    assert!(bharat_jsonrpc::request(&json!({"jsonrpc":"2.0", "id":false, "method":"ping"}), Limits::default()).is_none());
+    assert!(bharat_jsonrpc::request(&json!({"method":"ping"}), Limits::default()).is_none());
 }
 
 #[test]

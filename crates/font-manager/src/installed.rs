@@ -1,6 +1,6 @@
 //! The installed fonts the catalog sees, grouped by family.
 
-use craft_font_catalog::{FaceInfo, Source};
+use bharat_font_catalog::{FaceInfo, Source};
 
 /// One family from one source: a family installed on the system and in the font store is two
 /// entries, since only the store's can be removed.

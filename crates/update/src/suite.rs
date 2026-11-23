@@ -1,7 +1,7 @@
-//! The Craft App Suite as releases know it: each app's id, name and repository.
+//! The Bharat App Suite as releases know it: each app's id, name and repository.
 //!
 //! An app that updates itself takes its own entry (`suite::PHOTOCRAFT`); the launcher takes all
-//! of them. Installers use the list to tell a Craft App's package from anyone else's.
+//! of them. Installers use the list to tell a Bharat App's package from anyone else's.
 
 use crate::app::App;
 
@@ -23,12 +23,12 @@ pub const DECKCRAFT: App = App::new("deckcraft", "DeckCraft", "Presentations and
 pub const CADCRAFT: App = App::new("cadcraft", "CADCraft", "Computer-aided design and drafting", "storytold/cadcraft");
 pub const GRIDCRAFT: App = App::new("gridcraft", "GridCraft", "Spreadsheets and data", "storytold/gridcraft");
 
-/// ArtCraft Launcher, described like a Craft App so it updates itself with the same machinery
+/// ArtCraft Launcher, described like a Bharat App so it updates itself with the same machinery
 /// (asset names `artcraft-launcher-<ver>-…`, bundle id `ai.storyteller.artcraft-launcher`,
 /// `ArtCraft Launcher.app`). Not part of [`SUITE`].
-pub const LAUNCHER: App = App::new("artcraft-launcher", "ArtCraft Launcher", "Installs and updates the Craft App Suite", "storytold/craft-launcher");
+pub const LAUNCHER: App = App::new("artcraft-launcher", "ArtCraft Launcher", "Installs and updates the Bharat App Suite", "storytold/bharat-launcher");
 
-/// The Craft App Suite, in getartcraft.com's display order.
+/// The Bharat App Suite, in getartcraft.com's display order.
 pub const SUITE: [App; 13] = [
     PHOTOCRAFT,
     VECTORCRAFT,

@@ -1,5 +1,5 @@
 use super::*;
-use craft_wordmodel::THEME_COLORS;
+use bharat_wordmodel::THEME_COLORS;
 
 const NS: &str =
     r#"xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main""#;
@@ -386,7 +386,7 @@ fn axis_format_code_length_is_capped() {
         let x = format!(r#"<c:valAx {NS}><c:numFmt formatCode="{code}" sourceLinked="0"/></c:valAx>"#);
         axis(Some(&crate::xml::parse(x.as_bytes()).unwrap())).fmt
     };
-    use craft_wordmodel::chart::MAX_FMT;
+    use bharat_wordmodel::chart::MAX_FMT;
     // The limit is the model's, counted in characters (a CJK character is one).
     let ok = format!("{}0", "x".repeat(MAX_FMT - 1));
     assert_eq!(fmt(&ok), Some(ok.clone()));
@@ -728,7 +728,7 @@ fn data_labels_use_their_own_format_code() {
     let linked = shown(&line_with(&dl(r#"<c:numFmt formatCode="0.00" sourceLinked="1"/>"#), ""));
     assert!(linked.contains(&"3.2".to_string()) && linked.contains(&"5".to_string()), "{linked:?}");
     // A format code beyond the cap is ignored, not applied.
-    let long = "0".repeat(craft_wordmodel::chart::MAX_FMT + 1);
+    let long = "0".repeat(bharat_wordmodel::chart::MAX_FMT + 1);
     let capped = shown(&line_with(&dl(&format!(r#"<c:numFmt formatCode="{long}" sourceLinked="0"/>"#)), ""));
     assert!(capped.contains(&"3.2".to_string()), "{capped:?}");
 }

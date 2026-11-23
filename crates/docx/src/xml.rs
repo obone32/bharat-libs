@@ -1,4 +1,4 @@
-//! A small, bounded XML tree read with `craft-xml`, plus a string-building XML writer.
+//! A small, bounded XML tree read with `bharat-xml`, plus a string-building XML writer.
 //!
 //! Element and attribute names are rewritten to *canonical prefixes* by namespace URI (`w:p`,
 //! `r:id`, `a:blip`…), so the reader doesn't care which prefixes a producer chose. Names in
@@ -348,7 +348,7 @@ fn parse_with(bytes: &[u8], extra: &[(&'static str, &str)], strict: bool) -> Res
     // (wordcraft#3548): the WordprocessingDrawing namespace reads as Word 2010's several
     // ([`drawing_prefix`]), and Word's `wne:txbxContent` in a shape's text box reads as
     // `w:txbxContent`.
-    let element = |n: &craft_xml::NsName<'_>| -> Option<&'static str> {
+    let element = |n: &bharat_xml::NsName<'_>| -> Option<&'static str> {
         match n.prefix {
             "wp" => Some(drawing_prefix(n.local, n.parent)),
             "?" if n.uri.as_bytes() == WNE && n.local == "txbxContent" && n.parent == Some("wps:txbx") => Some("w"),
@@ -356,7 +356,7 @@ fn parse_with(bytes: &[u8], extra: &[(&'static str, &str)], strict: bool) -> Res
         }
     };
     // Requires holds namespace prefixes, not feature names: resolved while the scope exists.
-    let requires = |el: &str, attr: &str, value: &str, scope: &craft_xml::Scope<'_>| -> Option<String> {
+    let requires = |el: &str, attr: &str, value: &str, scope: &bharat_xml::Scope<'_>| -> Option<String> {
         if el != "mc:Choice" || attr != "Requires" {
             return None;
         }
@@ -366,11 +366,11 @@ fn parse_with(bytes: &[u8], extra: &[(&'static str, &str)], strict: bool) -> Res
         }
         Some(requirements.into_iter().map(|p| scope.uri(p).map_or("?", |u| requirement_prefix(u.as_bytes()))).collect::<Vec<_>>().join(" "))
     };
-    let canonical = craft_xml::Canonical { namespaces: &namespaces, unknown: "?", element: Some(&element), attr_value: Some(&requires) };
-    let limits = craft_xml::Limits {
+    let canonical = bharat_xml::Canonical { namespaces: &namespaces, unknown: "?", element: Some(&element), attr_value: Some(&requires) };
+    let limits = bharat_xml::Limits {
         // The flat (single-file) form of a package may be larger than any one part.
         max_input: 2 << 30,
-        // `MAX_DEPTH` open elements, and an empty element inside the deepest (craft-xml counts the
+        // `MAX_DEPTH` open elements, and an empty element inside the deepest (bharat-xml counts the
         // empty one as a level).
         max_depth: MAX_DEPTH + 1,
         // Text stretches count as nodes too: two for each element.
@@ -379,7 +379,7 @@ fn parse_with(bytes: &[u8], extra: &[(&'static str, &str)], strict: bool) -> Res
         max_attrs: MAX_ATTRS,
         max_attrs_total: 2 * MAX_ELEMENTS,
     };
-    let mut options = craft_xml::Options::canonical(&canonical).with_limits(limits);
+    let mut options = bharat_xml::Options::canonical(&canonical).with_limits(limits);
     if strict {
         options = options.strict();
     }
@@ -387,32 +387,32 @@ fn parse_with(bytes: &[u8], extra: &[(&'static str, &str)], strict: bool) -> Res
     Ok(from_tree(root))
 }
 
-/// The `craft-xml` tree as this module's (whose shape the reader was written against).
-// shortcut: one copy of each parsed part; read craft_xml::El directly when the reader is ported to it.
-fn from_tree(e: craft_xml::El) -> El {
+/// The `bharat-xml` tree as this module's (whose shape the reader was written against).
+// shortcut: one copy of each parsed part; read bharat_xml::El directly when the reader is ported to it.
+fn from_tree(e: bharat_xml::El) -> El {
     let mut kids = Vec::with_capacity(e.children.len());
     for n in e.children {
         match n {
-            craft_xml::Node::El(c) => kids.push(Node::El(from_tree(c))),
-            craft_xml::Node::Text(t) | craft_xml::Node::CData(t) => match kids.last_mut() {
+            bharat_xml::Node::El(c) => kids.push(Node::El(from_tree(c))),
+            bharat_xml::Node::Text(t) | bharat_xml::Node::CData(t) => match kids.last_mut() {
                 Some(Node::Text(prev)) => prev.push_str(&t),
                 _ => kids.push(Node::Text(t)),
             },
-            craft_xml::Node::Pi { .. } | craft_xml::Node::Comment(_) => {}
+            bharat_xml::Node::Pi { .. } | bharat_xml::Node::Comment(_) => {}
         }
     }
     El { name: e.name, attrs: e.attrs, kids }
 }
 
-/// This module's tree as `craft-xml`'s, for the shared readers (`craft-drawingml`, `craft-math`)
+/// This module's tree as `bharat-xml`'s, for the shared readers (`bharat-drawingml`, `bharat-math`)
 /// that take one. Both use the canonical prefixes.
-// shortcut: copies the subtree; goes when the reader reads craft_xml::El directly.
-pub(crate) fn to_craft(e: &El) -> craft_xml::El {
-    let mut out = craft_xml::El { name: e.name.clone(), attrs: e.attrs.clone(), children: Vec::with_capacity(e.kids.len()) };
+// shortcut: copies the subtree; goes when the reader reads bharat_xml::El directly.
+pub(crate) fn to_craft(e: &El) -> bharat_xml::El {
+    let mut out = bharat_xml::El { name: e.name.clone(), attrs: e.attrs.clone(), children: Vec::with_capacity(e.kids.len()) };
     for k in &e.kids {
         out.children.push(match k {
-            Node::El(c) => craft_xml::Node::El(to_craft(c)),
-            Node::Text(t) => craft_xml::Node::Text(t.clone()),
+            Node::El(c) => bharat_xml::Node::El(to_craft(c)),
+            Node::Text(t) => bharat_xml::Node::Text(t.clone()),
         });
     }
     out

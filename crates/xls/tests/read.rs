@@ -6,7 +6,7 @@ use common::{
     at, bof, cat, cell, compound, eof, exp, fmt, formula, ftext, num, ptg_int, ptg_ref, put32, read_limited, read_xls, rec, special, text, u16s, v,
     xlstr,
 };
-use craft_xls::{CalcMode, CellError, CellRef, Column, Error, Limits, Range, Row, Value, View, Workbook, is_xls};
+use bharat_xls::{CalcMode, CellError, CellRef, Column, Error, Limits, Range, Row, Value, View, Workbook, is_xls};
 
 fn range(a1: &str) -> Range {
     let (a, b) = a1.split_once(':').unwrap_or((a1, a1));
@@ -158,7 +158,7 @@ fn assert_formula_roundtrip(wb: &Workbook) {
     let c5 = wb.sheets[0].cells[&at("C5")].formula.clone().unwrap();
     assert_eq!((c5.text.as_str(), c5.array), ("A5:A6*2", Some(range("C5:C6"))));
     // The follower keeps its (unlocked, so not plain) format on a blank cell.
-    assert_eq!(wb.sheets[0].cells[&at("C6")], craft_xls::Cell { value: Value::Empty, format: Some(0), formula: None });
+    assert_eq!(wb.sheets[0].cells[&at("C6")], bharat_xls::Cell { value: Value::Empty, format: Some(0), formula: None });
     assert_eq!(ftext(wb, "C6"), None);
     assert_eq!(v(wb, 0, "C6"), Value::Empty);
 }
@@ -397,11 +397,11 @@ fn reads_iterative_calculation_settings() {
     assert_eq!(wb.calc.iterative, Some(true));
     assert_eq!((wb.calc.max_iterations, wb.calc.max_change), (Some(50), Some(0.01)));
     assert_eq!(wb.calc.mode, Some(CalcMode::Manual));
-    assert_eq!((wb.sheets[0].calc, wb.sheets[1].calc), (wb.calc, craft_xls::Calc::default()));
+    assert_eq!((wb.sheets[0].calc, wb.sheets[1].calc), (wb.calc, bharat_xls::Calc::default()));
     assert!(wb.precision_as_displayed);
     // Without the records nothing is set: the caller applies Excel's defaults.
     let (wb, _) = read_xls(&compound("Workbook", &sample(false))).unwrap();
-    assert_eq!(wb.calc, craft_xls::Calc::default());
+    assert_eq!(wb.calc, bharat_xls::Calc::default());
     assert!(!wb.precision_as_displayed);
 }
 
@@ -621,9 +621,9 @@ fn the_fixture_writer_reads_back() {
     let long = "é".repeat(3000);
     let rows =
         vec![vec!["Name".to_string(), "Żółw".into(), String::new(), "2.5".into()], vec!["date:45000".into(), long.clone(), long.clone() + "x"]];
-    let bytes = craft_xls::testing::workbook(&[("Erste", rows), ("Second", vec![vec!["Name".into()]])]);
+    let bytes = bharat_xls::testing::workbook(&[("Erste", rows), ("Second", vec![vec!["Name".into()]])]);
     assert!(is_xls(&bytes));
-    let read = craft_xls::read(&bytes).unwrap();
+    let read = bharat_xls::read(&bytes).unwrap();
     assert_eq!(read.warnings, []);
     let wb = read.workbook;
     assert_eq!(wb.sheets.iter().map(|s| s.name.as_str()).collect::<Vec<_>>(), ["Erste", "Second"]);
@@ -705,8 +705,8 @@ fn reports_the_sheet_it_was_saved_on() {
 
 // Encrypted workbooks. Ported from storytold/gridcraft#847 (RC4) and #3713 (RC4 CryptoAPI).
 
-fn read_pw(file: &[u8], password: &str) -> Result<craft_xls::Read, Error> {
-    craft_xls::read_with_password(file, Limits::default(), password)
+fn read_pw(file: &[u8], password: &str) -> Result<bharat_xls::Read, Error> {
+    bharat_xls::read_with_password(file, Limits::default(), password)
 }
 
 /// A sheet over several 1024-byte blocks, with records straddling the boundaries.
@@ -728,10 +728,10 @@ fn with_filepass(payload: &[u8]) -> Vec<u8> {
 
 #[test]
 fn rc4_encrypted_workbooks_read_with_their_password() {
-    use craft_xls::testing::encrypt_rc4;
+    use bharat_xls::testing::encrypt_rc4;
     let plain = compound("Workbook", &sample(false));
     let file = compound("Workbook", &encrypt_rc4(&sample(false), "a password").unwrap());
-    assert!(is_xls(&file) && craft_xls::is_encrypted(&file) && !craft_xls::is_encrypted(&plain));
+    assert!(is_xls(&file) && bharat_xls::is_encrypted(&file) && !bharat_xls::is_encrypted(&plain));
     assert_eq!(read_xls(&file).err(), Some(Error::Encrypted));
     assert_eq!(read_pw(&file, "A password").err(), Some(Error::WrongPassword));
     let wb = read_pw(&file, "a password").unwrap().workbook;
@@ -756,20 +756,20 @@ fn rc4_encrypted_workbooks_read_with_their_password() {
 #[test]
 fn excels_default_password_opens_without_asking() {
     // A workbook protected only against changes is encrypted with "VelvetSweatshop".
-    let file = compound("Workbook", &craft_xls::testing::encrypt_rc4(&sample(false), "VelvetSweatshop").unwrap());
+    let file = compound("Workbook", &bharat_xls::testing::encrypt_rc4(&sample(false), "VelvetSweatshop").unwrap());
     assert_eq!(read_xls(&file).unwrap().0.sheets.len(), 2);
-    let file = compound("Workbook", &craft_xls::testing::encrypt_cryptoapi(&sample(false), "VelvetSweatshop", 128).unwrap());
+    let file = compound("Workbook", &bharat_xls::testing::encrypt_cryptoapi(&sample(false), "VelvetSweatshop", 128).unwrap());
     assert_eq!(read_xls(&file).unwrap().0.sheets.len(), 2);
 }
 
 #[test]
 fn rc4_cryptoapi_encrypted_workbooks_read_with_their_password() {
-    use craft_xls::testing::encrypt_cryptoapi;
+    use bharat_xls::testing::encrypt_cryptoapi;
     let (expected, _) = read_xls(&compound("Workbook", &sample(false))).unwrap();
     // Current Excel's 128-bit key, the oldest 40-bit one (padded to 128 bits) and one between.
     for bits in [128, 40, 56] {
         let file = compound("Workbook", &encrypt_cryptoapi(&sample(false), "Synthetic pw 9", bits).unwrap());
-        assert!(craft_xls::is_encrypted(&file), "{bits}");
+        assert!(bharat_xls::is_encrypted(&file), "{bits}");
         assert_eq!(read_xls(&file).err(), Some(Error::Encrypted), "{bits}");
         assert_eq!(read_pw(&file, "synthetic pw 9").err(), Some(Error::WrongPassword), "{bits}");
         let wb = read_pw(&file, "Synthetic pw 9").unwrap().workbook;
@@ -789,20 +789,20 @@ fn rc4_cryptoapi_encrypted_workbooks_read_with_their_password() {
 /// named, and sizes that don't fit are a damaged file, never a panic.
 #[test]
 fn rc4_cryptoapi_filepass_fields_are_checked() {
-    let good = craft_xls::testing::cryptoapi_filepass("pw", 128);
+    let good = bharat_xls::testing::cryptoapi_filepass("pw", 128);
     // The EncryptionHeader starts at byte 14.
     let edited = |at: usize, word: u32| {
         let mut f = good.clone();
         f[at..at + 4].copy_from_slice(&word.to_le_bytes());
         read_pw(&with_filepass(&f), "pw")
     };
-    let unsupported = |r: Result<craft_xls::Read, Error>| match r {
+    let unsupported = |r: Result<bharat_xls::Read, Error>| match r {
         Err(Error::UnsupportedEncryption(s)) => s,
         other => panic!("{other:?}"),
     };
-    let damaged = |r: Result<craft_xls::Read, Error>| matches!(&r, Err(Error::Invalid(m)) if m.contains("encryption record"));
+    let damaged = |r: Result<bharat_xls::Read, Error>| matches!(&r, Err(Error::Invalid(m)) if m.contains("encryption record"));
     // Decrypted, the record alone is a workbook with no sheets: refused for that, not for its key.
-    let decrypts = |r: Result<craft_xls::Read, Error>| matches!(&r, Err(Error::Invalid(m)) if m.contains("no worksheets"));
+    let decrypts = |r: Result<bharat_xls::Read, Error>| matches!(&r, Err(Error::Invalid(m)) if m.contains("no worksheets"));
     assert!(decrypts(read_pw(&with_filepass(&good), "pw")));
     assert_eq!(unsupported(edited(14 + 8, 0x660E)), "CryptoAPI with cipher 0x660E");
     assert_eq!(unsupported(edited(6, 0x24)), "CryptoAPI AES");

@@ -2,12 +2,12 @@
 
 use std::process::Command;
 
-use craft_video::hevc::{Encoder, EncoderConfig, Frame};
+use bharat_video::hevc::{Encoder, EncoderConfig, Frame};
 
 /// The VUI carries the configured colour description, and BT.709 when none is set.
 #[test]
 fn colour_description_reaches_the_vui() {
-    let Some(ffprobe) = craft_media_testkit::ffprobe() else { return };
+    let Some(ffprobe) = bharat_media_testkit::ffprobe() else { return };
     let (w, h) = (64usize, 64usize);
     let (y, c) = (vec![100u16; w * h], vec![128u16; w * h / 4]);
     for (codes, names) in [(None, ["bt709", "bt709", "bt709"]), (Some([9u8, 16, 9]), ["bt2020", "smpte2084", "bt2020nc"])] {
@@ -30,7 +30,7 @@ fn colour_description_reaches_the_vui() {
             stream.extend_from_slice(nal);
             rest = tail;
         }
-        let path = craft_media_testkit::fixture_subdir("hevc").join(format!("colour-{}-{}.hevc", std::process::id(), codes.is_some()));
+        let path = bharat_media_testkit::fixture_subdir("hevc").join(format!("colour-{}-{}.hevc", std::process::id(), codes.is_some()));
         std::fs::write(&path, stream).unwrap();
         let out = Command::new(&ffprobe).args(["-v", "error", "-show_streams", "-of", "flat"]).arg(&path).output().unwrap();
         let _ = std::fs::remove_file(&path);

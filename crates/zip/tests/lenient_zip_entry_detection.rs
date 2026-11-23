@@ -1,6 +1,6 @@
 #![cfg(feature = "lenient")]
-// From Craft Anything crates/formats/tests/zip_entry_detection.rs.
-use craft_zip::lenient::has_entry as zip_has_entry;
+// From Bharat Anything crates/formats/tests/zip_entry_detection.rs.
+use bharat_zip::lenient::has_entry as zip_has_entry;
 #[path = "lenient_common/mod.rs"]
 mod common;
 use common::zip_stored;

@@ -1,4 +1,4 @@
-# craft-csv
+# bharat-csv
 
 Delimited text (CSV, TSV and their relatives) and SYLK (`.slk`). No `unsafe`; the only
 dependency is `thiserror`.

@@ -1,6 +1,6 @@
-use craft_psd::descriptor::{Descriptor, ObjectArray, ParseLimits, Value};
-use craft_psd::float::FloatImage;
-use craft_psd::smart::SmartObject;
+use bharat_psd::descriptor::{Descriptor, ObjectArray, ParseLimits, Value};
+use bharat_psd::float::FloatImage;
+use bharat_psd::smart::SmartObject;
 
 #[test]
 fn descriptor_limits_apply_at_boundary_and_through_every_nested_container() {
@@ -41,11 +41,11 @@ fn count_limits_reject_before_reading_declared_elements() {
     let mut bytes = Descriptor::new("test").to_bytes();
     let end = bytes.len();
     bytes[end - 4..].copy_from_slice(&2u32.to_be_bytes());
-    assert!(matches!(Descriptor::parse_prefix_with_limits(&bytes, limits), Err(craft_psd::PsdError::LimitExceeded(_))));
+    assert!(matches!(Descriptor::parse_prefix_with_limits(&bytes, limits), Err(bharat_psd::PsdError::LimitExceeded(_))));
     let mut bytes = Descriptor::new("test").with("list", Value::List(vec![])).to_bytes();
     let end = bytes.len();
     bytes[end - 4..].copy_from_slice(&2u32.to_be_bytes());
-    assert!(matches!(Descriptor::parse_prefix_with_limits(&bytes, limits), Err(craft_psd::PsdError::LimitExceeded(_))));
+    assert!(matches!(Descriptor::parse_prefix_with_limits(&bytes, limits), Err(bharat_psd::PsdError::LimitExceeded(_))));
 }
 
 #[test]

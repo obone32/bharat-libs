@@ -3,8 +3,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::props::{Border, BorderStyle, Borders, ParaProps};
-use craft_wordmodel::{Document, Paragraph, Rgb, para_block};
+use bharat_wordmodel::props::{Border, BorderStyle, Borders, ParaProps};
+use bharat_wordmodel::{Document, Paragraph, Rgb, para_block};
 
 fn open(props: &str, text: &str) -> Document {
     let content = format!(
@@ -71,7 +71,7 @@ fn borders_and_background_round_trip() {
     };
     let mut p = Paragraph::new();
     p.text = "Boxed".into();
-    p.runs = vec![craft_wordmodel::para::Run { len: 5, props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: 5, props: Default::default() }];
     p.props = want.clone();
     let mut d = Document::new();
     d.body = vec![para_block(p)];

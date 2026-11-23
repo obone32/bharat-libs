@@ -2,7 +2,7 @@
 //! images stored after the primary one in the same file (a gain map, a large preview, the second
 //! view of a stereo pair).
 //!
-//! The index is a small TIFF stream (read with `craft-tiff`): its first IFD holds MPFVersion
+//! The index is a small TIFF stream (read with `bharat-tiff`): its first IFD holds MPFVersion
 //! (0xB000), NumberOfImages (0xB001) and MPEntry (0xB002), one 16-byte entry per image: the
 //! attribute (flags and a type code in the low 24 bits), the size, the offset from the TIFF
 //! header's byte-order field (0 for the primary image), and two dependent-image numbers.
@@ -12,7 +12,7 @@
 //! - [`images`] lists the images after the primary one, with their file offsets.
 //! - [`write`] puts an index into a primary JPEG and appends the other images to it.
 
-use craft_tiff::{ByteOrder, Tiff};
+use bharat_tiff::{ByteOrder, Tiff};
 
 /// Type code of a baseline MP primary image.
 pub const BASELINE_PRIMARY: u32 = 0x03_0000;

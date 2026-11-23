@@ -1,8 +1,8 @@
 //! Comments anchored inside footnotes and endnotes keep their ranges on read. All markup here is
 //! synthetic, written from ECMA-376 §17.13.4 and §17.11.
 
-use craft_wordmodel::para::{NoteKind, OBJ};
-use craft_wordmodel::{Document, InlineObject};
+use bharat_wordmodel::para::{NoteKind, OBJ};
+use bharat_wordmodel::{Document, InlineObject};
 
 use crate::fixtures::zip;
 
@@ -42,7 +42,7 @@ fn read_doc_with_note_relationships(with_note_relationships: bool) -> Document {
         ("word/endnotes.xml", endnotes.as_bytes()),
         ("word/comments.xml", comments.as_bytes()),
     ]);
-    craft_docx::read(&bytes).unwrap()
+    bharat_docx::read(&bytes).unwrap()
 }
 
 #[test]

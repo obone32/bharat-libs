@@ -41,11 +41,11 @@ jobs:
           components: rustfmt, clippy
       - uses: step-security/rust-cache@v2.9.2
         with:
-          key: craft-crw-${{ matrix.os }}
+          key: bharat-crw-${{ matrix.os }}
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo fmt -p craft-crw --check
-      - run: cargo clippy -p craft-crw --all-targets --locked -- -D warnings
-      - run: cargo test -p craft-crw --locked
+      - run: cargo fmt -p bharat-crw --check
+      - run: cargo clippy -p bharat-crw --all-targets --locked -- -D warnings
+      - run: cargo test -p bharat-crw --locked
 
   wasm:
     timeout-minutes: 10
@@ -65,9 +65,9 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: step-security/rust-cache@v2.9.2
         with:
-          key: craft-crw-wasm
+          key: bharat-crw-wasm
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo check -p craft-crw --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-crw --locked --target wasm32-unknown-unknown
 
   samples:
     timeout-minutes: 20
@@ -86,7 +86,7 @@ jobs:
           toolchain: stable
       - uses: step-security/rust-cache@v2.9.2
         with:
-          key: craft-crw-samples
+          key: bharat-crw-samples
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - name: Cache the CC0 sample files
         uses: actions/cache@v6.1.0
@@ -95,7 +95,7 @@ jobs:
           key: crw-samples-${{ hashFiles('crates/crw/tests/samples.json') }}
       - name: Fetch the pinned CC0 sample files (raw.pixls.us)
         run: python scripts/fetch-crw-samples.py "$RUNNER_TEMP/crw-samples"
-      - run: cargo test -p craft-crw --release --locked --test samples -- --nocapture
+      - run: cargo test -p bharat-crw --release --locked --test samples -- --nocapture
         env:
-          CRAFT_CRW_SAMPLES: ${{ runner.temp }}/crw-samples
-          CRAFT_CRW_REQUIRE_SAMPLES: "1"
+          BHARAT_CRW_SAMPLES: ${{ runner.temp }}/crw-samples
+          BHARAT_CRW_REQUIRE_SAMPLES: "1"

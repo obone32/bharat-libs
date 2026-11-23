@@ -1,8 +1,8 @@
 //! ODS packages assembled here, not files from another application. Adapted from GridCraft's
 //! `crates/xlsx/src/tests/ods_tests.rs`.
 
-use craft_ods::testing::{content, package, spreadsheet};
-use craft_ods::{CellRef, Error, Options, Range, Sheet, Value, ValueType, Workbook, read};
+use bharat_ods::testing::{content, package, spreadsheet};
+use bharat_ods::{CellRef, Error, Options, Range, Sheet, Value, ValueType, Workbook, read};
 
 fn ods(tables: &str) -> Vec<u8> {
     spreadsheet(tables)
@@ -163,14 +163,14 @@ fn namespaces_are_resolved_not_inferred_from_prefixes() {
 fn bad_packages_encryption_and_bad_xml_are_refused() {
     assert!(matches!(open(b"not zip"), Err(Error::Invalid(_))));
     let xml = content(r#"<table:table table:name="Data"/>"#);
-    let mut w = craft_odf::PackageWriter::new("application/zip");
+    let mut w = bharat_odf::PackageWriter::new("application/zip");
     w.file("content.xml", "text/xml", xml.as_bytes());
     assert!(matches!(open(&w.finish().unwrap()), Err(Error::Invalid(_))));
-    assert!(craft_ods::is_ods(&package(xml.as_bytes())));
-    let mut w = craft_odf::PackageWriter::new(craft_odf::mime::SPREADSHEET);
+    assert!(bharat_ods::is_ods(&package(xml.as_bytes())));
+    let mut w = bharat_odf::PackageWriter::new(bharat_odf::mime::SPREADSHEET);
     w.file("content.xml", "text/xml", xml.as_bytes());
     if let Some(e) = w.manifest_mut().entries.iter_mut().find(|e| e.path == "content.xml") {
-        e.encryption = Some(craft_odf::Encryption::default());
+        e.encryption = Some(bharat_odf::Encryption::default());
     }
     assert_eq!(open(&w.finish().unwrap()), Err(Error::Encrypted));
     for bad in [

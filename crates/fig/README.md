@@ -1,10 +1,10 @@
-# craft-fig
+# bharat-fig
 
 A clean-room reader and writer for the `.fig` container: the local copies Figma Design saves
 (`.fig`) and FigJam whiteboards (`.jam`, the same archive with another canvas header). No `unsafe`.
 
 This crate is the wire layer. It opens the archive, decompresses the canvas, hands the schema and
-the message to [`craft-kiwi`](../kiwi/README.md), finds images, and reads and writes the two blob
+the message to [`bharat-kiwi`](../kiwi/README.md), finds images, and reads and writes the two blob
 encodings (vector networks and outline geometry). What the decoded node changes mean, and how
 they map onto an application's document, stays with the caller: the message is a `kiwi::Kv` tree
 read by field name, in the file's own terms.
@@ -36,22 +36,22 @@ Written files were checked by opening them in other software. Moved here from
 ## Reading
 
 ```rust
-let archive = craft_fig::Archive::open(&bytes)?;             // a zip or a bare canvas
+let archive = bharat_fig::Archive::open(&bytes)?;             // a zip or a bare canvas
 let packed = archive.canvas.len();
-let (schema, message) = craft_fig::decode_canvas(&archive.canvas)?;
+let (schema, message) = bharat_fig::decode_canvas(&archive.canvas)?;
 let root = schema.find("Message").ok_or("no Message definition")?;
-let msg = schema.decode_message_within(root, &message, craft_fig::value_budget(packed))?;
-let embedded = craft_fig::embedded_copies(&msg, craft_fig::Limits::default().max_image);
+let msg = schema.decode_message_within(root, &message, bharat_fig::value_budget(packed))?;
+let embedded = bharat_fig::embedded_copies(&msg, bharat_fig::Limits::default().max_image);
 let image = archive.image("0a1b…").or_else(|| embedded.get("0a1b…").map(|b| b.to_vec()));
-let network = craft_fig::network::decode(blob_bytes);        // Option<Network>
-let outline = craft_fig::path::decode(blob_bytes);           // Option<Vec<Command>>
+let network = bharat_fig::network::decode(blob_bytes);        // Option<Network>
+let outline = bharat_fig::path::decode(blob_bytes);           // Option<Vec<Command>>
 ```
 
 ## Writing
 
 ```rust
-let canvas = craft_fig::encode_canvas(&kiwi::encode::schema(&schema), &kiwi::encode::message(&schema, root, &msg)?)?;
-let bytes = craft_fig::write_archive(&craft_fig::Package {
+let canvas = bharat_fig::encode_canvas(&kiwi::encode::schema(&schema), &kiwi::encode::message(&schema, root, &msg)?)?;
+let bytes = bharat_fig::write_archive(&bharat_fig::Package {
     file_name: "Untitled", background: [1.0, 1.0, 1.0, 1.0], canvas: &canvas, images: &images, thumbnail: None,
 })?;
 ```
@@ -81,12 +81,12 @@ to: a small file can't claim a large tree however far its chunks inflate.
 ## ZIP
 
 The archive is read with the `zip` crate directly, with the bounds above applied to each member.
-A shared bounded ZIP reader is planned (craft-libs #126); this crate moves to it when it lands.
+A shared bounded ZIP reader is planned (bharat-libs #126); this crate moves to it when it lands.
 
 ## The message as REST file JSON (`rest`)
 
 `rest::to_rest` maps a decoded message onto the REST API file JSON that
-[`craft-figma-rest`](../figma-rest/README.md) models: pages, the layer tree, geometry, paints,
+[`bharat-figma-rest`](../figma-rest/README.md) models: pages, the layer tree, geometry, paints,
 strokes, effects, text with styled runs, auto layout and grids, components, component sets and
 instances (expanded from their main, with overrides and property values applied), shared styles,
 variables, prototype interactions and flows. Layer kinds the REST shape doesn't have (sticky
@@ -94,11 +94,11 @@ notes, connectors, tables, …) come out as the closest frames, text and vectors
 understood is skipped with a warning.
 
 ```rust
-let mapped = craft_fig::rest::to_rest(&msg, "Untitled", &craft_fig::rest::Options {
-    max_nodes: craft_fig::rest::layer_budget(packed),
+let mapped = bharat_fig::rest::to_rest(&msg, "Untitled", &bharat_fig::rest::Options {
+    max_nodes: bharat_fig::rest::layer_budget(packed),
     ..Default::default()
 });
-let file = craft_figma_rest::File::from_value(mapped.json, usize::MAX)?;  // or read the JSON
+let file = bharat_figma_rest::File::from_value(mapped.json, usize::MAX)?;  // or read the JSON
 // mapped.networks: the vector networks layers name by `vectorNetworkRef`
 // mapped.warnings: what was skipped or approximated
 ```
@@ -107,7 +107,7 @@ let file = craft_figma_rest::File::from_value(mapped.json, usize::MAX)?;  // or 
   be measured, come from `Options::geometry` (the `rest::Geometry` trait): an editor routes
   imported connectors as it routes its own. `rest::Straight` draws straight lines and accepts
   every text path.
-- **Extensions.** Besides the public fields, the JSON carries the extensions craft-figma-rest
+- **Extensions.** Besides the public fields, the JSON carries the extensions bharat-figma-rest
   documents and private `_fig*` handoffs (each layer's provenance, cached library definitions,
   mains the layer cap kept out, region paints, saved line breaks, text paths) for an importer
   that wants them.

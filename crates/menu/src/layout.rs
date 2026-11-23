@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use craft_keymap::{Chord, CommandRef, Key, Mods};
+use bharat_keymap::{Chord, CommandRef, Key, Mods};
 
 use crate::model::{Builtin, Item, ItemRole, Menu, MenuBar, MenuRole, Node, Platforms, Standard, tidy};
 
@@ -284,7 +284,7 @@ pub fn web_layout(bar: &MenuBar, options: &LayoutOptions) -> Layout {
     Layout { bar, clashes }
 }
 
-// Browsers run these themselves and never pass them to the page. craft_keymap::reserved lists
+// Browsers run these themselves and never pass them to the page. bharat_keymap::reserved lists
 // only the operating systems' chords.
 const BROWSER: &[(Key, bool, &str)] = &[
     (Key::W, false, "Close Tab"),

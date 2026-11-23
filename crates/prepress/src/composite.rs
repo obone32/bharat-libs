@@ -4,7 +4,7 @@
 //! overprints and what knocks out, so it shows overprint as printed without changing any
 //! paint's blend mode.
 
-use craft_pdf::interpret::color::{CmykConversion, cmyk_to_srgb8};
+use bharat_pdf::interpret::color::{CmykConversion, cmyk_to_srgb8};
 
 use crate::cms::lab_to_srgb8;
 use crate::coverage::filled;
@@ -64,7 +64,7 @@ impl Plates {
     /// the printing condition the plates were made for, see [`Plates::conversion`]), relative
     /// colorimetric with black point compensation, or through the bundled CMYK profile when
     /// `cms` can't. Each spot plate is then multiplied over them by the spot's appearance at
-    /// its tint, from its alternate. Spots whose Lab alternate craft-cms can't convert are
+    /// its tint, from its alternate. Spots whose Lab alternate bharat-cms can't convert are
     /// left out. Empty when `width × height × 3` overflows or can't be allocated.
     pub fn composite(&self, enabled: &[bool], cms: &dyn CmykConversion) -> Vec<u8> {
         let Some(mut rgb) = self.pixels().and_then(|n| n.checked_mul(3)).and_then(|len| filled(len, 255_u8)) else {

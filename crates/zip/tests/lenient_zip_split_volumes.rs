@@ -1,6 +1,6 @@
 #![cfg(feature = "lenient")]
-// From Craft Anything crates/formats/tests/zip_split_volumes.rs.
-use craft_zip::lenient::{self as zip, ZipError};
+// From Bharat Anything crates/formats/tests/zip_split_volumes.rs.
+use bharat_zip::lenient::{self as zip, ZipError};
 #[path = "lenient_common/mod.rs"]
 mod common;
 use common::zip_stored;

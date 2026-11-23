@@ -65,7 +65,7 @@ fn legacy_json_extracts_assets_and_applies_v1_migrations() -> Result<(), Box<dyn
 
 #[test]
 fn newer_metadata_precedes_malformed_document_json() -> Result<(), Box<dyn std::error::Error>> {
-    let bytes = craft_document_bundle::write(b"{", VERSION + 1, "future", None, &[], &[], BUNDLE)?;
+    let bytes = bharat_document_bundle::write(b"{", VERSION + 1, "future", None, &[], &[], BUNDLE)?;
     assert!(matches!(load::<Value>(&bytes), Err(Error::TooNew(version)) if version == u64::from(VERSION + 1)));
     assert!(matches!(load::<Value>(b"not a package"), Err(Error::NotOurs(_))));
     Ok(())
@@ -84,7 +84,7 @@ fn embedded_documents_keep_their_version() {
 fn a_linked_asset_requires_version_five_and_old_readers_refuse_it() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(required_version(&linked_doc(), &[]), 5);
     let bytes = save(&linked_doc(), "t", None, &[], &[])?;
-    assert_eq!(craft_document_bundle::read(&bytes, 4, BUNDLE), Err(craft_document_bundle::Error::TooNew(5)));
+    assert_eq!(bharat_document_bundle::read(&bytes, 4, BUNDLE), Err(bharat_document_bundle::Error::TooNew(5)));
     let loaded = load::<Value>(&bytes)?;
     assert_eq!(loaded.document, linked_doc());
     assert!(loaded.assets.is_empty());
@@ -93,7 +93,7 @@ fn a_linked_asset_requires_version_five_and_old_readers_refuse_it() -> Result<()
 
 #[test]
 fn proxies_round_trip_and_unknown_or_oversized_ones_are_skipped() -> Result<(), Box<dyn std::error::Error>> {
-    let big = vec![0u8; usize::try_from(craft_document_bundle::PROXY_LIMIT)? + 1];
+    let big = vec![0u8; usize::try_from(bharat_document_bundle::PROXY_LIMIT)? + 1];
     let proxies = [
         Asset { id: "7", mime: "image/jpeg", data: b"jpeg" },
         Asset { id: "8", mime: "image/png", data: &big },

@@ -1,4 +1,4 @@
-# craft-penpot
+# bharat-penpot
 
 A clean-room reader and writer for the Penpot 2.x export container: the `.penpot` archive
 (`penpot/export-files`, version 1). Offline: no network, no converter, no `unsafe`.
@@ -37,13 +37,13 @@ Penpot 1.x binary exports are a different format and are not read.
 ## Reading
 
 ```rust
-let mut archive = craft_penpot::Archive::open(&bytes)?;
+let mut archive = bharat_penpot::Archive::open(&bytes)?;
 for file in archive.files.clone() {
     let header = archive.json(&format!("files/{}.json", file.id)).ok();
     for page in archive.pages(&file.id)? {                    // sorted by index
         let Some(page_id) = page.get("id").and_then(|v| v.as_str()) else { continue };
         let shapes = archive.page_shapes(&file.id, page_id)?; // id -> shape JSON
-        let root = shapes.get(craft_penpot::ROOT_ID);
+        let root = shapes.get(bharat_penpot::ROOT_ID);
     }
     let colors = archive.uuid_members(&format!("files/{}/colors", file.id), 2048);
     let image = archive.media(&file.id, media_id, max_bytes);  // Option<Vec<u8>>
@@ -58,8 +58,8 @@ budget ran out along the way, so exhaustion is never swallowed.
 ## Writing
 
 ```rust
-let manifest = craft_penpot::manifest("my-app/1.0", &[(file_id, "Name", features)]);
-let bytes = craft_penpot::write_archive([("manifest.json", manifest_bytes), (path, member_bytes)])?;
+let manifest = bharat_penpot::manifest("my-app/1.0", &[(file_id, "Name", features)]);
+let bytes = bharat_penpot::write_archive([("manifest.json", manifest_bytes), (path, member_bytes)])?;
 ```
 
 `write_archive` refuses paths `Archive::open` would refuse.
@@ -89,7 +89,7 @@ fail the archive. Ids are checked to be UUIDs before they are used in a member p
 ## ZIP
 
 The archive is read with the `zip` crate directly, with the bounds above applied to each member.
-A shared bounded ZIP reader is planned (craft-libs #126); this crate moves to it when it lands.
+A shared bounded ZIP reader is planned (bharat-libs #126); this crate moves to it when it lands.
 
 ## Typed members (`model`)
 
@@ -101,8 +101,8 @@ grid layout fields, component links, applied tokens), and the library records `L
 they don't know (`Other`).
 
 ```rust
-let page: craft_penpot::model::Page = archive.typed(&format!("files/{file}/pages/{page_id}.json"))?;
-let shape: craft_penpot::model::Shape = archive.typed(&shape_path)?;
+let page: bharat_penpot::model::Page = archive.typed(&format!("files/{file}/pages/{page_id}.json"))?;
+let shape: bharat_penpot::model::Shape = archive.typed(&shape_path)?;
 let bytes = serde_json::to_vec(&shape)?;                     // written back as the file had it
 ```
 

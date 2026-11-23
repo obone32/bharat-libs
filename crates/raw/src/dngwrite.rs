@@ -3,9 +3,9 @@
 //! image, so the develop pipeline builds those on top of this writer. The raw image is stored in IFD0 (allowed by DNG 1.7 §"File Structure").
 
 use crate::{Matrix3, RawData, RawError, RawImage, Result, ljpeg, opcodes};
-use craft_tiff::tags::{self as t, compression, photometric};
-use craft_tiff::writer::{rational, srational};
-use craft_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
+use bharat_tiff::tags::{self as t, compression, photometric};
+use bharat_tiff::writer::{rational, srational};
+use bharat_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
 use rayon::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -107,7 +107,7 @@ pub struct DngWriteOptions {
 
 impl Default for DngWriteOptions {
     fn default() -> Self {
-        Self { compression: DngCompression::Lj92 { tile: 256 }, order: ByteOrder::Little, xmp: None, software: "craft-raw".into() }
+        Self { compression: DngCompression::Lj92 { tile: 256 }, order: ByteOrder::Little, xmp: None, software: "bharat-raw".into() }
     }
 }
 
@@ -714,7 +714,7 @@ mod tests {
         };
         let bytes = write_lossy_dng(&DngImage::from(&raw), &DngWriteOptions::default(), 17, 255, &linearization, &encoder).unwrap();
         assert_eq!(called.load(std::sync::atomic::Ordering::Relaxed), 1);
-        let tiff = craft_tiff::Tiff::parse(&bytes).unwrap();
+        let tiff = bharat_tiff::Tiff::parse(&bytes).unwrap();
         let ifd = tiff.all_ifds()[0];
         assert_eq!(ifd.u16(t::COMPRESSION), Some(compression::LOSSY_JPEG));
         assert_eq!(ifd.u64s(t::LINEARIZATION_TABLE).unwrap(), linearization.iter().map(|&v| u64::from(v)).collect::<Vec<_>>());

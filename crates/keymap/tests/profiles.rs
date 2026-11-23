@@ -1,4 +1,4 @@
-use craft_keymap::{
+use bharat_keymap::{
     Bindable, Binding, CommandRef, ContextRule, Flavor, ForeignEntry, ForeignKey, ForeignSet, ImportOptions, Keymap, MAX_SETS, Overrides, Platform,
     Policy, ProfileError, Profiles, Scope, Scopes, SetProblem, Start, plan,
 };
@@ -22,9 +22,9 @@ fn keymap() -> Keymap {
 fn profiles_copy_built_ins_on_edit_and_round_trip_as_json() {
     let mut classic = Overrides::new();
     classic.insert("edit.copy", vec!["Cmd+Shift+C".into()]);
-    let builtins = [("Craft", Overrides::new()), ("Classic", classic.clone())];
+    let builtins = [("Bharat", Overrides::new()), ("Classic", classic.clone())];
     let mut p = Profiles::default();
-    assert_eq!(p.active_name(&builtins), "Craft");
+    assert_eq!(p.active_name(&builtins), "Bharat");
 
     let mut edited = Overrides::new();
     edited.insert("edit.copy", vec![]);
@@ -49,9 +49,9 @@ fn profiles_copy_built_ins_on_edit_and_round_trip_as_json() {
     assert_eq!(p.active(), "Mine");
     assert_eq!(p.save_as(&"x".repeat(65), Overrides::new(), &builtins), Err(ProfileError::BadName));
     p.delete("Mine", &builtins).unwrap();
-    assert_eq!(p.active_name(&builtins), "Craft");
+    assert_eq!(p.active_name(&builtins), "Bharat");
 
-    let wrong = exported.replace("craft-keymap", "other");
+    let wrong = exported.replace("bharat-keymap", "other");
     assert_eq!(p.import(&wrong, &builtins), Err(ProfileError::WrongFormat));
     let newer = exported.replace("\"version\": 1", "\"version\": 2");
     assert_eq!(p.import(&newer, &builtins), Err(ProfileError::NewerVersion(2)));
@@ -68,7 +68,7 @@ fn profiles_copy_built_ins_on_edit_and_round_trip_as_json() {
 
 #[test]
 fn rename_keeps_a_set_whose_name_differs_only_in_case() {
-    let builtins = [("Craft", Overrides::new())];
+    let builtins = [("Bharat", Overrides::new())];
     let mut p: Profiles = serde_json::from_str(r#"{"sets": {"Mine": {"a": "A"}, "mine": {"b": "B"}}}"#).unwrap();
     assert_eq!(p.rename("Mine", "mine", &builtins), Err(ProfileError::NameTaken));
     assert_eq!(p.sets()["mine"].get("b"), Some(&["B".to_string()][..]));
@@ -91,12 +91,12 @@ fn a_user_set_named_like_a_new_built_in_keeps_its_edits() {
     let mut mine = Overrides::new();
     mine.insert("edit.copy", vec!["Cmd+K".into()]);
     let mut p = Profiles::default();
-    p.save_as("Classic", mine.clone(), &[("Craft", Overrides::new())]).unwrap();
+    p.save_as("Classic", mine.clone(), &[("Bharat", Overrides::new())]).unwrap();
 
     // An update adds a built-in of that name.
     let mut classic = Overrides::new();
     classic.insert("edit.copy", vec!["Cmd+Shift+C".into()]);
-    let builtins = [("Craft", Overrides::new()), ("Classic", classic.clone())];
+    let builtins = [("Bharat", Overrides::new()), ("Classic", classic.clone())];
     assert_eq!(p.active_overrides(&builtins), &mine, "the user set is what the name reads");
 
     let mut edited = mine.clone();
@@ -108,9 +108,9 @@ fn a_user_set_named_like_a_new_built_in_keeps_its_edits() {
     assert_eq!(builtins[1].1, classic);
 
     let mut q: Profiles =
-        serde_json::from_value(json!({"active": "CRAFT", "sets": [{"name": "CRAFT", "overrides": {"edit.copy": "Cmd+K"}}]})).unwrap();
+        serde_json::from_value(json!({"active": "BHARAT", "sets": [{"name": "BHARAT", "overrides": {"edit.copy": "Cmd+K"}}]})).unwrap();
     assert!(q.reconcile(&builtins));
-    assert_eq!(q.active_name(&builtins), "CRAFT 2");
+    assert_eq!(q.active_name(&builtins), "BHARAT 2");
     assert_eq!(q.active_overrides(&builtins), &mine);
     assert!(!q.reconcile(&builtins));
 }
@@ -121,7 +121,7 @@ fn an_exported_set_imports_as_a_new_set_with_the_same_keymap() {
     km.assign(&"file.save".into(), b("Cmd+Alt+S"), Policy::Steal).unwrap();
     km.assign(&CommandRef::with_params("window.panel", json!({"panel": "layers"})), b("Timeline: Cmd+L"), Policy::Steal).unwrap();
     km.clear(&"edit.copy".into());
-    let builtins = [("Craft", Overrides::new())];
+    let builtins = [("Bharat", Overrides::new())];
     let mut p = Profiles::default();
     p.save_as("Mine", km.overrides().clone(), &builtins).unwrap();
 
@@ -141,7 +141,7 @@ fn an_exported_set_imports_as_a_new_set_with_the_same_keymap() {
 fn duplicate_copies_built_in_and_user_sets() {
     let mut classic = Overrides::new();
     classic.insert("edit.copy", vec!["Cmd+Shift+C".into()]);
-    let builtins = [("Craft", Overrides::new()), ("Classic", classic.clone())];
+    let builtins = [("Bharat", Overrides::new()), ("Classic", classic.clone())];
     let mut p = Profiles::default();
 
     assert_eq!(p.duplicate("Classic", "Classic", &builtins), Ok("Classic 2".into()));
@@ -150,12 +150,12 @@ fn duplicate_copies_built_in_and_user_sets() {
     assert_eq!(p.duplicate("Classic 2", " Mine ", &builtins), Ok("Mine".into()));
     assert_eq!(p.duplicate("Mine", "mine", &builtins), Ok("mine 2".into()), "names compare without case");
     assert_eq!(p.duplicate("Nope", "X", &builtins), Err(ProfileError::NotFound));
-    assert_eq!(p.duplicate("Craft", "", &builtins), Err(ProfileError::BadName));
+    assert_eq!(p.duplicate("Bharat", "", &builtins), Err(ProfileError::BadName));
 
     while p.sets().len() < MAX_SETS {
-        p.duplicate("Craft", "Spare", &builtins).unwrap();
+        p.duplicate("Bharat", "Spare", &builtins).unwrap();
     }
-    assert_eq!(p.duplicate("Craft", "Spare", &builtins), Err(ProfileError::TooMany));
+    assert_eq!(p.duplicate("Bharat", "Spare", &builtins), Err(ProfileError::TooMany));
 }
 
 #[test]
@@ -165,7 +165,7 @@ fn a_foreign_set_imports_as_a_new_set_and_leaves_the_keymap_alone() {
     let set = ForeignSet::new(vec![ForeignEntry::new(Some("File"), ["Save"]).with_key(read("Cmd+Shift+S"))]).with_name("Other App");
     let options = ImportOptions { contexts: vec![("Default".into(), ContextRule::Home)], start: Start::Defaults, ..ImportOptions::default() };
     let planned = plan(&set, &km, &options);
-    let builtins = [("Craft", Overrides::new())];
+    let builtins = [("Bharat", Overrides::new())];
     let mut p = Profiles::default();
 
     let (name, report) = p.import_plan(&planned, &km, None, &builtins).unwrap();
@@ -177,8 +177,8 @@ fn a_foreign_set_imports_as_a_new_set_and_leaves_the_keymap_alone() {
     imported.set_overrides(p.active_overrides(&builtins).clone());
     assert_eq!(imported.bindings(&"file.save".into()), [b("Cmd+Shift+S")]);
 
-    let (name, _) = p.import_plan(&planned, &km, Some("Craft"), &builtins).unwrap();
-    assert_eq!(name, "Craft 2", "a built-in's name is not reused");
+    let (name, _) = p.import_plan(&planned, &km, Some("Bharat"), &builtins).unwrap();
+    assert_eq!(name, "Bharat 2", "a built-in's name is not reused");
 }
 
 #[test]

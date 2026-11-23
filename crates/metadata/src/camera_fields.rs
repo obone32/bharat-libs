@@ -39,7 +39,7 @@ const MAX_TEXT_BYTES: usize = 1 << 20;
 
 struct Tiff<'a> {
     b: &'a [u8],
-    order: craft_tiff::ByteOrder,
+    order: bharat_tiff::ByteOrder,
     /// Text bytes this read may still decode: duplicate tags can share one large blank value.
     text_left: std::cell::Cell<usize>,
 }
@@ -68,7 +68,7 @@ impl Tiff<'_> {
         if !(1..=12).contains(&typ) {
             return None;
         }
-        let span = craft_tiff::entry_span(self.b, field.checked_sub(8)?, self.order, false, 0)?;
+        let span = bharat_tiff::entry_span(self.b, field.checked_sub(8)?, self.order, false, 0)?;
         usize::try_from(span.start).ok()
     }
     fn number(&self, typ: u16, count: u32, field: usize) -> Option<f64> {
@@ -116,7 +116,7 @@ pub fn read(exif: &[u8]) -> CameraInfo {
     };
     let t = Tiff {
         b,
-        order: if le { craft_tiff::ByteOrder::Little } else { craft_tiff::ByteOrder::Big },
+        order: if le { bharat_tiff::ByteOrder::Little } else { bharat_tiff::ByteOrder::Big },
         text_left: std::cell::Cell::new(MAX_TEXT_BYTES),
     };
     let Some(ifd0) = t.u32(4) else { return info };
@@ -156,8 +156,8 @@ pub fn read(exif: &[u8]) -> CameraInfo {
 /// Raw date strings and numeric rounding match the camera-field view. Text is
 /// bounded to the reader's 1 MiB aggregate budget; oversized inputs return an error.
 /// Physical directory placement is not part of this API's contract.
-pub fn try_build(info: &CameraInfo) -> craft_tiff::Result<Vec<u8>> {
-    use craft_tiff::{ByteOrder, IfdBuilder, TiffError, TiffWriter, Value};
+pub fn try_build(info: &CameraInfo) -> bharat_tiff::Result<Vec<u8>> {
+    use bharat_tiff::{ByteOrder, IfdBuilder, TiffError, TiffWriter, Value};
     let total =
         [&info.make, &info.model, &info.lens, &info.date_taken].into_iter().flatten().try_fold(0usize, |n, s| n.checked_add(s.len())?.checked_add(1));
     if total.is_none_or(|n| n > MAX_TEXT_BYTES) {

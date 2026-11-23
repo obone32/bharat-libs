@@ -5,7 +5,7 @@
 //! matching placeholder on its layout and master ([`placeholder::parents`]). Slides and masters
 //! sit behind `Arc`s, so a snapshot of the whole deck costs one clone of the slide list.
 //!
-//! DrawingML (fills, lines, text bodies, tables, charts, themes) comes from [`craft_drawingml`];
+//! DrawingML (fills, lines, text bodies, tables, charts, themes) comes from [`bharat_drawingml`];
 //! [`anim`] holds transitions and animations. Media bytes live in [`Presentation::media`] and
 //! everything else names them by [`MediaId`]. The types derive serde with camelCase names, so a
 //! presentation can be stored as JSON.
@@ -23,14 +23,14 @@ pub use read::MAX_TAG_BYTES;
 
 use std::sync::Arc;
 
-pub use craft_drawingml::color::{ColorScheme, ColorTransform, Rgba, SchemeSlot};
-pub use craft_drawingml::custgeom::CustomPath;
-pub use craft_drawingml::diagram::{Diagram, DiagramNode};
-pub use craft_drawingml::style::{self, ColorBase, ColorRef, Effects, Fill, Line, ShapeStyle};
-pub use craft_drawingml::table::{self, Cell, Table};
-pub use craft_drawingml::text::{self, Paragraph, Run, RunProps, TextBody};
-pub use craft_drawingml::theme::{self, Theme};
-pub use craft_drawingml::{MediaId, SlideId, Xfrm, chart, chart::Chart};
+pub use bharat_drawingml::color::{ColorScheme, ColorTransform, Rgba, SchemeSlot};
+pub use bharat_drawingml::custgeom::CustomPath;
+pub use bharat_drawingml::diagram::{Diagram, DiagramNode};
+pub use bharat_drawingml::style::{self, ColorBase, ColorRef, Effects, Fill, Line, ShapeStyle};
+pub use bharat_drawingml::table::{self, Cell, Table};
+pub use bharat_drawingml::text::{self, Paragraph, Run, RunProps, TextBody};
+pub use bharat_drawingml::theme::{self, Theme};
+pub use bharat_drawingml::{MediaId, SlideId, Xfrm, chart, chart::Chart};
 pub use kurbo::{Rect, Size};
 use serde::{Deserialize, Serialize};
 
@@ -75,7 +75,7 @@ pub trait Defaults {
     /// The program writing the file: `Application` in `docProps/app.xml`, and the first word of
     /// the names of the table styles the writer defines.
     fn application(&self) -> &str {
-        "craft-pptx"
+        "bharat-pptx"
     }
 }
 
@@ -96,7 +96,7 @@ impl Defaults for Plain {
 /// The part is looked up in the archive's central directory, not in the leading bytes: writers may
 /// store it anywhere in the archive (recent PowerPoint builds put it last, megabytes in).
 pub fn sniff(bytes: &[u8]) -> bool {
-    bytes.starts_with(b"PK") && craft_opc::LazyPackage::open(bytes, &LIMITS).is_ok_and(|p| p.has("[Content_Types].xml"))
+    bytes.starts_with(b"PK") && bharat_opc::LazyPackage::open(bytes, &LIMITS).is_ok_and(|p| p.has("[Content_Types].xml"))
 }
 
 /// Reads a `.pptx` / `.potx` / `.ppsx` package leniently: unknown parts are skipped, malformed
@@ -530,7 +530,7 @@ impl Shape {
     }
     /// Is this a line-like shape (no area)?
     pub fn is_line(&self) -> bool {
-        matches!(self.kind, ShapeKind::Connector { .. }) || self.geom.preset_name().is_some_and(craft_drawingml::preset::is_line_like)
+        matches!(self.kind, ShapeKind::Connector { .. }) || self.geom.preset_name().is_some_and(bharat_drawingml::preset::is_line_like)
     }
     pub fn kind_name(&self) -> &'static str {
         match &self.kind {

@@ -1,6 +1,6 @@
 [package]
-name = "craft-media-testkit"
-description = "Oracle-test support (ffmpeg discovery, fixture locations) for the craft-libs media crates. Test support only."
+name = "bharat-media-testkit"
+description = "Oracle-test support (ffmpeg discovery, fixture locations) for the bharat-libs media crates. Test support only."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

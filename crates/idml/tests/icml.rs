@@ -1,8 +1,8 @@
 //! ICML: one story and what it uses, as one XML document.
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_idml::icml::{MAX_ICML_BYTES, icml_xml, is_icml, read_icml};
-use craft_idml::{El, Error};
+use bharat_idml::icml::{MAX_ICML_BYTES, icml_xml, is_icml, read_icml};
+use bharat_idml::{El, Error};
 
 const ICML: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <?aid style="50" type="snippet" readerVersion="6.0" featureSet="513" product="16.0(1)" ?>
@@ -33,8 +33,8 @@ fn an_icml_file_reads_as_its_resources_and_stories() {
 #[test]
 fn an_icml_file_written_reads_back() {
     let icml = read_icml(ICML.as_bytes()).unwrap();
-    let mut root = El::new("Document").with_attr("DOMVersion", craft_idml::DOM_VERSION).with_attr("Self", "d");
-    root.children.extend(icml.top.iter().cloned().map(craft_idml::Node::El));
+    let mut root = El::new("Document").with_attr("DOMVersion", bharat_idml::DOM_VERSION).with_attr("Self", "d");
+    root.children.extend(icml.top.iter().cloned().map(bharat_idml::Node::El));
     let bytes = icml_xml(&root);
     let text = String::from_utf8(bytes.clone()).unwrap();
     assert!(text.starts_with("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<?aid style=\"50\" type=\"snippet\" readerVersion=\"6.0\" featureSet=\"513\" product=\"16.0(1)\" ?>\n<?aid SnippetType=\"InCopyInterchange\"?>\n<Document "), "{text}");

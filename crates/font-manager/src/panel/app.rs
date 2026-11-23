@@ -4,15 +4,15 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use crate::craft_font_catalog::{FontEnv, Limits, Os};
+use crate::bharat_font_catalog::{FontEnv, Limits, Os};
 use crate::filter::{Query, Search};
 use crate::index::{Category, Family, Index, categories, source_label};
 use crate::installed::{InstalledFamily, group};
 use crate::store::{Installer, RemoveRequest, StoreError};
 use crate::{Catalog, FaceInfo, Source};
-use craft_i18n::Folder;
-use craft_ui::direction;
-use craft_ui::fonts::{CraftFace, I18nScripts, UiFonts};
+use bharat_i18n::Folder;
+use bharat_ui::direction;
+use bharat_ui::fonts::{BharatFace, I18nScripts, UiFonts};
 use egui::{CentralPanel, Context, Frame, Margin, Panel, Ui};
 
 use crate::panel::faces::FaceFonts;
@@ -22,13 +22,13 @@ use crate::panel::look::{Look, Palette};
 use crate::panel::samples;
 use crate::panel::widgets::{self, Skin};
 
-/// Installs the standalone app's interface fonts in `ctx` and sets the interface direction: craft-ui's
-/// font stack for the panel's interface language, with `craft_faces` (craft-fonts' faces the app
-/// embeds with craft-fonts-build, or none) and the system's fonts for every other character. A host
+/// Installs the standalone app's interface fonts in `ctx` and sets the interface direction: bharat-ui's
+/// font stack for the panel's interface language, with `bharat_faces` (bharat-fonts' faces the app
+/// embeds with bharat-fonts-build, or none) and the system's fonts for every other character. A host
 /// with its own fonts doesn't call it.
-pub fn install_interface_fonts(ctx: &Context, craft_faces: &[CraftFace]) {
+pub fn install_interface_fonts(ctx: &Context, bharat_faces: &[BharatFace]) {
     let language = I18N.code(i18n::current()).to_owned();
-    UiFonts::new(&I18nScripts).languages(LANGUAGES).ui_language(&language).craft_faces(craft_faces).install(ctx);
+    UiFonts::new(&I18nScripts).languages(LANGUAGES).ui_language(&language).bharat_faces(bharat_faces).install(ctx);
     direction::apply(ctx, direction::resolve(&language, direction::Setting::Language));
 }
 
@@ -36,7 +36,7 @@ pub fn install_interface_fonts(ctx: &Context, craft_faces: &[CraftFace]) {
 const PREVIEW_LIMITS: Limits = Limits { max_file_bytes: 64 << 20, max_faces_per_file: 512, max_added_faces: 20_000 };
 
 /// How often the download consent is read again from the store's settings file, which another
-/// Craft app can change.
+/// Bharat app can change.
 const CONSENT_RECHECK_SECS: f64 = 3.0;
 
 /// What a sample shows when the user hasn't typed one.
@@ -420,7 +420,7 @@ impl FontsPanel {
     /// Shows the interface in `language` (a tag such as `de` or `pt-BR`), the host's interface
     /// language, when its catalog is embedded; English otherwise.
     pub fn set_language(&mut self, language: &str) {
-        i18n::set_current(I18N.match_tag(language).unwrap_or(craft_i18n::Lang::EN));
+        i18n::set_current(I18N.match_tag(language).unwrap_or(bharat_i18n::Lang::EN));
     }
 
     /// Has the user allowed downloads from Google Fonts? A suite-wide setting of the font store,
@@ -473,11 +473,11 @@ impl FontsPanel {
         let rtl = direction::is_rtl(ui);
         let sides = |start: i8, end: i8| if rtl { (end, start) } else { (start, end) };
         let top = Frame::new().fill(p.bg).inner_margin(Margin { left: 20, right: 20, top: 16, bottom: 14 });
-        Panel::top("craft-fonts.top").frame(top).resizable(false).show(ui, |ui| self.top_bar(ui));
+        Panel::top("bharat-fonts.top").frame(top).resizable(false).show(ui, |ui| self.top_bar(ui));
         let width = if area.width() < 860.0 { 212.0 } else { 248.0 };
         let (left, right) = sides(20, 18);
         let filters = Frame::new().fill(p.bg).inner_margin(Margin { left, right, top: 18, bottom: 12 });
-        direction::start_panel(ui, "craft-fonts.filters").frame(filters).resizable(false).exact_size(width).show(ui, |ui| self.sidebar(ui));
+        direction::start_panel(ui, "bharat-fonts.filters").frame(filters).resizable(false).exact_size(width).show(ui, |ui| self.sidebar(ui));
         let main = Frame::new().fill(p.bg).inner_margin(Margin { left: 20, right: 20, top: 16, bottom: 0 });
         CentralPanel::default().frame(main).show(ui, |ui| self.main(ui));
         self.details(&ctx, area);
@@ -690,9 +690,9 @@ impl FontsPanel {
         let host = file.filter(|_| !curated).and_then(|f| c.index.file_urls(family, f).first().and_then(|u| url_host(u)).map(str::to_owned));
         let args = [("family", family.family.as_str()), ("size", &i18n::size(size)), ("source", source), ("host", host.as_deref().unwrap_or(""))];
         let text = match &host {
-            None => fmt("Craft Font Manager downloads {family} ({size}) from {source}, and checks every file before using it.", &args),
+            None => fmt("Bharat Font Manager downloads {family} ({size}) from {source}, and checks every file before using it.", &args),
             Some(_) => fmt(
-                "Craft Font Manager downloads {family} ({size}) from {host}, the server of {source}, a source you added, and checks every file before using it.",
+                "Bharat Font Manager downloads {family} ({size}) from {host}, the server of {source}, a source you added, and checks every file before using it.",
                 &args,
             ),
         };
@@ -702,7 +702,7 @@ impl FontsPanel {
         let mut cancel = false;
         let frame =
             Frame::new().fill(s.p.bg).stroke(egui::Stroke::new(1.0, s.p.line_strong)).corner_radius(s.look.corner).inner_margin(Margin::same(24));
-        let response = egui::Modal::new(egui::Id::unique("craft-font-manager.consent")).frame(frame).show(ctx, |ui| {
+        let response = egui::Modal::new(egui::Id::unique("bharat-font-manager.consent")).frame(frame).show(ctx, |ui| {
             ui.set_max_width(440.0);
             ui.spacing_mut().item_spacing.y = 10.0;
             let title = egui::RichText::new(&title).size(22.0).family(s.look.display.clone()).color(s.p.ink_strong);

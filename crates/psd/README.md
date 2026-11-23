@@ -1,4 +1,4 @@
-# craft-psd
+# bharat-psd
 
 A standalone reader and writer for Adobe Photoshop **PSD** (version 1) and **PSB** (version 2, "large document format") files. It keeps everything it reads, so an unmodified file writes back byte for byte. It came from PhotoCraft (`photocraft-psd`) and depends on no app.
 
@@ -176,8 +176,8 @@ allocations for padded channels return an error on failure.
 ## Legacy animation inspection
 
 ```sh
-cargo run -p craft-psd --example animation_inspect -- /path/to/input.psd
-cargo test -p craft-psd --test it animation::
+cargo run -p bharat-psd --example animation_inspect -- /path/to/input.psd
+cargo test -p bharat-psd --test it animation::
 ```
 
 The inspection example accepts an explicit local PSD/PSB (up to 128 MiB), reports frame counts,
@@ -194,7 +194,7 @@ layers. This parser alone does **not** make PSD animations play.
 
 ## Testing
 
-`cargo test -p craft-psd --all-features` runs the unit tests, integration tests and proptests:
+`cargo test -p bharat-psd --all-features` runs the unit tests, integration tests and proptests:
 
 * Byte stability and model round-trips for every generated case: all depths, color modes and compressions, PSD and PSB.
 * PackBits edge cases.
@@ -206,9 +206,9 @@ layers. This parser alone does **not** make PSD animations play.
 * Builder → `rgba8` correctness.
 * Unknown blend modes and unknown blocks pass through unchanged.
 
-`tests/it/corpus.rs` and `tests/it/corpus_atn.rs` (feature `corpus`) walk a real-file corpus that is not in this repository: `corpus/psd`, `corpus/psd-tools` and `corpus/atn` at the workspace root, or under `CRAFT_PSD_CORPUS` (a PhotoCraft checkout's `corpus` directory). For each file they assert that parsing succeeds and the file round-trips byte for byte. With the feature on and the corpus missing they fail. The one known-bad upstream file, `group-divider-blend-mode.psd`, is reported but does not fail the test (`KNOWN_BAD`). Add `-- --nocapture` to see the per-file results.
+`tests/it/corpus.rs` and `tests/it/corpus_atn.rs` (feature `corpus`) walk a real-file corpus that is not in this repository: `corpus/psd`, `corpus/psd-tools` and `corpus/atn` at the workspace root, or under `BHARAT_PSD_CORPUS` (a PhotoCraft checkout's `corpus` directory). For each file they assert that parsing succeeds and the file round-trips byte for byte. With the feature on and the corpus missing they fail. The one known-bad upstream file, `group-divider-blend-mode.psd`, is reported but does not fail the test (`KNOWN_BAD`). Add `-- --nocapture` to see the per-file results.
 
-A `cargo-fuzz` skeleton lives in `fuzz/`. It is its own workspace and is excluded from the craft-libs workspace. Run it with `cargo +nightly fuzz run parse` (or `descriptor`) from `crates/psd`.
+A `cargo-fuzz` skeleton lives in `fuzz/`. It is its own workspace and is excluded from the bharat-libs workspace. Run it with `cargo +nightly fuzz run parse` (or `descriptor`) from `crates/psd`.
 
 ## Spec ambiguities and decisions
 

@@ -2,7 +2,7 @@
 //! with (its MANIFEST).
 
 use crate::container::helpers::{base_layer, first_comp, open};
-use craft_aep::{CueType, ItemKind, KeyframeKind, LayerType, Marker, Project, Property, TextDocument, TextValue, parse_text_dict};
+use bharat_aep::{CueType, ItemKind, KeyframeKind, LayerType, Marker, Project, Property, TextDocument, TextValue, parse_text_dict};
 
 fn text_layer_document(name: &str) -> Option<TextDocument> {
     Some({
@@ -197,7 +197,7 @@ fn png_footage_layer() {
 
 // ---------------------------------------------------------------------------- batch 2
 
-use craft_aep::Justification;
+use bharat_aep::Justification;
 
 #[test]
 fn multi_line_text_is_paragraphs_separated_by_cr() {
@@ -266,7 +266,7 @@ fn marker_with_duration_and_all_strings() {
             frame_target: "_blank".to_string(),
             cue_point_name: "CueX".to_string(),
             label: Some(0),
-            cue_type: Some(craft_aep::CueType::Event),
+            cue_type: Some(bharat_aep::CueType::Event),
             cue_params: Vec::new(),
         }]
     );

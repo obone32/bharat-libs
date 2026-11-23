@@ -1,4 +1,4 @@
-use craft_image_codecs::{ChannelLayout, CodecError, Format, SampleType, decode, decode_as};
+use bharat_image_codecs::{ChannelLayout, CodecError, Format, SampleType, decode, decode_as};
 
 const PAM_GRAY: &[u8] = b"P7\nWIDTH 1\nHEIGHT 1\nDEPTH 1\nMAXVAL 255\nENDHDR";
 const ENDINGS: &[&[u8]] = &[b"\n", b" \n", b"\t \n", b"\r\n", b" \t\r\n"];

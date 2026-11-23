@@ -76,7 +76,7 @@ pub(crate) fn fill_path_impl<'a>(
     let paint = get_paint(context, false);
     device.set_soft_mask(context.get().graphics_state.soft_mask.clone());
     device.set_blend_mode(context.get().graphics_state.blend_mode);
-    // Craft patch (flatten): tell the device the overprint parameters.
+    // Bharat patch (flatten): tell the device the overprint parameters.
     set_overprint(context, device);
 
     let mut draw = |path: &BezPath| {
@@ -138,7 +138,7 @@ pub(crate) fn stroke_path_impl<'a>(
     let stroke_props = context.stroke_props();
     device.set_soft_mask(context.get().graphics_state.soft_mask.clone());
     device.set_blend_mode(context.get().graphics_state.blend_mode);
-    // Craft patch (flatten): tell the device the overprint parameters.
+    // Bharat patch (flatten): tell the device the overprint parameters.
     set_overprint(context, device);
     let paint = get_paint(context, true);
 
@@ -152,7 +152,7 @@ pub(crate) fn stroke_path_impl<'a>(
     }
 }
 
-/// Craft patch (flatten): passes the graphics state's `op`, `OP` and `OPM` to the device.
+/// Bharat patch (flatten): passes the graphics state's `op`, `OP` and `OPM` to the device.
 pub(crate) fn set_overprint<'a>(context: &Context<'a>, device: &mut impl Device<'a>) {
     let state = &context.get().graphics_state;
     device.set_overprint(

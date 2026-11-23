@@ -1,7 +1,7 @@
 //! Start codes and headers (ISO/IEC 14496-2 §6.2): visual object sequence, visual object, video
 //! object, video object layer and video object plane.
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use super::ColorConfig;
 

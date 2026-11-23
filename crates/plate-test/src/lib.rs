@@ -1,7 +1,7 @@
-//! Print-color test scenes for the Craft apps.
+//! Print-color test scenes for the Bharat apps.
 //!
 //! [`scene`] reads the app-neutral scene files in `scenes/`. [`reference`] writes a scene to
-//! PDF through craft-pdf, so the shared writer is tested on its own. [`structure`] summarizes a
+//! PDF through bharat-pdf, so the shared writer is tested on its own. [`structure`] summarizes a
 //! PDF's print-relevant structure (transparency groups, overprint and soft-mask graphics states,
 //! color spaces, output intents) and checks it against a scene's `structure` block. Apps use
 //! the scenes and [`structure`] from their own adapter, as a dev-dependency.
@@ -29,7 +29,7 @@ pub enum Error {
     #[error("unsupported: {0}")]
     Unsupported(String),
     #[error("write: {0}")]
-    Write(#[from] craft_pdf::write::WriteError),
+    Write(#[from] bharat_pdf::write::WriteError),
     /// The PDF could not be parsed for the structure summary.
     #[error("read: {0}")]
     Read(String),

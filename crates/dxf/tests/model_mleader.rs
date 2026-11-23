@@ -1,9 +1,9 @@
 //! MULTILEADER and MLEADERSTYLE.
 
-use craft_dxf::model::mleader::{MAX_ROOTS, MAX_VERTICES, MLeader, MLeaderStyle};
-use craft_dxf::model::write::{Drawing, Format};
-use craft_dxf::model::{Document, Entity, EntityKind};
-use craft_dxf::{Tag, parse};
+use bharat_dxf::model::mleader::{MAX_ROOTS, MAX_VERTICES, MLeader, MLeaderStyle};
+use bharat_dxf::model::write::{Drawing, Format};
+use bharat_dxf::model::{Document, Entity, EntityKind};
+use bharat_dxf::{Tag, parse};
 
 fn tags(text: &str) -> Vec<Tag> {
     let lines: Vec<&str> = text.split(['\n', '|']).map(str::trim).filter(|l| !l.is_empty()).map(|l| if l == "~" { "" } else { l }).collect();
@@ -26,7 +26,7 @@ const MLEADER: &str = "0|MULTILEADER|5|80|100|AcDbEntity|8|0|100|AcDbMLeader|270
 #[test]
 fn a_multileader_by_level() {
     let t = tags(MLEADER);
-    let EntityKind::MLeader(m) = Entity::read(&craft_dxf::model::entity_records(&craft_dxf::model::records(&t)).0[0]).kind else {
+    let EntityKind::MLeader(m) = Entity::read(&bharat_dxf::model::entity_records(&bharat_dxf::model::records(&t)).0[0]).kind else {
         panic!("a multileader")
     };
     // Entity level, after the context block.
@@ -112,7 +112,7 @@ fn a_multileader_style() {
 #[test]
 fn the_writer_leaves_a_multileader_out_before_2007() {
     let t = tags(MLEADER);
-    let e = Entity::read(&craft_dxf::model::entity_records(&craft_dxf::model::records(&t)).0[0]);
+    let e = Entity::read(&bharat_dxf::model::entity_records(&bharat_dxf::model::records(&t)).0[0]);
     for (format, left_out) in [(Format::R2004, 1), (Format::R2007, 0)] {
         let (_, skipped) = Drawing { format, entities: vec![e.clone()], ..Default::default() }.tags();
         assert_eq!(skipped, left_out, "{format:?}");

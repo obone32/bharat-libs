@@ -1,5 +1,5 @@
 [package]
-name = "craft-timeline"
+name = "bharat-timeline"
 description = "Editorial timeline interchange: exact media time and SMPTE timecode, import/export reports, Avid Log Exchange (ALE) and CMX 3600 EDL documents."
 version.workspace = true
 edition.workspace = true
@@ -13,15 +13,15 @@ workspace = true
 [features]
 # Serialize and Deserialize for the time, report and document types.
 serde = ["dep:serde"]
-# Final Cut Pro 7 XML (`fcp7`), read with craft-xml's bounded parser.
-xml = ["dep:craft-xml"]
+# Final Cut Pro 7 XML (`fcp7`), read with bharat-xml's bounded parser.
+xml = ["dep:bharat-xml"]
 # OpenTimelineIO JSON (`otio`), with serde_json.
 otio = ["dep:serde_json"]
 
 [dependencies]
 serde = { workspace = true, optional = true }
-craft-time.workspace = true
-craft-xml = { workspace = true, optional = true }
+bharat-time.workspace = true
+bharat-xml = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
 
 [dev-dependencies]

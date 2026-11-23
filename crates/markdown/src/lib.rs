@@ -19,20 +19,20 @@ struct ReadmeExamples;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use craft_wordmodel::table::{MAX_COLS, MAX_ROWS};
-use craft_wordmodel::{Align, Document};
+use bharat_wordmodel::table::{MAX_COLS, MAX_ROWS};
+use bharat_wordmodel::{Align, Document};
 
-use craft_flow::{self as model, Cell, FBlock, FTable, Fmt, Inline, Kind, ListInfo, Para, make_img};
+use bharat_flow::{self as model, Cell, FBlock, FTable, Fmt, Inline, Kind, ListInfo, Para, make_img};
 
 mod blocks;
 mod export;
 mod inlines;
 
-pub use craft_flow::MAX_TABLE_CELLS;
+pub use bharat_flow::MAX_TABLE_CELLS;
 
 /// The text of an entity body (`amp`, `#38`, `#x26`).
 fn decode_entity(body: &str) -> Option<String> {
-    craft_html::decode_entity(body).map(String::from)
+    bharat_html::decode_entity(body).map(String::from)
 }
 
 pub use blocks::{Refs, import, import_on, parse};

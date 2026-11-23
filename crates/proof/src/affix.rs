@@ -442,7 +442,7 @@ impl Conv {
 
     /// The pair to apply at the start of `rest`: the longest `from` that starts it. One hash
     /// lookup per prefix of `rest` up to the longest `from` ([`MAX_CONV_BYTES`]), however many
-    /// pairs there are (craft-libs#489 review: 65,536 pairs on one first character).
+    /// pairs there are (bharat-libs#489 review: 65,536 pairs on one first character).
     fn at(&self, rest: &str) -> Option<&(String, String)> {
         let ends = rest.char_indices().map(|(i, _)| i).skip(1).chain(std::iter::once(rest.len()));
         let ends: Vec<usize> = ends.take_while(|&e| e <= self.longest).collect();
@@ -3447,7 +3447,7 @@ pub(crate) mod tests {
         assert!(d.check("cdab"));
     }
 
-    /// craft-libs#483 review: a forbidden word isn't rebuilt from its parts.
+    /// bharat-libs#483 review: a forbidden word isn't rebuilt from its parts.
     #[test]
     fn compound_never_rebuilds_a_forbidden_word() {
         let d = AffixDict::from_hunspell("SET UTF-8\nFORBIDDENWORD X\nCOMPOUNDMIN 1\nCOMPOUNDRULE a*\n", "2\nx/a\nxx/X\n", &[]).unwrap();
@@ -3456,7 +3456,7 @@ pub(crate) mod tests {
         assert!(!back.check("xx") && back.check("xxx"));
     }
 
-    /// craft-libs#483 review: `ONLYINCOMPOUND` survives a round trip without compound rules too.
+    /// bharat-libs#483 review: `ONLYINCOMPOUND` survives a round trip without compound rules too.
     #[test]
     fn onlyincompound_round_trips_without_compound_rules() {
         let d = AffixDict::from_hunspell("SET UTF-8\nONLYINCOMPOUND c\n", "2\nfoo\nqux/c\n", &[]).unwrap();
@@ -3492,7 +3492,7 @@ pub(crate) mod tests {
         assert!(d.check("foo") && !d.check("bar") && !d.check("foobar"));
     }
 
-    /// craft-libs#488 review: NEEDAFFIX, CIRCUMFIX and FULLSTRIP as Hunspell 1.7.5 reads them.
+    /// bharat-libs#488 review: NEEDAFFIX, CIRCUMFIX and FULLSTRIP as Hunspell 1.7.5 reads them.
     /// Each case is a reviewer's repro `.aff`/`.dic`; the right and wrong words are the `hunspell`
     /// CLI's answers on the same files (black-box) for every prefix/stem/suffix combination of
     /// them, and `forms()` lists exactly the right ones.
@@ -3689,7 +3689,7 @@ pub(crate) mod tests {
     /// A circumfix prefix with two suffixes (`ne` + `work` + `able/Bc` + `s`): Hunspell 1.7.5
     /// takes `neworkables`; this engine allows a prefix with one suffix only.
     #[test]
-    #[ignore = "prefix + two suffixes is not supported (craft-libs#488 review P3)"]
+    #[ignore = "prefix + two suffixes is not supported (bharat-libs#488 review P3)"]
     fn a_circumfix_prefix_with_a_suffix_chain() {
         let aff = "SET UTF-8\nCIRCUMFIX c\nPFX P Y 1\nPFX P 0 ne/c .\nSFX A Y 1\nSFX A 0 able/Bc .\nSFX B Y 1\nSFX B 0 s .\n";
         let d = AffixDict::from_hunspell(aff, "1\nwork/AP\n", &[]).unwrap();
@@ -3822,7 +3822,7 @@ pub(crate) mod tests {
 
     #[test]
     fn suggesting_with_a_long_try_line_shares_one_budget() {
-        // craft-libs#497 review: a thousand one-letter prefixes, 40 chained suffix lengths and
+        // bharat-libs#497 review: a thousand one-letter prefixes, 40 chained suffix lengths and
         // a 128-letter TRY line. Each TRY candidate is a simple-word check; one suggest call
         // shares one budget between them (17 s in a release build before CP7.7).
         let mut aff = String::from("SET UTF-8\nFLAG num\nTRY ");
@@ -3848,7 +3848,7 @@ pub(crate) mod tests {
 
     #[test]
     fn a_check_out_of_steps_says_so() {
-        // craft-libs#497 review: the near-word check of a compound treats a candidate whose
+        // bharat-libs#497 review: the near-word check of a compound treats a candidate whose
         // steps ran out as a word (the compound is refused), not as no word.
         let d = AffixDict::from_hunspell("SET UTF-8\nSFX A Y 1\nSFX A 0 s .\n", "1\nkot/A\n", &[]).unwrap();
         let e = d.excluded(true);
@@ -3861,7 +3861,7 @@ pub(crate) mod tests {
 
     #[test]
     fn many_stems_sharing_big_homonym_aliases_load_fast() {
-        // craft-libs#497 review: 16 homonyms per stem, each an `AF` alias of thousands of flags,
+        // bharat-libs#497 review: 16 homonyms per stem, each an `AF` alias of thousands of flags,
         // on thousands of stems. Each stem's sets are worked out once per distinct entry list.
         let n = 4000;
         let mut aff = String::from("SET UTF-8\nFLAG num\nAF 16\n");
@@ -3915,7 +3915,7 @@ pub(crate) mod tests {
         }
     }
 
-    /// craft-libs#482 review: an English dictionary with compounding and output conversion, as the
+    /// bharat-libs#482 review: an English dictionary with compounding and output conversion, as the
     /// usual en_US and en_GB ones have, loads for English: `COMPOUNDRULE` makes its ordinals, its
     /// `ONLYINCOMPOUND` stems are words only inside them, `COMPOUNDFLAG` is ignored (other
     /// languages read it) and `OCONV` is applied to suggestions. (A synthetic `.aff`
@@ -4131,7 +4131,7 @@ pub(crate) mod tests {
         assert!(AffixDict::from_bytes(&d.to_bytes().unwrap()).unwrap().check("evde"));
     }
 
-    /// craft-libs#487 review: 21,000 suffix rules whose continuation classes are one 1,024-flag
+    /// bharat-libs#487 review: 21,000 suffix rules whose continuation classes are one 1,024-flag
     /// `AF` alias made every lookup cost rules × set size (172 ms a `check()`). A set is tested
     /// once per lookup now, against a bitmap.
     #[test]
@@ -4175,7 +4175,7 @@ pub(crate) mod tests {
         assert!(t.elapsed().as_secs() < 5, "{:?}", t.elapsed());
     }
 
-    /// craft-libs#487 review: an `AF` table is read in the final FLAG mode (Hunspell would read an
+    /// bharat-libs#487 review: an `AF` table is read in the final FLAG mode (Hunspell would read an
     /// alias before a `FLAG num` line one character at a time; no real dictionary does that), is
     /// shared by the stems using it rather than copied, and is capped.
     #[test]

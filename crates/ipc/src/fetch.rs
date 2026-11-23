@@ -211,7 +211,7 @@ impl FrameFetcher {
             let worker = Arc::clone(&shared);
             // Workers are not joined: one may sit in a socket read for up to `io_timeout`, and a
             // drop on a UI thread must not wait for that. A worker sees `stop` and leaves.
-            if let Err(err) = std::thread::Builder::new().name("craft-ipc-fetch".into()).spawn(move || run_worker(&worker, client)) {
+            if let Err(err) = std::thread::Builder::new().name("bharat-ipc-fetch".into()).spawn(move || run_worker(&worker, client)) {
                 shared_stop(&shared);
                 return Err(err.into());
             }

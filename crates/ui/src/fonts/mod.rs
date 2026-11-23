@@ -1,12 +1,12 @@
-//! The UI font stack every Craft app installs.
+//! The UI font stack every Bharat app installs.
 //!
 //! egui draws a character only if one of its installed faces has it. [`UiFonts`] builds the same
 //! fallback order for every app, so a label or file name in any shipped script draws in every app:
 //!
 //! 1. the app's own faces for the family (UI face, semibold, mono), or egui's default faces for a
 //!    family the app has none for;
-//! 2. craft-fonts faces for the UI language;
-//! 3. craft-fonts faces for every other script the app ships, so a Japanese interface still draws
+//! 2. bharat-fonts faces for the UI language;
+//! 3. bharat-fonts faces for every other script the app ships, so a Japanese interface still draws
 //!    Arabic file names;
 //! 4. installed system fonts ([`system_font_provider`]), at regular weight ([`RegularWeight`]);
 //! 5. emoji faces ([`Emoji`]) and, behind the app's own faces, egui's default faces.
@@ -22,11 +22,11 @@
 //! used as fallbacks sit on the row's baseline and rows grow to fit them by themselves; emoji and
 //! symbol faces stay centred.
 //!
-//! Apps keep their font files: their `build.rs` embeds craft-fonts' faces with `craft-fonts-build`,
-//! as [`CraftFace`]s or as `EmbeddedFace`s that convert into them, or, for a web build, copies them
+//! Apps keep their font files: their `build.rs` embeds bharat-fonts' faces with `bharat-fonts-build`,
+//! as [`BharatFace`]s or as `EmbeddedFace`s that convert into them, or, for a web build, copies them
 //! beside the wasm and lists them as [`ServedFace`]s, which the stack orders the same way and
 //! fetches when they are needed (see [`UiFonts::served_faces`]). For the interface they take
-//! `Embed::subset_to(catalogs)`, which embeds or serves the CJK faces as craft-fonts' interface
+//! `Embed::subset_to(catalogs)`, which embeds or serves the CJK faces as bharat-fonts' interface
 //! faces (`Noto Sans TC UI`, BIZ UDPGothic Regular), cut at build time to the characters the
 //! translation catalogs use. A character a cut face lacks, such as one in a file name, comes from
 //! the next face that has it: another region's interface face, then the installed system fonts.
@@ -55,9 +55,9 @@ use providers::Installed;
 pub use providers::{FaceList, RegularWeight, set_weight};
 pub use served::{ServedFace, loading};
 
-/// A font file from craft-fonts that the app embeds, one per line of `fonts/manifest.txt`.
+/// A font file from bharat-fonts that the app embeds, one per line of `fonts/manifest.txt`.
 #[derive(Clone, Copy, Debug)]
-pub struct CraftFace {
+pub struct BharatFace {
     /// Family name, e.g. `"Noto Sans Arabic"`.
     pub family: &'static str,
     /// `"Regular"` or `"Bold"`; faces with other styles are not used for UI text.
@@ -70,21 +70,21 @@ pub struct CraftFace {
     pub index: u32,
 }
 
-impl From<craft_fonts_build::EmbeddedFace> for CraftFace {
-    fn from(face: craft_fonts_build::EmbeddedFace) -> Self {
-        let craft_fonts_build::EmbeddedFace { family, style, scripts, index, bytes } = face;
+impl From<bharat_fonts_build::EmbeddedFace> for BharatFace {
+    fn from(face: bharat_fonts_build::EmbeddedFace) -> Self {
+        let bharat_fonts_build::EmbeddedFace { family, style, scripts, index, bytes } = face;
         Self { family, style, scripts, bytes, index }
     }
 }
 
-impl From<craft_fonts_build::ServedFace> for ServedFace {
-    fn from(face: craft_fonts_build::ServedFace) -> Self {
-        let craft_fonts_build::ServedFace { family, style, scripts, index, url, size, integrity, coverage } = face;
+impl From<bharat_fonts_build::ServedFace> for ServedFace {
+    fn from(face: bharat_fonts_build::ServedFace) -> Self {
+        let bharat_fonts_build::ServedFace { family, style, scripts, index, url, size, integrity, coverage } = face;
         Self { family, style, scripts, index, url, size, integrity, coverage }
     }
 }
 
-impl CraftFace {
+impl BharatFace {
     /// The egui font name, e.g. `"Noto Sans Arabic Regular"`.
     pub fn name(&self) -> String {
         format!("{} {}", self.family, self.style)
@@ -129,7 +129,7 @@ impl CraftFace {
     }
 }
 
-pub use craft_i18n::Han;
+pub use bharat_i18n::Han;
 
 /// The suite's egui fork has `FontTweak::set_baseline_fallback`, which puts a fallback face's
 /// glyphs on the primary face's baseline and grows the row to fit them; crates.io egui has
@@ -149,7 +149,7 @@ fn baseline_fallback(mut data: FontData) -> FontData {
 }
 
 /// The scripts a language is written in, by language tag. [`I18nScripts`] answers from
-/// craft-i18n; an app with its own table implements this instead.
+/// bharat-i18n; an app with its own table implements this instead.
 pub trait LanguageScripts {
     /// ISO 15924 codes of the language's interface text, main script first: `ja` → `Hani`, `Hira`,
     /// `Kana`; `ar` → `Arab`. The unions `Jpan`, `Kore`, `Hans` and `Hant` are accepted too.
@@ -159,18 +159,18 @@ pub trait LanguageScripts {
     fn han(&self, language: &str) -> Option<Han>;
 }
 
-/// [`LanguageScripts`] from craft-i18n's script table ([`craft_i18n::scripts`],
-/// [`craft_i18n::han`]).
+/// [`LanguageScripts`] from bharat-i18n's script table ([`bharat_i18n::scripts`],
+/// [`bharat_i18n::han`]).
 #[derive(Clone, Copy, Debug, Default)]
 pub struct I18nScripts;
 
 impl LanguageScripts for I18nScripts {
     fn scripts(&self, language: &str) -> Vec<&'static str> {
-        craft_i18n::scripts(language).iter().map(|s| s.code()).collect()
+        bharat_i18n::scripts(language).iter().map(|s| s.code()).collect()
     }
 
     fn han(&self, language: &str) -> Option<Han> {
-        craft_i18n::han(language)
+        bharat_i18n::han(language)
     }
 }
 
@@ -269,7 +269,7 @@ const APP_SCRIPTS: &[&str] = &["Latn", "Cyrl", "Grek"];
 /// Scripts whose characters sit inside the em square, so they fit a row of a Latin face.
 const EM_SQUARE_SCRIPTS: &[&str] = &["Hani", "Hira", "Kana", "Hang", "Bopo"];
 
-/// craft-fonts' interface face for Japanese; its manifest also lists serif Japanese faces.
+/// bharat-fonts' interface face for Japanese; its manifest also lists serif Japanese faces.
 const DEFAULT_PREFER: &[(&str, &str)] = &[("Jpan", "BIZ UDPGothic")];
 
 struct AppFace {
@@ -285,8 +285,8 @@ pub struct UiFonts<'a> {
     app_faces: Vec<AppFace>,
     egui_faces: Vec<(String, Vec<FontFamily>)>,
     app_scripts: Vec<String>,
-    craft_faces: Vec<CraftFace>,
-    /// For each of `craft_faces`, the served face it stands for, whose data is fetched later.
+    bharat_faces: Vec<BharatFace>,
+    /// For each of `bharat_faces`, the served face it stands for, whose data is fetched later.
     served: Vec<Option<ServedFace>>,
     languages: Vec<String>,
     ui_language: String,
@@ -305,7 +305,7 @@ impl<'a> UiFonts<'a> {
             app_faces: Vec::new(),
             egui_faces: Vec::new(),
             app_scripts: APP_SCRIPTS.iter().map(|s| (*s).to_owned()).collect(),
-            craft_faces: Vec::new(),
+            bharat_faces: Vec::new(),
             served: Vec::new(),
             languages: Vec::new(),
             ui_language: "en".to_owned(),
@@ -341,14 +341,14 @@ impl<'a> UiFonts<'a> {
         self
     }
 
-    /// The craft-fonts faces this build embedded; may be empty.
-    pub fn craft_faces(mut self, faces: &[CraftFace]) -> Self {
-        self.craft_faces.extend_from_slice(faces);
-        self.served.resize(self.craft_faces.len(), None);
+    /// The bharat-fonts faces this build embedded; may be empty.
+    pub fn bharat_faces(mut self, faces: &[BharatFace]) -> Self {
+        self.bharat_faces.extend_from_slice(faces);
+        self.served.resize(self.bharat_faces.len(), None);
         self
     }
 
-    /// The craft-fonts faces a web build serves beside its wasm (see `craft-fonts-build`'s
+    /// The bharat-fonts faces a web build serves beside its wasm (see `bharat-fonts-build`'s
     /// `Embed::serve`); may be empty. They take the places embedded faces would, and on the web
     /// [`Stack::install`] fetches them: the UI language's faces at once ([`Stack::ui_downloads`]),
     /// others the first time text needs a character that their files map and the faces already
@@ -356,7 +356,7 @@ impl<'a> UiFonts<'a> {
     /// faces after it. Outside the web they are never fetched.
     pub fn served_faces(mut self, faces: &[ServedFace]) -> Self {
         for face in faces {
-            self.craft_faces.push(face.craft_face());
+            self.bharat_faces.push(face.bharat_face());
             self.served.push(Some(*face));
         }
         self
@@ -441,7 +441,7 @@ impl<'a> UiFonts<'a> {
         };
         let defaults = FontDefinitions::default();
         let cjk_names: Vec<String> = match self.cjk_rows {
-            CjkRows::Fit => self.craft_faces.iter().filter(|face| EM_SQUARE_SCRIPTS.iter().any(|s| face.covers(s))).map(CraftFace::name).collect(),
+            CjkRows::Fit => self.bharat_faces.iter().filter(|face| EM_SQUARE_SCRIPTS.iter().any(|s| face.covers(s))).map(BharatFace::name).collect(),
             CjkRows::Grow => Vec::new(),
         };
         let mut cjk_faces: Vec<String> = Vec::new();
@@ -520,7 +520,7 @@ impl<'a> UiFonts<'a> {
             .iter()
             .filter(|s| covers(s))
             .flat_map(|s| self.candidates(s, ui_han, weight))
-            .filter(|&i| !self.craft_faces[i].covers("Hani"))
+            .filter(|&i| !self.bharat_faces[i].covers("Hani"))
             .collect();
         let mut others: Vec<usize> = Vec::new();
         for tag in self.languages.iter().filter(|l| **l != self.ui_language) {
@@ -530,20 +530,20 @@ impl<'a> UiFonts<'a> {
             }
         }
         let mut rest: Vec<(u8, usize)> =
-            self.craft_faces.iter().enumerate().filter_map(|(i, face)| face.style_rank(weight).map(|rank| (rank, i))).collect();
+            self.bharat_faces.iter().enumerate().filter_map(|(i, face)| face.style_rank(weight).map(|rank| (rank, i))).collect();
         rest.sort();
         others.extend(rest.into_iter().map(|(_, i)| i));
 
         let main_needs_lead = ui_scripts.first().is_some_and(|main| !covers(main) && !EM_SQUARE_SCRIPTS.contains(&main.as_str()));
         let language_first = !family.monospaced && main_needs_lead;
-        let craft = |indices: Vec<usize>| indices.into_iter().map(|i| self.craft_face(i)).collect::<Vec<_>>();
+        let craft = |indices: Vec<usize>| indices.into_iter().map(|i| self.bharat_face(i)).collect::<Vec<_>>();
         // A face that only follows the app's face keeps the app's rows unless the app asks otherwise.
-        let script = (language_first || self.cjk_rows == CjkRows::Grow).then(|| language.first().map(|i| self.craft_face(*i))).flatten();
+        let script = (language_first || self.cjk_rows == CjkRows::Grow).then(|| language.first().map(|i| self.bharat_face(*i))).flatten();
         // The best face for each of the UI language's scripts, the ones a web build fetches first.
         let ui_downloads = ui_scripts
             .iter()
             .filter(|s| !covers(s))
-            .filter_map(|s| self.candidates(s, ui_han, weight).first().map(|i| self.craft_face(*i)))
+            .filter_map(|s| self.candidates(s, ui_han, weight).first().map(|i| self.bharat_face(*i)))
             .filter(|face| face.served.is_some())
             .map(|face| face.name)
             .collect();
@@ -589,12 +589,12 @@ impl<'a> UiFonts<'a> {
         }
     }
 
-    /// Craft faces for `script`, best first: the right Han region, then the app's preference,
-    /// then the right style, then manifest order. craft-fonts' own preference ([`DEFAULT_PREFER`])
+    /// Bharat faces for `script`, best first: the right Han region, then the app's preference,
+    /// then the right style, then manifest order. bharat-fonts' own preference ([`DEFAULT_PREFER`])
     /// orders only the faces of the best region found.
     fn candidates(&self, script: &str, han: Option<Han>, weight: u16) -> Vec<usize> {
         let found: Vec<(u8, u8, usize)> = self
-            .craft_faces
+            .bharat_faces
             .iter()
             .enumerate()
             .filter(|(_, face)| face.covers(script))
@@ -608,7 +608,7 @@ impl<'a> UiFonts<'a> {
         let mut ranked: Vec<(u8, usize, u8, usize)> = found
             .into_iter()
             .map(|(region, style, i)| {
-                let face = &self.craft_faces[i];
+                let face = &self.bharat_faces[i];
                 let app = preference_of(self.prefer.iter().map(|(s, f)| (s.as_str(), f.as_str())), face);
                 let default = || (Some(region) == best).then(|| preference_of(DEFAULT_PREFER.iter().copied(), face)).flatten();
                 let preference = app.or_else(|| default().map(|p| self.prefer.len() + p)).unwrap_or(usize::MAX);
@@ -619,11 +619,11 @@ impl<'a> UiFonts<'a> {
         ranked.into_iter().map(|(.., i)| i).collect()
     }
 
-    fn craft_face(&self, index: usize) -> Face {
-        let face = self.craft_faces.get(index);
+    fn bharat_face(&self, index: usize) -> Face {
+        let face = self.bharat_faces.get(index);
         Face {
-            name: face.map(CraftFace::name).unwrap_or_default(),
-            data: face.map_or_else(|| FontData::from_static(&[]), CraftFace::data),
+            name: face.map(BharatFace::name).unwrap_or_default(),
+            data: face.map_or_else(|| FontData::from_static(&[]), BharatFace::data),
             served: self.served.get(index).copied().flatten(),
         }
     }
@@ -647,7 +647,7 @@ impl<'a> UiFonts<'a> {
 
 /// The first of `prefer`'s `(script tag, family)` entries that names `face`, or the family whose
 /// interface face `face` is (`Noto Sans TC` names `Noto Sans TC UI`).
-fn preference_of<'p>(mut prefer: impl Iterator<Item = (&'p str, &'p str)>, face: &CraftFace) -> Option<usize> {
+fn preference_of<'p>(mut prefer: impl Iterator<Item = (&'p str, &'p str)>, face: &BharatFace) -> Option<usize> {
     let full_family = face.family.strip_suffix(" UI").unwrap_or(face.family);
     prefer.position(|(tag, family)| face.scripts.contains(&tag) && (face.family == family || full_family == family))
 }
@@ -784,7 +784,7 @@ impl Stack {
     /// [`Self::install`] without fetching; `miss` is asked for characters no face has.
     fn install_faces(&self, ctx: &egui::Context, miss: Option<Arc<dyn FontProvider>>) {
         ctx.set_fonts(self.checked_definitions());
-        let id = egui::Id::unique("craft_ui::fonts::installed");
+        let id = egui::Id::unique("bharat_ui::fonts::installed");
         let (system, start_index) = self.context_lookup();
         let installed: Option<Arc<Installed>> = ctx.data(|d| d.get_temp(id));
         let installed = installed.unwrap_or_else(|| {
@@ -854,7 +854,7 @@ impl Stack {
     /// Whether the proportional family can draw `language`'s scripts, e.g. to leave a language out
     /// of the app's menu on a machine that can't show it. `with_system` also asks the system font
     /// provider. The scripts come from the stack's [`LanguageScripts`] for the UI language and
-    /// [`UiFonts::languages`], and from craft-i18n for any other language. Each script is checked
+    /// [`UiFonts::languages`], and from bharat-i18n for any other language. Each script is checked
     /// with a few of its common letters. A served face counts for the scripts it is tagged with,
     /// fetched or not, since it is fetched when text needs it.
     pub fn covers_language(&self, language: &str, with_system: bool) -> bool {
@@ -864,7 +864,7 @@ impl Stack {
         };
         let mut fonts = self.fonts(with_system);
         let font_id = FontId::new(14.0, FontFamily::Proportional);
-        let served = |script: &str| self.served.iter().any(|face| face.craft_face().covers(script));
+        let served = |script: &str| self.served.iter().any(|face| face.bharat_face().covers(script));
         scripts.iter().filter(|s| !served(s)).filter_map(|s| coverage::script_sample(s)).flat_map(str::chars).all(|c| fonts.has_glyph(&font_id, c))
     }
 

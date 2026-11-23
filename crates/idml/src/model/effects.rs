@@ -1,6 +1,6 @@
 //! The IDML transparency/effect settings found on page items and object styles.
 
-use craft_xml::{El, Local, Node};
+use bharat_xml::{El, Local, Node};
 
 use super::Values;
 

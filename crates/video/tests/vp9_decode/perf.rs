@@ -1,9 +1,9 @@
 //! Decode speed (ignored by default; run with
-//! `cargo test --release -p craft-video --features vp9-decode,threads --test vp9_decode perf:: -- --ignored --nocapture`).
+//! `cargo test --release -p bharat-video --features vp9-decode,threads --test vp9_decode perf:: -- --ignored --nocapture`).
 
 use crate::common;
 
-use craft_video::vp9::decode::Decoder;
+use bharat_video::vp9::decode::Decoder;
 use std::time::Instant;
 
 fn bench(frames: &[&[u8]], threads: usize, iters: usize) -> (usize, f64) {

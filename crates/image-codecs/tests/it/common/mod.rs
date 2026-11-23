@@ -4,7 +4,7 @@
 
 pub mod tiffgen;
 
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 /// SplitMix64 — tiny deterministic PRNG.
 pub struct Rng(u64);

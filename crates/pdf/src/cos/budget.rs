@@ -113,23 +113,23 @@ impl ImageBudget {
     /// nothing left an image is refused before anything is read, its globals included.
     ///
     /// ```
-    /// # let doc = craft_pdf::cos::Document::new_empty();
-    /// # let s = craft_pdf::cos::Stream::from_raw(craft_pdf::cos::Dict::new(), Vec::new());
-    /// let samples = craft_pdf::cos::ImageBudget::new(&doc).decode(&doc, &s, 1 << 20);
+    /// # let doc = bharat_pdf::cos::Document::new_empty();
+    /// # let s = bharat_pdf::cos::Stream::from_raw(bharat_pdf::cos::Dict::new(), Vec::new());
+    /// let samples = bharat_pdf::cos::ImageBudget::new(&doc).decode(&doc, &s, 1 << 20);
     /// assert_eq!(samples.unwrap(), b"");
     /// ```
     ///
     /// `Document` has no way of its own to decode an image:
     ///
     /// ```compile_fail
-    /// # let doc = craft_pdf::cos::Document::new_empty();
-    /// # let s = craft_pdf::cos::Stream::from_raw(craft_pdf::cos::Dict::new(), Vec::new());
+    /// # let doc = bharat_pdf::cos::Document::new_empty();
+    /// # let s = bharat_pdf::cos::Stream::from_raw(bharat_pdf::cos::Dict::new(), Vec::new());
     /// let _ = doc.decoded_image(&s);
     /// ```
     ///
     /// ```compile_fail
-    /// # let doc = craft_pdf::cos::Document::new_empty();
-    /// # let s = craft_pdf::cos::Stream::from_raw(craft_pdf::cos::Dict::new(), Vec::new());
+    /// # let doc = bharat_pdf::cos::Document::new_empty();
+    /// # let s = bharat_pdf::cos::Stream::from_raw(bharat_pdf::cos::Dict::new(), Vec::new());
     /// let _ = doc.decoded_image_within(&s, 1 << 20);
     /// ```
     pub fn decode(&mut self, doc: &Document, s: &Stream, max: usize) -> Result<Vec<u8>, CosError> {

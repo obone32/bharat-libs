@@ -1,5 +1,5 @@
 [package]
-name = "craft-assuan"
+name = "bharat-assuan"
 description = "An Assuan client and gpg-agent's operations over any Read + Write stream, with a bounded canonical S-expression reader; no sockets."
 version.workspace = true
 edition.workspace = true

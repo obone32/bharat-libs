@@ -8,8 +8,8 @@ use std::path::PathBuf;
 use jsonschema::Validator;
 use serde_json::{Value, json};
 
-use craft_ipc::InstanceRecord;
-use craft_ipc::record::{AssetKind, LinkRecord};
+use bharat_ipc::InstanceRecord;
+use bharat_ipc::record::{AssetKind, LinkRecord};
 
 fn schema_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("schemas")
@@ -262,7 +262,7 @@ fn schema_and_rust_agree_on_moniker_ids() {
 
 fn instance_doc() -> Value {
     let endpoint = if cfg!(windows) {
-        json!({"kind": "pipe", "name": "craft-hub-4242"})
+        json!({"kind": "pipe", "name": "bharat-hub-4242"})
     } else {
         json!({"kind": "unix", "path": "/run/user/1000/craft/hub-4242.sock"})
     };

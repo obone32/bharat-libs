@@ -1,4 +1,4 @@
-//! Craft Link client.
+//! Bharat Link client.
 //!
 //! Connects to one instance record, authenticates on local sockets and pipes,
 //! and exchanges JSON lines. Push events that arrive before a reply are kept
@@ -36,7 +36,7 @@ pub struct Event {
     pub data: Value,
 }
 
-/// A connected Craft Link session.
+/// A connected Bharat Link session.
 pub struct Client {
     record: InstanceRecord,
     reader: BufReader<Transport>,

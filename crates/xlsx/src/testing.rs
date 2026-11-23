@@ -1,6 +1,6 @@
 //! Small workbooks built in code, for tests and examples.
 
-use craft_opc::{PackageOut, RelsOut};
+use bharat_opc::{PackageOut, RelsOut};
 
 const MAIN_NS: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 const R_NS: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
@@ -46,5 +46,5 @@ pub fn workbook(sheets: &[(&str, &str)], strings: &[&str]) -> Vec<u8> {
 /// A ZIP archive of the given entries, stored as named (no content types are added).
 pub fn zip(entries: &[(&str, &[u8])]) -> Vec<u8> {
     let entries: Vec<(String, Vec<u8>)> = entries.iter().map(|(n, b)| (n.to_string(), b.to_vec())).collect();
-    craft_opc::zip_entries(&entries).unwrap_or_default()
+    bharat_opc::zip_entries(&entries).unwrap_or_default()
 }

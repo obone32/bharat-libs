@@ -49,4 +49,4 @@ let frame = dec.decode(&packet)?;
 
 `tests/ffv1.rs`: round trips over every shape, hostile input (every truncation and bit flip),
 and ffmpeg as the oracle in both directions (skipped without ffmpeg, a failure with
-`CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+`BHARAT_MEDIA_REQUIRE_ORACLES=1`).

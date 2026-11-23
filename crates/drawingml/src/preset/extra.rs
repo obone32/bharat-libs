@@ -799,7 +799,7 @@ mod tests {
         text.bytes().fold(0xcbf2_9ce4_8422_2325_u64, |h, b| (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3))
     }
 
-    /// Digests of every name's outlines as the string dispatch built them (craft-libs 2b35d243;
+    /// Digests of every name's outlines as the string dispatch built them (bharat-libs 2b35d243;
     /// DeckCraft's fc35ad67 gave other digests for curvedRightArrow and curvedDownArrow), so
     /// this refactor is proven output-identical: any changed outline fails here. pieWedge,
     /// curvedRightArrow and curvedDownArrow were taken again when [`digest_coord`] began printing

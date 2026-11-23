@@ -1,7 +1,7 @@
 //! Out-of-range arguments to the public constructors are errors or clamped, never arithmetic
 //! overflow (a panic in a debug build).
 
-use craft_video::apv::*;
+use bharat_video::apv::*;
 
 #[test]
 fn encoder_config_for_absurd_dimensions_does_not_overflow() {

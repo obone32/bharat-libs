@@ -1,6 +1,6 @@
 [package]
-name = "craft-tar"
-description = "TAR (v7, ustar, GNU long names and base-256 sizes, pax overrides) and cpio (newc, crc, odc) member walkers for hostile input: list members and where their data lies, without extracting. From Craft Anything."
+name = "bharat-tar"
+description = "TAR (v7, ustar, GNU long names and base-256 sizes, pax overrides) and cpio (newc, crc, odc) member walkers for hostile input: list members and where their data lies, without extracting. From Bharat Anything."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

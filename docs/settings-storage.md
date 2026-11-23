@@ -1,10 +1,10 @@
-# Settings storage across the Craft apps
+# Settings storage across the Bharat apps
 
-How every Craft app stores its settings, and what goes where. The shared code is
-[`craft-settings`](../crates/settings/README.md); this page is the policy it implements.
+How every Bharat app stores its settings, and what goes where. The shared code is
+[`bharat-settings`](../crates/settings/README.md); this page is the policy it implements.
 Where the apps install on Windows, and what an update may move, is the companion policy
 [installation-policy.md](installation-policy.md).
-Discussion: [storytold/craft-libs#12](https://github.com/storytold/craft-libs/issues/12).
+Discussion: [obone32/bharat-libs#12](https://github.com/obone32/bharat-libs/issues/12).
 
 ## What goes where
 
@@ -60,7 +60,7 @@ mount), the store opens read-only and says so at startup.
 ## Saving and recovery
 
 - Saves happen during use, half a second after the last change, atomically through
-  `craft-atomic`. A failed save leaves the old file intact and is retried with backoff; the app
+  `bharat-atomic`. A failed save leaves the old file intact and is retried with backoff; the app
   shows the error.
 - A file with a TOML syntax error is moved aside and defaults are used. A file that parses but
   has a value that no longer fits (a renamed theme, a typo in a hand edit) is not treated as
@@ -84,7 +84,7 @@ From the audit in #12 (Linux defaults, from source; overrides and portable mode 
 Before an app moves over, check where it saves on macOS and Windows so the importer finds the old
 files there too.
 
-| App | Today | Moving to `craft-settings` |
+| App | Today | Moving to `bharat-settings` |
 |---|---|---|
 | PhotoCraft | `~/.config/photocraft/preferences.json` + eframe `ui.ron`; atomic saves with retries; portable via `portable.txt`/`PhotoCraft.portable` → `PhotoCraftData/` | Import `preferences.json`; keep `ui.ron`; keep its portable names via `PORTABLE_MARKERS`/`PORTABLE_DIR` |
 | DesignCraft | `~/.config/designcraft/prefs.json` + `ui.json`; saves on exit, ignores failures; empty `DESIGNCRAFT_CONFIG_DIR` and `DESIGNCRAFT_NO_PREFS` touch nothing | Import `prefs.json`; keep `ui.json`; gain save-during-use and error reporting; `DESIGNCRAFT_NO_PREFS` → `Location::Memory` |

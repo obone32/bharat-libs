@@ -4,7 +4,7 @@
 use crate::hevc::decode::error::{Result, ensure, unsupported};
 use crate::hevc::decode::spec_tables::{DEFAULT_SCALING_INTER, DEFAULT_SCALING_INTRA};
 use crate::hevc::decode::tables::scan_diag;
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 /// HEVC picture state includes several per-pixel and per-block work buffers. This permits 8K
 /// pictures while rejecting dimensions that could exhaust memory during decode.
@@ -979,7 +979,7 @@ mod tests {
     }
 
     fn pps_bits_qp(num_ref_idx: u32, tiles: u32, init_qp_minus26: i32) -> Vec<u8> {
-        let mut w = craft_media::bitstream::BitWriter::new();
+        let mut w = bharat_media::bitstream::BitWriter::new();
         w.write_ue(0); // pps id
         w.write_ue(0); // sps id
         w.write_bit(false); // dependent slices
@@ -1035,7 +1035,7 @@ mod tests {
     fn hostile_sps(huge: &str, conf: u32) -> Vec<u8> {
         let m = u32::MAX;
         let pick = |name: &str, ok: u32| if huge == name { m } else { ok };
-        let mut w = craft_media::bitstream::BitWriter::new();
+        let mut w = bharat_media::bitstream::BitWriter::new();
         w.write_bits(0, 4);
         w.write_bits(0, 3);
         w.write_bits(1, 1);

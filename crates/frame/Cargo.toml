@@ -1,6 +1,6 @@
 [package]
-name = "craft-frame"
-description = "Compositor and display VideoFrame (RGBA and planar Y'CbCr) with ColorInfo, distinct from craft-video decoder pictures"
+name = "bharat-frame"
+description = "Compositor and display VideoFrame (RGBA and planar Y'CbCr) with ColorInfo, distinct from bharat-video decoder pictures"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,7 +11,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-color = { workspace = true }
-craft-time = { workspace = true }
+bharat-color = { workspace = true }
+bharat-time = { workspace = true }
 rayon = { workspace = true }
 serde = { workspace = true }

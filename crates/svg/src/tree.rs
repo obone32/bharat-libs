@@ -1,7 +1,7 @@
 //! The full SVG parser: usvg, behind one bounded entry point.
 //!
 //! usvg (re-exported as [`usvg`]) turns an SVG into a tree with styles resolved, `use` expanded,
-//! text laid out and units converted. It is the parser every Craft app that reads SVG in full
+//! text laid out and units converted. It is the parser every Bharat app that reads SVG in full
 //! shares, at the one version this crate pins; apps take it from here and not as a dependency of
 //! their own, so they also share the checks it needs. usvg trusts its input more than a file
 //! from anywhere deserves: it unpacks SVGZ with no limit, expands entities with no total limit,
@@ -542,24 +542,24 @@ fn account_invalid_data_urls(xml: &roxmltree::Document<'_>, used: &Used) {
     }
 }
 
-fn raster_format(data: &[u8]) -> Option<craft_image_codecs::Format> {
-    match craft_image_codecs::detect(data)? {
-        format @ (craft_image_codecs::Format::Png
-        | craft_image_codecs::Format::Jpeg
-        | craft_image_codecs::Format::Gif
-        | craft_image_codecs::Format::WebP) => Some(format),
+fn raster_format(data: &[u8]) -> Option<bharat_image_codecs::Format> {
+    match bharat_image_codecs::detect(data)? {
+        format @ (bharat_image_codecs::Format::Png
+        | bharat_image_codecs::Format::Jpeg
+        | bharat_image_codecs::Format::Gif
+        | bharat_image_codecs::Format::WebP) => Some(format),
         _ => None,
     }
 }
 
-fn raster_image(used: &Used, limits: &Limits, data: Arc<Vec<u8>>, format: craft_image_codecs::Format) -> Option<usvg::ImageKind> {
-    let Ok((width, height)) = craft_image_codecs::probe_allocation_size(&data) else {
+fn raster_image(used: &Used, limits: &Limits, data: Arc<Vec<u8>>, format: bharat_image_codecs::Format) -> Option<usvg::ImageKind> {
+    let Ok((width, height)) = bharat_image_codecs::probe_allocation_size(&data) else {
         used.invalid_raster.fetch_add(1, Ordering::Relaxed);
         return None;
     };
     if !matches!(
         format,
-        craft_image_codecs::Format::Png | craft_image_codecs::Format::Jpeg | craft_image_codecs::Format::Gif | craft_image_codecs::Format::WebP
+        bharat_image_codecs::Format::Png | bharat_image_codecs::Format::Jpeg | bharat_image_codecs::Format::Gif | bharat_image_codecs::Format::WebP
     ) {
         used.invalid_raster.fetch_add(1, Ordering::Relaxed);
         return None;
@@ -589,14 +589,14 @@ fn raster_image(used: &Used, limits: &Limits, data: Arc<Vec<u8>>, format: craft_
     drop(seen);
     // A valid header is not proof of valid pixels. resvg can silently omit a damaged
     // image later; decode now under explicit limits so omission accounting is honest.
-    let decode_limits = craft_image_codecs::Limits::new(width, height, pixels, limits.embedded_raster_pixels.saturating_mul(8));
-    let options = craft_image_codecs::DecodeOptions { limits: decode_limits, keep_orientation: true };
-    if let Err(error) = craft_image_codecs::decode_as_with(format, &data, &options) {
+    let decode_limits = bharat_image_codecs::Limits::new(width, height, pixels, limits.embedded_raster_pixels.saturating_mul(8));
+    let options = bharat_image_codecs::DecodeOptions { limits: decode_limits, keep_orientation: true };
+    if let Err(error) = bharat_image_codecs::decode_as_with(format, &data, &options) {
         // No tree retains this allocation on failure. Forget its address before it
         // can be reused, but keep the pixel charge for the decode work already spent.
         used.raster_data.lock().unwrap_or_else(PoisonError::into_inner).remove(&pointer);
         match error {
-            craft_image_codecs::CodecError::LimitExceeded(_) => {
+            bharat_image_codecs::CodecError::LimitExceeded(_) => {
                 used.raster_limit.fetch_add(1, Ordering::Relaxed);
             }
             _ => {
@@ -606,10 +606,10 @@ fn raster_image(used: &Used, limits: &Limits, data: Arc<Vec<u8>>, format: craft_
         return None;
     }
     Some(match format {
-        craft_image_codecs::Format::Png => usvg::ImageKind::PNG(data),
-        craft_image_codecs::Format::Jpeg => usvg::ImageKind::JPEG(data),
-        craft_image_codecs::Format::Gif => usvg::ImageKind::GIF(data),
-        craft_image_codecs::Format::WebP => usvg::ImageKind::WEBP(data),
+        bharat_image_codecs::Format::Png => usvg::ImageKind::PNG(data),
+        bharat_image_codecs::Format::Jpeg => usvg::ImageKind::JPEG(data),
+        bharat_image_codecs::Format::Gif => usvg::ImageKind::GIF(data),
+        bharat_image_codecs::Format::WebP => usvg::ImageKind::WEBP(data),
         _ => return None,
     })
 }
@@ -702,10 +702,10 @@ fn image_resolver_for(limits: Limits, used: Arc<Used>) -> usvg::ImageHrefResolve
         resolve_data: Box::new(move |mime, data, options| {
             let detected = raster_format(&data);
             let format = match mime {
-                "image/jpg" | "image/jpeg" => (detected == Some(craft_image_codecs::Format::Jpeg)).then_some(craft_image_codecs::Format::Jpeg),
-                "image/png" => (detected == Some(craft_image_codecs::Format::Png)).then_some(craft_image_codecs::Format::Png),
-                "image/gif" => (detected == Some(craft_image_codecs::Format::Gif)).then_some(craft_image_codecs::Format::Gif),
-                "image/webp" => (detected == Some(craft_image_codecs::Format::WebP)).then_some(craft_image_codecs::Format::WebP),
+                "image/jpg" | "image/jpeg" => (detected == Some(bharat_image_codecs::Format::Jpeg)).then_some(bharat_image_codecs::Format::Jpeg),
+                "image/png" => (detected == Some(bharat_image_codecs::Format::Png)).then_some(bharat_image_codecs::Format::Png),
+                "image/gif" => (detected == Some(bharat_image_codecs::Format::Gif)).then_some(bharat_image_codecs::Format::Gif),
+                "image/webp" => (detected == Some(bharat_image_codecs::Format::WebP)).then_some(bharat_image_codecs::Format::WebP),
                 "text/plain" => detected,
                 _ => None,
             };

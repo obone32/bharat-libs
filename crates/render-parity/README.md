@@ -1,17 +1,17 @@
-# craft-render-parity
+# bharat-render-parity
 
-Test support for the shared develop pipeline ([#587](https://github.com/storytold/craft-libs/issues/587)):
+Test support for the shared develop pipeline ([#587](https://github.com/obone32/bharat-libs/issues/587)):
 how far two renders of the same photo are apart, and whether that is within a stated tolerance.
 A develop stage that moves from an app, or an app that switches to the shared pipeline, renders
 the same fixture both ways and compares the two here.
 
 ```toml
 [dev-dependencies]
-craft-render-parity = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-render-parity = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ```rust
-use craft_render_parity::{Image, Tolerance, compare};
+use bharat_render_parity::{Image, Tolerance, compare};
 
 let expected = Image::new(width, height, &app_render)?;
 let actual = Image::new(width, height, &shared_render)?;
@@ -29,7 +29,7 @@ or infinite sample is an error, never a pass.
 
 | Measure | Meaning |
 |---|---|
-| `max_delta_e`, `mean_delta_e` | CIEDE2000 (kL = kC = kH = 1) in CIELAB relative to D65, from `craft_cms::math` |
+| `max_delta_e`, `mean_delta_e` | CIEDE2000 (kL = kC = kH = 1) in CIELAB relative to D65, from `bharat_cms::math` |
 | `max_channel`, `mean_channel` | Absolute difference of the linear samples, overall and per channel |
 | `worst` | The first pixel with the largest CIEDE2000 difference, or the first that differs at all |
 

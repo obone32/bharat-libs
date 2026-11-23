@@ -211,7 +211,7 @@ pub(super) fn has_char(data: &FontData, c: char) -> bool {
 struct ContextProviders(Vec<Arc<dyn FontProvider>>);
 
 fn providers_id() -> egui::Id {
-    egui::Id::unique("craft_ui::fonts::providers")
+    egui::Id::unique("bharat_ui::fonts::providers")
 }
 
 /// Set `ctx`'s font providers and remember them for [`reload_font_providers`].

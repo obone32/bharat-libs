@@ -2,7 +2,7 @@
 
 use crate::hevc::decode::error::{Result, ensure, invalid};
 use crate::hevc::decode::params::{Pps, Sps, StRps};
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 pub mod nal_type {
     pub const TRAIL_N: u8 = 0;
@@ -499,7 +499,7 @@ fn parse_pwt(r: &mut BitReader, sh: &SliceHeader, sps: &Sps) -> Result<PredWeigh
 #[cfg(test)]
 mod entry_point_tests {
     use super::*;
-    use craft_media::bitstream::BitWriter;
+    use bharat_media::bitstream::BitWriter;
 
     fn offsets(len_minus1: u32, values: &[u32], bits: u32) -> Result<Vec<u32>> {
         let mut w = BitWriter::new();

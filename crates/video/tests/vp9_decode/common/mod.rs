@@ -2,7 +2,7 @@
 //! reader, and comparison helpers.
 #![allow(dead_code)]
 
-use craft_video::vp9::decode::{Decoder, Picture};
+use bharat_video::vp9::decode::{Decoder, Picture};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -163,11 +163,11 @@ pub fn fixture(name: &str) -> &'static Fixture {
 }
 
 pub fn ffmpeg() -> Option<PathBuf> {
-    craft_media_testkit::ffmpeg_or_skip("VP9 conformance tests")
+    bharat_media_testkit::ffmpeg_or_skip("VP9 conformance tests")
 }
 
 pub fn fixtures_dir() -> PathBuf {
-    craft_media_testkit::fixtures_dir("vp9")
+    bharat_media_testkit::fixtures_dir("vp9")
 }
 
 /// Unique suffix for temporary files: tests run on several threads of one process and may
@@ -223,7 +223,7 @@ pub fn reference_decode(ivf: &Path, yuv: &Path, pix_fmt: &str) -> bool {
 /// Generate (if needed) the fixture stream and its ffmpeg reference decode.
 pub fn ensure(f: &Fixture) -> Option<(PathBuf, PathBuf)> {
     // A fixture that cannot be made is a skip, and a failure when oracles are required.
-    ensure_inner(f).or_else(|| craft_media_testkit::skip(&format!("VP9 fixture {} could not be generated", f.name)))
+    ensure_inner(f).or_else(|| bharat_media_testkit::skip(&format!("VP9 fixture {} could not be generated", f.name)))
 }
 
 fn ensure_inner(f: &Fixture) -> Option<(PathBuf, PathBuf)> {
@@ -321,7 +321,7 @@ pub fn write_ivf(path: &Path, w: u16, h: u16, frames: &[Vec<u8>]) {
     std::fs::write(path, d).unwrap();
 }
 
-pub type DecodeFailure = (usize, craft_video::vp9::decode::Error, Vec<Picture>);
+pub type DecodeFailure = (usize, bharat_video::vp9::decode::Error, Vec<Picture>);
 
 /// Decode an IVF file with `threads` workers (0 = default), pts = frame index.
 pub fn decode_file_threads(path: &Path, threads: usize) -> Result<Vec<Picture>, DecodeFailure> {

@@ -1,6 +1,6 @@
-# Craft UI
+# Bharat UI
 
-`craft-ui` provides small egui components with application-supplied styles. `icons` prepares
+`bharat-ui` provides small egui components with application-supplied styles. `icons` prepares
 embedded SVG catalogs; `buttons` paints accessible icon buttons; `tabs` handles tab fitting and
 interaction; `layout` provides toolbar fitting, split geometry and resize handles; `theme` shares widget-state styling.
 `layout::Section` groups dialog or inspector settings in caller-styled frames with optional headings.
@@ -69,7 +69,7 @@ localized heading and a frame built from the application's tokens. Typography st
 `WidgetText`; contents keep normal egui focus, clipping and parent disabled state.
 
 ```rust
-use craft_ui::layout::Section;
+use bharat_ui::layout::Section;
 use egui::{CornerRadius, Frame, Margin, RichText};
 
 fn display_settings(ui: &mut egui::Ui, show_grid: &mut bool) {
@@ -101,7 +101,7 @@ For common Insert Shapes choices and previews, see [the shared shape gallery](do
 
 ```rust
 use std::sync::OnceLock;
-use craft_ui::icons::{SvgIconSet, SvgStyle};
+use bharat_ui::icons::{SvgIconSet, SvgStyle};
 
 // Supply the application's own attributed assets here.
 static ICONS: &[(&str, &[u8])] = &[];
@@ -149,7 +149,7 @@ states. Selection wins over press and hover. `pressed: None` keeps ordinary hove
 `Some` supplies a separate press treatment. egui owns pointer capture and click cancellation.
 
 ```rust
-use craft_ui::buttons::{ButtonVisuals, IconButton, IconButtonStyle};
+use bharat_ui::buttons::{ButtonVisuals, IconButton, IconButtonStyle};
 use egui::{Color32, CornerRadius, Stroke, Vec2};
 
 fn layer_button(ui: &mut egui::Ui, selected: bool) -> egui::Response {
@@ -207,7 +207,7 @@ narrowed.
 
 ```rust
 fn tab(ui: &mut egui::Ui, rect: egui::Rect, selected: bool) -> egui::Response {
-    craft_ui::tabs::Tab::new(ui.scope_id().with("layers-tab"), "Layers", selected)
+    bharat_ui::tabs::Tab::new(ui.scope_id().with("layers-tab"), "Layers", selected)
         .sense(egui::Sense::click_and_drag())
         .show_at(ui, rect, |ui, response| {
             let fill = if response.hovered() { egui::Color32::GRAY } else { egui::Color32::DARK_GRAY };
@@ -231,7 +231,7 @@ are supplied by the application. Tiny areas relax the minimum to half the space 
 non-finite or inverted input returns `None` instead of panicking.
 
 ```rust
-use craft_ui::layout::{split_rect, SplitAxis, SplitSize};
+use bharat_ui::layout::{split_rect, SplitAxis, SplitSize};
 
 fn two_panes(rect: egui::Rect) -> Option<(egui::Rect, egui::Rect)> {
     let split = split_rect(rect, SplitAxis::Horizontal, SplitSize::Ratio(0.5), 4.0, 20.0)?;
@@ -292,7 +292,7 @@ local tokens. It updates each state's strong/weak background fill, radius and fo
 expansion and all other visual settings are retained.
 
 ```rust
-use craft_ui::theme::WidgetPalette;
+use bharat_ui::theme::WidgetPalette;
 use egui::{Color32, CornerRadius, Stroke};
 
 fn style_widgets(visuals: &mut egui::Visuals, palette: WidgetPalette, text: Color32) {
@@ -316,8 +316,8 @@ font stack in the same order:
 
 1. the app's own faces for the family (UI face, semibold, mono), or egui's default faces for a
    family the app has none for;
-2. craft-fonts faces for the UI language;
-3. craft-fonts faces for every other script the app ships, so a Japanese interface still draws
+2. bharat-fonts faces for the UI language;
+3. bharat-fonts faces for every other script the app ships, so a Japanese interface still draws
    Arabic file names;
 4. installed system fonts (see below), set to regular weight so variable fonts don't draw Thin;
 5. emoji faces (system emoji first, then the colour, web and monochrome faces the app embeds) and,
@@ -344,12 +344,12 @@ egui those fallbacks are centred. Monospace keeps the app's or egui's mono face 
 Traditional (TC) face, then Hong Kong, then Simplified; `zh-HK` the Hong Kong face first; `ja` the
 Japanese face; `ko` the Korean one.
 
-The app keeps its font files: its `build.rs` embeds the craft-fonts faces it wants from
-`fonts/manifest.txt` with `craft-fonts-build`, and craft-ui never depends on craft-fonts. A crate
+The app keeps its font files: its `build.rs` embeds the bharat-fonts faces it wants from
+`fonts/manifest.txt` with `bharat-fonts-build`, and bharat-ui never depends on bharat-fonts. A crate
 below the UI (an app's engine or font crate, without egui) holds the table as
-`craft_fonts_build::EmbeddedFace` values (storytold/craft-libs#213), and the UI converts each into
-a `fonts::CraftFace` with `From`. Apps embed with `Embed::subset_to(catalogs)`, which takes the
-CJK faces as craft-fonts' interface faces (`Noto Sans TC UI`, BIZ UDPGothic Regular) and cuts them
+`bharat_fonts_build::EmbeddedFace` values (obone32/bharat-libs#213), and the UI converts each into
+a `fonts::BharatFace` with `From`. Apps embed with `Embed::subset_to(catalogs)`, which takes the
+CJK faces as bharat-fonts' interface faces (`Noto Sans TC UI`, BIZ UDPGothic Regular) and cuts them
 at build time to the characters the translation catalogs use (about 3 MB for all five with
 FilmCraft's catalogs). A character a cut face lacks, such as one in a file name, comes from
 another region's interface face that has it, then from the installed system fonts; the build
@@ -364,24 +364,24 @@ whose chains the app can still edit (`insert`, `replace`, `remove`) before `Stac
 `get` and `faces`; `Stack::flat_definitions` appends them to each chain, for a context that takes
 its fonts only through `set_fonts`.
 
-`fonts::I18nScripts` reads each language's scripts and Han forms from craft-i18n; an app with its
+`fonts::I18nScripts` reads each language's scripts and Han forms from bharat-i18n; an app with its
 own table implements `fonts::LanguageScripts` instead.
 
 ```rust
-use craft_fonts_build::EmbeddedFace;
-use craft_ui::fonts::{CraftFace, Family, I18nScripts, UiFonts};
+use bharat_fonts_build::EmbeddedFace;
+use bharat_ui::fonts::{BharatFace, Family, I18nScripts, UiFonts};
 use egui::{FontData, FontFamily};
 
-pub static CRAFT_FONTS: &[EmbeddedFace] = include!(concat!(env!("OUT_DIR"), "/craft_fonts.rs"));
+pub static BHARAT_FONTS: &[EmbeddedFace] = include!(concat!(env!("OUT_DIR"), "/bharat_fonts.rs"));
 
 fn install_fonts(ctx: &egui::Context, ui_language: &str) {
-    let craft_faces: Vec<CraftFace> = CRAFT_FONTS.iter().copied().map(CraftFace::from).collect();
+    let bharat_faces: Vec<BharatFace> = BHARAT_FONTS.iter().copied().map(BharatFace::from).collect();
     UiFonts::new(&I18nScripts)
         .app_face("ui", FontData::from_static(UI_FONT), &[FontFamily::Proportional])
         .app_face("ui-semibold", FontData::from_static(UI_SEMIBOLD), &[FontFamily::Name("semibold".into())])
         .app_face("mono", FontData::from_static(MONO_FONT), &[FontFamily::Monospace])
         .family(Family::named("semibold").weight(600))
-        .craft_faces(&craft_faces)
+        .bharat_faces(&bharat_faces)
         .languages(OFFERED_LANGUAGES)
         .ui_language(ui_language)
         .install(ctx);
@@ -392,11 +392,11 @@ Call `install` again when the UI language changes.
 
 ### Web builds
 
-A web build serves the craft-fonts faces beside its wasm instead of embedding them, so the wasm
-stays small and an English interface never downloads Chinese. `craft-fonts-build`'s
+A web build serves the bharat-fonts faces beside its wasm instead of embedding them, so the wasm
+stays small and an English interface never downloads Chinese. `bharat-fonts-build`'s
 `Embed::serve` copies the faces into a directory and writes a table of `fonts::ServedFace`s (URL,
 size, Subresource Integrity hash and the characters the face maps, no bytes);
-`UiFonts::served_faces` takes it in place of `craft_faces`. Each face's characters are its
+`UiFonts::served_faces` takes it in place of `bharat_faces`. Each face's characters are its
 `cmap`'s code point ranges, packed as LEB128 gaps and lengths: about 3 KB for a CJK interface face
 cut to an app's catalogs, a few hundred bytes for Noto Sans, the symbol faces or an emoji face. The
 stack orders served faces exactly as embedded ones, and on the web `Stack::install` fetches them:
@@ -428,14 +428,14 @@ in its first frames.
 ```rust
 fn main() {
     println!("cargo::rerun-if-changed=build.rs");
-    // CJK faces as craft-fonts' interface faces, cut to the app's catalogs (`catalogs` as in
-    // craft-fonts-build's README; `subset` feature on the build-dependency).
-    let fonts = craft_fonts_build::Embed::new().subset_to(catalogs("myapp"));
-    let written = if craft_fonts_build::target_is_wasm() {
+    // CJK faces as bharat-fonts' interface faces, cut to the app's catalogs (`catalogs` as in
+    // bharat-fonts-build's README; `subset` feature on the build-dependency).
+    let fonts = bharat_fonts_build::Embed::new().subset_to(catalogs("myapp"));
+    let written = if bharat_fonts_build::target_is_wasm() {
         // Served by the page as `fonts/`; see Trunk.toml.
-        fonts.serve("web/fonts", "fonts/").write("craft_fonts.rs")
+        fonts.serve("web/fonts", "fonts/").write("bharat_fonts.rs")
     } else {
-        fonts.write("craft_fonts.rs")
+        fonts.write("bharat_fonts.rs")
     };
     if let Err(e) = written {
         println!("cargo::error={e}");
@@ -447,25 +447,25 @@ The app:
 
 ```rust
 // The embedded table is written as `EmbeddedFace` literals, the served one as `ServedFace`s.
-use craft_ui::fonts::{CraftFace as EmbeddedFace, I18nScripts, ServedFace, UiFonts};
+use bharat_ui::fonts::{BharatFace as EmbeddedFace, I18nScripts, ServedFace, UiFonts};
 
 #[cfg(not(target_arch = "wasm32"))]
-static CRAFT_FONTS: &[EmbeddedFace] = include!(concat!(env!("OUT_DIR"), "/craft_fonts.rs"));
+static BHARAT_FONTS: &[EmbeddedFace] = include!(concat!(env!("OUT_DIR"), "/bharat_fonts.rs"));
 #[cfg(target_arch = "wasm32")]
-static CRAFT_FONTS: &[ServedFace] = include!(concat!(env!("OUT_DIR"), "/craft_fonts.rs"));
+static BHARAT_FONTS: &[ServedFace] = include!(concat!(env!("OUT_DIR"), "/bharat_fonts.rs"));
 
 fn install_fonts(ctx: &egui::Context, ui_language: &str) {
     let fonts = UiFonts::new(&I18nScripts).app_face("ui", FontData::from_static(UI_FONT), &[FontFamily::Proportional]);
     #[cfg(not(target_arch = "wasm32"))]
-    let fonts = fonts.craft_faces(CRAFT_FONTS);
+    let fonts = fonts.bharat_faces(BHARAT_FONTS);
     #[cfg(target_arch = "wasm32")]
-    let fonts = fonts.served_faces(CRAFT_FONTS);
+    let fonts = fonts.served_faces(BHARAT_FONTS);
     fonts.languages(OFFERED_LANGUAGES).ui_language(ui_language).install(ctx);
 }
 
 impl eframe::App for App {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        if craft_ui::fonts::loading(ui.ctx()) {
+        if bharat_ui::fonts::loading(ui.ctx()) {
             return; // The fetch repaints when it arrives.
         }
         // …
@@ -489,7 +489,7 @@ workspace can pass `concat!(env!("CARGO_MANIFEST_DIR"), "/../../web/fonts")` ins
 directory out of version control. A build filters faces for the web as for the desktop (`scripts`,
 `filter`), e.g. to leave out bold faces.
 
-Two features, both off by default, change what every craft-ui user draws, so the app turns them on:
+Two features, both off by default, change what every bharat-ui user draws, so the app turns them on:
 
 - `system_fonts` (desktop): the stack asks the installed fonts, at regular weight, and `install`
   replaces the context's font providers, including the one eframe adds. One index of the
@@ -509,7 +509,7 @@ family for ⇧ and ▸.
 Each app tests its coverage with `fonts::assert_covers`: it checks every shipped translation and a
 sample of content scripts against the stack without system fonts, and fails naming the language,
 message key and character that has no glyph. Build the stack with `.system_fonts(SystemFonts::Off)`
-in that test, and run it with `CRAFT_FONTS_DIR` set so it sees the faces a release embeds. For
+in that test, and run it with `BHARAT_FONTS_DIR` set so it sees the faces a release embeds. For
 languages the app leaves to installed fonts, `fonts::assert_covers_with_system` asks the stack's
 system provider too; `fonts::system_font_provider(locale)` gives egui's provider (with
 `system_fonts`), shared per locale, for `UiFonts::system_provider` or such a check. At run time,
@@ -526,9 +526,9 @@ test. Right-to-left languages lay the screen out from the right. The app's UI cl
 `Locale` (language tag and direction) and picks its strings from it.
 
 ```rust,ignore
-use craft_ui::testing::{KOREAN, Screens, compose};
+use bharat_ui::testing::{KOREAN, Screens, compose};
 
-let screens = Screens::new("rename").size([320.0, 150.0]).fonts(|fonts| fonts.craft_faces(FACES));
+let screens = Screens::new("rename").size([320.0, 150.0]).fonts(|fonts| fonts.bharat_faces(FACES));
 // Compares tests/snapshots/rename-ar.png, rename-ja.png, …; UPDATE_SNAPSHOTS=1 writes them.
 screens.snapshots(|ui, locale| rename_dialog(ui, locale));
 
@@ -541,7 +541,7 @@ assert_eq!(harness.state().name, "한");
 
 `compose` sends the preedit and commit events an input method sends (`KOREAN`, `JAPANESE`,
 `PINYIN`, `TELEX`), which egui's `TextEdit` and canvases reading `Event::Ime` both take. The module
-documentation has the recipe for a shortcut smoke test on a non-Latin layout through craft-keymap.
+documentation has the recipe for a shortcut smoke test on a non-Latin layout through bharat-keymap.
 `tests/screens.rs` is a complete example. egui's default proportional face has no Vietnamese
 letters such as ổ, so an app relying on it fails the `vi` screens until its own face covers them. The per-release manual checks are in
 [language-testing.md](../../docs/language-testing.md).
@@ -551,7 +551,7 @@ letters such as ổ, so an app relying on it fails the `vi` screens until its ow
 `printing::State` holds the transient printer selection, copies, duplex and grayscale settings,
 plus discovery and submission receivers. Hosts supply `Discover` and `Submit` workers; neither
 the state nor the controls invokes an OS spooler or generates PDF content. Apps map `Settings`
-to `craft-print::Job` and own the Print action, page selection, preview and export behavior.
+to `bharat-print::Job` and own the Print action, page selection, preview and export behavior.
 
 `State::show` takes a stable `egui::Id` and app-localized `Labels`. It draws the settings only;
 apps render typed `Feedback` using their own translations. `poll` requests occasional repaints
@@ -605,7 +605,7 @@ record, outside egui-owned storage: a slot stored in `egui::Memory::data` or a r
 would form a `Context` → slot → `Context` cycle.
 
 ```rust
-use craft_ui::capture::{CaptureError, CaptureSlot};
+use bharat_ui::capture::{CaptureError, CaptureSlot};
 use egui::{Context, ViewportCommand, ViewportId};
 
 fn issue_capture(ctx: &Context, viewport: ViewportId) -> CaptureSlot {
@@ -688,7 +688,7 @@ Validation:
 cargo fmt --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
-cargo check --target wasm32-unknown-unknown -p craft-ui
+cargo check --target wasm32-unknown-unknown -p bharat-ui
 ```
 
 The [visual regression suite](../../docs/ui-visual-regressions.md) compares the actual controls
@@ -696,5 +696,5 @@ against independent reference painters, including exact mesh and RGBA checks, an
 color, spacing and stroke changes fail those comparisons. To retain reviewable PNG pairs:
 
 ```sh
-CRAFT_UI_VISUAL_DIR=/absolute/path/to/visuals cargo test -p craft-ui --test visual_regression
+BHARAT_UI_VISUAL_DIR=/absolute/path/to/visuals cargo test -p bharat-ui --test visual_regression
 ```

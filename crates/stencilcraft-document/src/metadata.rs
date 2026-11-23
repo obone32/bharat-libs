@@ -80,6 +80,6 @@ impl RecentFiles {
 
     pub fn save(&self, file: &Path) -> Result<(), DocError> {
         let json = self.to_json_pretty().map_err(|e| DocError::Structure { path: file.display().to_string(), message: e.to_string() })?;
-        craft_atomic::atomic_write(file, json.as_bytes()).map_err(|source| DocError::Io { path: file.display().to_string(), source })
+        bharat_atomic::atomic_write(file, json.as_bytes()).map_err(|source| DocError::Io { path: file.display().to_string(), source })
     }
 }

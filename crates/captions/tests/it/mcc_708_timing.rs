@@ -1,6 +1,6 @@
 //! CEA-708 timing of back-to-back one-frame captions in MCC.
 
-use craft_captions::{Cue, Document, Format, mcc, parse};
+use bharat_captions::{Cue, Document, Format, mcc, parse};
 
 /// A frame carries 18 DTVCC pairs, and with one-frame captions back to back it holds one
 /// caption's display (3 pairs) and the next one's load. A load of up to 19 characters (15 pairs)

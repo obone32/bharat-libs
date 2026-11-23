@@ -1,12 +1,12 @@
-//! DDS compatibility facade; implementation and BC block codecs live in craft-image-codecs.
+//! DDS compatibility facade; implementation and BC block codecs live in bharat-image-codecs.
 use crate::{CodecError, Image, Limits, SampleType, bridge};
-use craft_image_codecs::Format;
+use bharat_image_codecs::Format;
 
 pub fn looks_like_dds(bytes: &[u8]) -> bool {
-    craft_image_codecs::detect(bytes) == Some(Format::Dds)
+    bharat_image_codecs::detect(bytes) == Some(Format::Dds)
 }
 pub fn has_additional_images(bytes: &[u8]) -> Result<bool, CodecError> {
-    craft_image_codecs::has_unretained_source_data(bytes).map_err(bridge::from_shared_error)
+    bharat_image_codecs::has_unretained_source_data(bytes).map_err(bridge::from_shared_error)
 }
 pub fn decode(bytes: &[u8], limits: &Limits) -> Result<Image, CodecError> {
     bridge::format(Format::Dds, bytes, limits)
@@ -64,12 +64,12 @@ pub fn encode(image: &Image, options: DdsOptions) -> Result<Vec<u8>, CodecError>
         return Err(CodecError::encode("DDS", format!("{:?} pixels can't be written as `{}`", image.layout(), options.compression.name())));
     }
     let compression = match options.compression {
-        DdsCompression::None => craft_image_codecs::DdsCompression::None,
-        DdsCompression::Bc1 => craft_image_codecs::DdsCompression::Bc1,
-        DdsCompression::Bc2 => craft_image_codecs::DdsCompression::Bc2,
-        DdsCompression::Bc3 => craft_image_codecs::DdsCompression::Bc3,
+        DdsCompression::None => bharat_image_codecs::DdsCompression::None,
+        DdsCompression::Bc1 => bharat_image_codecs::DdsCompression::Bc1,
+        DdsCompression::Bc2 => bharat_image_codecs::DdsCompression::Bc2,
+        DdsCompression::Bc3 => bharat_image_codecs::DdsCompression::Bc3,
     };
     let opts =
-        craft_image_codecs::EncodeOptions { dds: craft_image_codecs::DdsOptions { compression, mipmaps: options.mipmaps }, ..Default::default() };
+        bharat_image_codecs::EncodeOptions { dds: bharat_image_codecs::DdsOptions { compression, mipmaps: options.mipmaps }, ..Default::default() };
     bridge::encode(image, Format::Dds, &opts)
 }

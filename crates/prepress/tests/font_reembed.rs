@@ -3,8 +3,8 @@
 //! the PDF-in adapter relies on: glyph ids, positions, Unicode and plates survive the trip.
 //!
 //! Fonts not in the repository are read from paths and their cases are skipped when missing:
-//! Inter from `CRAFT_PDF_TEST_FONT_DIR`, a CFF-flavored OpenType font from
-//! `CRAFT_PREPRESS_CFF_FONT` (default: Debian's `fonts-urw-base35` Nimbus Sans). The Type1C
+//! Inter from `BHARAT_PDF_TEST_FONT_DIR`, a CFF-flavored OpenType font from
+//! `BHARAT_PREPRESS_CFF_FONT` (default: Debian's `fonts-urw-base35` Nimbus Sans). The Type1C
 //! case embeds hayro's Foxit Sans, which is bare CFF.
 #![cfg(feature = "flatten")]
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
@@ -13,25 +13,25 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use craft_pdf::interpret::font::{Glyph, OutlineFontData, StandardFont};
-use craft_pdf::interpret::hayro_cmap::BfString;
-use craft_pdf::interpret::{
+use bharat_pdf::interpret::font::{Glyph, OutlineFontData, StandardFont};
+use bharat_pdf::interpret::hayro_cmap::BfString;
+use bharat_pdf::interpret::{
     BlendMode, ClipPath, Context, Device, GlyphDrawMode, Image, InterpreterCache, InterpreterSettings, Paint, PathDrawMode, SoftMask, TransformExt,
     interpret_page,
 };
-use craft_pdf::write::backend::color::cmyk;
-use craft_pdf::write::backend::geom::{PathBuilder, Point as KPoint, Transform};
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::backend::paint::Fill;
-use craft_pdf::write::backend::surface::Surface;
-use craft_pdf::write::backend::tagging::{ContentTag, SpanTag};
-use craft_pdf::write::backend::text::{Font, GlyphId, KrillaGlyph};
-use craft_pdf::write::backend::{self, Data};
-use craft_pdf::write::{Metadata, Writer};
-use craft_prepress::flatten::font::FontCache;
-use craft_prepress::flatten::kurbo::{Affine, BezPath, PathEl, Rect, Shape};
-use craft_prepress::flatten::{PlacedGlyph, TextFont, TextItem};
-use craft_prepress::{InkColor, InkId, Options, Overprint, Process, plates};
+use bharat_pdf::write::backend::color::cmyk;
+use bharat_pdf::write::backend::geom::{PathBuilder, Point as KPoint, Transform};
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::backend::paint::Fill;
+use bharat_pdf::write::backend::surface::Surface;
+use bharat_pdf::write::backend::tagging::{ContentTag, SpanTag};
+use bharat_pdf::write::backend::text::{Font, GlyphId, KrillaGlyph};
+use bharat_pdf::write::backend::{self, Data};
+use bharat_pdf::write::{Metadata, Writer};
+use bharat_prepress::flatten::font::FontCache;
+use bharat_prepress::flatten::kurbo::{Affine, BezPath, PathEl, Rect, Shape};
+use bharat_prepress::flatten::{PlacedGlyph, TextFont, TextItem};
+use bharat_prepress::{InkColor, InkId, Options, Overprint, Process, plates};
 
 const W: f64 = 300.0;
 const H: f64 = 120.0;
@@ -48,14 +48,14 @@ fn read_font(path: Option<PathBuf>, what: &str) -> Option<Vec<u8>> {
 }
 
 fn inter() -> Option<Vec<u8>> {
-    read_font(std::env::var_os("CRAFT_PDF_TEST_FONT_DIR").map(|d| PathBuf::from(d).join("Inter-Regular.ttf")), "Inter (CRAFT_PDF_TEST_FONT_DIR)")
+    read_font(std::env::var_os("BHARAT_PDF_TEST_FONT_DIR").map(|d| PathBuf::from(d).join("Inter-Regular.ttf")), "Inter (BHARAT_PDF_TEST_FONT_DIR)")
 }
 
 fn cff_otf() -> Option<Vec<u8>> {
-    let path = std::env::var_os("CRAFT_PREPRESS_CFF_FONT")
+    let path = std::env::var_os("BHARAT_PREPRESS_CFF_FONT")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("/usr/share/fonts/opentype/urw-base35/NimbusSans-Regular.otf"));
-    read_font(Some(path), "a CFF OpenType font (CRAFT_PREPRESS_CFF_FONT)")
+    read_font(Some(path), "a CFF OpenType font (BHARAT_PREPRESS_CFF_FONT)")
 }
 
 // ---- writing -------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ fn source_pdf(font_bytes: &[u8]) -> Vec<u8> {
             KrillaGlyph::new(GlyphId::new(u32::from(id.0)), advance, 0.0, 0.0, 0.0, i..i + c.len_utf8(), None)
         })
         .collect();
-    let font = craft_pdf::write::font(font_bytes, 0, None).unwrap();
+    let font = bharat_pdf::write::font(font_bytes, 0, None).unwrap();
     write_page(|s| {
         s.set_fill(Some(black()));
         s.draw_glyphs(KPoint::from_xy(10.0, 40.0), &glyphs, font.clone(), SAMPLE, 24.0, false);
@@ -277,7 +277,7 @@ fn pdf_text_string(bytes: &[u8]) -> String {
 }
 
 fn read(pdf: &[u8]) -> Recorder {
-    let doc = craft_pdf::syntax::Pdf::new(Arc::new(pdf.to_vec())).unwrap();
+    let doc = bharat_pdf::syntax::Pdf::new(Arc::new(pdf.to_vec())).unwrap();
     let page = &doc.pages()[0];
     let cache = InterpreterCache::new();
     let mut context =
@@ -315,7 +315,7 @@ fn text_items(drawn: &[Drawn], fonts: &HashMap<u128, Option<Arc<TextFont>>>) -> 
                 glyphs: Vec::new(),
                 text: Some(String::new()),
                 outlines: BezPath::new(),
-                paint: craft_prepress::flatten::Paint::Solid(InkColor::Tints(vec![(InkId::process(Process::Black), 1.0)])),
+                paint: bharat_prepress::flatten::Paint::Solid(InkColor::Tints(vec![(InkId::process(Process::Black), 1.0)])),
                 overprint: Overprint::default(),
             });
         }

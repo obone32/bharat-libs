@@ -4,8 +4,8 @@
 mod common;
 
 use common::{read, read_with};
-use craft_xlsx::testing::zip;
-use craft_xlsx::{
+use bharat_xlsx::testing::zip;
+use bharat_xlsx::{
     CellError, CellRef, Color, ColorSource, Error, Fill, FormulaKind, Limits, Package, Pattern, PatternFill, Protection, Range, Row, SheetKind,
     SheetPart, Styles, Table, Value, Visibility, is_xlsb,
 };
@@ -189,7 +189,7 @@ fn cells_carry_their_format_index_and_blank_cells_their_format() {
     blank.extend((7u32 | 0x0100_0000).to_le_bytes());
     data.extend(record(1, &blank));
     let bytes = file(&worksheet(&data, &[]));
-    let mut p = craft_xlsx::Package::open(&bytes, &craft_xlsx::Limits::default()).unwrap();
+    let mut p = bharat_xlsx::Package::open(&bytes, &bharat_xlsx::Limits::default()).unwrap();
     assert!(p.styles().unwrap().is_none());
     let wb = p.workbook().unwrap();
     let mut cells = vec![];
@@ -199,7 +199,7 @@ fn cells_carry_their_format_index_and_blank_cells_their_format() {
     })
     .unwrap();
     assert_eq!(cells.len(), 1);
-    assert_eq!((cells[0].style, cells[0].phonetic, &cells[0].value), (7, true, &craft_xlsx::CellValue::Empty));
+    assert_eq!((cells[0].style, cells[0].phonetic, &cells[0].value), (7, true, &bharat_xlsx::CellValue::Empty));
 }
 
 #[test]
@@ -1005,7 +1005,7 @@ fn names() -> Vec<Vec<u8>> {
 
 const NAMES_XML: &str = r#"<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><definedNames><definedName name="_xlnm._FilterDatabase" localSheetId="0" hidden="1">Data!$A$1:$C$10</definedName><definedName name="Gone">Data!#REF!</definedName><definedName name="Hid" hidden="1">42</definedName><definedName name="Local" localSheetId="0">Data!$B$2</definedName><definedName name="Local" localSheetId="1">Hidden!$B$1</definedName><definedName name="MacroName" xlm="1" functionGroupId="14" shortcutKey="k">Data!$A$1</definedName><definedName name="Rate" comment="a note">0.05</definedName><definedName name="Rel">Data!XFD1</definedName><definedName name="RelN">A1048576</definedName><definedName name="Twice">Rate*2</definedName></definedNames></workbook>"#;
 
-fn xml_names(xml: &str) -> Vec<craft_xlsx::DefinedName> {
+fn xml_names(xml: &str) -> Vec<bharat_xlsx::DefinedName> {
     let types = r#"<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/></Types>"#;
     let root = r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="r" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>"#;
     let bytes = zip(&[("[Content_Types].xml", types.as_bytes()), ("_rels/.rels", root.as_bytes()), ("xl/workbook.xml", xml.as_bytes())]);
@@ -1447,10 +1447,10 @@ fn xml_styles(xml: &str) -> Styles {
 fn lifted(mut s: Styles) -> Styles {
     for xf in s.cell_style_xfs.iter_mut().chain(&mut s.cell_xfs) {
         let attrs = xf.el.attrs.iter().filter(|(k, _)| k.starts_with("apply")).cloned().collect();
-        xf.el = craft_xml::El::new("xf");
+        xf.el = bharat_xml::El::new("xf");
         xf.el.attrs = attrs;
     }
-    s.root = craft_xml::El::default();
+    s.root = bharat_xml::El::default();
     s
 }
 
@@ -1760,7 +1760,7 @@ const SALES_XML: &str = r#"<table xmlns="http://schemas.openxmlformats.org/sprea
 const NO_HEAD_XML: &str = r#"<table xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" id="2" name="NoHead" displayName="NoHead" ref="H10:I11" headerRowCount="0" totalsRowShown="0"><tableColumns count="2"><tableColumn id="1" name="Column1"/><tableColumn id="2" name="Column2"/></tableColumns><tableStyleInfo name="TableStyleMedium2" showFirstColumn="0" showLastColumn="0" showRowStripes="0" showColumnStripes="0"/></table>"#;
 
 fn xml_table(xml: &str) -> Table {
-    let root = craft_xml::Options::canonical(&craft_xlsx::ns::CANONICAL).parse(xml.as_bytes()).unwrap();
+    let root = bharat_xml::Options::canonical(&bharat_xlsx::ns::CANONICAL).parse(xml.as_bytes()).unwrap();
     Table::read(&root).unwrap()
 }
 

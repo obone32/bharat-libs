@@ -1,4 +1,4 @@
-use craft_raster_codecs::{ChannelLayout, CodecError, Image, Limits, SampleType, pcx};
+use bharat_raster_codecs::{ChannelLayout, CodecError, Image, Limits, SampleType, pcx};
 
 fn decode(b: &[u8]) -> Result<Image, CodecError> {
     pcx::decode(b, &Limits::default())

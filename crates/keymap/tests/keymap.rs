@@ -1,6 +1,6 @@
 use std::time::{Duration, Instant};
 
-use craft_keymap::{
+use bharat_keymap::{
     Active, AssignError, Bindable, Binding, Chord, CommandRef, ConflictKind, DropReason, Key, Keymap, Kind, Lookup, MAX_BINDINGS, MAX_COMMANDS,
     MAX_CONFLICTS, Mods, Overrides, Platform, Policy, Problem, Scope, Scopes, Trigger, TypingRule, reserved,
 };
@@ -575,7 +575,7 @@ fn overrides_write_the_map_form_unless_a_command_has_several_keys() {
 
     #[derive(serde::Serialize)]
     struct Prefs {
-        #[serde(with = "craft_keymap::keymap::overrides_list")]
+        #[serde(with = "bharat_keymap::keymap::overrides_list")]
         shortcuts: Overrides,
     }
     let mut single = Overrides::new();

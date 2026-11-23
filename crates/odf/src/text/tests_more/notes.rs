@@ -2,8 +2,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::para::{InlineObject, NoteKind, OBJ};
-use craft_wordmodel::{Document, PartKind};
+use bharat_wordmodel::para::{InlineObject, NoteKind, OBJ};
+use bharat_wordmodel::{Document, PartKind};
 
 fn body(xml: &str) -> Vec<u8> {
     package(
@@ -159,13 +159,13 @@ fn a_footnote_keeps_its_text_beside_a_footer() {
     let text = |id: u32| {
         d.parts
             .get(&id)
-            .map(|p| p.blocks.iter().filter_map(|b| b.as_para()).map(|p| p.text.replace(craft_wordmodel::para::OBJ, "")).collect::<String>())
+            .map(|p| p.blocks.iter().filter_map(|b| b.as_para()).map(|p| p.text.replace(bharat_wordmodel::para::OBJ, "")).collect::<String>())
             .unwrap_or_default()
             .trim()
             .to_string()
     };
     let note = d.body[0].as_para().unwrap().objects.iter().find_map(|o| match o {
-        craft_wordmodel::para::InlineObject::NoteRef { id, .. } => Some(*id),
+        bharat_wordmodel::para::InlineObject::NoteRef { id, .. } => Some(*id),
         _ => None,
     });
     assert_eq!(note.map(text).as_deref(), Some("The note."));
@@ -185,9 +185,9 @@ fn citations_are_numbered_as_the_document_numbers_its_notes() {
     assert_eq!(citations(&d, true), ["1", "2", "i"]);
     // Unedited, the file's own (as read).
     assert_eq!(citations(&d, false), ["x", "x", "x"]);
-    d.settings.footnote_format = craft_wordmodel::section::NumFormat::UpperLetter;
+    d.settings.footnote_format = bharat_wordmodel::section::NumFormat::UpperLetter;
     d.settings.footnote_pr.num_start = Some(3);
-    d.settings.endnote_format = craft_wordmodel::section::NumFormat::Decimal;
+    d.settings.endnote_format = bharat_wordmodel::section::NumFormat::Decimal;
     // The numbering changed: its notes' paragraph written from the model, numbered anew.
     assert_eq!(citations(&d, false), ["C", "D", "1"]);
 }

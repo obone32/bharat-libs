@@ -1,10 +1,10 @@
-//! XML property-list reader ported from Craft Anything at 8f3b7751.
+//! XML property-list reader ported from Bharat Anything at 8f3b7751.
 use crate::{DateValue, FormatError, Limits, Value};
 
 /// XML-specific representation policy, separate from resource allowances.
 #[derive(Clone, Copy, Debug)]
 pub struct XmlOptions {
-    /// Trim surrounding whitespace in date text, as the original Craft Anything reader does.
+    /// Trim surrounding whitespace in date text, as the original Bharat Anything reader does.
     /// Disable for consumers that retain dates as opaque strings, such as Luminar presets.
     pub trim_date_text: bool,
 }
