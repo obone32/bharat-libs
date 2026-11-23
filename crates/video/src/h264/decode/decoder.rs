@@ -14,7 +14,7 @@ use crate::h264::decode::slice::{NalHeader, Poc, PocState, SliceHeader, SliceTyp
 use crate::h264::decode::slicedec::{PicState, SliceDecoder};
 use crate::h264::decode::transform::LevelScale;
 use crate::h264::decode::{ColorInfo, Picture};
-use craft_media::bitstream::{BitReader, annexb_nals, length_prefixed_nals, unescape_rbsp};
+use bharat_media::bitstream::{BitReader, annexb_nals, length_prefixed_nals, unescape_rbsp};
 use std::collections::{HashMap, VecDeque};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};

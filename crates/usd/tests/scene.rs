@@ -2,8 +2,8 @@
 
 #![allow(clippy::unwrap_used)]
 
-use craft_usd::codec;
-use craft_usd::scene::{
+use bharat_usd::codec;
+use bharat_usd::scene::{
     Budget, MAX_DEPTH, SceneError, Specifier, UsdAttr, UsdLayer, UsdPrim, UsdValue, Val, read_layer, read_layer_with_budget, write_usda, write_usdc,
 };
 

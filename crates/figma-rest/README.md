@@ -1,11 +1,11 @@
-# craft-figma-rest
+# bharat-figma-rest
 
 A typed model of the Figma REST API file JSON: the response of `GET /v1/files/:key` (a `document`
 with `CANVAS` pages, plus `components`, `componentSets` and `styles`) and of
 `GET /v1/files/:key/nodes`. Read and written with serde. No `unsafe`.
 
-This shape is the neutral model for design files in craft-libs: the `.fig` reader
-([`craft-fig`](../fig/README.md)) and the `.sketch` reader ([`craft-sketch`](../sketch/README.md))
+This shape is the neutral model for design files in bharat-libs: the `.fig` reader
+([`bharat-fig`](../fig/README.md)) and the `.sketch` reader ([`bharat-sketch`](../sketch/README.md))
 map what they read onto it, and an application's importer takes it. It is the file's own shape,
 named as the API names it, and knows nothing of any application's document.
 
@@ -76,9 +76,9 @@ build this shape report and name things alike.
 ## Reading and writing
 
 ```rust
-let file = craft_figma_rest::File::from_slice(&bytes)?;          // or from_value(value, max_nodes)
+let file = bharat_figma_rest::File::from_slice(&bytes)?;          // or from_value(value, max_nodes)
 for node in file.document.iter().flat_map(|d| d.walk()) {         // parents first, no recursion
-    if node.kind == Some(craft_figma_rest::NodeType::Text) {
+    if node.kind == Some(bharat_figma_rest::NodeType::Text) {
         let text = node.characters.as_deref().unwrap_or_default();
     }
 }
@@ -88,7 +88,7 @@ let json = file.to_value()?;
 Building one:
 
 ```rust
-use craft_figma_rest::{Node, NodeProps, NodeType};
+use bharat_figma_rest::{Node, NodeProps, NodeType};
 let rect = Node::new(NodeProps { id: Some("1:1".into()), kind: Some(NodeType::Rectangle), ..Default::default() });
 let page = Node::with_children(NodeProps { kind: Some(NodeType::Canvas), ..Default::default() }, vec![rect]);
 ```

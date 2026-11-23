@@ -1,6 +1,6 @@
 //! Typed views of IDML's reusable text-frame preference grammar.
 
-use craft_xml::El;
+use bharat_xml::El;
 
 use super::Values;
 

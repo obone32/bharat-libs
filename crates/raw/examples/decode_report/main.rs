@@ -1,5 +1,5 @@
 //! Report the decoded samples and selected metadata of explicitly supplied RAW files.
-//! `cargo run --locked -p craft-raw --example decode_report -- <file> [<file> ...]`
+//! `cargo run --locked -p bharat-raw --example decode_report -- <file> [<file> ...]`
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 
@@ -13,7 +13,7 @@ fn main() -> std::process::ExitCode {
 
     let stdout = io::stdout();
     let mut out = stdout.lock();
-    match report::run(std::env::args_os().skip(1), &mut out, report::MAX_INPUT_BYTES, &craft_raw::Limits::default()) {
+    match report::run(std::env::args_os().skip(1), &mut out, report::MAX_INPUT_BYTES, &bharat_raw::Limits::default()) {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
             let stderr = io::stderr();

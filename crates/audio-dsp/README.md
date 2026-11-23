@@ -1,6 +1,6 @@
-# craft-audio-dsp
+# bharat-audio-dsp
 
-Audio DSP for the Craft apps, in Rust with no dependencies. It builds for `wasm32-unknown-unknown`
+Audio DSP for the Bharat apps, in Rust with no dependencies. It builds for `wasm32-unknown-unknown`
 and contains no `unsafe` code.
 
 ## Contents
@@ -47,7 +47,7 @@ number through `AudioEffect::gain_reduction_db`. The compressor and the gate tak
 (sidechain) input of up to two channels through `AudioEffect::process_keyed`.
 
 ```rust
-use craft_audio_dsp::{AudioEffect, effects::Compressor, loudness::LoudnessMeter};
+use bharat_audio_dsp::{AudioEffect, effects::Compressor, loudness::LoudnessMeter};
 
 let mut comp = Compressor::new(48_000.0, 2);
 comp.set_param("threshold", -24.0);
@@ -85,4 +85,4 @@ MIT OR Apache-2.0.
 
 Copyright (c) 2026 ArtCraft Team and the FilmCraft contributors.
 Copyright (c) 2026 ArtCraft Team and the SoundCraft contributors.
-Copyright (c) 2026 The Craft contributors.
+Copyright (c) 2026 The Bharat contributors.

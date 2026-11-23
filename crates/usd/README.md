@@ -1,4 +1,4 @@
-# craft-usd
+# bharat-usd
 
 Bounded wire primitives and neutral `.usda`/`.usdc` scene, prim, and layer read/write for USD, independent of application mesh and material models.
 

@@ -48,7 +48,7 @@ fn the_default_text_colour_round_trips() {
     let styles = format!(
         r##"<office:document-styles {NS_T}><office:styles><style:default-style style:family="paragraph"><style:text-properties fo:color="#666666"/></style:default-style></office:styles></office:document-styles>"##
     );
-    let grey = Some(craft_wordmodel::props::TextColor::Rgb(craft_wordmodel::props::Rgb(0x66, 0x66, 0x66)));
+    let grey = Some(bharat_wordmodel::props::TextColor::Rgb(bharat_wordmodel::props::Rgb(0x66, 0x66, 0x66)));
     let doc = import(&package(&content, Some(&styles))).unwrap();
     assert_eq!(doc.styles.default_chr.color, grey);
     let back = import(&export(&doc).unwrap()).unwrap();
@@ -319,7 +319,7 @@ fn common_paragraph_styles_give_text_formatting() {
     assert_eq!(shown.len(), 4);
     assert!(!shown[0].bold && shown[0].size != 24.0);
     for c in &shown[1..] {
-        assert!(c.bold && c.color == craft_wordmodel::props::TextColor::Rgb(Rgb(255, 0, 0)) && c.size == 24.0, "{c:?}");
+        assert!(c.bold && c.color == bharat_wordmodel::props::TextColor::Rgb(Rgb(255, 0, 0)) && c.size == 24.0, "{c:?}");
     }
 }
 
@@ -372,7 +372,7 @@ fn page_layout_follows_the_first_master_page() {
             <style:master-page style:name="Standard" style:page-layout-name="pm2"/>
             <style:master-page style:name="Other" style:page-layout-name="pm1"/>
             </office:master-styles></office:document-styles>"#;
-    let mut sec = craft_wordmodel::SectionProps::default();
+    let mut sec = bharat_wordmodel::SectionProps::default();
     apply_page_layout(xml, &mut sec);
     assert!(sec.landscape);
     // A margin left unsaid is XSL's initial value, 0.
@@ -392,15 +392,15 @@ fn hostile_page_layout_values_are_clamped() {
         )
     };
     // Huge values: the page is capped at 22 inches and margins at the page's longer side.
-    let mut sec = craft_wordmodel::SectionProps::default();
+    let mut sec = bharat_wordmodel::SectionProps::default();
     apply_page_layout(styles("1e30pt", "1e30in", "1e30pt").as_bytes(), &mut sec);
     assert_eq!((sec.page_w, sec.page_h), (1584.0, 1584.0));
     assert_eq!((sec.margin_top, sec.margin_left), (1584.0, 1584.0));
     // Negative, zero, tiny and non-numeric values leave the defaults alone: the default page, and
     // XSL's margins (0).
-    let def = craft_wordmodel::SectionProps { margin_top: 0.0, margin_right: 0.0, ..Default::default() };
+    let def = bharat_wordmodel::SectionProps { margin_top: 0.0, margin_right: 0.0, ..Default::default() };
     for (w, h, m) in [("-10in", "-5in", "-1in"), ("0pt", "0pt", "NaNpt"), ("1pt", "2pt", "infpt"), ("NaN", "inf", "x")] {
-        let mut sec = craft_wordmodel::SectionProps::default();
+        let mut sec = bharat_wordmodel::SectionProps::default();
         apply_page_layout(styles(w, h, m).as_bytes(), &mut sec);
         assert_eq!((sec.page_w, sec.page_h), (def.page_w, def.page_h), "{w} {h}");
         assert_eq!((sec.margin_top, sec.margin_right), (def.margin_top, def.margin_right), "{m}");
@@ -427,7 +427,7 @@ fn table_column_widths_survive_a_round_trip() {
         r##"<office:document-content {NS_T}><office:automatic-styles><style:style style:name="Table1.A" style:family="table-column"><style:table-column-properties style:column-width="1in"/></style:style><style:style style:name="Table1.B" style:family="table-column"><style:table-column-properties style:column-width="3in"/></style:style></office:automatic-styles><office:body><office:text><table:table><table:table-column table:style-name="Table1.A"/><table:table-column table:style-name="Table1.B"/><table:table-row><table:table-cell><text:p>A</text:p></table:table-cell><table:table-cell><text:p>B</text:p></table:table-cell></table:table-row></table:table></office:text></office:body></office:document-content>"##
     );
     let grid =
-        |doc: &Document| match doc.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t.grid.clone()) } else { None }) {
+        |doc: &Document| match doc.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t.grid.clone()) } else { None }) {
             Some(g) => g,
             None => panic!("no table"),
         };
@@ -435,7 +435,7 @@ fn table_column_widths_survive_a_round_trip() {
     assert_eq!(grid(&doc), vec![72.0, 216.0]);
     let widths = vec![150.0, 100.0];
     for b in doc.body.iter_mut() {
-        if let craft_wordmodel::Block::Table(t) = std::sync::Arc::make_mut(b) {
+        if let bharat_wordmodel::Block::Table(t) = std::sync::Arc::make_mut(b) {
             t.grid = widths.clone();
         }
     }
@@ -450,8 +450,8 @@ fn narrow_table_columns_keep_their_width() {
         r##"<office:document-content {NS_T}><office:automatic-styles><style:style style:name="Table1.A" style:family="table-column"><style:table-column-properties style:column-width="3pt"/></style:style><style:style style:name="Table1.B" style:family="table-column"><style:table-column-properties style:column-width="100pt"/></style:style></office:automatic-styles><office:body><office:text><table:table><table:table-column table:style-name="Table1.A"/><table:table-column table:style-name="Table1.B"/><table:table-row><table:table-cell><text:p>A</text:p></table:table-cell><table:table-cell><text:p>B</text:p></table:table-cell></table:table-row></table:table></office:text></office:body></office:document-content>"##
     );
     let doc = import(&package(&content, None)).unwrap();
-    let grid_of = |doc: &craft_wordmodel::Document| {
-        doc.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t.grid.clone()) } else { None })
+    let grid_of = |doc: &bharat_wordmodel::Document| {
+        doc.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t.grid.clone()) } else { None })
     };
     assert_eq!(grid_of(&doc), Some(vec![3.0, 100.0]));
     // Saved and opened again, the narrow column is still the file's width.
@@ -471,7 +471,7 @@ fn table_columns_of_a_point_or_less_give_equal_columns() {
             r##"<office:document-content {NS_T}><office:automatic-styles><style:style style:name="Table1.A" style:family="table-column"><style:table-column-properties style:column-width="{bad}"/></style:style><style:style style:name="Table1.B" style:family="table-column"><style:table-column-properties style:column-width="100pt"/></style:style></office:automatic-styles><office:body><office:text><table:table><table:table-column table:style-name="Table1.A"/><table:table-column table:style-name="Table1.B"/><table:table-row><table:table-cell><text:p>A</text:p></table:table-cell><table:table-cell><text:p>B</text:p></table:table-cell></table:table-row></table:table></office:text></office:body></office:document-content>"##
         );
         let doc = import(&package(&content, None)).unwrap();
-        let grid = doc.body.iter().find_map(|b| if let craft_wordmodel::Block::Table(t) = &**b { Some(t.grid.clone()) } else { None }).unwrap();
+        let grid = doc.body.iter().find_map(|b| if let bharat_wordmodel::Block::Table(t) = &**b { Some(t.grid.clone()) } else { None }).unwrap();
         assert_eq!(grid.len(), 2, "{bad}: {grid:?}");
         assert!(grid.iter().all(|w| w.is_finite() && *w > 1.0), "{bad}: {grid:?}");
         assert_eq!(grid[0], grid[1], "{bad}: equal columns, {grid:?}");
@@ -509,7 +509,7 @@ fn table_cell_style_vertical_alignment() {
     let Some(FBlock::Table(t)) = f.blocks.iter().find(|b| matches!(b, FBlock::Table(_))) else { panic!("no table") };
     assert_eq!(t.rows[0][0].valign, Some(VAlign::Center));
     assert_eq!(t.rows[0][1].valign, Some(VAlign::Bottom));
-    let doc = craft_flow::to_doc(&f);
+    let doc = bharat_flow::to_doc(&f);
     let bytes = export(&doc).unwrap();
     let f2 = parse(&bytes).unwrap();
     let Some(FBlock::Table(t2)) = f2.blocks.iter().find(|b| matches!(b, FBlock::Table(_))) else { panic!("no table in export") };
@@ -548,7 +548,7 @@ fn sections_package() -> Vec<u8> {
 }
 
 fn part_text(d: &Document, id: Option<u32>) -> String {
-    d.plain_text(craft_wordmodel::StoryRef::Part(id.expect("part")))
+    d.plain_text(bharat_wordmodel::StoryRef::Part(id.expect("part")))
 }
 
 #[test]
@@ -594,7 +594,7 @@ fn headers_and_footers_follow_their_master_page() {
     assert_eq!(part_text(&d, wide.footers.default), "");
     assert_eq!(d.parts.len(), 6);
     let id = up.headers.default.unwrap();
-    let Some(craft_wordmodel::Block::Para(p)) = d.parts[&id].blocks.first().map(|b| &**b) else { panic!("no header paragraph") };
+    let Some(bharat_wordmodel::Block::Para(p)) = d.parts[&id].blocks.first().map(|b| &**b) else { panic!("no header paragraph") };
     assert!(p.runs.iter().all(|r| d.styles.resolve_char(p.props.style.as_deref(), &r.props).bold), "{:?}", p.runs);
 }
 
@@ -640,7 +640,7 @@ fn headers_and_footers_share_the_text_s_budget_with_the_body() {
     );
     let d = import(&package(&content, Some(&styles))).unwrap();
     let texts =
-        [part_text(&d, d.last_section.headers.default), part_text(&d, d.last_section.footers.default), d.plain_text(craft_wordmodel::StoryRef::Body)];
+        [part_text(&d, d.last_section.headers.default), part_text(&d, d.last_section.footers.default), d.plain_text(bharat_wordmodel::StoryRef::Body)];
     // One space per element in all three, and one budget of extra spaces between them.
     assert_eq!(texts.iter().map(|t| t.matches(' ').count()).sum::<usize>(), 3 * 3_000 + MAX_EXTRA_SPACES);
     assert!(texts[0].starts_with("h ") && texts[1].starts_with("f ") && texts[2].starts_with("b "));
@@ -648,7 +648,7 @@ fn headers_and_footers_share_the_text_s_budget_with_the_body() {
 
 #[test]
 fn master_pages_and_column_sections_become_sections() {
-    use craft_wordmodel::section::SectionStart;
+    use bharat_wordmodel::section::SectionStart;
     let doc = import(&sections_package()).unwrap();
     let secs = doc.sections();
     let summary: Vec<_> =
@@ -668,23 +668,23 @@ fn master_pages_and_column_sections_become_sections() {
     assert!((cols.space - 28.35).abs() < 0.01 && cols.separator, "{cols:?}");
     // Each section ends on its own last paragraph; the wide one ends after its table.
     let text = |i: usize| match doc.body.get(i).map(|b| &**b) {
-        Some(craft_wordmodel::Block::Para(p)) => p.plain_text().to_string(),
+        Some(bharat_wordmodel::Block::Para(p)) => p.plain_text().to_string(),
         _ => String::from("<not a paragraph>"),
     };
     assert_eq!(text(secs[0].0), "More opening words");
-    assert!(matches!(doc.body.get(secs[1].0 - 1).map(|b| &**b), Some(craft_wordmodel::Block::Table(_))));
+    assert!(matches!(doc.body.get(secs[1].0 - 1).map(|b| &**b), Some(bharat_wordmodel::Block::Table(_))));
     assert_eq!(text(secs[2].0), "Right column text");
     assert_eq!(text(secs[3].0), "Last line");
 }
 
 /// (start, landscape, width, height, columns, restart, margins) of each section, and the
 /// text of the paragraph ending it.
-fn section_summary(doc: &Document) -> Vec<(craft_wordmodel::section::SectionStart, bool, f32, f32, u32, bool, Option<u32>, [f32; 4], String)> {
+fn section_summary(doc: &Document) -> Vec<(bharat_wordmodel::section::SectionStart, bool, f32, f32, u32, bool, Option<u32>, [f32; 4], String)> {
     doc.sections()
         .iter()
         .map(|(end, s)| {
             let text = match doc.body.get(*end).map(|b| &**b) {
-                Some(craft_wordmodel::Block::Para(p)) => p.plain_text().to_string(),
+                Some(bharat_wordmodel::Block::Para(p)) => p.plain_text().to_string(),
                 _ => String::new(),
             };
             (
@@ -815,7 +815,7 @@ fn export_of_a_one_section_document_stays_simple() {
     let one = import(&crate::text::tests::export_model(&doc).unwrap()).unwrap();
     let mut single = one.clone();
     for b in single.body.iter_mut() {
-        if let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
+        if let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
             p.section = None;
         }
     }
@@ -873,7 +873,7 @@ fn master_page_on_a_table_style_starts_a_section() {
     // Review of #1379: a table style can name a master page too (ODF 1.3 §19.509), with its
     // page-number restart on `style:table-properties`. An empty name on a child style means
     // "no page style here", and a page-number restart without a master page starts nothing.
-    use craft_wordmodel::section::SectionStart;
+    use bharat_wordmodel::section::SectionStart;
     let styles = format!(
         r#"<office:document-styles {NS_T}><office:styles><style:style style:name="WideParent" style:family="paragraph" style:master-page-name="Wide"/></office:styles><office:automatic-styles>
             <style:page-layout style:name="pU"><style:page-layout-properties fo:page-width="21cm" fo:page-height="29.7cm"><style:columns fo:column-count="1" fo:column-gap="0cm"/></style:page-layout-properties></style:page-layout>
@@ -897,9 +897,9 @@ fn master_page_on_a_table_style_starts_a_section() {
     let secs = doc.sections();
     let summary: Vec<_> = secs.iter().map(|(i, s)| (*i, s.start, s.landscape, s.page_num_start)).collect();
     assert_eq!(summary, [(2, SectionStart::NextPage, false, None), (4, SectionStart::NextPage, true, Some(1))]);
-    assert!(matches!(doc.body.get(3).map(|b| &**b), Some(craft_wordmodel::Block::Table(_))));
+    assert!(matches!(doc.body.get(3).map(|b| &**b), Some(bharat_wordmodel::Block::Table(_))));
     // A one-column page layout keeps the default column gap.
-    assert_eq!(secs[0].1.columns, craft_wordmodel::section::Columns::default());
+    assert_eq!(secs[0].1.columns, bharat_wordmodel::section::Columns::default());
 }
 
 #[test]
@@ -938,13 +938,13 @@ fn region(id: &str, kind: &str, author: &str, date: &str, content: &str) -> Stri
 }
 
 /// Each body paragraph as (text, revision kind) runs, plus its mark's revision kind.
-type RevRuns = Vec<(Vec<(String, Option<craft_wordmodel::RevisionKind>)>, Option<craft_wordmodel::RevisionKind>)>;
+type RevRuns = Vec<(Vec<(String, Option<bharat_wordmodel::RevisionKind>)>, Option<bharat_wordmodel::RevisionKind>)>;
 
 fn rev_runs(doc: &Document) -> RevRuns {
     let kind = |i: Option<u32>| i.and_then(|i| doc.revisions.get(i as usize)).map(|r| r.kind);
     doc.body
         .iter()
-        .filter_map(|b| if let craft_wordmodel::Block::Para(p) = &**b { Some(p) } else { None })
+        .filter_map(|b| if let bharat_wordmodel::Block::Para(p) = &**b { Some(p) } else { None })
         .map(|p| {
             let runs = p.run_ranges().map(|(r, cp)| (p.text[r].to_string(), kind(cp.del).or(kind(cp.ins)))).collect();
             (runs, kind(p.mark.del).or(kind(p.mark.ins)))
@@ -963,7 +963,7 @@ fn insertion_and_deletion() -> Vec<u8> {
 
 #[test]
 fn tracked_insertion_and_deletion_import_with_authors_and_dates() {
-    use craft_wordmodel::RevisionKind::{Delete, Insert};
+    use bharat_wordmodel::RevisionKind::{Delete, Insert};
     let doc = import(&insertion_and_deletion()).unwrap();
     let s = |v: &str| v.to_string();
     assert_eq!(rev_runs(&doc), vec![(vec![(s("Keep "), None), (s("new "), Some(Insert)), (s("old "), Some(Delete)), (s("words."), None)], None)]);
@@ -974,7 +974,7 @@ fn tracked_insertion_and_deletion_import_with_authors_and_dates() {
 
 #[test]
 fn tracked_deletion_across_paragraphs_keeps_the_deleted_paragraph_mark() {
-    use craft_wordmodel::RevisionKind::Delete;
+    use bharat_wordmodel::RevisionKind::Delete;
     // "First tail¶head rest." with "tail¶head " deleted: the body holds the merged paragraph.
     let regions = region("d1", "deletion", "Bob", "2024-03-02T11:30:00", "<text:p>tail</text:p><text:p>head<text:s/></text:p>");
     let doc = import(&tracked(&regions, r#"<text:p>First <text:change text:change-id="d1"/>rest.</text:p>"#)).unwrap();
@@ -997,24 +997,24 @@ fn tracked_changes_round_trip_through_export() {
     assert_eq!(revs(&back), revs(&doc));
     assert_eq!(back.settings.track_changes, doc.settings.track_changes);
     // The inserted paragraph mark survives: "added¶" is part of the insertion.
-    assert_eq!(rev_runs(&doc)[2].1, Some(craft_wordmodel::RevisionKind::Insert));
+    assert_eq!(rev_runs(&doc)[2].1, Some(bharat_wordmodel::RevisionKind::Insert));
 }
 
 #[test]
 fn an_inserted_ruby_keeps_its_tracked_insertion() {
     // A ruby inside a tracked insertion is written as its base text, so that it stays inside
     // the change range rather than becoming plain untracked text.
-    use craft_wordmodel::RevisionKind::Insert;
-    let props = craft_wordmodel::props::CharProps::default();
-    let mut p = craft_wordmodel::Paragraph::with_text("before ", props.clone());
+    use bharat_wordmodel::RevisionKind::Insert;
+    let props = bharat_wordmodel::props::CharProps::default();
+    let mut p = bharat_wordmodel::Paragraph::with_text("before ", props.clone());
     let n = p.len();
     let mut ins = props.clone();
     ins.ins = Some(0);
-    p.insert_object(n, craft_flow::ruby_object("漢字".into(), "かんじ".into(), 20.0), &ins).unwrap();
+    p.insert_object(n, bharat_flow::ruby_object("漢字".into(), "かんじ".into(), 20.0), &ins).unwrap();
     let mut d = Document::new();
     d.settings.track_changes = true;
-    d.revisions.push(craft_wordmodel::Revision::new(Insert, "Alice", "2024-03-01T10:00:00"));
-    d.body = vec![craft_wordmodel::para_block(p)];
+    d.revisions.push(bharat_wordmodel::Revision::new(Insert, "Alice", "2024-03-01T10:00:00"));
+    d.body = vec![bharat_wordmodel::para_block(p)];
     let back = import(&export(&d).unwrap()).unwrap();
     assert_eq!(rev_runs(&back), vec![(vec![("before ".to_string(), None), ("漢字".to_string(), Some(Insert))], None)]);
 }
@@ -1046,14 +1046,14 @@ fn hostile_tracked_changes_are_bounded() {
 type Marks = Vec<(Vec<(String, bool, bool)>, (bool, bool))>;
 
 fn marks(doc: &Document) -> Marks {
-    fn walk(bl: &craft_wordmodel::Blocks, out: &mut Marks) {
+    fn walk(bl: &bharat_wordmodel::Blocks, out: &mut Marks) {
         for b in bl {
             match &**b {
-                craft_wordmodel::Block::Para(p) => out.push((
+                bharat_wordmodel::Block::Para(p) => out.push((
                     p.run_ranges().map(|(r, cp)| (p.text[r].to_string(), cp.ins.is_some(), cp.del.is_some())).collect(),
                     (p.mark.ins.is_some(), p.mark.del.is_some()),
                 )),
-                craft_wordmodel::Block::Table(t) => {
+                bharat_wordmodel::Block::Table(t) => {
                     for r in &t.rows {
                         for c in &r.cells {
                             walk(&c.blocks, out);
@@ -1148,7 +1148,7 @@ fn spaces_after_a_tab_survive_a_round_trip() {
     for src in ["a\t b", "a\t  b", "a\t   éa", "é\t 😀a", "a\t\t b"] {
         let doc = Document::from_text(src);
         let back = import(&export(&doc).unwrap()).unwrap();
-        assert_eq!(back.plain_text(craft_wordmodel::StoryRef::Body).trim_end(), src, "{src:?}");
+        assert_eq!(back.plain_text(bharat_wordmodel::StoryRef::Body).trim_end(), src, "{src:?}");
     }
 }
 
@@ -1199,11 +1199,11 @@ fn explicit_spaces_at_paragraph_ends_are_kept() {
     assert_eq!(texts, vec!["    lead", "trail  ", "plain", " x  "]);
     let d = Document::from_text("    indented code  ");
     let back = import(&export(&d).unwrap()).unwrap();
-    assert_eq!(back.plain_text(craft_wordmodel::StoryRef::Body).trim_end_matches('\n'), "    indented code  ");
+    assert_eq!(back.plain_text(bharat_wordmodel::StoryRef::Body).trim_end_matches('\n'), "    indented code  ");
     for t in ["trail ", "trail  "] {
         let d = Document::from_text(t);
         let back = import(&export(&d).unwrap()).unwrap();
-        assert_eq!(back.plain_text(craft_wordmodel::StoryRef::Body).trim_end_matches('\n'), t);
+        assert_eq!(back.plain_text(bharat_wordmodel::StoryRef::Body).trim_end_matches('\n'), t);
     }
 }
 
@@ -1215,14 +1215,14 @@ fn text_s_spaces_have_a_budget_for_the_whole_document() {
     let content = format!(
         r#"<office:document-content {NS_T}><office:body><office:text><text:p>a{run}b</text:p><text:p>c<text:s text:c="3"/>d</text:p></office:text></office:body></office:document-content>"#
     );
-    craft_flow::begin_import();
+    bharat_flow::begin_import();
     let f = parse(&package(&content, None)).unwrap();
     let texts: Vec<String> = paras(&f).iter().map(|p| p.text()).collect();
     // Once the budget is spent, each element still stands for one space, and the cut is logged.
     assert_eq!(texts[0].len(), 2 + tags + MAX_EXTRA_SPACES);
     assert!(texts[0].starts_with("a ") && texts[0].ends_with(" b"));
     assert_eq!(texts[1], "c d");
-    assert!(craft_flow::Dropped::Spaces.reported());
+    assert!(bharat_flow::Dropped::Spaces.reported());
 }
 
 #[test]
@@ -1232,11 +1232,11 @@ fn text_s_outside_a_paragraph_spends_no_budget() {
     let content = format!(
         r#"<office:document-content {NS_T}><office:body><office:text>{stray}<text:p>a<text:s text:c="1000"/>b</text:p></office:text></office:body></office:document-content>"#
     );
-    craft_flow::begin_import();
+    bharat_flow::begin_import();
     let f = parse(&package(&content, None)).unwrap();
     let texts: Vec<String> = paras(&f).iter().map(|p| p.text()).collect();
     assert_eq!(texts, vec![format!("a{}b", " ".repeat(1000))]);
-    assert!(!craft_flow::Dropped::Spaces.reported(), "nothing was cut");
+    assert!(!bharat_flow::Dropped::Spaces.reported(), "nothing was cut");
 }
 
 #[test]
@@ -1365,7 +1365,7 @@ pub(super) fn content_of(bytes: &[u8]) -> String {
 /// Entry `name` of a package, as text.
 /// `d` saved from its model alone, as after an edit: nothing written as it was read (for tests
 /// of how WordCraft writes what it models).
-pub(crate) fn export_model(d: &craft_wordmodel::Document) -> Result<Vec<u8>, String> {
+pub(crate) fn export_model(d: &bharat_wordmodel::Document) -> Result<Vec<u8>, String> {
     let mut d = d.clone();
     d.kept.clear();
     super::export(&d)
@@ -1524,7 +1524,7 @@ pub(crate) fn import_ext(ext: &str, bytes: &[u8]) -> Option<Result<Document, Str
 }
 
 /// [`import_ext`] onto `page`.
-pub(crate) fn import_on_ext(ext: &str, bytes: &[u8], page: &craft_wordmodel::SectionProps) -> Option<Result<Document, String>> {
+pub(crate) fn import_on_ext(ext: &str, bytes: &[u8], page: &bharat_wordmodel::SectionProps) -> Option<Result<Document, String>> {
     match ext {
         "odt" | "ott" => Some(super::import_on(bytes, page)),
         "fodt" => Some(super::import_flat_on(bytes, page)),

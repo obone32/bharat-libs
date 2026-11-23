@@ -1,5 +1,5 @@
 [package]
-name = "craft-fcproj-format"
+name = "bharat-fcproj-format"
 description = "FilmCraft project envelope and schema migrations"
 version.workspace = true
 edition.workspace = true

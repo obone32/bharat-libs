@@ -22,17 +22,17 @@ jobs:
       (contains(github.event.pull_request.labels.*.name, 'full-validation') &&
        (github.event.action != 'labeled' || github.event.label.name == 'full-validation'))
     name: Full native
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/gate.yml@main
     with:
       os: '["ubuntu-latest","windows-latest","macos-latest"]'
       select-os: '[]'
       timeout-minutes: 120
       tools: ""
       packages: mesa-vulkan-drivers libvulkan1
-      craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
+      bharat-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
       linux-env: WGPU_BACKEND=vulkan
-      windows-env: CRAFT_PRINT_REQUIRE_QUEUE=1
-      env: CRAFT_PRINT_REQUIRE_QUEUE=0
+      windows-env: BHARAT_PRINT_REQUIRE_QUEUE=1
+      env: BHARAT_PRINT_REQUIRE_QUEUE=0
       setup-command: bash scripts/ci-test-inputs.sh
       command: |
         python scripts/test-full-validation.py
@@ -44,21 +44,21 @@ jobs:
       (contains(github.event.pull_request.labels.*.name, 'full-validation') &&
        (github.event.action != 'labeled' || github.event.label.name == 'full-validation'))
     name: Full PDF contracts
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/gate.yml@main
     with:
       os: '["ubuntu-latest","windows-latest","macos-latest"]'
       select-os: '[]'
       timeout-minutes: 120
       tools: ""
-      craft-fonts-ref: ""
+      bharat-fonts-ref: ""
       require-craft-fonts: false
-      env: RUSTFLAGS=--cfg craft_pdf_unicode_fixtures
+      env: RUSTFLAGS=--cfg bharat_pdf_unicode_fixtures
       setup-command: |
         python scripts/test-fetch-pdf-test-fonts.py
-        python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/craft-pdf-test-fonts"
-        echo "CRAFT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/craft-pdf-test-fonts" >> "$GITHUB_ENV"
+        python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/bharat-pdf-test-fonts"
+        echo "BHARAT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/bharat-pdf-test-fonts" >> "$GITHUB_ENV"
       command: |
-        unset CRAFT_HOSTILE_DIVISOR PROPTEST_CASES
-        cargo clippy -p craft-pdf --all-targets --all-features --locked -- -D warnings
-        cargo test -p craft-pdf --all-features --locked
+        unset BHARAT_HOSTILE_DIVISOR PROPTEST_CASES
+        cargo clippy -p bharat-pdf --all-targets --all-features --locked -- -D warnings
+        cargo test -p bharat-pdf --all-features --locked
         cargo test --manifest-path crates/pdf/read-only-contract/Cargo.toml --locked

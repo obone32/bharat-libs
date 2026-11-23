@@ -1,8 +1,8 @@
-# craft-stream-codecs
+# bharat-stream-codecs
 
 Byte-stream and bi-level image codecs that PDF, PostScript and TIFF share. The crate knows no
 container: a caller hands it bytes and parameters. A PDF `/Filter` chain (stage order, limits
-across stages, Flate, accounting) belongs to `craft-pdf`, which builds on this crate; a TIFF
+across stages, Flate, accounting) belongs to `bharat-pdf`, which builds on this crate; a TIFF
 reader can use the same LZW, predictor, CCITT and JBIG2 code.
 
 - **Licence:** MIT OR Apache-2.0. Written from ISO 32000-2 §7.4, TIFF 6.0 §14 (predictor 2) and

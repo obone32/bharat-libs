@@ -2,26 +2,26 @@
 //! that already opens them.
 
 use crate::text::{export, import};
-use craft_wordmodel::para::InlineObject;
-use craft_wordmodel::props::CharProps;
-use craft_wordmodel::{Document, Paragraph, Part, PartKind, para_block};
+use bharat_wordmodel::para::InlineObject;
+use bharat_wordmodel::props::CharProps;
+use bharat_wordmodel::{Document, Paragraph, Part, PartKind, para_block};
 
-fn text_para(s: &str, props: CharProps) -> std::sync::Arc<craft_wordmodel::Block> {
+fn text_para(s: &str, props: CharProps) -> std::sync::Arc<bharat_wordmodel::Block> {
     let mut p = Paragraph::new();
     p.text = s.into();
-    p.runs = vec![craft_wordmodel::para::Run { len: s.len(), props }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: s.len(), props }];
     para_block(p)
 }
 
-fn page_field_para(before: &str) -> std::sync::Arc<craft_wordmodel::Block> {
+fn page_field_para(before: &str) -> std::sync::Arc<bharat_wordmodel::Block> {
     let mut p = Paragraph::new();
-    p.text = format!("{before}{}", craft_wordmodel::para::OBJ);
+    p.text = format!("{before}{}", bharat_wordmodel::para::OBJ);
     p.objects.push(InlineObject::Field { instr: "PAGE".into(), result: "1".into(), locked: false, dirty: false, code: false, form: String::new() });
-    p.runs = vec![craft_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
     para_block(p)
 }
 
-fn part(kind: PartKind, blocks: Vec<std::sync::Arc<craft_wordmodel::Block>>) -> Part {
+fn part(kind: PartKind, blocks: Vec<std::sync::Arc<bharat_wordmodel::Block>>) -> Part {
     Part { kind, blocks, body: Default::default() }
 }
 
@@ -47,7 +47,7 @@ fn headers_and_footers_are_written_and_read_back() {
     assert_eq!(part_text(&back, s.headers.default), "Bold header");
     assert_eq!(part_text(&back, s.headers.first), "First page header");
     assert!(s.title_page);
-    assert_eq!(part_text(&back, s.footers.default).replace(craft_wordmodel::para::OBJ, "#"), "Page #");
+    assert_eq!(part_text(&back, s.footers.default).replace(bharat_wordmodel::para::OBJ, "#"), "Page #");
     // The header's text keeps its formatting; the footer its page field.
     let h = back.parts.get(&s.headers.default.unwrap()).unwrap().blocks[0].as_para().unwrap();
     assert_eq!(h.runs[0].props.bold, Some(true));
@@ -75,7 +75,7 @@ fn each_section_keeps_its_own_header() {
     let mut d = Document::new();
     let mut first = Paragraph::new();
     first.text = "One".into();
-    first.runs = vec![craft_wordmodel::para::Run { len: 3, props: Default::default() }];
+    first.runs = vec![bharat_wordmodel::para::Run { len: 3, props: Default::default() }];
     let mut sec = d.last_section.clone();
     sec.headers.default = Some(1);
     first.section = Some(Box::new(sec));
@@ -264,7 +264,7 @@ fn a_watermark_is_a_shape_in_the_header_and_reads_back_as_one() {
     // header, here one made for it), and read back as the watermark, not a shape.
     let mut d = Document::new();
     d.body = vec![para_block(Paragraph::with_text("Body", CharProps::default()))];
-    d.settings.watermark = Some(craft_wordmodel::Watermark { text: "CONFIDENTIAL".into(), ..Default::default() });
+    d.settings.watermark = Some(bharat_wordmodel::Watermark { text: "CONFIDENTIAL".into(), ..Default::default() });
     let saved = export(&d).unwrap();
     let styles = crate::text::tests::entry(&saved, "styles.xml");
     assert!(styles.contains("draw:name=\"PowerPlusWaterMarkObject\"") && styles.contains("draw:text-path=\"true\""), "{styles}");
@@ -304,7 +304,7 @@ fn a_watermark_change_to_a_file_is_saved() {
 
     // Added.
     let mut d = import(&plain).unwrap();
-    d.settings.watermark = Some(craft_wordmodel::Watermark { text: "DRAFT".into(), ..Default::default() });
+    d.settings.watermark = Some(bharat_wordmodel::Watermark { text: "DRAFT".into(), ..Default::default() });
     let saved = export(&d).unwrap();
     let s = crate::text::tests::entry(&saved, "styles.xml");
     assert!(s.contains(shape) && s.contains("DRAFT"), "added: {s}");
@@ -331,7 +331,7 @@ fn a_watermark_change_to_a_file_is_saved() {
 
     // One with no text isn't written, so it's no change to the file's page definitions.
     let mut d = import(&plain).unwrap();
-    d.settings.watermark = Some(craft_wordmodel::Watermark { text: "  ".into(), ..Default::default() });
+    d.settings.watermark = Some(bharat_wordmodel::Watermark { text: "  ".into(), ..Default::default() });
     let s = styles_of(&d);
     assert!(s.contains(r#"style:page-usage="mirrored""#) && !s.contains(shape), "no text: {s}");
 }
@@ -391,7 +391,7 @@ fn libreoffices_watermark_reads_as_the_watermark() {
         format!("<office:document-content {ns}><office:body><office:text><text:p>x</text:p></office:text></office:body></office:document-content>");
     let d = import(&crate::text::tests::package(&content, Some(&styles))).unwrap();
     let wm = d.settings.watermark.expect("the watermark");
-    assert_eq!((wm.text.as_str(), wm.color, wm.diagonal, wm.semitransparent), ("DRAFT", craft_wordmodel::Rgb(0xc0, 0xc0, 0xc0), true, true));
+    assert_eq!((wm.text.as_str(), wm.color, wm.diagonal, wm.semitransparent), ("DRAFT", bharat_wordmodel::Rgb(0xc0, 0xc0, 0xc0), true, true));
     let [w, h] = wm.size.unwrap();
     assert!((w - 6.69 * 72.0).abs() < 0.5 && (h - 2.24 * 72.0).abs() < 0.5);
 }

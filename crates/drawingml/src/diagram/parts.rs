@@ -9,7 +9,7 @@ use std::collections::HashMap;
 
 use crate::diagram::{Diagram, DiagramNode};
 
-use craft_xml::{El, Local, Writer, value};
+use bharat_xml::{El, Local, Writer, value};
 
 use crate::xmlx::{A, TagExt};
 

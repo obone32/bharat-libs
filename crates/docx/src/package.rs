@@ -67,7 +67,7 @@ pub const GLOSSARY_BEHAVIORS: [&str; 3] = ["content", "p", "pg"];
 
 /// A fingerprint of `glossary` (FNV-1a over its debug form): stable across runs and builds that
 /// keep the model's shape, and cheap (nothing is allocated).
-pub fn glossary_fingerprint(glossary: &[craft_wordmodel::BuildingBlock]) -> String {
+pub fn glossary_fingerprint(glossary: &[bharat_wordmodel::BuildingBlock]) -> String {
     struct Fnv(u64);
     impl std::fmt::Write for Fnv {
         fn write_str(&mut self, s: &str) -> std::fmt::Result {
@@ -93,7 +93,7 @@ pub const VBA_RELATED: &str = "wordcraft:vbaProject.related";
 pub const MAX_VBA_RELATED: usize = 64;
 
 /// `Document::passthrough` key listing the parts that objects read from a file refer to (charts,
-/// SmartArt diagrams, OLE objects: see `craft_wordmodel::graphic::Embedded`), with their content
+/// SmartArt diagrams, OLE objects: see `bharat_wordmodel::graphic::Embedded`), with their content
 /// types and own relationships, as [`EmbeddedManifest`] lines. Each part's bytes are kept under its
 /// part name. Not a package part: WordCraft's own bookkeeping.
 pub const EMBEDDED_PARTS: &str = "wordcraft:embedded.parts";
@@ -210,22 +210,22 @@ pub fn rel_is(t: &str, full: &str) -> bool {
 }
 
 /// The limits a DOCX package is read within.
-pub const LIMITS: craft_opc::Limits = craft_opc::Limits::new(MAX_ENTRIES, MAX_PART, MAX_TOTAL);
+pub const LIMITS: bharat_opc::Limits = bharat_opc::Limits::new(MAX_ENTRIES, MAX_PART, MAX_TOTAL);
 
-fn opc_error(e: craft_opc::Error) -> DocxError {
+fn opc_error(e: bharat_opc::Error) -> DocxError {
     match e {
-        craft_opc::Error::Zip(m) => DocxError::Zip(m),
-        craft_opc::Error::Xml { part, error } if error.is_limit() => DocxError::Limit(format!("{part}: {error}")),
-        craft_opc::Error::Xml { part, error } => DocxError::Xml(format!("{part}: {error}")),
-        craft_opc::Error::Write(m) => DocxError::Zip(m),
+        bharat_opc::Error::Zip(m) => DocxError::Zip(m),
+        bharat_opc::Error::Xml { part, error } if error.is_limit() => DocxError::Limit(format!("{part}: {error}")),
+        bharat_opc::Error::Xml { part, error } => DocxError::Xml(format!("{part}: {error}")),
+        bharat_opc::Error::Write(m) => DocxError::Zip(m),
         other => DocxError::Limit(other.to_string()),
     }
 }
 
-/// The decompressed parts of a package (bounded), read with `craft-opc`. Shared, so a part the
+/// The decompressed parts of a package (bounded), read with `bharat-opc`. Shared, so a part the
 /// document keeps as it is (a picture, an embedded object) is handed over rather than copied.
 pub struct Package {
-    opc: craft_opc::Package,
+    opc: bharat_opc::Package,
     /// Elements this package's XML parts may still be parsed into. Every XML part read through
     /// [`Package::xml`] charges it, so a file of many parts each inside the per-part cap builds
     /// bounded tree memory in total — a chart part with no series builds a maximal tree for
@@ -251,8 +251,8 @@ impl Package {
     /// [`open_limited`] with an XML element budget of its own (nested documents share their
     /// container's, tests use a small one).
     pub fn open_limited_within(bytes: &[u8], max_part: u64, max_total: u64, max_elements: usize) -> Result<Package, DocxError> {
-        let limits = craft_opc::Limits::new(MAX_ENTRIES, max_part, max_total);
-        craft_opc::Package::open(bytes, &limits)
+        let limits = bharat_opc::Limits::new(MAX_ENTRIES, max_part, max_total);
+        bharat_opc::Package::open(bytes, &limits)
             .map(|opc| Package { opc, budget: Cell::new(max_elements), budget_cap: max_elements })
             .map_err(opc_error)
     }
@@ -270,7 +270,7 @@ impl Package {
     /// A package from parts already in memory (a Flat OPC file, a converted document), by part
     /// name without the leading `/`.
     pub fn from_parts(files: BTreeMap<String, Vec<u8>>) -> Package {
-        Package { opc: craft_opc::Package::from_parts(files), budget: Cell::new(xml::MAX_ELEMENTS_TOTAL), budget_cap: xml::MAX_ELEMENTS_TOTAL }
+        Package { opc: bharat_opc::Package::from_parts(files), budget: Cell::new(xml::MAX_ELEMENTS_TOTAL), budget_cap: xml::MAX_ELEMENTS_TOTAL }
     }
 
     /// Start a read's element budget over: the budget is per read, not per package's lifetime.
@@ -337,8 +337,8 @@ impl Package {
     /// an altChunk importer or fetches additional data. Non-XML extensions are valid OPC
     /// targets too. Errors end a lenient part exactly as the normal XML reader does;
     /// the subsequent strict main-document parse remains authoritative.
-    pub(crate) fn file_orders(&self) -> Result<craft_wordmodel::para::FileOrders, DocxError> {
-        use craft_wordmodel::para::FileOrderScan;
+    pub(crate) fn file_orders(&self) -> Result<bharat_wordmodel::para::FileOrders, DocxError> {
+        use bharat_wordmodel::para::FileOrderScan;
         let mut bytes = 0u64;
         for (i, name) in self.opc.names().enumerate() {
             if name.len() > MAX_SCAN_NAME {
@@ -355,7 +355,7 @@ impl Package {
             }
         }
         let mut scan = FileOrderScan::new(bytes).map_err(DocxError::Limit)?;
-        let limits = craft_xml::Limits {
+        let limits = bharat_xml::Limits {
             max_input: 2 << 30,
             max_depth: xml::MAX_DEPTH + 1,
             max_nodes: 2 * xml::MAX_ELEMENTS,
@@ -363,10 +363,10 @@ impl Package {
             max_attrs: xml::MAX_ATTRS,
             max_attrs_total: 2 * xml::MAX_ELEMENTS,
         };
-        let opts = craft_xml::Options::default().with_limits(limits);
+        let opts = bharat_xml::Options::default().with_limits(limits);
         for name in self.opc.names() {
             let Some(bytes) = self.opc.get(name) else { continue };
-            let text = craft_xml::to_utf8(bytes);
+            let text = bharat_xml::to_utf8(bytes);
             // Attribute names cannot contain entity references. This only skips parts
             // that cannot possibly supply an order, including ordinary binary media.
             if !text.windows(b"relativeHeight".len()).any(|w| w == b"relativeHeight") {
@@ -374,7 +374,7 @@ impl Package {
             }
             let mut events = opts.events(&text);
             while let Ok(Some(ev)) = events.next() {
-                if let craft_xml::Event::Start { attrs, .. } = ev {
+                if let bharat_xml::Event::Start { attrs, .. } = ev {
                     for (name, value) in attrs {
                         if name.rsplit(':').next() == Some("relativeHeight")
                             && let Ok(raw) = value.trim().parse::<u32>()
@@ -397,7 +397,7 @@ impl Package {
 
 /// `[Content_Types].xml`: Override by part name, then Default by extension (both case-insensitive).
 #[derive(Default)]
-pub struct ContentTypes(craft_opc::ContentTypes);
+pub struct ContentTypes(bharat_opc::ContentTypes);
 
 impl ContentTypes {
     pub fn read(pkg: &Package) -> ContentTypes {
@@ -428,7 +428,7 @@ pub struct Rels {
 }
 
 impl Rels {
-    fn from_opc(r: craft_opc::Rels) -> Rels {
+    fn from_opc(r: bharat_opc::Rels) -> Rels {
         let mut rels = Rels::default();
         for x in r.list {
             rels.ids.entry(x.id.clone()).or_insert(rels.list.len());
@@ -444,11 +444,11 @@ impl Rels {
     }
 }
 
-pub use craft_opc::relative;
+pub use bharat_opc::relative;
 
 /// Build a zip from (name, bytes) entries.
 pub fn zip_entries(entries: &[(String, Vec<u8>)]) -> Result<Vec<u8>, DocxError> {
-    craft_opc::zip_entries(entries).map_err(opc_error)
+    bharat_opc::zip_entries(entries).map_err(opc_error)
 }
 
 #[cfg(test)]
@@ -463,7 +463,7 @@ mod tests {
     #[test]
     fn a_package_declaring_too_many_entries_is_refused_before_zip_reads_them() {
         // #3660: a ZIP64 end record declaring more than MAX_ENTRIES.
-        let bomb = craft_opc::zip64_entry_count_sample(MAX_ENTRIES as u64 + 1);
+        let bomb = bharat_opc::zip64_entry_count_sample(MAX_ENTRIES as u64 + 1);
         assert!(matches!(Package::open(&bomb), Err(DocxError::Limit(e)) if e.contains("declares")));
         assert_eq!(crate::package_title(std::io::Cursor::new(bomb), 1 << 20), None);
         // A real package still opens, and its title still reads.
@@ -598,7 +598,7 @@ mod file_order_tests {
         assert!(Package::from_parts(BTreeMap::from([(too_long, Vec::new())])).file_orders().is_err());
     }
 
-    fn scan(xml: &str) -> craft_wordmodel::para::FileOrders {
+    fn scan(xml: &str) -> bharat_wordmodel::para::FileOrders {
         Package::from_parts(BTreeMap::from([("odd.part".into(), xml.as_bytes().to_vec())])).file_orders().unwrap()
     }
 

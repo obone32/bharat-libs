@@ -1,9 +1,9 @@
-# Craft suite: egui 0.37 rollout and acceptance plan
+# Bharat suite: egui 0.37 rollout and acceptance plan
 
 Status: local implementation underway, updated 2026-10-24. The reviewed local egui fork is
 `173cc7375d35dc5fbc5b5d0994fdf787f547c5d1`; the reviewed local winit fork is
-`ae48c756a3b81125eb796c0cc6dccf60990d1181`. craft-libs is reconciled on merged PR 199 and now
-records those immutable canonical sources in its manifest and lock. Its 118 craft-ui tests, strict
+`ae48c756a3b81125eb796c0cc6dccf60990d1181`. bharat-libs is reconciled on merged PR 199 and now
+records those immutable canonical sources in its manifest and lock. Its 118 bharat-ui tests, strict
 package clippy, canonical source audit and formatting checks pass. Full workspace, platform/native,
 accepted comparative performance and clean post-publication remote-fetch gates are not implied.
 No push or new pull request is authorized.
@@ -18,19 +18,19 @@ commands, fixtures and behavior-specific assertions.
 
 The inventory covers 15 applications: CADCraft, DeckCraft, DesignCraft, EffectCraft, FigCraft,
 FilmCraft, GridCraft, LightCraft, PdfCraft, PhotoCraft, SoundCraft, VectorCraft, WordCraft,
-ArtCraft Launcher (`craft-launcher`) and ArtCraft Native (`artcraft/artcraft-native`).
-It also covers `craft-libs`, `craft-ai-integrations`, `storytold/egui` and the required
-`storytold/winit` companion fork. CLI, web, headless, examples, benchmarks and nested workspaces
+ArtCraft Launcher (`bharat-launcher`) and ArtCraft Native (`artcraft/artcraft-native`).
+It also covers `bharat-libs`, `bharat-ai-integrations`, `obone32/bharat-egui` and the required
+`obone32/bharat-winit` companion fork. CLI, web, headless, examples, benchmarks and nested workspaces
 that consume these libraries belong to their repository's migration.
 
 The first 14 applications were present in the earlier suite audit; ArtCraft Native and
-`craft-ai-integrations/crates/ai-egui` must not be lost from the rollout. `craft-fonts` and
-`craft-i18n` are relevant data/API inputs, not egui rendering consumers in the inspected sources.
+`bharat-ai-integrations/crates/ai-egui` must not be lost from the rollout. `bharat-fonts` and
+`bharat-i18n` are relevant data/API inputs, not egui rendering consumers in the inspected sources.
 The older `storyteller-bevy` studio and `bevy-mocap` examples use Bevy-specific integrations
-(`bevy-inspector-egui` 0.23 and 0.22); they are outside this Craft suite/fork migration. A
+(`bevy-inspector-egui` 0.23 and 0.22); they are outside this Bharat suite/fork migration. A
 future expansion to those projects needs their own Bevy compatibility plan, not a root egui override.
 
-The [launcher's pinned catalog](https://github.com/storytold/craft-launcher/blob/9419d8977bc70f80373da8558356e4ba7387c7b2/crates/core/src/catalog.rs)
+The [launcher's pinned catalog](https://github.com/storytold/bharat-launcher/blob/9419d8977bc70f80373da8558356e4ba7387c7b2/crates/core/src/catalog.rs)
 enumerates the 13 creative apps above. Repository discovery also covered all 68 repositories
 returned for `storytold` (the next page was empty), with a separate code search excluding the
 19 migration repositories so one large app could not crowd out smaller consumers. Search is a
@@ -38,13 +38,13 @@ discovery aid, not proof about unindexed code. Manifest/source inspection confir
 ArtCraft Native and AI UI consumers. ArtCraft-X is a Tauri/Vite frontend, the repository-status
 app uses a TypeScript UI, and ArtCraft Services' inspected workspace contains service/CLI code;
 the latter's old Docker comments mentioning egui are not a dependency declaration. Asset/data
-repositories and the empty AniCraft/CraftHub repositories do not require an egui port. Re-run
+repositories and the empty AniCraft/BharatHub repositories do not require an egui port. Re-run
 this inventory before final integration to catch newly added consumers or branches.
 
 Most inspected suite roots still resolve egui 0.36.2. CADCraft at
 `1977a493c7d8340249185126744c5143f096dc86` and SoundCraft at
 `52471b37e957feaea56dfd48932ef16d314cc74a` have already bumped direct dependencies to 0.37,
-while their pinned `craft-ui` still requires 0.36. Both lockfiles therefore contain two egui versions.
+while their pinned `bharat-ui` still requires 0.36. Both lockfiles therefore contain two egui versions.
 Their first deliverable is a coherent graph and preserved behavior, not another version bump.
 
 The existing application code already uses the root-Ui lifecycle on 0.36.2; some web shells
@@ -62,16 +62,16 @@ revalidate the lifecycle, especially hidden windows, child viewports and repeate
 | aiongg egui candidate | `a4f9a17f64a6bae61350fb85804c9df0d9865916` | `craft/0.37`; review E1–E21 before integration |
 | Published storytold winit | `ffae5198770d7730e718043f035a772b7dbc3b1b` | Existing `craft/0.30.13` behavior |
 | aiongg winit candidate | `8b35388bd719e8cc86a95971ba0bc026c9a8f058` | `craft/0.30.13-lang`; review companion patches and downstream vendors |
-| craft-libs plan baseline | `49190884278f16c9a9f5823d7698a8ffb5deb062` | Current shared-library tree used by this plan |
-| craft-libs PR 199 | `b68de8c5f4f1c060904d211a7b1320aa0f7bce78` | Existing aiongg API port; open and conflicting at inspection |
+| bharat-libs plan baseline | `49190884278f16c9a9f5823d7698a8ffb5deb062` | Current shared-library tree used by this plan |
+| bharat-libs PR 199 | `b68de8c5f4f1c060904d211a7b1320aa0f7bce78` | Existing aiongg API port; open and conflicting at inspection |
 
-[PR 199](https://github.com/storytold/craft-libs/pull/199) supplies reusable API-port hunks,
+[PR 199](https://github.com/obone32/bharat-libs/pull/199) supplies reusable API-port hunks,
 not a mergeable replacement tree. Its head `b68de8c` and historical audit tree `ec8840a`
-omit current `craft-platform` and revert security, settings, docking and printing fixes.
+omit current `bharat-platform` and revert security, settings, docking and printing fixes.
 Apply the port from `8614e4a04fae516fba16c22b31ff1008cb6be10b` and relevant README
 changes from `1764bca` onto current `4919088`, preserving intervening fixes and provenance.
 Re-run actual gates; neither the PR nor historical checks qualify the resulting tree.
-[Issue 198](https://github.com/storytold/craft-libs/issues/198) is a broader language-support
+[Issue 198](https://github.com/obone32/bharat-libs/issues/198) is a broader language-support
 proposal, not a merged dependency. Its locale/formatting roadmap is not silently included in
 this upgrade. Changes required to consume the selected fork correctly are included: remove
 double bidi processing, maintain logical text at OS/accessibility boundaries, preserve IME and
@@ -113,14 +113,14 @@ unit. winit remains 0.30.13 and wgpu remains 30 unless a separately justified ch
    including P7 held-key pairing and P7c selection-action/hidden-child fixes, then final P8;
    include only justified performance fixes. Preserve patch authorship, source links, test mappings
    and removal conditions. Publish approved dependency commits before consumers reference them.
-4. Port craft-libs using the selected PR 199 hunks, including `craft-ui`, egui-enabled
-   `craft-quit`/`craft-window` and all relevant optional features. The current shared workspace
+4. Port bharat-libs using the selected PR 199 hunks, including `bharat-ui`, egui-enabled
+   `bharat-quit`/`bharat-window` and all relevant optional features. The current shared workspace
    has no binary/example targets; excluded vendor examples retain their separate disposition.
    Add narrowly justified shared helpers and their
-   regressions. Port `craft-ai-egui` in parallel once its dependency contracts are fixed.
+   regressions. Port `bharat-ai-egui` in parallel once its dependency contracts are fixed.
 5. Port each application in its own reviewable PR series. Atomic compatibility changes include
    manifests, lockfiles, source adaptations and harness changes; never land an intermediate
-   dependency bump that leaves main unbuildable. Eleven craft-ui consumers adopt the capture
+   dependency bump that leaves main unbuildable. Eleven bharat-ui consumers adopt the capture
    helper from CL-1 + CL-2F in that atomic stage; DesignCraft/GridCraft explicitly pilot the
    reviewed CL-2 prototype before CL-2F. Only Deck/Fig/Art Native use local capture adapters.
    Non-capture helpers may follow separately when compatible. Required IME/bidi adapters
@@ -149,7 +149,7 @@ agent/model/tool signatures. Contributor metadata remains username-only.
   `egui_system_font_provider` when used, must resolve from the intended immutable fork revision.
   A package version match alone is insufficient: registry and git packages have different identities.
 - Root `[patch]` sections must exist where resolution occurs; a dependency's patch section is
-  ignored by its consumer. Verify fork-specific APIs under real consumer roots. Align craft-libs
+  ignored by its consumer. Verify fork-specific APIs under real consumer roots. Align bharat-libs
   revisions wherever shared public types cross crate boundaries; do not churn unrelated pins blindly.
 - Resolve features for every accepted native/wasm/package-test root with `cargo tree -e features`.
   Egui 0.37 has no default `default_fonts`; eframe's default feature set is different. Each root
@@ -158,7 +158,7 @@ agent/model/tool signatures. Contributor metadata remains username-only.
   features explicitly. All-family source audits include optional lock-only crates such as `egui_glow`.
 - Record the full coherent version/source set in a canonical manifest and check all consumer
   roots against it in CI. Tooling must catch a missing patch, duplicate egui/winit, an old transitive
-  `craft-ui`, a moving branch dependency, and a machine-local path. Test these failure cases.
+  `bharat-ui`, a moving branch dependency, and a machine-local path. Test these failure cases.
 - Compare PdfCraft's vendored winit and egui-wgpu fixes against the selected fork semantically,
   including fixes added since the old audit. Transfer regression coverage before deleting only
   superseded vendors. Preserve krilla, hayro (including hayro-cmap), lopdf, vello and VectorCraft's windows-link patches unless a
@@ -173,12 +173,12 @@ inventory and must be checked under their actual resolution roots:
 
 | Root | Existing override | Migration disposition |
 |---|---|---|
-| DesignCraft | winit `storytold/winit@3d51077fd1a966f84df9ef287839dc84fd5b4ca7` | Replace with final reviewed W14/W15P/W27-compatible storytold revision; preserve cancelable-quit regression |
+| DesignCraft | winit `obone32/bharat-winit@3d51077fd1a966f84df9ef287839dc84fd5b4ca7` | Replace with final reviewed W14/W15P/W27-compatible storytold revision; preserve cancelable-quit regression |
 | PdfCraft | `vendor/winit`, `vendor/egui-wgpu` 0.36.2 | Transfer all window/GPU fixes and guards centrally, prove equivalence, then remove these overrides/vendors atomically |
-| craft-libs | local krilla, hayro, hayro-interpret, hayro-syntax, hayro-jbig2 | Retain PDF/printing fixes, provenance and tests |
-| DesignCraft | krilla and four hayro packages at craft-libs `89dcbb3060377a26c99a6d80caa16084366704c4` | Retain independently of the UI pin |
-| DeckCraft, WordCraft | krilla at craft-libs `c348732…` | Retain exact existing revision from each manifest |
-| EffectCraft | hayro-syntax at craft-libs `ca50d63b773c99f96e75c77ce5a1d21e7c9cda0d` | Retain |
+| bharat-libs | local krilla, hayro, hayro-interpret, hayro-syntax, hayro-jbig2 | Retain PDF/printing fixes, provenance and tests |
+| DesignCraft | krilla and four hayro packages at bharat-libs `89dcbb3060377a26c99a6d80caa16084366704c4` | Retain independently of the UI pin |
+| DeckCraft, WordCraft | krilla at bharat-libs `c348732…` | Retain exact existing revision from each manifest |
+| EffectCraft | hayro-syntax at bharat-libs `ca50d63b773c99f96e75c77ce5a1d21e7c9cda0d` | Retain |
 | VectorCraft | hayro-syntax, hayro-interpret, hayro-jbig2, krilla at the same `ca50d63…` | Retain; also preserve Windows 7 packaging's command-line windows-link path override and its dedicated test |
 | PdfCraft | local hayro, hayro-interpret, hayro-syntax, hayro-cmap, hayro-jbig2, lopdf, vello_common | Retain unrelated PDF fixes |
 | Other 12 roots | No root patch at the recorded source | Add required immutable family/winit overrides at the actual consuming roots |
@@ -198,10 +198,10 @@ record its hash in each gate, compare against Git's tracked manifests, and rejec
 
 Screenshot completion has 14 consumers: CADCraft, DeckCraft, DesignCraft, EffectCraft, FigCraft,
 FilmCraft, GridCraft, LightCraft, PdfCraft, PhotoCraft, SoundCraft, VectorCraft, WordCraft and
-ArtCraft Native. Eleven creative apps already depend on craft-ui and will adopt its new helper after CL-2F
+ArtCraft Native. Eleven creative apps already depend on bharat-ui and will adopt its new helper after CL-2F
 (the DesignCraft/GridCraft pilots first use the reviewed CL-2 prototype).
 DeckCraft, FigCraft and ArtCraft Native do not depend on it and keep small local adapters
-with the same tested contract. Exact manifest-key inspection distinguishes `craft-ui`
+with the same tested contract. Exact manifest-key inspection distinguishes `bharat-ui`
 from each app's own `*-ui-egui` crate name. The launcher has no screenshot consumer.
 egui 0.37 replaces screenshot input events with a one-shot callback.
 The screenshot command itself requests a hidden paint; callback arrival does not. A request
@@ -245,7 +245,7 @@ Stress concurrent captures, cancellation, shutdown, delayed GPU readback, out-of
 memory and hidden-window wakeup. Compare a bounded nonblocking channel prototype with explicit
 overflow/error handling if these tests or measurements expose a weakness in the slot design.
 Do not encode/save images on the callback thread or add a generic UI compatibility framework.
-Applications without craft-ui need not adopt the entire crate solely for this helper. Prototype
+Applications without bharat-ui need not adopt the entire crate solely for this helper. Prototype
 the shared API in CL-2, then integrate DesignCraft's multiple viewports and GridCraft's single
 window against an approved provisional revision. Review those adapters before CL-2F freezes the
 API. This is an initial topology check, not a reduction of scope: all eleven shared
@@ -290,7 +290,7 @@ dropped callback or forced duplicate command), then remove the deliberate defect
 
 Rerun's [testing guide](https://github.com/rerun-io/rerun/blob/42677ef9b096abbce742f0929dea58bb75f740ad/TESTING.md)
 provides relevant prior art: drive viewer interactions through the harness and examine image diffs.
-Apply that principle to Craft workflows; direct state setup is for fixtures, not a substitute for
+Apply that principle to Bharat workflows; direct state setup is for fixtures, not a substitute for
 clicking the changed control. Use egui_kittest's strict missing-name and missing-glyph behavior.
 Native IME, focus, system dialogs and compositor behavior still need native evidence.
 W15/W15P use bounded asynchronous read/write transfer handles, a total monotonic deadline,

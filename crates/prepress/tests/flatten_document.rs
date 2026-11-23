@@ -1,7 +1,7 @@
 //! Whole documents flattened: pages, boxes, metadata, output intent and shared fonts carry over,
 //! and each page's plates match the source.
 //!
-//! The text cases need Inter from `CRAFT_PDF_TEST_FONT_DIR` or `~/.cache/craft-pdf-test-fonts`,
+//! The text cases need Inter from `BHARAT_PDF_TEST_FONT_DIR` or `~/.cache/bharat-pdf-test-fonts`,
 //! and are skipped when it is missing.
 #![cfg(feature = "flatten")]
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
@@ -9,28 +9,28 @@
 use std::path::PathBuf;
 use std::time::Instant;
 
-use craft_pdf::syntax::object::dict::keys::{BLEED_BOX, DEST_OUTPUT_PROFILE, OUTPUT_CONDITION_IDENTIFIER, OUTPUT_INTENTS, TRIM_BOX};
-use craft_pdf::syntax::object::{Array, Dict, Rect as PdfRect, Stream, String as PdfString};
-use craft_pdf::write::backend;
-use craft_pdf::write::backend::color::cmyk;
-use craft_pdf::write::backend::color::device_n::{self, Colorant, DeviceNSpace, Process};
-use craft_pdf::write::backend::configure::PdfVersion;
-use craft_pdf::write::backend::geom::{PathBuilder, Point, Rect as KRect};
-use craft_pdf::write::backend::metadata::DateTime;
-use craft_pdf::write::backend::num::NormalizedF32;
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::backend::paint::Fill;
-use craft_pdf::write::backend::surface::Surface;
-use craft_pdf::write::backend::text::{Font, GlyphId, KrillaGlyph};
-use craft_pdf::write::backend::{GroupColorSpace, SerializeSettings};
-use craft_pdf::write::print::{self, PrintColor};
-use craft_pdf::write::{Metadata, Writer};
-use craft_plate_test::reference;
-use craft_plate_test::structure;
-use craft_prepress::flatten::{
+use bharat_pdf::syntax::object::dict::keys::{BLEED_BOX, DEST_OUTPUT_PROFILE, OUTPUT_CONDITION_IDENTIFIER, OUTPUT_INTENTS, TRIM_BOX};
+use bharat_pdf::syntax::object::{Array, Dict, Rect as PdfRect, Stream, String as PdfString};
+use bharat_pdf::write::backend;
+use bharat_pdf::write::backend::color::cmyk;
+use bharat_pdf::write::backend::color::device_n::{self, Colorant, DeviceNSpace, Process};
+use bharat_pdf::write::backend::configure::PdfVersion;
+use bharat_pdf::write::backend::geom::{PathBuilder, Point, Rect as KRect};
+use bharat_pdf::write::backend::metadata::DateTime;
+use bharat_pdf::write::backend::num::NormalizedF32;
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::backend::paint::Fill;
+use bharat_pdf::write::backend::surface::Surface;
+use bharat_pdf::write::backend::text::{Font, GlyphId, KrillaGlyph};
+use bharat_pdf::write::backend::{GroupColorSpace, SerializeSettings};
+use bharat_pdf::write::print::{self, PrintColor};
+use bharat_pdf::write::{Metadata, Writer};
+use bharat_plate_test::reference;
+use bharat_plate_test::structure;
+use bharat_prepress::flatten::{
     FlattenDocumentOptions, FlattenOptions, FlattenPageOptions, flatten_document, flatten_document_with_progress, flatten_page,
 };
-use craft_prepress::{Options, Plates, plates};
+use bharat_prepress::{Options, Plates, plates};
 
 const DPI: f32 = 36.0;
 const SIZES: [(f32, f32); 3] = [(200.0, 160.0), (150.0, 200.0), (220.0, 120.0)];
@@ -38,7 +38,7 @@ const SIZES: [(f32, f32); 3] = [(200.0, 160.0), (150.0, 200.0), (220.0, 120.0)];
 fn inter() -> Option<Vec<u8>> {
     let dir = std::env::var_os(reference::FONT_DIR_ENV)
         .map(PathBuf::from)
-        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".cache/craft-pdf-test-fonts")))?;
+        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".cache/bharat-pdf-test-fonts")))?;
     let font = std::fs::read(dir.join(reference::FONT_FILE)).ok();
     if font.is_none() {
         eprintln!("skipped: no {} in {}", reference::FONT_FILE, dir.display());
@@ -57,7 +57,7 @@ fn rect(s: &mut Surface<'_>, x0: f32, y0: f32, x1: f32, y1: f32, f: Fill) {
     s.draw_path(&b.finish().unwrap());
 }
 
-fn tiny_rect(x0: f32, y0: f32, x1: f32, y1: f32) -> craft_pdf::write::backend::geom::Rect {
+fn tiny_rect(x0: f32, y0: f32, x1: f32, y1: f32) -> bharat_pdf::write::backend::geom::Rect {
     KRect::from_ltrb(x0, y0, x1, y1).unwrap()
 }
 
@@ -79,7 +79,7 @@ fn text(s: &mut Surface<'_>, font: &Font, face: &ttf_parser::Face<'_>, at: (f32,
 /// over text in page 1's font. Page 1 has a TrimBox and a BleedBox.
 fn three_pages(font_bytes: &[u8]) -> Vec<u8> {
     let face = ttf_parser::Face::parse(font_bytes, 0).unwrap();
-    let font = craft_pdf::write::font(font_bytes, 0, None).unwrap();
+    let font = bharat_pdf::write::font(font_bytes, 0, None).unwrap();
     let metadata = Metadata {
         title: Some("Flatten test".into()),
         authors: vec!["A. Writer".into()],
@@ -143,7 +143,7 @@ fn assert_opaque(pdf: &[u8]) {
     }
 }
 
-fn has_text(pdf: &craft_pdf::syntax::Pdf, page: usize) -> bool {
+fn has_text(pdf: &bharat_pdf::syntax::Pdf, page: usize) -> bool {
     let pages = pdf.pages();
     let mut ops = pages.get(page).unwrap().operations();
     let mut found = false;
@@ -157,7 +157,7 @@ fn count(haystack: &[u8], needle: &[u8]) -> usize {
     haystack.windows(needle.len()).filter(|w| *w == needle).count()
 }
 
-fn page_box(pdf: &craft_pdf::syntax::Pdf, page: usize, key: &[u8]) -> Option<[f64; 4]> {
+fn page_box(pdf: &bharat_pdf::syntax::Pdf, page: usize, key: &[u8]) -> Option<[f64; 4]> {
     pdf.pages().get(page)?.raw().get::<PdfRect>(key).map(|r| [r.x0, r.y0, r.x1, r.y1])
 }
 
@@ -169,8 +169,8 @@ fn a_document_flattens_page_by_page_and_keeps_boxes_metadata_and_shared_fonts() 
     let (out, report) = flatten_document(&source, &opts()).unwrap();
     eprintln!("flatten_document: {:?}, totals {:?}", start.elapsed(), report.totals);
 
-    let doc = craft_pdf::open_slice(&out, None).unwrap();
-    let src = craft_pdf::open_slice(&source, None).unwrap();
+    let doc = bharat_pdf::open_slice(&out, None).unwrap();
+    let src = bharat_pdf::open_slice(&source, None).unwrap();
     assert_eq!(doc.pages().len(), 3);
     for (i, (w, h)) in SIZES.iter().enumerate() {
         assert_eq!(doc.pages()[i].render_dimensions(), (*w, *h), "page {i}");
@@ -238,7 +238,7 @@ fn a_page_range_flattens_only_those_pages() {
     let t = Instant::now();
     let (out, report) = flatten_document_with_progress(&source, &opts, &mut |done, total| calls.push((done, total))).unwrap();
     eprintln!("flatten {:?}", t.elapsed());
-    let doc = craft_pdf::open_slice(&out, None).unwrap();
+    let doc = bharat_pdf::open_slice(&out, None).unwrap();
     assert_eq!(doc.pages().len(), 2);
     assert_eq!(doc.pages()[0].render_dimensions(), SIZES[1]);
     assert_eq!(doc.pages()[1].render_dimensions(), SIZES[2]);
@@ -252,7 +252,7 @@ fn a_page_range_flattens_only_those_pages() {
 #[test]
 fn the_source_output_intent_is_written_once() {
     let color = PrintColor {
-        profile: craft_cms::builtin::COATED_CMYK_ICC,
+        profile: bharat_cms::builtin::COATED_CMYK_ICC,
         condition_identifier: "Test coated",
         condition: Some("A coated test condition"),
         registry_name: None,
@@ -274,7 +274,7 @@ fn the_source_output_intent_is_written_once() {
     assert!(report.other_intents.is_empty());
     assert_opaque(&out);
 
-    let doc = craft_pdf::open_slice(&out, None).unwrap();
+    let doc = bharat_pdf::open_slice(&out, None).unwrap();
     let xref = doc.xref();
     let catalog = xref.get::<Dict<'_>>(xref.root_id()).unwrap();
     let intents: Vec<Dict<'_>> = catalog.get::<Array<'_>>(OUTPUT_INTENTS).unwrap().iter::<Dict<'_>>().collect();
@@ -282,7 +282,7 @@ fn the_source_output_intent_is_written_once() {
     let id = intents[0].get::<PdfString<'_>>(OUTPUT_CONDITION_IDENTIFIER).unwrap();
     assert_eq!(id.as_bytes(), b"Test coated");
     let icc = intents[0].get::<Stream<'_>>(DEST_OUTPUT_PROFILE).unwrap().decoded().unwrap();
-    assert_eq!(&*icc, craft_cms::builtin::COATED_CMYK_ICC);
+    assert_eq!(&*icc, bharat_cms::builtin::COATED_CMYK_ICC);
     assert_eq!(count(&out, b"/DestOutputProfile"), 1);
 }
 
@@ -293,7 +293,7 @@ fn pdf_x1a_output_is_pdf_14_without_nchannel() {
     let gold = cmyk::Color::new(0, 51, 255, 26);
     let space = DeviceNSpace::new(vec![Colorant::Process(Process::Cyan), Colorant::Spot { name: "Gold".to_owned(), alternate: gold }]).unwrap();
     let color = device_n::Color::new(vec![255, 128], space).unwrap();
-    let mut writer = Writer::new(print::settings(PrintColor::fogra39(craft_cms::builtin::COATED_FOGRA39_ICC)).unwrap(), Metadata::default());
+    let mut writer = Writer::new(print::settings(PrintColor::fogra39(bharat_cms::builtin::COATED_FOGRA39_ICC)).unwrap(), Metadata::default());
     let mut page = writer.document_mut().start_page_with(PageSettings::from_wh(100.0, 100.0).unwrap());
     let mut s = page.surface();
     rect(&mut s, 10.0, 10.0, 60.0, 60.0, Fill { paint: backend::color::Color::from(color).into(), ..Default::default() });

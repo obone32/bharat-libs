@@ -405,7 +405,7 @@ fn fraction_chain(depth: usize) -> Arg {
 fn a_tree_past_the_depth_cap_writes_well_formed_xml() {
     for depth in [MAX_DEPTH, MAX_DEPTH + 1, 4 * MAX_DEPTH] {
         let out = xml(&fraction_chain(depth));
-        assert!(craft_xml::Options::default().strict().parse(out.as_bytes()).is_ok(), "depth {depth}");
+        assert!(bharat_xml::Options::default().strict().parse(out.as_bytes()).is_ok(), "depth {depth}");
     }
     assert!(!xml(&fraction_chain(MAX_DEPTH + 1)).contains("LEAF"), "the writer stops at MAX_DEPTH");
 }

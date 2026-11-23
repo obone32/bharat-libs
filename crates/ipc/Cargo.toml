@@ -1,6 +1,6 @@
 [package]
-name = "craft-ipc"
-description = "Local-socket control server, client and discovery for Craft apps on one machine: token auth, launch on demand, focus hand-off. Native only."
+name = "bharat-ipc"
+description = "Local-socket control server, client and discovery for Bharat apps on one machine: token auth, launch on demand, focus hand-off. Native only."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

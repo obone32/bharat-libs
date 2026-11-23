@@ -1,9 +1,9 @@
 // The code came from an app whose lints allow this.
 #![allow(clippy::type_complexity)]
 //! OpenDocument Text (`.odt`, ODF 1.3), feature `text`: documents read into and written from the
-//! craft-flow model and a craft-wordmodel `Document`.
+//! bharat-flow model and a bharat-wordmodel `Document`.
 //!
-//! Both ways, through the flow model ([`craft_flow`]) with what ODT keeps besides
+//! Both ways, through the flow model ([`bharat_flow`]) with what ODT keeps besides
 //! ([`model::FlowOpts`]): paragraphs and headings with their spacing, indents, line spacing,
 //! contextual spacing, alignment, borders, background and tab stops; character formatting (the
 //! extras in [`model::Fmt::extra`] included); custom paragraph and character styles by name, and
@@ -31,11 +31,11 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use craft_wordmodel::props::{Borders, VAlign};
-use craft_wordmodel::section::{Columns, SectionStart};
-use craft_wordmodel::{Align, Document, RevisionKind, Rgb, SectionProps};
+use bharat_wordmodel::props::{Borders, VAlign};
+use bharat_wordmodel::section::{Columns, SectionStart};
+use bharat_wordmodel::{Align, Document, RevisionKind, Rgb, SectionProps};
 
-use craft_flow::{self as model, Cell, FBlock, FComment, FTable, Flow, Fmt, Inline, Kind, ListInfo, Meta, Para, RevMark, make_img, mime_of};
+use bharat_flow::{self as model, Cell, FBlock, FComment, FTable, Flow, Fmt, Inline, Kind, ListInfo, Meta, Para, RevMark, make_img, mime_of};
 
 mod body;
 mod cell_formula;

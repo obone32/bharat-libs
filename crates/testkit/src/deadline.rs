@@ -29,7 +29,7 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 /// The variable a limit reads unless [`DeadlineLimit::with_variable`] names another.
-pub const DEFAULT_VARIABLE: &str = "CRAFT_TEST_TIMEOUT_SECS";
+pub const DEFAULT_VARIABLE: &str = "BHARAT_TEST_TIMEOUT_SECS";
 
 /// The first pause of [`wait_until`] between two calls of its condition.
 const FIRST_PAUSE: Duration = Duration::from_millis(1);
@@ -38,18 +38,18 @@ const FIRST_PAUSE: Duration = Duration::from_millis(1);
 const MAX_PAUSE: Duration = Duration::from_millis(50);
 
 /// The name of the thread [`with_deadline`] runs a body on.
-const WORKER_NAME: &str = "craft-testkit deadline";
+const WORKER_NAME: &str = "bharat-testkit deadline";
 
 /// A limit for [`with_deadline`] and [`wait_until`]: a default duration and the name of the
 /// variable that replaces it.
 ///
 /// ```
 /// use std::time::Duration;
-/// use craft_testkit::deadline::DeadlineLimit;
+/// use bharat_testkit::deadline::DeadlineLimit;
 ///
-/// // Reads CRAFT_TEST_TIMEOUT_SECS.
+/// // Reads BHARAT_TEST_TIMEOUT_SECS.
 /// let limit: DeadlineLimit = Duration::from_secs(30).into();
-/// assert_eq!(limit.variable(), "CRAFT_TEST_TIMEOUT_SECS");
+/// assert_eq!(limit.variable(), "BHARAT_TEST_TIMEOUT_SECS");
 ///
 /// // Reads the app's own variable instead.
 /// let limit = DeadlineLimit::new(Duration::from_secs(30)).with_variable("FILMCRAFT_HOSTILE_TIMEOUT_SECS");
@@ -103,7 +103,7 @@ impl From<Duration> for DeadlineLimit<'static> {
 ///
 /// ```
 /// use std::time::Duration;
-/// use craft_testkit::deadline::with_deadline;
+/// use bharat_testkit::deadline::with_deadline;
 ///
 /// let sum = with_deadline(Duration::from_secs(30), "sum of 1 to 10", || (1..=10).sum::<u32>());
 /// assert_eq!(sum, 55);
@@ -132,7 +132,7 @@ pub fn with_deadline<'a, T: Send + 'static>(limit: impl Into<DeadlineLimit<'a>>,
 /// ```
 /// use std::sync::atomic::{AtomicBool, Ordering};
 /// use std::time::Duration;
-/// use craft_testkit::deadline::wait_until;
+/// use bharat_testkit::deadline::wait_until;
 ///
 /// let ready = AtomicBool::new(false);
 /// std::thread::scope(|s| {
@@ -369,10 +369,10 @@ mod tests {
     use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
     /// A variable no test sets, so the environment cannot lengthen a test's short limit.
-    const UNSET: &str = "CRAFT_TESTKIT_DEADLINE_UNSET_IN_TESTS";
+    const UNSET: &str = "BHARAT_TESTKIT_DEADLINE_UNSET_IN_TESTS";
 
     /// The variable `run_child` sets for the child process.
-    const CHILD_VARIABLE: &str = "CRAFT_TESTKIT_DEADLINE_CHILD_SECS";
+    const CHILD_VARIABLE: &str = "BHARAT_TESTKIT_DEADLINE_CHILD_SECS";
 
     fn short() -> DeadlineLimit<'static> {
         DeadlineLimit::new(Duration::from_millis(50)).with_variable(UNSET)
@@ -542,13 +542,13 @@ mod tests {
     #[test]
     fn invalid_override_fails() {
         let printed = run_child(OsStr::new("5s"));
-        assert!(printed.contains("CRAFT_TESTKIT_DEADLINE_CHILD_SECS=\"5s\" is not a whole number of seconds"), "{printed}");
+        assert!(printed.contains("BHARAT_TESTKIT_DEADLINE_CHILD_SECS=\"5s\" is not a whole number of seconds"), "{printed}");
     }
 
     #[test]
     fn zero_override_fails() {
         let printed = run_child(OsStr::new("0"));
-        assert!(printed.contains("CRAFT_TESTKIT_DEADLINE_CHILD_SECS=\"0\" is zero"), "{printed}");
+        assert!(printed.contains("BHARAT_TESTKIT_DEADLINE_CHILD_SECS=\"0\" is zero"), "{printed}");
     }
 
     #[cfg(unix)]
@@ -556,13 +556,13 @@ mod tests {
     fn non_unicode_override_fails() {
         use std::os::unix::ffi::OsStrExt;
         let printed = run_child(OsStr::from_bytes(b"3\xff"));
-        assert!(printed.contains("CRAFT_TESTKIT_DEADLINE_CHILD_SECS is not valid Unicode"), "{printed}");
+        assert!(printed.contains("BHARAT_TESTKIT_DEADLINE_CHILD_SECS is not valid Unicode"), "{printed}");
     }
 
     #[test]
     fn valid_override_replaces_the_default() {
         let printed = run_child(OsStr::new("1"));
-        assert!(printed.contains("child body did not finish within 1s, set by CRAFT_TESTKIT_DEADLINE_CHILD_SECS"), "{printed}");
+        assert!(printed.contains("child body did not finish within 1s, set by BHARAT_TESTKIT_DEADLINE_CHILD_SECS"), "{printed}");
     }
 
     #[test]

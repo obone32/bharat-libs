@@ -3,7 +3,7 @@
 
 use std::fmt::Write as _;
 
-use craft_xml::{El, Node, Writer, is_name};
+use bharat_xml::{El, Node, Writer, is_name};
 
 /// A number for an attribute or a `<v>`: integers without a fraction, others in the shortest
 /// form that reads back to the same value, `E` for the exponent. Not finite is `0`.

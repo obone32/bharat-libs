@@ -9,13 +9,13 @@ use std::sync::{Arc, Mutex};
 
 use serde_json::{Value, json};
 
-use craft_ipc::asset::{Described, Refreshed, Resolved};
-use craft_ipc::client::{Client, HelloClient};
-use craft_ipc::moniker::Moniker;
-use craft_ipc::record::AssetKind;
-use craft_ipc::refresh::{Tracker, write_atomic};
-use craft_ipc::server::{Activate, Activation, Assets, ControlSink, Extensions, FrameOpen, Frames, Server, ServerConfig};
-use craft_ipc::{Discovery, InstanceRecord, LinkError, RuntimeDir};
+use bharat_ipc::asset::{Described, Refreshed, Resolved};
+use bharat_ipc::client::{Client, HelloClient};
+use bharat_ipc::moniker::Moniker;
+use bharat_ipc::record::AssetKind;
+use bharat_ipc::refresh::{Tracker, write_atomic};
+use bharat_ipc::server::{Activate, Activation, Assets, ControlSink, Extensions, FrameOpen, Frames, Server, ServerConfig};
+use bharat_ipc::{Discovery, InstanceRecord, LinkError, RuntimeDir};
 
 // Both tests bind the same app and process named pipe on Windows, regardless of runtime directory.
 static HUB_TEST: Mutex<()> = Mutex::new(());
@@ -93,14 +93,14 @@ struct Stills {
 impl Assets for Stills {
     fn resolve(&self, asset: &Moniker) -> Result<Resolved, LinkError> {
         self.known(asset)?;
-        let fp = craft_ipc::refresh::fingerprint_if_present(&self.file)?.ok_or_else(|| LinkError::Unknown("no result file yet".into()))?;
+        let fp = bharat_ipc::refresh::fingerprint_if_present(&self.file)?.ok_or_else(|| LinkError::Unknown("no result file yet".into()))?;
         let epoch = self.tracker.lock().unwrap().epoch();
         Ok(Resolved::from_fingerprint(asset.clone(), &self.file.display().to_string(), epoch, &fp))
     }
 
     fn describe(&self, asset: &Moniker) -> Result<Described, LinkError> {
         self.known(asset)?;
-        let fp = craft_ipc::refresh::fingerprint_if_present(&self.file)?;
+        let fp = bharat_ipc::refresh::fingerprint_if_present(&self.file)?;
         Ok(Described {
             asset: asset.clone(),
             name: "Poster".into(),

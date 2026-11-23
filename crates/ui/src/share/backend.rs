@@ -9,7 +9,7 @@
 //! and testable with no server. A host supplies the half that does, and this
 //! crate never learns what it reaches.
 
-use craft_cloud::{Capability, Contact, Permission, Share, ShareTarget};
+use bharat_cloud::{Capability, Contact, Permission, Share, ShareTarget};
 
 /// One thing the dialog needs done.
 #[derive(Clone, Debug, PartialEq, Eq)]

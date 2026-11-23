@@ -1,7 +1,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 
-//! Decide who draws the window frame, so every Craft app shows the same titlebar and borders on a
+//! Decide who draws the window frame, so every Bharat app shows the same titlebar and borders on a
 //! given desktop, and make an app-drawn strip act as the title bar.
 //!
 //! egui apps either let the desktop draw the window frame (the title bar, borders and window
@@ -26,7 +26,7 @@
 //!   ([`Frame::App`]): without this, winit draws an imitation frame that matches no desktop.
 //!
 //! An environment variable overrides the choice, for users whose compositor the probe can't read
-//! or who simply prefer the other frame. With the default prefix `CRAFT`, `CRAFT_TITLEBAR=app`
+//! or who simply prefer the other frame. With the default prefix `BHARAT`, `BHARAT_TITLEBAR=app`
 //! forces [`Frame::App`] and `=system` (or `=desktop`) forces [`Frame::Desktop`]; apps may pass
 //! their own prefix (`PDFCRAFT`, `FIGCRAFT`, …) so each keeps its own variable name.
 //!
@@ -43,8 +43,8 @@
 //! ```ignore
 //! let viewport = egui::ViewportBuilder::default().with_title("PhotoCraft");
 //! // The app may still prefer its own frame when the user asked for it in preferences:
-//! let choice = craft_window::Choice::probe(craft_window::Prefix::default());
-//! let viewport = craft_window::decorate(viewport, choice.frame());
+//! let choice = bharat_window::Choice::probe(bharat_window::Prefix::default());
+//! let viewport = bharat_window::decorate(viewport, choice.frame());
 //! ```
 //!
 //! The probe opens a short-lived Wayland connection and reads the global registry once; it never
@@ -61,12 +61,12 @@
 //!
 //! ```ignore
 //! egui::Panel::top("app_bar").show(ui, |ui| {
-//!     craft_window::title_bar::empty_area(ui, ui.max_rect());
+//!     bharat_window::title_bar::empty_area(ui, ui.max_rect());
 //!     // ... the bar's controls ...
 //! });
 //! // After the UI, once per frame (macOS); `applied` lives in the app state, starting at `None`.
 //! #[cfg(target_os = "macos")]
-//! craft_window::title_bar::sync_movable(ui.ctx(), &mut self.applied);
+//! bharat_window::title_bar::sync_movable(ui.ctx(), &mut self.applied);
 //! ```
 //!
 //! # One window per document
@@ -88,7 +88,7 @@
 //! it from the list.
 //!
 //! ```ignore
-//! use craft_window::{Choice, Document, Prefix, Viewports, WindowEvent, WindowList, WindowMenu};
+//! use bharat_window::{Choice, Document, Prefix, Viewports, WindowEvent, WindowList, WindowMenu};
 //!
 //! // At startup: the first document's window is drawn in the root viewport.
 //! let mut windows = WindowList::new();
@@ -159,7 +159,7 @@ pub use viewports::{Viewports, WindowEvent, child_viewport_id};
 
 /// The environment-variable prefix an app overrides the frame with: `<PREFIX>_TITLEBAR`.
 ///
-/// `Prefix::default()` is `CRAFT`, so `CRAFT_TITLEBAR`. An app that wants its own name passes
+/// `Prefix::default()` is `BHARAT`, so `BHARAT_TITLEBAR`. An app that wants its own name passes
 /// [`Prefix::new`] (`Prefix::new("PDFCRAFT")` reads `PDFCRAFT_TITLEBAR`). The name is used as
 /// given; it should be ASCII letters, digits and underscores, as environment names are.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -167,7 +167,7 @@ pub struct Prefix(&'static str);
 
 impl Default for Prefix {
     fn default() -> Self {
-        Self("CRAFT")
+        Self("BHARAT")
     }
 }
 
@@ -177,7 +177,7 @@ impl Prefix {
         Self(prefix)
     }
 
-    /// The environment variable this prefix reads, e.g. `CRAFT_TITLEBAR`.
+    /// The environment variable this prefix reads, e.g. `BHARAT_TITLEBAR`.
     pub fn var_name(self) -> String {
         format!("{}_TITLEBAR", self.0)
     }
@@ -409,7 +409,7 @@ mod platform {
     /// also kills and reaps the child on timeout; this helper only bounds the caller's wait.
     fn bounded<T: Send + 'static>(f: impl FnOnce() -> T + Send + 'static) -> Option<T> {
         let (send, receive) = mpsc::sync_channel(1);
-        let spawned = std::thread::Builder::new().name("craft-window-probe".into()).spawn(move || {
+        let spawned = std::thread::Builder::new().name("bharat-window-probe".into()).spawn(move || {
             let _ = send.send(f());
         });
         if spawned.is_err() {
@@ -451,7 +451,7 @@ mod platform {
             .ok()?;
         let stdout = child.stdout.take()?;
         let (send, receive) = mpsc::sync_channel(1);
-        let reader = std::thread::Builder::new().name("craft-window-gsettings".into()).spawn(move || {
+        let reader = std::thread::Builder::new().name("bharat-window-gsettings".into()).spawn(move || {
             let mut stdout = stdout;
             let mut buf = String::new();
             let read = std::io::Read::read_to_string(&mut stdout, &mut buf);
@@ -486,7 +486,7 @@ mod tests {
 
     #[test]
     fn prefix_names_the_override_variable() {
-        assert_eq!(Prefix::default().var_name(), "CRAFT_TITLEBAR");
+        assert_eq!(Prefix::default().var_name(), "BHARAT_TITLEBAR");
         assert_eq!(Prefix::new("PDFCRAFT").var_name(), "PDFCRAFT_TITLEBAR");
     }
 
@@ -560,7 +560,7 @@ mod tests {
     #[test]
     fn the_os_always_draws_the_frame_on_macos_and_windows() {
         // A prefix whose variable no test or environment sets, so the platform decides.
-        let choice = super::Choice::probe(Prefix::new("CRAFT_WINDOW_UNSET_FOR_TEST"));
+        let choice = super::Choice::probe(Prefix::new("BHARAT_WINDOW_UNSET_FOR_TEST"));
         assert_eq!(choice.frame(), &Frame::Desktop);
         assert_eq!(choice.overridden(), None);
     }

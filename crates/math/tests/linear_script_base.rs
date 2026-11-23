@@ -2,7 +2,7 @@
 //! isn't simple in invisible brackets, `〖a^b〗^c`, as Word linearizes it, and the parser treats
 //! `〖…〗` as a script base as grouping only, as Word builds it: no delimiter is left.
 
-use craft_math::math::{MNode, MRun, ScriptKind, parse_linear, to_linear};
+use bharat_math::math::{MNode, MRun, ScriptKind, parse_linear, to_linear};
 
 fn a(t: &str) -> Vec<MNode> {
     vec![MNode::Run(MRun::new(t))]
@@ -47,7 +47,7 @@ fn an_invisible_delimiter_as_the_base_is_kept() {
     let invisible = MNode::Delim { beg: None, end: None, sep: None, grow: true, shp_match: false, elems: vec![a("a")] };
     let n = vec![sup(vec![invisible], a("2"))];
     assert_eq!(parse_linear(&to_linear(&n)), n, "{}", to_linear(&n));
-    let latex = craft_math::math_latex::parse_latex(r"\left.a\right.^2");
+    let latex = bharat_math::math_latex::parse_latex(r"\left.a\right.^2");
     assert!(matches!(&latex[..], [MNode::Script { base, .. }] if matches!(&base[..], [MNode::Delim { beg: None, end: None, .. }])), "{latex:?}");
     assert_eq!(parse_linear(&to_linear(&latex)), latex, "{}", to_linear(&latex));
 }

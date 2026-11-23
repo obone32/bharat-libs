@@ -1,5 +1,5 @@
 [package]
-name = "craft-ecproj-format"
+name = "bharat-ecproj-format"
 description = "The envelope of EffectCraft .ecproj project files: savedBy, the schema version and its check, and the file object with the project and its saved view as type parameters."
 version.workspace = true
 edition.workspace = true

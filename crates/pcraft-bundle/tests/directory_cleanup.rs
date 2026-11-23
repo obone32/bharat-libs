@@ -1,8 +1,8 @@
 //! Publication succeeds independently of best-effort cleanup of the previous entry set.
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_pcraft_bundle::{DirectoryBundle, DirectoryBundleWriter, Limits, ObjectKind, ZipBundleWriter};
-use craft_pcraft_format::{COMPOSITE, FULL_COMPOSITE, MANIFEST, THUMB};
+use bharat_pcraft_bundle::{DirectoryBundle, DirectoryBundleWriter, Limits, ObjectKind, ZipBundleWriter};
+use bharat_pcraft_format::{COMPOSITE, FULL_COMPOSITE, MANIFEST, THUMB};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -15,7 +15,7 @@ struct Temporary(PathBuf);
 impl Temporary {
     fn new() -> Self {
         static NEXT: AtomicU64 = AtomicU64::new(0);
-        let path = std::env::temp_dir().join(format!("craft-bundle-cleanup-{}-{}", std::process::id(), NEXT.fetch_add(1, Ordering::Relaxed)));
+        let path = std::env::temp_dir().join(format!("bharat-bundle-cleanup-{}-{}", std::process::id(), NEXT.fetch_add(1, Ordering::Relaxed)));
         fs::create_dir(&path).unwrap();
         Self(path)
     }

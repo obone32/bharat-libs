@@ -1,4 +1,4 @@
-//! Craft Link server.
+//! Bharat Link server.
 //!
 //! One accept thread, then a read thread and a write thread per connection.
 //! There is no tokio runtime here.
@@ -307,7 +307,7 @@ impl Server {
             threads: Mutex::new(Vec::new()),
         });
         let accept_hub = Arc::clone(&hub);
-        let accept = match std::thread::Builder::new().name("craft-ipc-accept".into()).spawn(move || {
+        let accept = match std::thread::Builder::new().name("bharat-ipc-accept".into()).spawn(move || {
             listener::accept_loop(listener, tcp, accept_hub);
         }) {
             Ok(handle) => handle,

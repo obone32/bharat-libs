@@ -15,17 +15,17 @@
 //!   timecodes (drop-frame or not) convert exactly; [`Document::snap_to_frames`] snaps to a
 //!   frame grid.
 //! - **Limits:** input is at most [`MAX_INPUT`] bytes and a document holds at most [`MAX_CUES`]
-//!   cues; TTML is read through `craft-xml` with its nesting, node and attribute limits.
+//!   cues; TTML is read through `bharat-xml` with its nesting, node and attribute limits.
 //!
 //! ```
-//! use craft_captions::{Format, WriteOptions, detect, parse, write};
+//! use bharat_captions::{Format, WriteOptions, detect, parse, write};
 //! let srt = b"1\n00:00:01,000 --> 00:00:02,500\nHello\n";
 //! assert_eq!(detect(srt, Some("srt")), Some(Format::Srt));
 //! let doc = parse(srt, Format::Srt)?;
 //! assert_eq!(doc.cues[0].text, "Hello");
 //! let vtt = write(&doc, Format::WebVtt, WriteOptions::default());
 //! assert!(vtt.starts_with(b"WEBVTT"));
-//! # Ok::<(), craft_captions::Error>(())
+//! # Ok::<(), bharat_captions::Error>(())
 //! ```
 
 #[cfg(doctest)]
@@ -44,8 +44,8 @@ pub mod scc;
 pub mod srt;
 pub mod stl;
 mod text;
-/// Exact time: `craft-timeline`'s ticks, frame rates and timecode fields.
-pub use craft_timeline::time;
+/// Exact time: `bharat-timeline`'s ticks, frame rates and timecode fields.
+pub use bharat_timeline::time;
 pub mod ttml;
 pub mod vtt;
 
@@ -53,7 +53,7 @@ pub use text::{decode_entities, entity_at, plain_text};
 pub use time::{FrameRate, TICKS_PER_SECOND, Tick};
 
 /// The creating program MCC and EBU STL files name when the caller gives none.
-pub const PROGRAM: &str = "craft-captions";
+pub const PROGRAM: &str = "bharat-captions";
 
 /// The largest caption file [`parse`] reads, in bytes.
 pub const MAX_INPUT: usize = 64 << 20;

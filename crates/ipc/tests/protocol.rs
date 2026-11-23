@@ -10,11 +10,11 @@ use std::time::Duration;
 
 use serde_json::{Value, json};
 
-use craft_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
-use craft_ipc::wire::{self, MAX_LINE};
-use craft_ipc::{Endpoint, LinkError, RuntimeDir};
+use bharat_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
+use bharat_ipc::wire::{self, MAX_LINE};
+use bharat_ipc::{Endpoint, LinkError, RuntimeDir};
 
-const PAYLOAD: &[u8] = b"craft-frame";
+const PAYLOAD: &[u8] = b"bharat-frame";
 const TICKET: &str = "00112233445566778899aabbccddeeff";
 
 struct Tmp(PathBuf);

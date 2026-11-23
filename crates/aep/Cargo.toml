@@ -1,5 +1,5 @@
 [package]
-name = "craft-aep"
+name = "bharat-aep"
 description = "After Effects projects: the .aep (RIFX 'Egg!') and .aepx container as a lossless chunk tree with a typed, read-only view (compositions, layers, properties, keyframes, effects, masks, shapes, text, footage), bounded on hostile input"
 version.workspace = true
 edition.workspace = true

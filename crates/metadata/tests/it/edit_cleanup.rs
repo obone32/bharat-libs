@@ -3,7 +3,7 @@
 
 use std::borrow::Cow;
 
-use craft_metadata::edit::exif_with_resolution;
+use bharat_metadata::edit::exif_with_resolution;
 
 #[derive(Clone, Copy)]
 struct Layout {

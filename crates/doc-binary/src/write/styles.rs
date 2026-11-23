@@ -7,8 +7,8 @@
 
 use std::collections::HashMap;
 
-use craft_wordmodel::props::CharProps;
-use craft_wordmodel::styles::{Style, StyleKind, StyleSheet};
+use bharat_wordmodel::props::CharProps;
+use bharat_wordmodel::styles::{Style, StyleKind, StyleSheet};
 
 use super::grpprl::{self, CharCtx, Grpprl, ParaCtx};
 
@@ -251,7 +251,7 @@ fn std_bytes(st: &Style, name: &str, sti: u16, sheet: &StyleSheet, plan: &Plan, 
     let mut para = st.para.clone();
     if root && matches!(st.kind, StyleKind::Paragraph) {
         chr = overlay(&sheet.default_chr, &chr);
-        para = craft_wordmodel::props::ParaProps { style: None, ..overlay_para(&sheet.default_para, &para) };
+        para = bharat_wordmodel::props::ParaProps { style: None, ..overlay_para(&sheet.default_para, &para) };
     }
     if normal {
         chr.style = None;
@@ -337,7 +337,7 @@ fn overlay(under: &CharProps, over: &CharProps) -> CharProps {
     out
 }
 
-fn overlay_para(under: &craft_wordmodel::props::ParaProps, over: &craft_wordmodel::props::ParaProps) -> craft_wordmodel::props::ParaProps {
+fn overlay_para(under: &bharat_wordmodel::props::ParaProps, over: &bharat_wordmodel::props::ParaProps) -> bharat_wordmodel::props::ParaProps {
     let mut out = under.clone();
     out.overlay(over);
     out

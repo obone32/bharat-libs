@@ -1,7 +1,7 @@
 //! Literal text stays distinct from style markup across repeated caption exports.
-use craft_captions::plain_text;
-use craft_captions::{Cue, Document, srt, stl};
-use craft_captions::{TICKS_PER_SECOND, Tick};
+use bharat_captions::plain_text;
+use bharat_captions::{Cue, Document, srt, stl};
+use bharat_captions::{TICKS_PER_SECOND, Tick};
 
 fn document(text: &str) -> Document {
     Document {

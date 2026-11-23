@@ -6,9 +6,9 @@
 #[path = "support/synthetic_icc.rs"]
 mod synthetic_icc;
 
-use craft_pdf::interpret::InterpreterSettings;
-use craft_pdf::interpret::color::{CmykConversion, CmykSimulation, Ink, InkSinkFn, NoSimulation, PCS_WHITE, Plate};
-use craft_pdf::{
+use bharat_pdf::interpret::InterpreterSettings;
+use bharat_pdf::interpret::color::{CmykConversion, CmykSimulation, Ink, InkSinkFn, NoSimulation, PCS_WHITE, Plate};
+use bharat_pdf::{
     open_slice,
     raster::{self, Options, RenderCache},
 };

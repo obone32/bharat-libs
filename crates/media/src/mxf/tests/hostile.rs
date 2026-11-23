@@ -60,17 +60,17 @@ fn hostile_seeds() -> [Vec<u8>; 3] {
 
 #[test]
 fn hostile_input_seed_0_never_panics() {
-    craft_media_testkit::hostile::hammer("mxf seed 0", &hostile_seeds()[0], 6_000, exercise);
+    bharat_media_testkit::hostile::hammer("mxf seed 0", &hostile_seeds()[0], 6_000, exercise);
 }
 
 #[test]
 fn hostile_input_seed_1_never_panics() {
-    craft_media_testkit::hostile::hammer("mxf seed 1", &hostile_seeds()[1], 6_000, exercise);
+    bharat_media_testkit::hostile::hammer("mxf seed 1", &hostile_seeds()[1], 6_000, exercise);
 }
 
 #[test]
 fn hostile_input_seed_2_never_panics() {
-    craft_media_testkit::hostile::hammer("mxf seed 2", &hostile_seeds()[2], 6_000, exercise);
+    bharat_media_testkit::hostile::hammer("mxf seed 2", &hostile_seeds()[2], 6_000, exercise);
 }
 
 #[test]
@@ -78,7 +78,7 @@ fn hostile_index_segment_never_panics() {
     let seed = &hostile_seeds()[0];
     let index_key = [0x06, 0x0E, 0x2B, 0x34, 0x02, 0x53, 0x01, 0x01, 0x0D, 0x01, 0x02, 0x01, 0x01, 0x10, 0x01, 0x00];
     if let Some(v) = value_of(seed, &index_key) {
-        craft_media_testkit::hostile::hammer("mxf index segment", v, 30_000, |d| {
+        bharat_media_testkit::hostile::hammer("mxf index segment", v, 30_000, |d| {
             let _ = IndexSegment::parse(d);
         });
     }
@@ -89,7 +89,7 @@ fn hostile_primer_never_panics() {
     let seed = &hostile_seeds()[0];
     let primer_key = [0x06, 0x0E, 0x2B, 0x34, 0x02, 0x05, 0x01, 0x01, 0x0D, 0x01, 0x02, 0x01, 0x01, 0x05, 0x01, 0x00];
     if let Some(v) = value_of(seed, &primer_key) {
-        craft_media_testkit::hostile::hammer("mxf primer", v, 5_000, |d| {
+        bharat_media_testkit::hostile::hammer("mxf primer", v, 5_000, |d| {
             let _ = Primer::parse(d);
         });
     }
@@ -100,7 +100,7 @@ fn hostile_set_never_panics() {
     let seed = &hostile_seeds()[0];
     let set = seed.windows(16).position(|w| w == set_key(0x18)).and_then(|at| value_of(&seed[at..], &set_key(0x18)));
     if let Some(v) = set {
-        craft_media_testkit::hostile::hammer("mxf set", v, 20_000, |d| {
+        bharat_media_testkit::hostile::hammer("mxf set", v, 20_000, |d| {
             let _ = Set::parse(Ul(set_key(0x18)), d, &Primer::default());
         });
     }

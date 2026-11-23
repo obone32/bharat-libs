@@ -4,11 +4,11 @@
 
 use std::process::Command;
 
-use craft_audio::AudioError;
-use craft_audio::vmd::{Decoder, Error};
-use craft_media::vmd::{FrameKind, open};
-use craft_media_testkit::hostile::Rng;
-use craft_media_testkit::vmd::{Audio, Frame, Spec, build, dpcm_pack};
+use bharat_audio::AudioError;
+use bharat_audio::vmd::{Decoder, Error};
+use bharat_media::vmd::{FrameKind, open};
+use bharat_media_testkit::hostile::Rng;
+use bharat_media_testkit::vmd::{Audio, Frame, Spec, build, dpcm_pack};
 
 /// (frame length field, audio flags, channels, 16-bit): every layout the decoder handles.
 const FORMATS: [(i16, u16, usize, bool); 6] =
@@ -111,8 +111,8 @@ fn decodes_the_samples_that_were_packed() {
 
 #[test]
 fn matches_ffmpeg() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg_or_skip("vmd sound oracle") else { return };
-    let dir = craft_media_testkit::private_dir("vmd-sound");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg_or_skip("vmd sound oracle") else { return };
+    let dir = bharat_media_testkit::private_dir("vmd-sound");
     for (i, (frame_length, flags, ..)) in FORMATS.into_iter().enumerate() {
         let (bytes, _) = movie(i as u64 + 1, frame_length, flags);
         let path = dir.join(format!("sound{i}.vmd"));
@@ -216,7 +216,7 @@ fn bad_input_is_an_error() {
 fn hostile_input_never_panics() {
     for (i, (frame_length, flags, ..)) in FORMATS.into_iter().enumerate() {
         let (bytes, _) = movie(i as u64 + 1, frame_length, flags);
-        craft_media_testkit::hostile::hammer(&format!("vmd sound format {i}"), &bytes, 10_000, |d| {
+        bharat_media_testkit::hostile::hammer(&format!("vmd sound format {i}"), &bytes, 10_000, |d| {
             let Ok(file) = open(d) else { return };
             let Ok(decoder) = Decoder::new(file.header_bytes()) else { return };
             for (i, frame) in file.frames.iter().enumerate() {
@@ -230,22 +230,22 @@ fn hostile_input_never_panics() {
 }
 
 /// Real files, for whoever has some: the sound of every `.vmd` in the directory
-/// `CRAFT_MEDIA_VMD_SAMPLES` names must decode to the samples ffmpeg gets. Game files are not
+/// `BHARAT_MEDIA_VMD_SAMPLES` names must decode to the samples ffmpeg gets. Game files are not
 /// redistributable, so none are in the repository and the test is skipped without the variable.
 #[test]
 fn real_files_match_ffmpeg() {
-    let Some(dir) = std::env::var_os("CRAFT_MEDIA_VMD_SAMPLES").filter(|d| !d.is_empty()) else {
-        craft_media_testkit::skip_test("vmd samples", "CRAFT_MEDIA_VMD_SAMPLES is not set");
+    let Some(dir) = std::env::var_os("BHARAT_MEDIA_VMD_SAMPLES").filter(|d| !d.is_empty()) else {
+        bharat_media_testkit::skip_test("vmd samples", "BHARAT_MEDIA_VMD_SAMPLES is not set");
         return;
     };
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg_or_skip("vmd sound samples") else { return };
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg_or_skip("vmd sound samples") else { return };
     let mut paths: Vec<_> = std::fs::read_dir(&dir)
         .unwrap()
         .filter_map(|e| Some(e.ok()?.path()))
         .filter(|p| p.extension().is_some_and(|e| e.eq_ignore_ascii_case("vmd")))
         .collect();
     paths.sort();
-    assert!(!paths.is_empty(), "no .vmd files in CRAFT_MEDIA_VMD_SAMPLES");
+    assert!(!paths.is_empty(), "no .vmd files in BHARAT_MEDIA_VMD_SAMPLES");
     let (mut files, mut samples) = (0, 0);
     for path in &paths {
         let name = path.display();

@@ -1,5 +1,5 @@
 [package]
-name = "craft-sf2"
+name = "bharat-sf2"
 description = "SoundFont 2 (.sf2) reader: the sample pool and, for every preset, the key and velocity regions a note sounds, bounded on hostile input"
 version.workspace = true
 edition.workspace = true
@@ -18,4 +18,4 @@ test-support = []
 thiserror.workspace = true
 
 [dev-dependencies]
-craft-sf2 = { path = ".", features = ["test-support"] }
+bharat-sf2 = { path = ".", features = ["test-support"] }

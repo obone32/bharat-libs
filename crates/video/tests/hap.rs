@@ -1,10 +1,10 @@
 //! Hap tests: round trips, chunking, hostile input, and ffmpeg's decoder as the reference (oracle;
-//! skipped when ffmpeg is absent, a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`). ffmpeg has no
+//! skipped when ffmpeg is absent, a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`). ffmpeg has no
 //! Hap encoder here, so the oracle is one-way: it decodes the frames our encoder writes, in an AVI
 //! file, to the pictures our decoder returns.
 
-use craft_media::avi::{AviWriter, MuxOptions, StreamSpec, VideoSpec};
-use craft_video::hap::{Decoder, Encoder, Error, Image, TextureFormat, Variant};
+use bharat_media::avi::{AviWriter, MuxOptions, StreamSpec, VideoSpec};
+use bharat_video::hap::{Decoder, Encoder, Error, Image, TextureFormat, Variant};
 use std::path::Path;
 use std::process::Command;
 
@@ -238,8 +238,8 @@ fn avi_of(fourcc: [u8; 4], w: u32, h: u32, frames: &[Vec<u8>]) -> Vec<u8> {
 
 #[test]
 fn ffmpeg_decodes_our_frames_to_our_pictures() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("hap");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("hap");
     let mut worst_overall = 0u8;
     for (w, h) in [(64u32, 48u32), (130, 70), (36, 20)] {
         for v in VARIANTS {
@@ -277,8 +277,8 @@ fn ffmpeg_decodes_our_frames_to_our_pictures() {
 /// covers every endpoint order, palette index and YCoCg scale a block can hold.
 #[test]
 fn ffmpeg_decodes_arbitrary_blocks_to_our_pictures() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("hap");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("hap");
     let mut seed = 0xDEAD_BEEFu32;
     let (w, h) = (64u32, 64u32);
     let blocks = (w / 4 * (h / 4)) as usize;

@@ -327,7 +327,7 @@ pub fn version(ip: &mut Interp) -> R {
 }
 
 pub fn product(ip: &mut Interp) -> R {
-    ip.push(Obj::str(b"craft-ps"))
+    ip.push(Obj::str(b"bharat-ps"))
 }
 
 pub fn revision(ip: &mut Interp) -> R {
@@ -490,11 +490,11 @@ pub fn realtime(ip: &mut Interp) -> R {
 
 pub fn internaldict(ip: &mut Interp) -> R {
     ip.pop_int()?;
-    let d = match ip.systemdict.get_name(b"CraftPsInternal") {
+    let d = match ip.systemdict.get_name(b"BharatPsInternal") {
         Some(Obj::Dict(d)) => d,
         _ => {
             let d = PDict::new(10);
-            ip.systemdict.put_name(b"CraftPsInternal", Obj::Dict(d.clone()));
+            ip.systemdict.put_name(b"BharatPsInternal", Obj::Dict(d.clone()));
             d
         }
     };

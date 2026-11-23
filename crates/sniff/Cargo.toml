@@ -1,5 +1,5 @@
 [package]
-name = "craft-sniff"
+name = "bharat-sniff"
 description = "What a file is from its first bytes: a dependency-free signature table naming the format, its media type, extension and family, for images, audio, video, 3D models, archives, executables and databases."
 version.workspace = true
 edition.workspace = true

@@ -1,7 +1,7 @@
-# craft-video: VP8
+# bharat-video: VP8
 
 Clean-room, pure-Rust (no `unsafe`) VP8 decoder, implemented from RFC 6386, *VP8 Data Format and
-Decoding Guide*, sections 1-19. Part of `craft-video` (feature `vp8`). It is an L0 module: it depends only on `thiserror`, and builds for
+Decoding Guide*, sections 1-19. Part of `bharat-video` (feature `vp8`). It is an L0 module: it depends only on `thiserror`, and builds for
 `wasm32-unknown-unknown`.
 
 The constant tables (coefficient and mode probabilities and their update probabilities, the
@@ -37,7 +37,7 @@ The decoder rejects frames whose padded luma plane exceeds 36,000,000 samples (s
 ## API
 
 ```rust
-use craft_video::vp8::Decoder;
+use bharat_video::vp8::Decoder;
 
 let mut dec = Decoder::new();
 for (pts, frame) in frames {      // one IVF frame / WebM block / MP4 sample each
@@ -53,12 +53,12 @@ dec.reset(); // forget the reference frames (seek): decoding resumes at the next
 let stats = dec.stats(); // frames, key frames, hidden frames
 
 // Random access points
-let key: bool = craft_video::vp8::is_keyframe(frame);
-let info: Option<craft_video::vp8::KeyframeInfo> = craft_video::vp8::keyframe_info(frame);
+let key: bool = bharat_video::vp8::is_keyframe(frame);
+let info: Option<bharat_video::vp8::KeyframeInfo> = bharat_video::vp8::keyframe_info(frame);
 ```
 
-`craft-video` decodes compressed VP8 frames; it does not connect this decoder to Matroska / WebM
-(`V_VP8`) or MP4 (`vp08`) readers. The `craft-media` WebM reader exposes a VP8 sample and its alpha
+`bharat-video` decodes compressed VP8 frames; it does not connect this decoder to Matroska / WebM
+(`V_VP8`) or MP4 (`vp08`) readers. The `bharat-media` WebM reader exposes a VP8 sample and its alpha
 layer in `BlockAdditional` separately. VP8 has no colour signalling: pictures are BT.601,
 studio swing (RFC 6386 9.2), unless the container's `Colour` says otherwise. VP8 has no
 superframes either: a hidden altref frame is a block of its own; container seeking positions at a
@@ -66,11 +66,11 @@ key frame and does not remap that timestamp to the shown frame that follows it.
 
 ## Tests and tools
 
-- `cargo test -p craft-video --features vp8`: unit tests, bit-exactness against libvpx on generated fixtures
+- `cargo test -p bharat-video --features vp8`: unit tests, bit-exactness against libvpx on generated fixtures
   (`target/fixtures/vp8-tests`, skipped without ffmpeg / libvpx), robustness (corrupted,
   truncated, reordered and random input), and the libvpx test vectors when present in
   `target/fixtures/vp8/conformance` (or `$VP8_TEST_VECTORS`).
-- `cargo run --release -p craft-video --features vp8 --example vp8_vp8dec in.ivf out.yuv`: decode to raw I420.
-- `cargo run -p craft-video --features vp8 --example vp8_fuzz -- <iterations> <seed> files.ivf...`: decode
+- `cargo run --release -p bharat-video --features vp8 --example vp8_vp8dec in.ivf out.yuv`: decode to raw I420.
+- `cargo run -p bharat-video --features vp8 --example vp8_fuzz -- <iterations> <seed> files.ivf...`: decode
   randomly damaged variants of IVF files (in a debug build, so overflow panics too) and report
   any panic.

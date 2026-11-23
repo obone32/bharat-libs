@@ -1,6 +1,6 @@
 //! Checks before this crate runs a program.
 //!
-//! The launcher finds an app binary through `CRAFT_<APP>_BIN`, `installed.json`, `PATH` and a few
+//! The launcher finds an app binary through `BHARAT_<APP>_BIN`, `installed.json`, `PATH` and a few
 //! fixed directories. A same-user process can write most of those places, so a name that resolves
 //! is not proof that the file is the app. These checks do not stop a process of the same user,
 //! which can do anything the user can. They stop two mistakes: running a file that any local

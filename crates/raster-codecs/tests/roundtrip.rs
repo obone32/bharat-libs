@@ -1,7 +1,7 @@
 //! Every format with a writer reads back what it wrote, and no reader panics on damaged files.
 
-use craft_raster_codecs::dds::{DdsCompression, DdsOptions};
-use craft_raster_codecs::{ChannelLayout as L, CodecError, Image, Limits, SampleType as S, dds, dicom, fits, iff, pcx, pnm, xpm};
+use bharat_raster_codecs::dds::{DdsCompression, DdsOptions};
+use bharat_raster_codecs::{ChannelLayout as L, CodecError, Image, Limits, SampleType as S, dds, dicom, fits, iff, pcx, pnm, xpm};
 
 /// SplitMix64.
 struct Rng(u64);

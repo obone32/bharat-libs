@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Craft contributors
+// SPDX-FileCopyrightText: Bharat contributors
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 //! Error message handling for protocol errors.

@@ -8,7 +8,7 @@
 
 use std::io::{Cursor, Read, Seek, Write};
 
-use craft_zip::{Archive, Limits};
+use bharat_zip::{Archive, Limits};
 use serde_json::Value;
 
 const MAX_ENTRIES: u64 = 100_000;
@@ -119,7 +119,7 @@ pub fn has_document(bytes: &[u8], spec: Spec<'_>) -> bool {
 
 /// Whether `prefix` starts with the configured stored mimetype entry.
 pub fn starts_with_mimetype(prefix: &[u8], spec: Spec<'_>) -> bool {
-    craft_zip::stored_mimetype(prefix).is_some_and(|mime| mime == spec.mimetype.as_bytes())
+    bharat_zip::stored_mimetype(prefix).is_some_and(|mime| mime == spec.mimetype.as_bytes())
 }
 
 /// Refuses every write and seek after the first failure of the wrapped writer. Dropping a

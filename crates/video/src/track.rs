@@ -1,5 +1,5 @@
 //! [`TrackDecoder`]: one video track's packets in, [`VideoFrame`]s out, whatever the codec. The
-//! counterpart of `craft_audio::TrackDecoder`, for an app with its own demuxer.
+//! counterpart of `bharat_audio::TrackDecoder`, for an app with its own demuxer.
 
 #[cfg(feature = "av1-decode")]
 use crate::av1;
@@ -13,7 +13,7 @@ use crate::hevc;
 use crate::mpeg2;
 #[cfg(feature = "vp9-decode")]
 use crate::vp9;
-use craft_media::{CodecId, CodecParams};
+use bharat_media::{CodecId, CodecParams};
 
 /// The codec-specific decoder behind a [`TrackDecoder`].
 enum Inner {
@@ -78,8 +78,8 @@ enum Inner {
 /// of the packet that coded it, through reordering ([`VideoFrame::pts`]).
 ///
 /// ```no_run
-/// # fn run(params: &craft_media::CodecParams, packets: &[(Vec<u8>, i64)]) -> Result<(), craft_video::VideoError> {
-/// use craft_video::TrackDecoder;
+/// # fn run(params: &bharat_media::CodecParams, packets: &[(Vec<u8>, i64)]) -> Result<(), bharat_video::VideoError> {
+/// use bharat_video::TrackDecoder;
 ///
 /// let mut dec = TrackDecoder::new(params)?;
 /// for (packet, pts) in packets {
@@ -482,7 +482,7 @@ fn is_annex_b(extradata: &[u8]) -> bool {
 /// error).
 #[cfg(any(feature = "h264-decode", feature = "hevc-decode"))]
 fn check_annex_b(codec: &str, extradata: &[u8], nal_type: fn(u8) -> u8, allowed: &[u8]) -> Result<(), VideoError> {
-    for nal in craft_media::bitstream::annexb_nals(extradata) {
+    for nal in bharat_media::bitstream::annexb_nals(extradata) {
         let t = nal.first().map_or(u8::MAX, |&b| nal_type(b));
         if !allowed.contains(&t) {
             return Err(VideoError::Malformed(format!("{codec}: configuration holds NAL unit type {t}, not a parameter set")));

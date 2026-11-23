@@ -1,4 +1,4 @@
-# craft-odf
+# bharat-odf
 
 OpenDocument packages (ODF 1.3 Part 2): what every OpenDocument file has in common, whatever it
 holds. Text documents, spreadsheets, presentations and drawings all sit in the same container;
@@ -13,7 +13,7 @@ this crate reads and writes that container and nothing inside it.
 | `zip_guard` | Refuses a ZIP whose end record declares too many entries, before `zip` reserves room for them. |
 
 ```rust
-use craft_odf::{Limits, Package, PackageWriter, crypt, flat, mime};
+use bharat_odf::{Limits, Package, PackageWriter, crypt, flat, mime};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut w = PackageWriter::new(mime::SPREADSHEET);
@@ -38,13 +38,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Text documents (feature `text`)
 
-`craft_odf::text` reads and writes OpenDocument Text (`.odt`, `.ott`, `.fodt`) through the
-[craft-flow](../flow/README.md) model and a craft-wordmodel `Document`: paragraphs and headings
+`bharat_odf::text` reads and writes OpenDocument Text (`.odt`, `.ott`, `.fodt`) through the
+[bharat-flow](../flow/README.md) model and a bharat-wordmodel `Document`: paragraphs and headings
 with their formatting and styles, lists and outline numbering, tables, pictures, shapes, text
-boxes and groups, charts, equations (as formula objects, through craft-math's MathML), embedded
+boxes and groups, charts, equations (as formula objects, through bharat-math's MathML), embedded
 objects, fields, notes, comments, bookmarks, indexes, forms, sections and page setup with headers
 and footers, tracked changes, metadata and settings. What a document holds that the model does not
-is kept as read and written back (`craft_wordmodel::kept`). Packages are read and written with
+is kept as read and written back (`bharat_wordmodel::kept`). Packages are read and written with
 this crate's `Package` and `PackageWriter`, password protection is `crypt`, flat files are `flat`.
 
 ## Limits

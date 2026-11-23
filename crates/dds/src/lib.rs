@@ -26,15 +26,15 @@
 //! levels) on several threads with rayon.
 //!
 //! ```
-//! use craft_dds::{DdsCompression, DdsOptions, Layout};
+//! use bharat_dds::{DdsCompression, DdsOptions, Layout};
 //!
 //! let pixels = [10, 20, 30, 255].repeat(6 * 5);
 //! let options = DdsOptions { compression: DdsCompression::Bc1, mipmaps: true };
-//! let file = craft_dds::encode(6, 5, Layout::Rgba, &pixels, options)?;
-//! let texture = craft_dds::Texture::parse(&file)?;
+//! let file = bharat_dds::encode(6, 5, Layout::Rgba, &pixels, options)?;
+//! let texture = bharat_dds::Texture::parse(&file)?;
 //! assert_eq!((texture.width(), texture.height(), texture.layout()), (6, 5, Layout::Rgba));
 //! assert_eq!(texture.decode()?.len(), 6 * 5 * 4);
-//! # Ok::<(), craft_dds::DdsError>(())
+//! # Ok::<(), bharat_dds::DdsError>(())
 //! ```
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 

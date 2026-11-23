@@ -3,8 +3,8 @@ use std::fs::{self, File};
 use std::io::{self, Read, Write};
 use std::path::Path;
 
-use craft_raw::{Limits, RawData, RawError, RawFormat, RawImage, Rect};
-use craft_tiff::TiffError;
+use bharat_raw::{Limits, RawData, RawError, RawFormat, RawImage, Rect};
+use bharat_tiff::TiffError;
 use sha2::{Digest, Sha256};
 
 pub(super) const MAX_INPUT_BYTES: u64 = 512 * 1024 * 1024;
@@ -30,7 +30,7 @@ pub(super) fn run(paths: impl IntoIterator<Item = OsString>, out: &mut impl Writ
                 InputFailure::Read => "read_error",
                 InputFailure::Limit => "input_limit",
             })
-            .and_then(|bytes| craft_raw::decode_with(&bytes, limits).map_err(decode_status));
+            .and_then(|bytes| bharat_raw::decode_with(&bytes, limits).map_err(decode_status));
         match result {
             Ok(raw) => write_success(out, input, &raw),
             Err(status) => write_failure(out, input, status),

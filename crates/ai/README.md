@@ -1,6 +1,6 @@
-# craft-ai — AI providers for the Craft suite
+# bharat-ai — AI providers for the Bharat suite
 
-Shared AI abstraction for every Craft app: translation, rewriting, summaries,
+Shared AI abstraction for every Bharat app: translation, rewriting, summaries,
 vision captions — one crate, one settings store, one model cache.
 
 Status: **spec** — this file is the contract; implementation follows.
@@ -131,7 +131,7 @@ First-open flow — the "smooth informed" sequence:
   unreviewed custom licenses are excluded by policy.
 - **Everything is a command**: `ai.translate_doc`, `ai.status`,
   `ai.models.list`, `ai.model.download`, `ai.provider.test` — reachable
-  from the app's control channel and MCP, same as every Craft convention.
+  from the app's control channel and MCP, same as every Bharat convention.
 
 ## Milestones
 

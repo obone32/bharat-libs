@@ -1,7 +1,7 @@
 //! DSD (DSF and DSDIFF) decoding and decimation tests, including oracle tests against FFmpeg
-//! (skipped when ffmpeg is absent, a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+//! (skipped when ffmpeg is absent, a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 
-use craft_audio::dsd::{BitOrder, Format, decode, decode_with_factor, encode_dsdiff, encode_dsf, filter::SILENCE_LSBF, read_metadata, read_raw};
+use bharat_audio::dsd::{BitOrder, Format, decode, decode_with_factor, encode_dsdiff, encode_dsf, filter::SILENCE_LSBF, read_metadata, read_raw};
 use std::process::Command;
 
 /// Generates a test DSD 1-bit stream with various features (silence, alternating tones, noise).
@@ -272,8 +272,8 @@ fn hostile_inputs() {
 
 #[test]
 fn ffmpeg_dsf_oracle() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("dsd");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("dsd");
 
     let sample_rate = 2_822_400;
     let block_size = 4096;
@@ -312,8 +312,8 @@ fn ffmpeg_dsf_oracle() {
 
 #[test]
 fn ffmpeg_dsdiff_oracle() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("dsd");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("dsd");
 
     let sample_rate = 2_822_400;
     let ch0 = make_test_stream(8192, 33);

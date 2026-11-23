@@ -3,7 +3,7 @@
 
 use std::io::{Cursor, Write};
 
-use craft_epub::{Encrypted, Epub, MAX_TOC_ENTRIES, TocEntry, parse_encryption, parse_nav, parse_ncx};
+use bharat_epub::{Encrypted, Epub, MAX_TOC_ENTRIES, TocEntry, parse_encryption, parse_nav, parse_ncx};
 
 fn zip_of(entries: &[(&str, &[u8])]) -> Vec<u8> {
     let mut z = zip::ZipWriter::new(Cursor::new(Vec::new()));

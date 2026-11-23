@@ -1,4 +1,4 @@
-//! Real-time audio DSP for the Craft apps: dependency-free and `wasm32` clean.
+//! Real-time audio DSP for the Bharat apps: dependency-free and `wasm32` clean.
 //!
 //! * [`loudness`]: ITU-R BS.1770-4 / EBU R128 loudness meter (momentary, short-term,
 //!   integrated, loudness range, sample peak, true peak) and the loudness-normalization helper.

@@ -1,5 +1,5 @@
 //! Hostile container sizes must return errors, never wrap offsets or panic.
-use craft_audio::dsd::{BitOrder, Error, RawAudio, encode_dsdiff, encode_dsf, read_metadata, read_raw};
+use bharat_audio::dsd::{BitOrder, Error, RawAudio, encode_dsdiff, encode_dsf, read_metadata, read_raw};
 
 #[test]
 fn dsf_untrusted_sizes_are_checked() {
@@ -67,7 +67,7 @@ fn empty_raw_audio_rejects_invalid_decimation_factors() {
 #[test]
 fn writers_reject_unbounded_output_before_allocating() {
     let channels: [&[u8]; 8] = [&[]; 8];
-    for count in [u64::MAX, (craft_audio::dsd::MAX_ENCODE_BYTES as u64 + 1) * 8] {
+    for count in [u64::MAX, (bharat_audio::dsd::MAX_ENCODE_BYTES as u64 + 1) * 8] {
         assert_eq!(encode_dsf(2_822_400, &channels, count, 8), Err(Error::MemoryLimitExceeded));
         assert_eq!(encode_dsdiff(2_822_400, &channels, count), Err(Error::MemoryLimitExceeded));
     }

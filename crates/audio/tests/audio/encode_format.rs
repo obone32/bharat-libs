@@ -1,4 +1,4 @@
-use craft_audio::{EncodeFormat, encode_format_for};
+use bharat_audio::{EncodeFormat, encode_format_for};
 
 #[test]
 fn only_formats_the_encoder_writes_are_named() {
@@ -10,8 +10,8 @@ fn only_formats_the_encoder_writes_are_named() {
     assert_eq!(encode_format_for("BWF"), Some(EncodeFormat::Wav));
     assert_eq!(encode_format_for(".aifc"), Some(EncodeFormat::Aiff));
     assert_eq!(encode_format_for("flac"), Some(EncodeFormat::Flac));
-    assert!(craft_audio::ENCODE_EXTENSIONS.contains(&"flac"));
-    for name in craft_audio::ENCODE_EXTENSIONS {
+    assert!(bharat_audio::ENCODE_EXTENSIONS.contains(&"flac"));
+    for name in bharat_audio::ENCODE_EXTENSIONS {
         assert!(encode_format_for(name).is_some(), "{name}");
     }
     for other in ["opus", "aac", "mp4", "xyz", ""] {
@@ -24,5 +24,5 @@ fn ogg_names_follow_the_feature() {
     let built = cfg!(feature = "vorbis-encode");
     assert_eq!(EncodeFormat::Ogg.is_built(), built);
     assert_eq!(encode_format_for("ogg"), built.then_some(EncodeFormat::Ogg));
-    assert_eq!(craft_audio::ENCODE_EXTENSIONS.contains(&"ogg"), built);
+    assert_eq!(bharat_audio::ENCODE_EXTENSIONS.contains(&"ogg"), built);
 }

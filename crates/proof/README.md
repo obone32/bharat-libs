@@ -1,12 +1,12 @@
-# craft-proof
+# bharat-proof
 
-Proofing for the Craft apps, per language: spelling, suggestions, grammar checks and hyphenation,
+Proofing for the Bharat apps, per language: spelling, suggestions, grammar checks and hyphenation,
 a Hunspell `.aff`/`.dic` reader, user words, ignored words and a dictionaries folder. It moved here
 from WordCraft's `wordcraft-proof` with its history and the same public API. No `unsafe`, no
 panics on hostile input, and it builds for `wasm32-unknown-unknown`.
 
 ```toml
-craft-proof = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-proof = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ## Languages
@@ -26,8 +26,8 @@ build.
 ## Use
 
 ```rust
-use craft_proof::{ProofLang, check_text_with, suggest_in, Options};
-use craft_proof::hyphen::{hyphen_points_in, Limits};
+use bharat_proof::{ProofLang, check_text_with, suggest_in, Options};
+use bharat_proof::hyphen::{hyphen_points_in, Limits};
 
 // A paragraph whose runs are in different languages (byte ranges of `text`).
 let text = "The colour of the hous.";
@@ -54,41 +54,41 @@ plain text and language spans.
 
 ## Language data
 
-The word lists and patterns live in [craft-i18n](https://github.com/storytold/craft-i18n)
+The word lists and patterns live in [bharat-i18n](https://github.com/obone32/bharat-i18n)
 (`language-data/`), not here. `build.rs` embeds them at build time:
 
-- `CRAFT_I18N_DIR=<absolute path to a craft-i18n checkout>` embeds `language-data/`.
+- `BHARAT_I18N_DIR=<absolute path to a bharat-i18n checkout>` embeds `language-data/`.
 - Unset (a fork, docs.rs, offline): the crate builds with a warning and no embedded Language
   data. English spelling then falls back as below, hyphenation that needs the data is off, and
   grammar and the Hunspell languages work as before.
-- `CRAFT_I18N_REQUIRED=1` (releases) makes a missing directory or file an error.
+- `BHARAT_I18N_REQUIRED=1` (releases) makes a missing directory or file an error.
 
-Tests that pin results of the data run only when every file the build embeds is there (`craft_proof_data`);
-`src/no_data.rs` runs every public entry point when none is (`craft_proof_no_data`). A partial
+Tests that pin results of the data run only when every file the build embeds is there (`bharat_proof_data`);
+`src/no_data.rs` runs every public entry point when none is (`bharat_proof_no_data`). A partial
 data folder runs neither set.
 
 - By default every carry-over locale is embedded: English, the German, Polish, Portuguese and
   Italian patterns and our own word supplements (`*-extra.txt`, MIT), as before Language packs.
-  `CRAFT_PROOF_EMBED` picks the set: `en` (English and our supplements only; the others come from
+  `BHARAT_PROOF_EMBED` picks the set: `en` (English and our supplements only; the others come from
   Language packs), `de,pl`, or `all`. Making `en` the default is **CP4.4**, done in the release
   that publishes and pins `language-packs-1`.
-  `craft_proof::packs::embedded_locales()` lists what a build embeds.
+  `bharat_proof::packs::embedded_locales()` lists what a build embeds.
 
 ## Language packs
 
 **API (fixed by `plan/pack-contract.md`, plus the additions marked ＋):**
 
 ```rust
-// craft_proof::packs
+// bharat_proof::packs
 pub fn set_packs_dir(dir: Option<PathBuf>);            // <font-store folder>/language-packs; bumps dictionary_generation()
 pub fn reload();                                       // ＋ same folder, after a pack is installed or removed
 pub fn packs_dir() -> Option<PathBuf>;                 // ＋
 pub fn installed() -> Vec<InstalledPack>;              // InstalledPack { locale, name, licence, path }, by locale
 pub fn licence_texts() -> Vec<(String, String)>;       // (title, text): embedded English notices, then each pack's LICENCES/*
 pub fn load_errors() -> Vec<(String, String)>;         // ＋ (locale or folder, reason): packs skipped, pattern files that failed
-pub fn embedded_locales() -> &'static [&'static str];  // ＋ locales with embedded upstream data, not our supplements ("en-us", "en-gb", "en-ca", "en-au", "pl", "pt", "it", "de" by default; the four English ones with CRAFT_PROOF_EMBED=en)
+pub fn embedded_locales() -> &'static [&'static str];  // ＋ locales with embedded upstream data, not our supplements ("en-us", "en-gb", "en-ca", "en-au", "pl", "pt", "it", "de" by default; the four English ones with BHARAT_PROOF_EMBED=en)
 
-// craft_proof (crate root)
+// bharat_proof (crate root)
 pub enum ProofLang { …, Pack(PackLocale), Other }      // ＋ Pack: a language without a dedicated built-in variant (nl, fr, sr-Latn…)
 pub struct PackLocale;                                 // ＋ Copy; PackLocale::new(tag) -> Option<Self>, .as_str() "nl-nl", .primary() "nl", Display
 impl ProofLang { pub fn pack_locale(self) -> Option<PackLocale>; } // ＋
@@ -116,12 +116,12 @@ region's pack of the same language (`nl` → `nl-be`), never another script's (`
 `pt-*`).
 
 Spelling dictionaries and hyphenation patterns for other languages come as **Language packs**:
-the app's font store (`craft-font-store`, item kind `language-pack`) downloads, verifies and
+the app's font store (`bharat-font-store`, item kind `language-pack`) downloads, verifies and
 unpacks them; this crate reads them.
 
 ```rust
-craft_proof::packs::set_packs_dir(Some(store.language_packs_dir())); // at startup
-craft_proof::packs::reload();                       // after a pack is installed or removed
+bharat_proof::packs::set_packs_dir(Some(store.language_packs_dir())); // at startup
+bharat_proof::packs::reload();                       // after a pack is installed or removed
 ```
 
 Both `set_packs_dir` and `reload` reload every dictionary without a restart and bump
@@ -159,9 +159,9 @@ English spelling uses the first of these that is there; `english_source(lang)` s
 1. **Dictionaries folder:** the English's own `.aff`/`.dic` pair (`en_US`, `en_GB` or `en_CA`)
    that the user put in the folder set with `set_dictionaries_folder`, in `WORDCRAFT_DICTIONARIES`
    or in WordCraft's own `dictionaries` folder. The user's choice comes first.
-2. **Installed English pack:** reserved for Language packs (craft-libs#485, CP4.2).
+2. **Installed English pack:** reserved for Language packs (bharat-libs#485, CP4.2).
 3. **Embedded SCOWL:** the English's own SCOWL `rel-2026.02.25` Hunspell dictionary from
-   `CRAFT_I18N_DIR` (`language-data/en-us`, `en-gb` (British `-ise`), `en-au` or `en-ca`,
+   `BHARAT_I18N_DIR` (`language-data/en-us`, `en-gb` (British `-ise`), `en-au` or `en-ca`,
    `spelling.aff` + `spelling.dic`), read by the affix engine. Australian English reads en-AU
    (Australian words such as `billabong`, with en-GB's spelling policy); en-NZ, en-IE and the
    other British-spelling Englishes read en-GB; Canadian English reads en-CA. A word is right when the English's own
@@ -186,7 +186,7 @@ English spelling uses the first of these that is there; `english_source(lang)` s
    every language. None on the web.
 5. **Built-in list:** `data/en-words.dic`, the whole Moby word list (about 165,000 words, 344 KB
    compressed, words only) built into the crate, with `data/en-extra.txt` (WordCraft's supplement
-   of modern words, a copy of craft-i18n's) and the inflection rules. A word it doesn't know is
+   of modern words, a copy of bharat-i18n's) and the inflection rules. A word it doesn't know is
    misspelled. Suggestions are the words one edit away (swap, missing, added or changed letter),
    looked up in the list, for words of up to 32 letters: swaps first, then common words,
    neighbouring keys, the same first letter.
@@ -200,16 +200,16 @@ and `dictionary_load_error(lang)` gives the reason; it never panics. Text in oth
 never checked against English: a language without its dictionary has no spelling marks.
 
 `data/en-words.dic` is public domain: the Moby Hyphenator II list by Grady Ward (Project Gutenberg
-eBook #3204), from craft-i18n's `language-data/en-us/en-us.dic` with its break points dropped
+eBook #3204), from bharat-i18n's `language-data/en-us/en-us.dic` with its break points dropped
 and a few entries that are far more often typos left out (`teh`, `abd`, `nad`, `ur`, `u`, `r`;
 the list is in the generator).
 Regenerate with
-`cargo run -p craft-proof --example en_words -- <craft-i18n>/language-data/en-us/en-us.dic crates/proof/data/en-words.dic`.
+`cargo run -p bharat-proof --example en_words -- <bharat-i18n>/language-data/en-us/en-us.dic crates/proof/data/en-words.dic`.
 `data/en-extra.txt` is WordCraft contributors' own list (MIT OR Apache-2.0); keep it in step with
-craft-i18n's copy.
+bharat-i18n's copy.
 
 The SCOWL notice (SCOWL's licence, the Ispell BSD licence of the affix files and Benjamin Titze's
-notice) is embedded with the dictionaries: `craft_proof::scowl::notice()`, for an About window.
+notice) is embedded with the dictionaries: `bharat_proof::scowl::notice()`, for an About window.
 
 Embedding SCOWL adds 2,056,533 bytes of Language data (the en-US, en-GB, en-CA and en-AU `.aff`/`.dic`
 and the notice); the Moby list (432,905 bytes) stays for hyphenation.
@@ -217,19 +217,19 @@ and the notice); the Moby list (432,905 bytes) stays for hyphenation.
 ## Check
 
 ```sh
-cargo fmt -p craft-proof --check
-cargo clippy -p craft-proof --all-targets -- -D warnings
-CRAFT_I18N_DIR=/abs/path/craft-i18n cargo test -p craft-proof
-CRAFT_PROOF_EMBED=en CRAFT_I18N_DIR=/abs/path/craft-i18n cargo test -p craft-proof    # the English-only build (CP4.4)
-cargo test -p craft-proof   # without Language data
-cargo check -p craft-proof --target wasm32-unknown-unknown
+cargo fmt -p bharat-proof --check
+cargo clippy -p bharat-proof --all-targets -- -D warnings
+BHARAT_I18N_DIR=/abs/path/bharat-i18n cargo test -p bharat-proof
+BHARAT_PROOF_EMBED=en BHARAT_I18N_DIR=/abs/path/bharat-i18n cargo test -p bharat-proof    # the English-only build (CP4.4)
+cargo test -p bharat-proof   # without Language data
+cargo check -p bharat-proof --target wasm32-unknown-unknown
 ```
 
 CI: `.github/workflows/proof.yml`.
 
 ## Credits
 
-storytold/craft-libs#30/#31 by brzuchal (Michał Marcin Brzuchalski) started the shared crate.
+obone32/bharat-libs#30/#31 by brzuchal (Michał Marcin Brzuchalski) started the shared crate.
 
 ### French adaptation validation
 
@@ -246,7 +246,7 @@ NFC/NFD lookup with original ranges, suggestions and pack hyphenation. The opt-i
 dictionary gate fails when its input is missing; it never silently skips its assertions:
 
 ```sh
-WORDCRAFT_DICTIONARIES=/absolute/isolated/french-dictionary cargo test -p craft-proof --test french_dictionary -- --ignored
+WORDCRAFT_DICTIONARIES=/absolute/isolated/french-dictionary cargo test -p bharat-proof --test french_dictionary -- --ignored
 ```
 
 For a reproducible real-dictionary run, use Dicollecte 7.7 from LibreOffice/dictionaries
@@ -271,5 +271,5 @@ WordCraft maintainers: echelon, dylanmtaylor, aiongg.
 
 ## Licence
 
-MIT OR Apache-2.0. The Language data carries its own licences, recorded in craft-i18n's
+MIT OR Apache-2.0. The Language data carries its own licences, recorded in bharat-i18n's
 `ATTRIBUTION.md`.

@@ -1,7 +1,7 @@
-//! Conversion of decoded VP9 pictures into `craft_video::frame::VideoFrame`.
+//! Conversion of decoded VP9 pictures into `bharat_video::frame::VideoFrame`.
 
 use crate::common;
-use craft_video::frame::{ColorFamily, Samples, VideoFrame};
+use bharat_video::frame::{ColorFamily, Samples, VideoFrame};
 
 /// An RGB stream converts to R, G, B. The reference decode is ffmpeg's `gbrp` (G, B, R), so the
 /// frame's planes 0, 1, 2 must equal reference planes 2, 0, 1.
@@ -38,7 +38,7 @@ fn ycbcr_422_12bit() {
     let pics = common::decode_file_threads(&ivf, 1).map_err(|e| e.1).unwrap();
     let frame = VideoFrame::try_from(pics.into_iter().next().unwrap()).unwrap();
     assert_eq!(frame.family(), ColorFamily::YCbCr);
-    assert_eq!(frame.subsampling(), craft_video::frame::Subsampling::S422);
+    assert_eq!(frame.subsampling(), bharat_video::frame::Subsampling::S422);
     assert_eq!(frame.bit_depth(), 12);
     assert_eq!((frame.planes()[1].width(), frame.planes()[1].height()), (88, 144));
     assert!(matches!(frame.planes()[0].samples(), Samples::U16(_)));

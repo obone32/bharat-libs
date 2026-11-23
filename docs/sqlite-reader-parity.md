@@ -1,15 +1,15 @@
 # SQLite reader comparison
 
-This comparison addresses the LightCraft and Craft Anything SQLite item in [#778](https://github.com/storytold/craft-libs/issues/778#issuecomment-7022490467).
+This comparison addresses the LightCraft and Bharat Anything SQLite item in [#778](https://github.com/obone32/bharat-libs/issues/778#issuecomment-7022490467).
 
 ## Readers and results
 
 - LightCraft's Lightroom importer checks the WAL and passes the validated committed prefix to its file-backed page reader. The probe calls that reader directly with a complete, committed WAL produced by SQLite. [LightCraft baseline `78b57565`](https://github.com/storytold/lightcraft/blob/78b575658a61d17bd392b4b81b64c92c8beecbac/crates/engine/src/lightroom_catalog.rs#L512-L530)
-- Craft Anything's `db_sqlite_show` reads the main-file image and checks for a WAL sidecar so it can disclose a potentially older view. The probe calls the same parser and row-pagination method as the tool. [Craft Anything baseline `df227090`](https://github.com/storytold/craft-anything/blob/df2270904c36d6904883ba4442fb80fb383ed350/crates/engine/src/tools/database_tools.rs#L49-L93)
+- Bharat Anything's `db_sqlite_show` reads the main-file image and checks for a WAL sidecar so it can disclose a potentially older view. The probe calls the same parser and row-pagination method as the tool. [Bharat Anything baseline `df227090`](https://github.com/storytold/bharat-anything/blob/df2270904c36d6904883ba4442fb80fb383ed350/crates/engine/src/tools/database_tools.rs#L49-L93)
 
 The fixture is one table with 512-byte pages. SQLite queries verified the seven stored values: row ID 1, integer −8,388,607, real 1.25, null, label `Päris`, 6,000 ASCII `x` characters, and bytes `00 ff`. The text spans overflow pages. An update changes the label to `committed`.
 
-| Input | LightCraft import reader | Craft Anything inspection reader |
+| Input | LightCraft import reader | Bharat Anything inspection reader |
 | --- | --- | --- |
 | Same pre-update main image | `Päris` | `Päris` |
 | Same main image with SQLite's committed WAL available | `committed` after the caller supplies the committed prefix | Main-file view remains `Päris` |
@@ -21,13 +21,13 @@ The scalar values other than the updated label agreed across every view. Both pi
 
 ## Candidate shared boundary
 
-Start with bounded varint decoding and serial-type widths over borrowed bytes. The reader sources already have independently implemented versions of these mechanics. Before adopting a helper, add boundary fixtures for ninth-byte varints, failed reads and offset handling, reserved serial types, and truncated values. Both readers assemble overflow data, but their caps and treatment of partial data need separate parity evidence before that code moves. [LightCraft reader](https://github.com/storytold/lightcraft/blob/78b575658a61d17bd392b4b81b64c92c8beecbac/crates/engine/src/lightroom_sqlite.rs) · [Craft Anything reader](https://github.com/storytold/craft-anything/blob/df2270904c36d6904883ba4442fb80fb383ed350/crates/formats/src/sqlite.rs)
+Start with bounded varint decoding and serial-type widths over borrowed bytes. The reader sources already have independently implemented versions of these mechanics. Before adopting a helper, add boundary fixtures for ninth-byte varints, failed reads and offset handling, reserved serial types, and truncated values. Both readers assemble overflow data, but their caps and treatment of partial data need separate parity evidence before that code moves. [LightCraft reader](https://github.com/storytold/lightcraft/blob/78b575658a61d17bd392b4b81b64c92c8beecbac/crates/engine/src/lightroom_sqlite.rs) · [Bharat Anything reader](https://github.com/storytold/bharat-anything/blob/df2270904c36d6904883ba4442fb80fb383ed350/crates/formats/src/sqlite.rs)
 
-Keep snapshot selection and caller validation with the Lightroom importer. Keep schema defaults, pagination, text previews and BLOB presentation with Craft Anything. Coordinate a consumer change against the current catalog bounds and old-row default work. [LightCraft #3674](https://github.com/storytold/lightcraft/pull/3674) · [Craft Anything #1349](https://github.com/storytold/craft-anything/pull/1349)
+Keep snapshot selection and caller validation with the Lightroom importer. Keep schema defaults, pagination, text previews and BLOB presentation with Bharat Anything. Coordinate a consumer change against the current catalog bounds and old-row default work. [LightCraft #3674](https://github.com/storytold/lightcraft/pull/3674) · [Bharat Anything #1349](https://github.com/storytold/bharat-anything/pull/1349)
 
 ## Reproduce
 
-Place the three repositories under one parent directory and check out the two app revisions above. In a scratch directory at `craft-libs/target/sqlite-reader-parity`, save the three blocks below as `generate.py`, `Cargo.toml` and `src/main.rs`. Run from that scratch directory. Use a new fixture path on each run.
+Place the three repositories under one parent directory and check out the two app revisions above. In a scratch directory at `bharat-libs/target/sqlite-reader-parity`, save the three blocks below as `generate.py`, `Cargo.toml` and `src/main.rs`. Run from that scratch directory. Use a new fixture path on each run.
 
 ```text
 python generate.py fixtures
@@ -94,7 +94,7 @@ sha2 = "=0.10.9"
 ```rust
 #[path = "../../../../lightcraft/crates/engine/src/lightroom_sqlite.rs"]
 mod light;
-#[path = "../../../../craft-anything/crates/formats/src/sqlite.rs"]
+#[path = "../../../../bharat-anything/crates/formats/src/sqlite.rs"]
 mod inspect;
 
 use inspect::{CellValue, SqliteDb};
@@ -151,7 +151,7 @@ fn inspector_row(main: &Path, label: &str) {
             CellValue::Blob { len: 2, sha256_prefix: "06eb7d6a69ee19e5".into() },
         ]
     );
-    println!("Craft Anything: {label}; all 7 values; 4096-byte projection and BLOB digest");
+    println!("Bharat Anything: {label}; all 7 values; 4096-byte projection and BLOB digest");
 }
 
 fn main() {

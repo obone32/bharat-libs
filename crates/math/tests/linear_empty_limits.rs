@@ -2,7 +2,7 @@
 //! empty lower limit that is shown, and `to_linear` writes it as `_()`. Left out, it reads back as a
 //! hidden limit.
 
-use craft_math::math::{MNode, MRun, parse_linear, to_linear};
+use bharat_math::math::{MNode, MRun, parse_linear, to_linear};
 
 #[test]
 fn an_empty_shown_limit_prints_back_the_same() {

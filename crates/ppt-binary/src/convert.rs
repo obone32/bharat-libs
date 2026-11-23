@@ -1,4 +1,4 @@
-//! Building a `craft_pptx` presentation from the parsed `.ppt` structure.
+//! Building a `bharat_pptx` presentation from the parsed `.ppt` structure.
 //!
 //! Each main master becomes a master: the caller's default master (its layouts and placeholders),
 //! with the file's colours, fonts, text styles, background and decorative shapes, and the file's
@@ -10,13 +10,13 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use craft_pptx::style::{Dash, LineCap, LineEnd, LineJoin, PictureFill, PictureMode, Shadow};
-use craft_pptx::text::{Align, Anchor as TextAnchor, AutoFit, BodyProps, Bullet, LevelStyle, ListStyle, ParaProps, RunKind, Spacing, TabStop};
-use craft_pptx::{
+use bharat_pptx::style::{Dash, LineCap, LineEnd, LineJoin, PictureFill, PictureMode, Shadow};
+use bharat_pptx::text::{Align, Anchor as TextAnchor, AutoFit, BodyProps, Bullet, LevelStyle, ListStyle, ParaProps, RunKind, Spacing, TabStop};
+use bharat_pptx::{
     Background, ColorRef, Defaults, Effects, Fill, Layout, LayoutId, LayoutType, Line, Master, MediaId, Paragraph, PhType, Placeholder, Presentation,
     Run, RunProps, Shape, ShapeId, ShapeKind, Size, Slide, SlideId, TextBody, Theme, Xfrm,
 };
-use craft_pptx::{ColorTransform, Rgba, SchemeSlot};
+use bharat_pptx::{ColorTransform, Rgba, SchemeSlot};
 
 use crate::doc::{self, Doc, Listed, rt};
 use crate::draw::{self, Props, RawShape, prop};
@@ -122,7 +122,7 @@ pub fn convert<'a>(d: &Doc<'a>, pictures: &'a [u8], app: &'a dyn Defaults) -> Pr
     };
     let environment = d.document.child(rt::ENVIRONMENT);
     if let Some(hf) = doc::headers_footers(&d.document, 3) {
-        cx.p.header_footer = craft_pptx::HeaderFooter {
+        cx.p.header_footer = bharat_pptx::HeaderFooter {
             date: hf.date,
             slide_number: hf.slide_number,
             footer: hf.footer,
@@ -692,7 +692,7 @@ impl<'a> Ctx<'a> {
             },
             // Gradients.
             t @ 4..=8 => {
-                use craft_pptx::style::{Gradient, GradientShape};
+                use bharat_pptx::style::{Gradient, GradientShape};
                 let focus = props.get(prop::FILL_FOCUS).map_or(0, |v| v as i32).clamp(-100, 100);
                 let stops = gradient_stops(focus, &fg, &bg);
                 let shape = if matches!(t, 5 | 6) {
@@ -731,11 +731,11 @@ impl<'a> Ctx<'a> {
             .into(),
         });
         l.compound = props.get(prop::LINE_STYLE).map(|v| match v {
-            1 => craft_pptx::style::Compound::Double,
-            2 => craft_pptx::style::Compound::ThickThin,
-            3 => craft_pptx::style::Compound::ThinThick,
-            4 => craft_pptx::style::Compound::Triple,
-            _ => craft_pptx::style::Compound::Single,
+            1 => bharat_pptx::style::Compound::Double,
+            2 => bharat_pptx::style::Compound::ThickThin,
+            3 => bharat_pptx::style::Compound::ThinThick,
+            4 => bharat_pptx::style::Compound::Triple,
+            _ => bharat_pptx::style::Compound::Single,
         });
         l.join = props.get(prop::LINE_JOIN).map(|v| match v {
             0 => LineJoin::Bevel,
@@ -1049,8 +1049,8 @@ fn text_shadow(scheme: &Scheme) -> Shadow {
 /// A shaded fill's stops ([MS-ODRAW] `fillFocus`: the position of the last colour, the back
 /// colour). Focus 0 starts at the back colour and ends at the fill colour, ±100 the other way; in
 /// between, the back colour sits at that point with the fill colour at both ends.
-fn gradient_stops(focus: i32, fg: &ColorRef, bg: &ColorRef) -> Vec<craft_pptx::style::GradientStop> {
-    use craft_pptx::style::GradientStop;
+fn gradient_stops(focus: i32, fg: &ColorRef, bg: &ColorRef) -> Vec<bharat_pptx::style::GradientStop> {
+    use bharat_pptx::style::GradientStop;
     let stop = |pos: f64, c: &ColorRef| GradientStop { pos, color: c.clone() };
     match focus {
         0 => vec![stop(0.0, bg), stop(1.0, fg)],
@@ -1177,7 +1177,7 @@ mod tests {
     #[test]
     fn shaded_fills_put_the_back_colour_at_the_focus() {
         let (fg, bg) = (ColorRef::rgb(Rgba::rgb(255, 0, 0)), ColorRef::rgb(Rgba::rgb(0, 0, 255)));
-        let at = |stops: &[craft_pptx::style::GradientStop]| stops.iter().map(|s| (s.pos, s.color == fg)).collect::<Vec<_>>();
+        let at = |stops: &[bharat_pptx::style::GradientStop]| stops.iter().map(|s| (s.pos, s.color == fg)).collect::<Vec<_>>();
         assert_eq!(at(&gradient_stops(0, &fg, &bg)), [(0.0, false), (1.0, true)]);
         assert_eq!(at(&gradient_stops(100, &fg, &bg)), [(0.0, true), (1.0, false)]);
         assert_eq!(at(&gradient_stops(-50, &fg, &bg)), [(0.0, true), (0.5, false), (1.0, true)]);

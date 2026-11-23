@@ -15,9 +15,9 @@
 //! [`spec_of`] turns a data part back into the model only when writing that model again gives
 //! the same markup: a diagram another program made or changed stays read-only.
 
-use craft_wordmodel::graphic::GraphicItem;
-use craft_wordmodel::props::Rgb;
-use craft_wordmodel::smart_art::{MAX_ITEMS, SmartArtColors, SmartArtItem, SmartArtLayout, SmartArtSpec};
+use bharat_wordmodel::graphic::GraphicItem;
+use bharat_wordmodel::props::Rgb;
+use bharat_wordmodel::smart_art::{MAX_ITEMS, SmartArtColors, SmartArtItem, SmartArtLayout, SmartArtSpec};
 
 use crate::read::diagram::{text_width, wrap};
 use crate::xml::{self, El, MAX_DEPTH, Node, W};
@@ -1169,7 +1169,7 @@ fn same(a: &El, b: &El, depth: usize) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use craft_wordmodel::THEME_COLORS;
+    use bharat_wordmodel::THEME_COLORS;
 
     fn parse(s: &str) -> El {
         xml::parse(s.as_bytes()).unwrap()

@@ -1,4 +1,4 @@
-# craft-cfb
+# bharat-cfb
 
 A clean-room reader and writer for the Compound File Binary format (Microsoft "OLE structured
 storage"): the container of legacy Office files (`.doc`, `.xls`, `.ppt`), Outlook `.msg` messages,
@@ -16,7 +16,7 @@ and AAF objects belong to the crates that read those formats.
 
 ```rust
 let bytes = std::fs::read("book.xls")?;
-let cf = craft_cfb::CompoundFile::open(&bytes)?;
+let cf = bharat_cfb::CompoundFile::open(&bytes)?;
 let workbook = cf.read_path("Workbook")?;                    // a stream, by path
 let small = cf.read_path_capped("\u{5}SummaryInformation", 1 << 20)?; // with a size cap
 for id in cf.walk() {                                         // every storage and stream
@@ -78,8 +78,8 @@ size is larger than the file is refused before any allocation, whatever the limi
 ### Files too damaged to open
 
 ```rust
-let limits = craft_cfb::Limits::default();
-let locked = ["EncryptedPackage", "EncryptionInfo"].iter().any(|n| craft_cfb::has_entry_named(&bytes, n, &limits));
+let limits = bharat_cfb::Limits::default();
+let locked = ["EncryptedPackage", "EncryptionInfo"].iter().any(|n| bharat_cfb::has_entry_named(&bytes, n, &limits));
 ```
 
 `directory_names` follows only the header, the DIFAT and the directory chain and returns the name
@@ -90,11 +90,11 @@ file is password-protected"), not for security decisions: the fallback can match
 ## Writing
 
 ```rust
-let file = craft_cfb::write_streams(craft_cfb::Version::V3, &[("Workbook", &book), ("Macros/VBA/dir", &dir)])?;
+let file = bharat_cfb::write_streams(bharat_cfb::Version::V3, &[("Workbook", &book), ("Macros/VBA/dir", &dir)])?;
 
-let mut w = craft_cfb::Writer::new(craft_cfb::Version::V4);
-w.set_clsid(craft_cfb::Writer::ROOT, root_class);
-let h = w.storage(craft_cfb::Writer::ROOT, "Header", header_class)?;
+let mut w = bharat_cfb::Writer::new(bharat_cfb::Version::V4);
+w.set_clsid(bharat_cfb::Writer::ROOT, root_class);
+let h = w.storage(bharat_cfb::Writer::ROOT, "Header", header_class)?;
 w.stream(h, "properties", bytes)?;
 w.stream_at("Header/Content/data", more)?;      // creates "Content"
 let file: Vec<u8> = w.finish();
@@ -118,7 +118,7 @@ case-insensitively); the duplicate check is a hash lookup, so adding n children 
 ## Where it came from
 
 The base is FilmCraft's `filmcraft-cfb` (reader, writer and tests, moved as they were). Three
-other Craft apps had their own readers; what they did and the base did not was ported, each with
+other Bharat apps had their own readers; what they did and the base did not was ported, each with
 a test in `src/tests/ported.rs`. Where the copies disagreed:
 
 | Question | FilmCraft | GridCraft / DeckCraft | WordCraft (guard in front of the `cfb` crate) | Here |
@@ -147,7 +147,7 @@ FilmCraft (`filmcraft_cfb`):
 
 | Before | After |
 |---|---|
-| `filmcraft_cfb::{CompoundFile, Entry, EntryKind, Writer, NodeId, Version, Error, sniff, compare_names, validate_name}` | the same names in `craft_cfb` |
+| `filmcraft_cfb::{CompoundFile, Entry, EntryKind, Writer, NodeId, Version, Error, sniff, compare_names, validate_name}` | the same names in `bharat_cfb` |
 | `CompoundFile::open(bytes)` with no stream cap | `CompoundFile::open_with(bytes, Limits { max_stream_size: u64::MAX, ..Limits::default() })` if streams over 1 GiB must read |
 | matching on `Error` | `Error` is `#[non_exhaustive]` and has `LimitExceeded` |
 
@@ -155,14 +155,14 @@ GridCraft (`crates/xlsx/src/cfb.rs`) and DeckCraft (`crates/pptx/src/cfb.rs`):
 
 | Before | After |
 |---|---|
-| `cfb::SIGNATURE`, `bytes.starts_with(&SIGNATURE)` | `craft_cfb::SIGNATURE`, `craft_cfb::sniff(bytes)` |
-| `cfb::is_encrypted(bytes)` | `["EncryptedPackage", "EncryptionInfo"].iter().any(\|n\| craft_cfb::has_entry_named(bytes, n, &limits))` |
-| `directory_names(bytes)` | `craft_cfb::directory_names(bytes, &limits)` |
+| `cfb::SIGNATURE`, `bytes.starts_with(&SIGNATURE)` | `bharat_cfb::SIGNATURE`, `bharat_cfb::sniff(bytes)` |
+| `cfb::is_encrypted(bytes)` | `["EncryptedPackage", "EncryptionInfo"].iter().any(\|n\| bharat_cfb::has_entry_named(bytes, n, &limits))` |
+| `directory_names(bytes)` | `bharat_cfb::directory_names(bytes, &limits)` |
 | `Compound::open(bytes)` | `CompoundFile::open(bytes)` |
 | `cf.has_root_stream(name)` | `cf.has_stream(name)` |
 | `cf.root_stream(name)` → `Ok(None)` when absent | `if cf.has_stream(name) { Some(cf.read_path(name)?) } else { None }` |
 | `MAX_STREAM` (1 GiB) | the default `Limits::max_stream_size` |
-| `testing::compound_file(streams)` | `craft_cfb::write_streams(Version::V3, streams)` (a different sector layout: tests that cut or patch the file at fixed offsets need new offsets) |
+| `testing::compound_file(streams)` | `bharat_cfb::write_streams(Version::V3, streams)` (a different sector layout: tests that cut or patch the file at fixed offsets need new offsets) |
 
 WordCraft (`wordcraft_doc::cfb_guard` and the `cfb` crate):
 
@@ -172,7 +172,7 @@ WordCraft (`wordcraft_doc::cfb_guard` and the `cfb` crate):
 | `comp.is_stream(path)` | `cf.has_stream(path)` |
 | `comp.open_stream(path)` then `take(cap + 1).read_to_end(..)` | `cf.read_path_capped(path, cap)` (`Error::LimitExceeded` when larger) |
 | `CompoundFile::create_with_version(v, Cursor::new(Vec::new()))`, `create_storage_all`, `create_stream(..).write_all(..)`, `flush`, `into_inner().into_inner()` | `Writer::new(v)`, `stream_at(path, bytes)`, `finish()`, or `write_streams(v, &[(path, bytes)])` |
-| `cfb::Version::{V3, V4}` | `craft_cfb::Version::{V3, V4}` |
+| `cfb::Version::{V3, V4}` | `bharat_cfb::Version::{V3, V4}` |
 | `cfb_guard::repeating_difat_sample()` (test input) | not exported; the regression is `a_repeating_difat_is_refused` here |
 
 ## Tests

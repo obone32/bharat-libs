@@ -2,7 +2,7 @@
 //! configuration), 8-bit and 10-bit.
 
 use crate::common;
-use craft_media::CodecId;
+use bharat_media::CodecId;
 
 /// Closed GOPs every 12 frames with B-frames, so decoding from a key packet gives every frame
 /// from there on.
@@ -46,7 +46,7 @@ fn ts_annex_b() {
 
 /// The NAL unit types of an Annex B packet.
 fn nal_types(data: &[u8]) -> Vec<u8> {
-    craft_media::bitstream::annexb_nals(data).iter().filter_map(|n| n.first()).map(|b| (b >> 1) & 0x3f).collect()
+    bharat_media::bitstream::annexb_nals(data).iter().filter_map(|n| n.first()).map(|b| (b >> 1) & 0x3f).collect()
 }
 
 /// AVI written with global headers: the chunks need the VPS, SPS and PPS from the stream header.

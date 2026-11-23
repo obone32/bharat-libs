@@ -3,8 +3,8 @@
 #![allow(clippy::unwrap_used, clippy::type_complexity)] // a test-only encoder (the module is `cfg(test)`)
 
 use crate::llvc::{Bands3, Plane, band_rows};
-use craft_tiff::tags as t;
-use craft_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
+use bharat_tiff::tags as t;
+use bharat_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
 
 /// Exact inverse of `dequant` on representable values: `sign(v) * (|v| >> qi)`.
 pub(crate) fn quantize(v: i32, qi: u32) -> i32 {

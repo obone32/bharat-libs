@@ -1,6 +1,6 @@
 //! Which app an installer or an update works on.
 
-/// A Craft App, as its releases and installers know it.
+/// A Bharat App, as its releases and installers know it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct App {
     /// Machine name: repo, binary, package and asset stem (`photocraft`).
@@ -75,7 +75,7 @@ impl App {
         std::iter::once(self.name).chain(self.former_names.iter().copied())
     }
 
-    /// Looks up an app in the Craft App Suite catalog by its id.
+    /// Looks up an app in the Bharat App Suite catalog by its id.
     pub fn by_id(id: &str) -> Option<&'static App> {
         crate::suite::by_id(id)
     }

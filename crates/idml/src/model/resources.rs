@@ -1,7 +1,7 @@
 //! Resources: style groups and styles, swatches, inks, stroke styles, colour groups, and the
 //! preference elements.
 
-use craft_xml::{El, Local, Node};
+use bharat_xml::{El, Local, Node};
 
 use super::{Values, tidy};
 use crate::value::nums;

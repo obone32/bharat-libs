@@ -30,7 +30,7 @@ impl TestRenderer for Fake {
 
 /// A folder of this test's own under the system temp folder, removed first.
 fn temp_dir(test: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("craft-ui-snapshot-{}-{test}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("bharat-ui-snapshot-{}-{test}", std::process::id()));
     _ = std::fs::remove_dir_all(&dir);
     dir
 }
@@ -51,8 +51,8 @@ fn an_unset_or_empty_variable_is_no_folder() {
     assert_eq!(dir_from(None), None);
     assert_eq!(dir_from(Some(OsString::new())), None);
     assert_eq!(dir_from(Some("shots".into())), Some(PathBuf::from("shots")));
-    assert_eq!(snapshot_dir("CRAFT_UI_SNAPSHOT_DIR_TEST_UNSET_8F3A"), None);
-    assert_eq!(DEFAULT_DIR_VAR, "CRAFT_UI_SNAPSHOT_DIR");
+    assert_eq!(snapshot_dir("BHARAT_UI_SNAPSHOT_DIR_TEST_UNSET_8F3A"), None);
+    assert_eq!(DEFAULT_DIR_VAR, "BHARAT_UI_SNAPSHOT_DIR");
 }
 
 #[test]

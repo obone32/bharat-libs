@@ -1,5 +1,5 @@
 [package]
-name = "craft-affinity"
+name = "bharat-affinity"
 description = "Bounded reader for native Affinity documents (.af, .afdesign, .afphoto, .afpub): archive, object stream and a neutral document model"
 version.workspace = true
 edition.workspace = true

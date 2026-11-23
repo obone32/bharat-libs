@@ -2,7 +2,7 @@
 //! durations, 509 and 510).
 
 use crate::container::helpers::{first_comp, open};
-use craft_aep::Project;
+use bharat_aep::Project;
 
 #[test]
 fn two_composition_markers_in_time_order_with_label_and_duration() {
@@ -37,7 +37,7 @@ fn shape_value(name: &str, path: &[&str]) -> Option<Option<Vec<f64>>> {
         let comp = first_comp(&project);
         let layer = comp.layers().next().expect("S");
         match layer.properties()?.find(path)? {
-            craft_aep::PropNode::Property(p) => p.static_value(),
+            bharat_aep::PropNode::Property(p) => p.static_value(),
             _ => None,
         }
     })
@@ -105,15 +105,15 @@ fn shape_values_are_stored_as_shown() {
         let project = Project::new(&file).expect("project");
         let comp = first_comp(&project);
         let layer = comp.layers().next().expect("S");
-        let Some(craft_aep::PropNode::Group(g)) = layer.properties().and_then(|p| p.find(&at(&["ADBE Vectors Group", item]))) else {
+        let Some(bharat_aep::PropNode::Group(g)) = layer.properties().and_then(|p| p.find(&at(&["ADBE Vectors Group", item]))) else {
             panic!("{item}")
         };
-        assert!(g.entries().iter().all(|e| !matches!(e.node, craft_aep::PropNode::Property(p) if p.flags() == Some(1))), "{item} has a value record");
+        assert!(g.entries().iter().all(|e| !matches!(e.node, bharat_aep::PropNode::Property(p) if p.flags() == Some(1))), "{item} has a value record");
     }
 }
 
 /// The baseline option of the first style run of the first text layer.
-fn script_of(name: &str) -> Option<craft_aep::FontBaseline> {
+fn script_of(name: &str) -> Option<bharat_aep::FontBaseline> {
     Some({
         let bytes = crate::common::try_fixture(name)?;
         let file = open(&bytes);
@@ -128,7 +128,7 @@ fn script_of(name: &str) -> Option<craft_aep::FontBaseline> {
 
 #[test]
 fn superscript_and_subscript_are_style_slot_13() {
-    use craft_aep::FontBaseline;
+    use bharat_aep::FontBaseline;
     // The character state the corpus was made in is superscript (526, and 243, 517).
     assert_eq!(skip!(script_of("526-text-point-HHHH-default.aep")), FontBaseline::Superscript);
     assert_eq!(skip!(script_of("243-text-multiline-A-CR-B.aep")), FontBaseline::Superscript);
@@ -149,7 +149,7 @@ fn a_wrapping_box_text() {
     assert_eq!(doc.style_runs[0].font_size, 100.0);
 }
 
-fn layer_l<T>(name: &str, f: impl Fn(&craft_aep::Layer<'_, '_>) -> T) -> Option<T> {
+fn layer_l<T>(name: &str, f: impl Fn(&bharat_aep::Layer<'_, '_>) -> T) -> Option<T> {
     Some({
         let bytes = crate::common::try_fixture(name)?;
         let file = open(&bytes);

@@ -35,7 +35,7 @@ jobs:
       - name: Install ACL tools
         run: sudo apt-get update && sudo apt-get install -y acl
       - name: Check inherited Linux ACLs
-        run: cargo test -p craft-atomic --locked -- --ignored --nocapture
+        run: cargo test -p bharat-atomic --locked -- --ignored --nocapture
 
   wasm:
     name: Atomic WASM
@@ -45,5 +45,5 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - run: cargo check -p craft-atomic --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-atomic --target wasm32-unknown-unknown
 

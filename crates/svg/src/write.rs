@@ -1,11 +1,11 @@
 //! Writes SVG documents: the declaration and root element, elements and attributes with XML
-//! escaping (through `craft-xml`), path data and numbers.
+//! escaping (through `bharat-xml`), path data and numbers.
 //!
 //! The caller decides what to draw and how the file is laid out; this module makes what it
 //! writes well-formed. Attribute values and text are escaped, so no value can inject markup.
 //!
 //! ```
-//! use craft_svg::write::{SvgWriter, num, path_data};
+//! use bharat_svg::write::{SvgWriter, num, path_data};
 //!
 //! let mut path = kurbo::BezPath::new();
 //! path.move_to((1.0, 2.0));
@@ -24,7 +24,7 @@
 
 use std::fmt::{self, Display, Write as _};
 
-pub use craft_xml::Tag;
+pub use bharat_xml::Tag;
 use kurbo::{BezPath, PathEl, Point};
 
 /// The SVG namespace.
@@ -124,7 +124,7 @@ impl Scene {
     }
 }
 
-fn write_attributes<'a>(mut tag: craft_xml::Tag<'a>, attributes: &'a [Attribute]) -> craft_xml::Tag<'a> {
+fn write_attributes<'a>(mut tag: bharat_xml::Tag<'a>, attributes: &'a [Attribute]) -> bharat_xml::Tag<'a> {
     // SVG consumers disagree about duplicate attributes; make the last supplied value win.
     for (index, attribute) in attributes.iter().enumerate() {
         if attributes[index + 1..].iter().any(|later| later.name == attribute.name) {
@@ -266,7 +266,7 @@ pub fn path_data_with_format<T: Display>(path: &BezPath, mut format: impl FnMut(
 /// Whitespace between elements is the caller's: nothing is added unless [`SvgWriter::line`]
 /// is called.
 #[derive(Clone, Debug, Default)]
-pub struct SvgWriter(craft_xml::Writer);
+pub struct SvgWriter(bharat_xml::Writer);
 
 // A subset ends with `] S? >`; quoted entity values, comments and PIs may contain that text.
 // Scan once without allocations; malformed unterminated constructs remain the caller's error.
@@ -307,7 +307,7 @@ fn closes_internal_subset(internal: &str) -> bool {
 impl SvgWriter {
     /// A document: starts with the XML declaration.
     pub fn new() -> SvgWriter {
-        let mut xml = craft_xml::Writer::new();
+        let mut xml = bharat_xml::Writer::new();
         xml.decl(false);
         SvgWriter(xml)
     }
@@ -337,7 +337,7 @@ impl SvgWriter {
     /// or `internal` closes the subset outside a quoted value, comment or processing instruction.
     /// The caller still supplies valid DTD declarations; this is not a DTD validator.
     pub fn doctype_internal(&mut self, name: &str, internal: &str, newline: &str) {
-        if !craft_xml::is_name(name) || closes_internal_subset(internal) {
+        if !bharat_xml::is_name(name) || closes_internal_subset(internal) {
             return;
         }
         let mut out = format!("<!DOCTYPE {name} [");

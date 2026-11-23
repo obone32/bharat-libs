@@ -124,7 +124,7 @@ fn orphaned_native_mail_merge_bookkeeping_refuses_the_save() {
     const ORIGINAL: &str = "wordcraft:settings.orig";
     const RELATIONSHIPS: &str = "wordcraft:settings.mailMerge.rels";
     let source = fixture(&merge(), &source_rels());
-    let imported = craft_docx::read(&source).unwrap();
+    let imported = bharat_docx::read(&source).unwrap();
     assert!(imported.passthrough.contains_key(RELATIONSHIPS));
     for original in [None, Some(format!(r#"<w:settings xmlns:w="{W}"><w:doNotAutoCompressPictures/></w:settings>"#))] {
         let mut doc = imported.clone();
@@ -133,28 +133,28 @@ fn orphaned_native_mail_merge_bookkeeping_refuses_the_save() {
         } else {
             doc.passthrough.remove(ORIGINAL);
         }
-        let error = craft_docx::write(&doc).expect_err("orphaned native mail-merge state must refuse saving");
+        let error = bharat_docx::write(&doc).expect_err("orphaned native mail-merge state must refuse saving");
         assert!(error.to_string().contains("mail merge"), "{error}");
         // Without retained mail-merge bookkeeping, ordinary settings remain saveable.
         let mut cleared = doc;
         cleared.passthrough.remove(RELATIONSHIPS);
-        let saved = craft_docx::write(&cleared).unwrap();
+        let saved = bharat_docx::write(&cleared).unwrap();
         assert!(elements(&part(&saved, "word/settings.xml"), "w:mailMerge").is_empty());
     }
-    assert_sources(&craft_docx::write(&imported).unwrap());
+    assert_sources(&bharat_docx::write(&imported).unwrap());
 }
 
 #[test]
 fn mail_merge_sources_survive_edit_and_two_docx_saves() {
     let original = fixture(&merge(), &source_rels());
     assert_sources(&original);
-    let mut doc = craft_docx::read(&original).unwrap();
-    doc.body.push(craft_wordmodel::Block::Para(craft_wordmodel::Paragraph::with_text("Local edit retained.", Default::default())).into());
+    let mut doc = bharat_docx::read(&original).unwrap();
+    doc.body.push(bharat_wordmodel::Block::Para(bharat_wordmodel::Paragraph::with_text("Local edit retained.", Default::default())).into());
     for _ in 0..2 {
-        let saved = craft_docx::write(&doc).unwrap();
+        let saved = bharat_docx::write(&doc).unwrap();
         assert_sources(&saved);
-        doc = craft_docx::read(&saved).unwrap();
-        assert!(doc.plain_text(craft_wordmodel::StoryRef::Body).contains("Local edit retained."));
+        doc = bharat_docx::read(&saved).unwrap();
+        assert!(doc.plain_text(bharat_wordmodel::StoryRef::Body).contains("Local edit retained."));
     }
 }
 
@@ -170,10 +170,10 @@ fn unusable_mail_merge_sources_refuse_the_save() {
         ("malformed", "<Relationship".to_string()),
     ];
     for (case, rels) in cases {
-        let doc = craft_docx::read(&fixture(&merge(), &rels)).unwrap();
-        let err = craft_docx::write(&doc).expect_err(case);
+        let doc = bharat_docx::read(&fixture(&merge(), &rels)).unwrap();
+        let err = bharat_docx::write(&doc).expect_err(case);
         assert!(err.to_string().contains("mail merge"), "{case}: {err}");
-        assert!(doc.plain_text(craft_wordmodel::StoryRef::Body).contains("Original letter."));
+        assert!(doc.plain_text(bharat_wordmodel::StoryRef::Body).contains("Original letter."));
     }
 }
 
@@ -181,10 +181,10 @@ fn unusable_mail_merge_sources_refuse_the_save() {
 fn unrelated_relationships_are_not_carried_and_shared_sources_reuse_an_id() {
     let rels =
         format!(r#"{}<Relationship Id="unused" Type="{R}/image" Target="https://example.invalid/unrelated" TargetMode="External"/>"#, source_rels());
-    let doc = craft_docx::read(&fixture(&merge(), &rels)).unwrap();
-    assert_sources(&craft_docx::write(&doc).unwrap());
-    let doc = craft_docx::read(&fixture(&merge().replace("rId2", "rId1"), &rels)).unwrap();
-    let saved = craft_docx::write(&doc).unwrap();
+    let doc = bharat_docx::read(&fixture(&merge(), &rels)).unwrap();
+    assert_sources(&bharat_docx::write(&doc).unwrap());
+    let doc = bharat_docx::read(&fixture(&merge().replace("rId2", "rId1"), &rels)).unwrap();
+    let saved = bharat_docx::write(&doc).unwrap();
     let settings = part(&saved, "word/settings.xml");
     assert_eq!(elements(&settings, "w:dataSource")[0]["r:id"], elements(&settings, "w:src")[0]["r:id"]);
     let rels = elements(&part(&saved, "word/_rels/settings.xml.rels"), "Relationship");
@@ -202,10 +202,10 @@ fn header_sources_and_prefix_aliases_survive() {
         r#"{}<Relationship Id="header" Type="{R}/mailMergeHeaderSource" Target="file:///__wordcraft_missing_source__/columns.csv" TargetMode="External"/>"#,
         source_rels()
     );
-    let mut doc = craft_docx::read(&fixture(&merge, &rels)).unwrap();
+    let mut doc = bharat_docx::read(&fixture(&merge, &rels)).unwrap();
     doc.settings.link_styles = true;
     for _ in 0..2 {
-        let saved = craft_docx::write(&doc).unwrap();
+        let saved = bharat_docx::write(&doc).unwrap();
         let settings = part(&saved, "word/settings.xml");
         assert!(settings.find("w:linkStyles").unwrap() < settings.find("<w:mailMerge").unwrap());
         let header_id = &elements(&settings, "w:headerSource")[0]["r:id"];
@@ -216,15 +216,15 @@ fn header_sources_and_prefix_aliases_survive() {
         assert_eq!(header["TargetMode"], "External");
         let src_id = &elements(&settings, "w:src")[0]["r:id"];
         assert_eq!(rels.iter().find(|r| &r["Id"] == src_id).unwrap()["Target"], ODSO);
-        doc = craft_docx::read(&saved).unwrap();
+        doc = bharat_docx::read(&saved).unwrap();
     }
 }
 
 #[test]
 fn unrecognised_mail_merge_markup_is_not_silently_dropped() {
     let merge = merge().replace("</w:mailMerge>", "<x:extra xmlns:x=\"urn:synthetic:unsupported\"/></w:mailMerge>");
-    let doc = craft_docx::read(&fixture(&merge, &source_rels())).unwrap();
-    assert!(craft_docx::write(&doc).unwrap_err().to_string().contains("unrecognised namespace"));
+    let doc = bharat_docx::read(&fixture(&merge, &source_rels())).unwrap();
+    assert!(bharat_docx::write(&doc).unwrap_err().to_string().contains("unrecognised namespace"));
 }
 
 #[test]
@@ -235,16 +235,16 @@ fn oversized_mail_merge_relationships_keep_owned_settings() {
     for rels in [count_limit, size_limit] {
         let rels = format!("{}{rels}", source_rels());
         let referenced = format!("<w:trackRevisions/>{}", merge());
-        let doc = craft_docx::read(&fixture(&referenced, &rels)).unwrap();
+        let doc = bharat_docx::read(&fixture(&referenced, &rels)).unwrap();
         assert!(doc.settings.track_changes);
-        assert!(craft_docx::write(&doc).unwrap_err().to_string().contains("mail merge"));
-        let mut doc = craft_docx::read(&fixture(settings, &rels)).unwrap();
+        assert!(bharat_docx::write(&doc).unwrap_err().to_string().contains("mail merge"));
+        let mut doc = bharat_docx::read(&fixture(settings, &rels)).unwrap();
         for _ in 0..2 {
             assert!(doc.settings.track_changes, "relationship limits must not reset Track Changes");
             assert!(doc.settings.auto_hyphenation, "relationship limits must not reset hyphenation");
-            let saved = craft_docx::write(&doc).unwrap();
+            let saved = bharat_docx::write(&doc).unwrap();
             assert_eq!(elements(&part(&saved, "word/settings.xml"), "w:mailMerge").len(), 1);
-            doc = craft_docx::read(&saved).unwrap();
+            doc = bharat_docx::read(&saved).unwrap();
         }
     }
 }
@@ -267,8 +267,8 @@ fn source_elements_require_ids_and_their_own_relationship_types() {
         ("header reuses ODSO source ID", merge().replace("<w:odso>", "<w:headerSource r:id=\"rId2\"/><w:odso>"), valid),
     ];
     for (case, settings, rels) in cases {
-        let doc = craft_docx::read(&fixture(&settings, &rels)).unwrap();
-        let err = craft_docx::write(&doc).expect_err(case);
+        let doc = bharat_docx::read(&fixture(&settings, &rels)).unwrap();
+        let err = bharat_docx::write(&doc).expect_err(case);
         assert!(err.to_string().contains("mail merge"), "{case}: {err}");
     }
 }
@@ -284,9 +284,9 @@ fn aliased_mail_merge_without_source_ids_is_written_once() {
             // is merged rather than replaced. The child declares its own namespace alias.
             let unrelated = r#"<x:mailMerge xmlns:x="urn:original:unrelated"/>"#;
             let settings = format!("{merge}<w:doNotAutoCompressPictures/>{unrelated}");
-            let mut doc = craft_docx::read(&fixture(&settings, "")).unwrap();
+            let mut doc = bharat_docx::read(&fixture(&settings, "")).unwrap();
             for _ in 0..2 {
-                let saved = craft_docx::write(&doc).unwrap();
+                let saved = bharat_docx::write(&doc).unwrap();
                 let settings = part(&saved, "word/settings.xml");
                 let mut reader = quick_xml::NsReader::from_str(&settings);
                 let mut count = 0;
@@ -304,7 +304,7 @@ fn aliased_mail_merge_without_source_ids_is_written_once() {
                 assert_eq!(elements(&settings, "w:mainDocumentType")[0]["w:val"], "formLetters");
                 assert!(settings.contains("<w:doNotAutoCompressPictures/>"));
                 assert!(settings.contains(unrelated));
-                doc = craft_docx::read(&saved).unwrap();
+                doc = bharat_docx::read(&saved).unwrap();
             }
         }
     }
@@ -330,9 +330,9 @@ fn strict_mail_merge_settings_keep_consistent_namespaces_through_two_saves() {
             output.start_file(name, zip::write::SimpleFileOptions::default()).unwrap();
             output.write_all(xml.as_bytes()).unwrap();
         }
-        let mut doc = craft_docx::read(&output.finish().unwrap().into_inner()).unwrap();
+        let mut doc = bharat_docx::read(&output.finish().unwrap().into_inner()).unwrap();
         for _ in 0..2 {
-            let saved = craft_docx::write(&doc).unwrap();
+            let saved = bharat_docx::write(&doc).unwrap();
             let settings = part(&saved, "word/settings.xml");
             // An aliased root takes the existing generated-part fallback, which is Transitional.
             let (expected_w, expected_r) = if aliases { (W, R) } else { (SW, SR) };
@@ -374,7 +374,7 @@ fn strict_mail_merge_settings_keep_consistent_namespaces_through_two_saves() {
                 assert!(rel["Type"].starts_with(expected_r) || rel["Type"] == format!("{R}/attachedTemplate"));
                 assert_eq!(rel["TargetMode"], "External");
             }
-            doc = craft_docx::read(&saved).unwrap();
+            doc = bharat_docx::read(&saved).unwrap();
         }
     }
 }
@@ -384,13 +384,13 @@ fn foreign_mail_merge_spelling_is_preserved_with_and_without_a_real_merge() {
     let foreign = r#"<w:mailMerge xmlns:w="urn:original:unrelated"><w:opaque w:value="Retain extension."/></w:mailMerge>"#;
     for real in ["".to_string(), merge()] {
         for settings in [format!("{foreign}{real}"), format!("{real}{foreign}")] {
-            let mut doc = craft_docx::read(&fixture(&settings, &source_rels())).unwrap();
+            let mut doc = bharat_docx::read(&fixture(&settings, &source_rels())).unwrap();
             for _ in 0..2 {
-                let saved = craft_docx::write(&doc).unwrap();
+                let saved = bharat_docx::write(&doc).unwrap();
                 let settings = part(&saved, "word/settings.xml");
                 assert!(settings.contains(foreign), "foreign extension lost: {settings}");
                 assert_eq!(settings.matches("<w:query ").count(), usize::from(!real.is_empty()));
-                doc = craft_docx::read(&saved).unwrap();
+                doc = bharat_docx::read(&saved).unwrap();
             }
         }
     }
@@ -398,30 +398,30 @@ fn foreign_mail_merge_spelling_is_preserved_with_and_without_a_real_merge() {
 
 #[test]
 fn explicit_opt_out_removes_unusable_mail_merge_with_aliased_names() {
-    let options = craft_docx::WriteOptions { discard_unusable_mail_merge: true };
+    let options = bharat_docx::WriteOptions { discard_unusable_mail_merge: true };
     for unusable in
         [format!(r#"<x:mailMerge xmlns:x="{W}"><x:dataSource/></x:mailMerge>"#), format!(r#"<mailMerge xmlns="{W}"><dataSource/></mailMerge>"#)]
     {
         let foreign = r#"<x:mailMerge xmlns:x="urn:original:unrelated"/>"#;
-        let doc = craft_docx::read(&fixture(&format!("{unusable}{foreign}"), "")).unwrap();
-        assert!(matches!(craft_docx::write(&doc), Err(craft_docx::DocxError::MailMerge(_))));
+        let doc = bharat_docx::read(&fixture(&format!("{unusable}{foreign}"), "")).unwrap();
+        assert!(matches!(bharat_docx::write(&doc), Err(bharat_docx::DocxError::MailMerge(_))));
 
-        let saved = craft_docx::write_as_with_options(&doc, craft_docx::Flavor::Document, options).unwrap();
+        let saved = bharat_docx::write_as_with_options(&doc, bharat_docx::Flavor::Document, options).unwrap();
         let settings = part(&saved, "word/settings.xml");
         assert!(settings.contains(foreign), "foreign extension lost: {settings}");
         assert!(!settings.contains("dataSource"), "unusable settings kept: {settings}");
-        assert!(craft_docx::write(&craft_docx::read(&saved).unwrap()).is_ok());
+        assert!(bharat_docx::write(&bharat_docx::read(&saved).unwrap()).is_ok());
     }
 }
 
 #[test]
 fn explicit_opt_out_saves_the_edit_and_only_discards_unusable_mail_merge() {
     let broken = source_rels().replace(r#"Id="rId1""#, r#"Id="unused""#);
-    let mut doc = craft_docx::read(&fixture(&merge(), &broken)).unwrap();
-    doc.insert_text(&craft_wordmodel::Pos::body(0, 0), "Edited. ", &craft_wordmodel::CharProps::default()).unwrap();
-    assert!(matches!(craft_docx::write(&doc), Err(craft_docx::DocxError::MailMerge(_))));
-    let options = craft_docx::WriteOptions { discard_unusable_mail_merge: true };
-    let saved = craft_docx::write_as_with_options(&doc, craft_docx::Flavor::Document, options).unwrap();
+    let mut doc = bharat_docx::read(&fixture(&merge(), &broken)).unwrap();
+    doc.insert_text(&bharat_wordmodel::Pos::body(0, 0), "Edited. ", &bharat_wordmodel::CharProps::default()).unwrap();
+    assert!(matches!(bharat_docx::write(&doc), Err(bharat_docx::DocxError::MailMerge(_))));
+    let options = bharat_docx::WriteOptions { discard_unusable_mail_merge: true };
+    let saved = bharat_docx::write_as_with_options(&doc, bharat_docx::Flavor::Document, options).unwrap();
     let settings = part(&saved, "word/settings.xml");
     assert!(elements(&settings, "w:mailMerge").is_empty());
     let template = elements(&settings, "w:attachedTemplate");
@@ -434,12 +434,12 @@ fn explicit_opt_out_saves_the_edit_and_only_discards_unusable_mail_merge() {
     for field in ["Name", "Company", "Reference"] {
         assert!(body.contains(&format!("MERGEFIELD {field}")));
     }
-    let reopened = craft_docx::read(&saved).unwrap();
-    assert!(craft_docx::write(&reopened).is_ok());
-    let flat = String::from_utf8(craft_docx::write_flat_with_options(&doc, options).unwrap()).unwrap();
+    let reopened = bharat_docx::read(&saved).unwrap();
+    assert!(bharat_docx::write(&reopened).is_ok());
+    let flat = String::from_utf8(bharat_docx::write_flat_with_options(&doc, options).unwrap()).unwrap();
     assert!(!flat.contains("w:mailMerge"));
     assert!(flat.contains(TEMPLATE));
 
-    let valid = craft_docx::read(&fixture(&merge(), &source_rels())).unwrap();
-    assert_sources(&craft_docx::write_as_with_options(&valid, craft_docx::Flavor::Document, options).unwrap());
+    let valid = bharat_docx::read(&fixture(&merge(), &source_rels())).unwrap();
+    assert_sources(&bharat_docx::write_as_with_options(&valid, bharat_docx::Flavor::Document, options).unwrap());
 }

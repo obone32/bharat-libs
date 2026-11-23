@@ -1,5 +1,5 @@
 [package]
-name = "craft-dialogs"
+name = "bharat-dialogs"
 description = "Native file and message dialogs that never block the event loop: queued requests, shown at the end of the frame, answered on a later frame."
 version.workspace = true
 edition.workspace = true

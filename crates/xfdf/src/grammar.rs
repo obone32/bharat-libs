@@ -2,7 +2,7 @@
 
 use std::fmt::Write as _;
 
-use craft_xml::esc_attr as esc;
+use bharat_xml::esc_attr as esc;
 
 use crate::{check_form_xml_depth, el_text, parse_form_xml, xml_nesting_depth};
 
@@ -218,7 +218,7 @@ pub fn write_format_attrs(fmt: &AnnotFormat, is_free_text: bool, attrs: &mut Str
 }
 
 /// Parse XFDF 3.0 annotation formatting attributes from an XML element.
-pub fn parse_format_attrs(node: &craft_xml::El) -> AnnotFormat {
+pub fn parse_format_attrs(node: &bharat_xml::El) -> AnnotFormat {
     let num = |a: &str| node.attr(a).and_then(|v| v.trim().parse::<f64>().ok()).filter(|v| v.is_finite());
     let style = node.attr("style").map(str::trim);
     let dashes = node.attr("dashes").map(parse_csv).filter(|v| !v.is_empty() && v.iter().all(|x| *x >= 0.0) && v.iter().any(|x| *x > 0.0));
@@ -306,17 +306,17 @@ pub fn rich_text_element(rc: &str) -> Option<String> {
 /// Recursively extract plain text from a `<contents-richtext>` element, a `\r`-separated line
 /// per paragraph or `<br>` (what `/Contents` gets when `<contents-richtext>` comes without
 /// `<contents>`). Unlike [`direct_text`], this walks descendant elements.
-pub fn rich_plain(node: &craft_xml::El) -> String {
-    fn walk(node: &craft_xml::El, out: &mut String) {
+pub fn rich_plain(node: &bharat_xml::El) -> String {
+    fn walk(node: &bharat_xml::El, out: &mut String) {
         for n in &node.children {
             match n {
-                craft_xml::Node::El(el) => {
+                bharat_xml::Node::El(el) => {
                     if el.local() == "br" || (matches!(el.local(), "p" | "div" | "li") && !out.is_empty() && !out.ends_with('\r')) {
                         out.push('\r');
                     }
                     walk(el, out);
                 }
-                craft_xml::Node::Text(t) if !(t.trim().is_empty() && t.contains('\n')) => {
+                bharat_xml::Node::Text(t) if !(t.trim().is_empty() && t.contains('\n')) => {
                     out.push_str(&t.replace("\r\n", "\r").replace('\n', "\r"));
                 }
                 _ => {}
@@ -330,7 +330,7 @@ pub fn rich_plain(node: &craft_xml::El) -> String {
 
 /// The one element `markup` (cut out of `rich`, a `<contents-richtext>`) as an XML
 /// document of its own: the namespaces it inherits from the XFDF around it are declared on it.
-pub fn standalone(el: &craft_xml::El, ns: &[(String, String)]) -> String {
+pub fn standalone(el: &bharat_xml::El, ns: &[(String, String)]) -> String {
     let mut clone = (*el).clone();
     let markup = clone.to_xml();
     if let Some((_, uri)) = ns.iter().rfind(|(p, _)| p.is_empty())
@@ -359,7 +359,7 @@ pub fn is_xfdf_comments(text: &str) -> bool {
 }
 
 /// Every comment element of an XFDF text, in order (none when it is no XFDF).
-pub fn with_comment_nodes(text: &str, mut f: impl FnMut(&craft_xml::El)) {
+pub fn with_comment_nodes(text: &str, mut f: impl FnMut(&bharat_xml::El)) {
     if check_form_xml_depth(text).is_err() {
         return;
     }
@@ -367,7 +367,7 @@ pub fn with_comment_nodes(text: &str, mut f: impl FnMut(&craft_xml::El)) {
     if root.local() != "xfdf" {
         return;
     }
-    let Some(annots) = root.child(craft_xml::Local("annots")) else { return };
+    let Some(annots) = root.child(bharat_xml::Local("annots")) else { return };
     for node in annots.elements() {
         if SUBTYPES.iter().any(|(_, t)| *t == node.local().to_ascii_lowercase()) {
             f(node);
@@ -389,7 +389,7 @@ pub fn format_color_attr(name: &str, color: &[f64], out: &mut String) {
 
 /// Concatenate only the direct text children of `node`, without recursing into child elements
 /// (unlike [`rich_plain`]).
-pub fn direct_text(node: &craft_xml::El) -> String {
+pub fn direct_text(node: &bharat_xml::El) -> String {
     el_text(node)
 }
 

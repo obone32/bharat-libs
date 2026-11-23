@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
-//! Spreadsheet vocabulary shared by the spreadsheet format crates (`craft-xls`, `craft-xlsx`,
-//! `craft-ods`): cell positions and their A1 text, cell values and error values, sheet-name
+//! Spreadsheet vocabulary shared by the spreadsheet format crates (`bharat-xls`, `bharat-xlsx`,
+//! `bharat-ods`): cell positions and their A1 text, cell values and error values, sheet-name
 //! quoting, the cell formatting enumerations, Excel's built-in number formats and its indexed
 //! colour palette.
 //!

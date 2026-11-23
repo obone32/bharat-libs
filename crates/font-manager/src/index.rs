@@ -1,13 +1,13 @@
-//! The font indexes (aiongg/craft-font-index: Google Fonts, Noto, and sources the user adds), as
-//! craft-font-store reads them, and the categories the catalogue filters by.
+//! The font indexes (aiongg/bharat-font-index: Google Fonts, Noto, and sources the user adds), as
+//! bharat-font-store reads them, and the categories the catalogue filters by.
 //!
 //! [`Index::families`] holds every source's families, sorted by name; a family's source is
 //! [`Index::source_of`] (its name, and whether it is curated: [`Family::is_curated`] is false for
 //! a source the user added). [`Index::problems`] lists the sources that couldn't be loaded.
 
-pub use craft_font_store::{Family, FontFile, FontSource, GOOGLE_FONTS, Index, IndexError, Language, Script, SourceProblem};
+pub use bharat_font_store::{Family, FontFile, FontSource, GOOGLE_FONTS, Index, IndexError, Language, Script, SourceProblem};
 
-/// The pinned built-in indexes compiled into craft-font-store, read without a request.
+/// The pinned built-in indexes compiled into bharat-font-store, read without a request.
 pub fn bundled() -> Result<Index, IndexError> {
     Index::bundled()
 }

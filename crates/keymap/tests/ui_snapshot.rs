@@ -1,17 +1,17 @@
 #![cfg(feature = "snapshot")]
 //! Screenshots of the Keyboard Shortcuts dialog for review, not a golden comparison. With
-//! `CRAFT_KEYMAP_SNAPSHOT_DIR` set, writes PNGs of a few states in light and dark at 1× and 2×;
+//! `BHARAT_KEYMAP_SNAPSHOT_DIR` set, writes PNGs of a few states in light and dark at 1× and 2×;
 //! without it the test does nothing.
 //!
-//! `CRAFT_KEYMAP_SNAPSHOT_DIR=/tmp/shots cargo test -p craft-keymap --features snapshot --test ui_snapshot`
+//! `BHARAT_KEYMAP_SNAPSHOT_DIR=/tmp/shots cargo test -p bharat-keymap --features snapshot --test ui_snapshot`
 //!
-//! Uses the same hash-verified `CRAFT_FONTS_DIR` input as ui_dialog (see README.md).
+//! Uses the same hash-verified `BHARAT_FONTS_DIR` input as ui_dialog (see README.md).
 //! Fonts are installed before the first layout pass; missing glyphs remain errors.
 
 use std::path::PathBuf;
 
-use craft_keymap::ui::{DialogState, English, Options, ShortcutsDialog, Text};
-use craft_keymap::{ContextRule, Flavor, ForeignEntry, ForeignKey, ForeignSet, ImportOptions, Keymap, Overrides, Platform, Profiles};
+use bharat_keymap::ui::{DialogState, English, Options, ShortcutsDialog, Text};
+use bharat_keymap::{ContextRule, Flavor, ForeignEntry, ForeignKey, ForeignSet, ImportOptions, Keymap, Overrides, Platform, Profiles};
 use egui::{Key as EguiKey, Modifiers, Theme, Vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
@@ -151,13 +151,13 @@ const CASES: &[Case] = &[
     Case::new("review", 1000.0, 640.0, foreign_review).sets(),
     Case::new("long", 1000.0, 640.0, |h| {
         let state = &mut h.state_mut().state;
-        state.select(&craft_keymap::CommandRef::from("object.distribute"));
+        state.select(&bharat_keymap::CommandRef::from("object.distribute"));
         h.run();
     })
     .sets()
     .long(),
     Case::new("long-narrow", 560.0, 640.0, |h| {
-        h.state_mut().state.select(&craft_keymap::CommandRef::from("object.distribute"));
+        h.state_mut().state.select(&bharat_keymap::CommandRef::from("object.distribute"));
         h.run();
     })
     .sets()
@@ -174,7 +174,7 @@ const CASES: &[Case] = &[
     Case::new("rtl-keyboard", 1100.0, 720.0, |h| click(h, "L: Loop (Timeline)")).keyboard().words(Words::Rtl),
     Case::new("rtl-review", 1000.0, 640.0, foreign_review).sets().words(Words::Rtl),
     Case::new("pseudo", 1100.0, 720.0, |h| {
-        h.state_mut().state.select(&craft_keymap::CommandRef::from("file.save"));
+        h.state_mut().state.select(&bharat_keymap::CommandRef::from("file.save"));
         h.run();
     })
     .sets()
@@ -182,7 +182,7 @@ const CASES: &[Case] = &[
     .long()
     .words(Words::Pseudo),
     Case::new("pseudo-narrow", 560.0, 640.0, |h| {
-        h.state_mut().state.select(&craft_keymap::CommandRef::from("object.distribute"));
+        h.state_mut().state.select(&bharat_keymap::CommandRef::from("object.distribute"));
         h.run();
     })
     .sets()
@@ -191,16 +191,16 @@ const CASES: &[Case] = &[
 ];
 
 #[test]
-/// Write review screenshots when `CRAFT_KEYMAP_SNAPSHOT_DIR` is set.
+/// Write review screenshots when `BHARAT_KEYMAP_SNAPSHOT_DIR` is set.
 ///
-/// For every case whose name starts with `CRAFT_KEYMAP_SNAPSHOT_ONLY`, renders light and dark at
+/// For every case whose name starts with `BHARAT_KEYMAP_SNAPSHOT_ONLY`, renders light and dark at
 /// 1× and 2× with the pinned fonts, optional sets and long labels, after running the case action.
 /// Without the directory variable the test does nothing; these are not golden comparisons.
 fn dialog_screenshots() {
-    let Some(dir) = std::env::var_os("CRAFT_KEYMAP_SNAPSHOT_DIR").map(PathBuf::from) else { return };
+    let Some(dir) = std::env::var_os("BHARAT_KEYMAP_SNAPSHOT_DIR").map(PathBuf::from) else { return };
     std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{}: {e}", dir.display()));
-    // `CRAFT_KEYMAP_SNAPSHOT_ONLY=keyboard` renders only the cases whose name starts with it.
-    let only = std::env::var("CRAFT_KEYMAP_SNAPSHOT_ONLY").unwrap_or_default();
+    // `BHARAT_KEYMAP_SNAPSHOT_ONLY=keyboard` renders only the cases whose name starts with it.
+    let only = std::env::var("BHARAT_KEYMAP_SNAPSHOT_ONLY").unwrap_or_default();
     for case in CASES.iter().filter(|c| c.name.starts_with(&only)) {
         for (theme_name, theme) in [("light", Theme::Light), ("dark", Theme::Dark)] {
             for scale in [1.0, 2.0] {

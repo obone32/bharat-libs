@@ -1,4 +1,4 @@
-# craft-pst
+# bharat-pst
 
 A reader of Outlook personal folders files (`.pst`), written from Microsoft's published
 specification, [MS-PST], and nothing else. No dependencies, no `unsafe`.
@@ -18,12 +18,12 @@ specification, [MS-PST], and nothing else. No dependencies, no `unsafe`.
   `Message::left_out`).
 
 ```rust
-use craft_pst::Pst;
+use bharat_pst::Pst;
 
 let mut pst = Pst::open(std::fs::File::open(path)?)?;
 for entry in pst.walk_folders()?.folders {
     for item in pst.items(entry.folder.id)?.items {
-        let message = pst.message(&craft_pst::MessageRef::item(item.id))?;
+        let message = pst.message(&bharat_pst::MessageRef::item(item.id))?;
     }
 }
 ```

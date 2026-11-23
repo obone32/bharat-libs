@@ -791,7 +791,7 @@ mod tests {
     }
 
     /// A dialogue cleanup chain on 60 s of stereo 48 kHz.
-    /// `cargo test --release -p craft-audio-dsp dialogue_chain_realtime -- --ignored --nocapture`
+    /// `cargo test --release -p bharat-audio-dsp dialogue_chain_realtime -- --ignored --nocapture`
     #[test]
     #[ignore]
     fn dialogue_chain_realtime() {

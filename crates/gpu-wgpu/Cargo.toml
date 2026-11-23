@@ -1,6 +1,6 @@
 [package]
-name = "craft-gpu-wgpu"
-description = "craft-gpu backend using wgpu (WebGPU on wasm32, native APIs on desktop)"
+name = "bharat-gpu-wgpu"
+description = "bharat-gpu backend using wgpu (WebGPU on wasm32, native APIs on desktop)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,7 +10,7 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-craft-gpu = { workspace = true }
+bharat-gpu = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wgpu = { workspace = true, features = ["webgpu"] }
@@ -29,7 +29,7 @@ native-gles = ["wgpu/gles"]
 
 [dev-dependencies]
 pollster = { workspace = true }
-# Real-backend test (crates/gpu-wgpu/src/tests.rs): dispatches craft-gpu-providers' CPU-stand-in
-# providers against a real WgpuContext, not just craft-gpu-null, per RFC-0022 acceptance
-# requirement 2. Dev-only: no cycle (craft-gpu-providers never depends on craft-gpu-wgpu).
-craft-gpu-providers = { workspace = true }
+# Real-backend test (crates/gpu-wgpu/src/tests.rs): dispatches bharat-gpu-providers' CPU-stand-in
+# providers against a real WgpuContext, not just bharat-gpu-null, per RFC-0022 acceptance
+# requirement 2. Dev-only: no cycle (bharat-gpu-providers never depends on bharat-gpu-wgpu).
+bharat-gpu-providers = { workspace = true }

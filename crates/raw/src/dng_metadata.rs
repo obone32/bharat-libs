@@ -1,13 +1,13 @@
 //! Bounded DNG processing and camera metadata, before application rendering.
 //!
-//! This is the [`crate::dng_lines`] companion on the same `craft_tiff::classic` IFDs. The full
-//! reader's `dng::color_data` works on `craft_tiff::Tiff` and returns the values it will render
+//! This is the [`crate::dng_lines`] companion on the same `bharat_tiff::classic` IFDs. The full
+//! reader's `dng::color_data` works on `bharat_tiff::Tiff` and returns the values it will render
 //! with (raw IFD first, implausible or singular values dropped, `BaselineExposureOffset` added).
 //! This reader returns the tags as written, IFD 0 first, and fails on a value outside the file,
 //! so a damaged file does not silently lose its white balance. For a well-formed file both read the
 //! same matrices and neutral (see `tests/it/dng_metadata.rs`).
 use crate::dng_lines::{self, Error, PHOTOMETRIC_CFA, Result};
-use craft_tiff::classic::{Entry, Ifd, Tiff, tags};
+use bharat_tiff::classic::{Entry, Ifd, Tiff, tags};
 type M3 = [[f64; 3]; 3];
 type V3 = [f64; 3];
 /// Camera-plane colour filter pattern.
@@ -193,7 +193,7 @@ impl Metadata<'_, '_> {
             .unwrap_or_default();
         let frame_rate = self.main_tag(tags::FRAME_RATE).and_then(|e| {
             let b = self.tiff.value_bytes(e).ok()?;
-            if !matches!(e.ty, craft_tiff::classic::Type::SRational | craft_tiff::classic::Type::Rational) {
+            if !matches!(e.ty, bharat_tiff::classic::Type::SRational | bharat_tiff::classic::Type::Rational) {
                 return None;
             }
             let n = i64::from(self.tiff.u32_of(b.get(0..4)?.try_into().ok()?) as i32);

@@ -20,7 +20,7 @@ mod tables;
 
 use std::ops::{Add, Mul};
 
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 use self::bitstream::{ChannelData, Frame};
 use self::freq::FreqTables;
@@ -383,7 +383,7 @@ pub(crate) const TEST_HEADER: Header = Header {
 /// `noise(k)`.
 #[cfg(test)]
 pub(crate) fn test_payload(rate: u32, env: impl Fn(usize) -> i32, noise: impl Fn(usize) -> i32) -> Option<Vec<u8>> {
-    use craft_media::bitstream::BitWriter;
+    use bharat_media::bitstream::BitWriter;
     let t = FreqTables::new(&TEST_HEADER, rate)?;
     let (env, noise): (Vec<i32>, Vec<i32>) = ((0..t.n_high()).map(env).collect(), (0..t.n_q()).map(noise).collect());
     let mut bw = BitWriter::new();

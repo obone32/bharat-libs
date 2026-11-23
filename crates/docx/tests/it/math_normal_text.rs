@@ -3,10 +3,10 @@
 //! such a run, so the bold or italic of normal text goes in `w:rPr` (`w:b`/`w:i`), which the
 //! reader takes back for normal text.
 
-use craft_math::math::{MNode, MRun, MScr, MSty, Math};
-use craft_wordmodel::InlineObject;
-use craft_wordmodel::props::CharProps;
-use craft_wordmodel::{Document, Paragraph, para_block};
+use bharat_math::math::{MNode, MRun, MScr, MSty, Math};
+use bharat_wordmodel::InlineObject;
+use bharat_wordmodel::props::CharProps;
+use bharat_wordmodel::{Document, Paragraph, para_block};
 
 /// Save an equation holding one normal-text run; the run's `m:r` XML and the reopened run.
 fn save(run: MRun) -> (String, MRun) {
@@ -15,13 +15,13 @@ fn save(run: MRun) -> (String, MRun) {
     p.insert_object(0, InlineObject::Equation { linear: String::new(), display: false, math }, &CharProps::default()).unwrap();
     let mut doc = Document::new();
     doc.body = vec![para_block(p)];
-    let bytes = craft_docx::write(&doc).unwrap();
+    let bytes = bharat_docx::write(&doc).unwrap();
     let mut zip = zip::ZipArchive::new(std::io::Cursor::new(&bytes)).unwrap();
     let mut xml = String::new();
     std::io::Read::read_to_string(&mut zip.by_name("word/document.xml").unwrap(), &mut xml).unwrap();
     let start = xml.find("<m:r>").unwrap();
     let end = start + xml[start..].find("</m:r>").unwrap() + "</m:r>".len();
-    let back = craft_docx::read(&bytes).unwrap();
+    let back = bharat_docx::read(&bytes).unwrap();
     let math = back.body.iter().filter_map(|b| b.as_para()).flat_map(|p| p.objects.iter()).find_map(|o| match o {
         InlineObject::Equation { math, .. } => Some(math.clone()),
         _ => None,

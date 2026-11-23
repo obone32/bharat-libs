@@ -3,12 +3,12 @@
 
 use crate::support;
 
-use craft_timeline::model::{
+use bharat_timeline::model::{
     BinEntry, ClipId, Generator, ItemId, ItemKind, Keyframe, Label, Marker, MarkerId, MarkerKind, MediaRef, Param, ParamValue, Project, Sequence,
     TrackKind, TransitionAlign,
 };
-use craft_timeline::time::{FrameRate, Tick};
-use craft_timeline::{ExportOptions, Format, Imported, Report, detect_text};
+use bharat_timeline::time::{FrameRate, Tick};
+use bharat_timeline::{ExportOptions, Format, Imported, Report, detect_text};
 use proptest::prelude::*;
 use support::*;
 
@@ -792,10 +792,10 @@ fn optional_report_limit_bounds_distinct_fcp7_diagnostics() {
     let doc = format!("<xmeml><sequence id=\"s\"><name>S</name><media><video><track>{clips}</track></video></media></sequence></xmeml>");
     let opts = iopts(None);
     let mut limited = Report::default();
-    assert!(craft_timeline::fcp7::import_with_report_limit(&doc, &opts, &mut limited, Some(2)).is_ok());
+    assert!(bharat_timeline::fcp7::import_with_report_limit(&doc, &opts, &mut limited, Some(2)).is_ok());
     assert_eq!(limited.entries.len(), 3);
     assert!(limited.mentions("further diagnostics omitted"));
     let mut ordinary = Report::default();
-    assert!(craft_timeline::fcp7::import(&doc, &opts, &mut ordinary).is_ok());
+    assert!(bharat_timeline::fcp7::import(&doc, &opts, &mut ordinary).is_ok());
     assert_eq!(ordinary.entries.len(), 10);
 }

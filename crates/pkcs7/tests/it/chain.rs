@@ -2,9 +2,9 @@
 //! for trust). Certificates are issued in-process with chosen extensions, so every refusal is
 //! tested on its own.
 
-use craft_pkcs7::PrivateKey;
-use craft_pkcs7::der::{self, Time, tag};
-use craft_pkcs7::x509::{Certificate, Name, RefusedWhy, SigningProblem, build_chain, build_chain_noted};
+use bharat_pkcs7::PrivateKey;
+use bharat_pkcs7::der::{self, Time, tag};
+use bharat_pkcs7::x509::{Certificate, Name, RefusedWhy, SigningProblem, build_chain, build_chain_noted};
 
 fn time(year: u32) -> Time {
     Time { year, month: 6, day: 1, hour: 12, minute: 0, second: 0 }
@@ -314,8 +314,8 @@ fn an_issuer_with_an_unprocessed_critical_extension_does_not_vouch() {
 /// Standards-shaped evidence signed by a directly issued responder, not merely a parse fixture.
 #[test]
 fn delegated_ocsp_requires_the_issuer_signature_eku_and_response_signature() {
-    use craft_pkcs7::keys::DigestAlg;
-    use craft_pkcs7::revocation::{OcspResponse, RevocationStatus};
+    use bharat_pkcs7::keys::DigestAlg;
+    use bharat_pkcs7::revocation::{OcspResponse, RevocationStatus};
 
     let issuer = root();
     let leaf = end_entity("OCSP Leaf", &issuer);

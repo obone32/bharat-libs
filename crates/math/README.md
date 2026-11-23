@@ -1,4 +1,4 @@
-# craft-math
+# bharat-math
 
 Equations as one tree, and the syntaxes it is read from and written to:
 
@@ -16,7 +16,7 @@ over every run), `symbol_fonts` (Symbol, Wingdings and the other symbol fonts as
 `Rgb` (a run's colour).
 
 ```rust
-use craft_math::{Math, math, math_latex, mathml, omml};
+use bharat_math::{Math, math, math_latex, mathml, omml};
 
 let tree = math_latex::parse_latex(r"\frac{a}{b}+\sqrt{x}");
 assert_eq!(math::to_linear(&tree), "a/b+√x");
@@ -34,7 +34,7 @@ assert_eq!(mathml::parse(&ml).and_then(|m| mathml::read(&m)), Some(("a/b+√x".t
 
 ## Reading OMML
 
-`omml::read_omath` takes an `m:oMath` element of a `craft_xml` tree read with the canonical
+`omml::read_omath` takes an `m:oMath` element of a `bharat_xml` tree read with the canonical
 prefixes of `omml::NAMESPACES` (`m`, `w` and `mc`, transitional and strict URIs), so a document
 reader passes the element it already has. `omml::read_str` and `omml::parse` read a string. The
 source XML is kept in `Math::omml`; `write_equation` writes it back unchanged while the
@@ -50,7 +50,7 @@ reader looks at 20,000 characters. Nothing panics on any input.
 ## Provenance
 
 The tree, the linear format, LaTeX, the symbol names, the tree walk, the symbol fonts and `Rgb`
-are WordCraft's (`crates/doc`), as moved into craft-wordmodel; OMML is WordCraft's DOCX reader
+are WordCraft's (`crates/doc`), as moved into bharat-wordmodel; OMML is WordCraft's DOCX reader
 and writer (`crates/docx/src/read/math.rs`, `write/math.rs`) and MathML its formats crate's
-(`crates/formats/src/mathml.rs`), moved onto craft-xml. The MathLive command spellings and the
-round-trip corpus in `tests/corpus/` come from equaSHion (storytold/craft-libs#29).
+(`crates/formats/src/mathml.rs`), moved onto bharat-xml. The MathLive command spellings and the
+round-trip corpus in `tests/corpus/` come from equaSHion (obone32/bharat-libs#29).

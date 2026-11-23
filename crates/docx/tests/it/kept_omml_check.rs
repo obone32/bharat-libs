@@ -2,10 +2,10 @@
 //! `m:oMath` (#6072). `Math::omml` also comes from `.json` documents, so anything else must not
 //! reach `document.xml`: it is written from the equation's nodes instead.
 
-use craft_math::math::{MNode, MRun, Math};
-use craft_wordmodel::para::{InlineObject, OBJ};
-use craft_wordmodel::props::CharProps;
-use craft_wordmodel::{Document, Paragraph, para_block};
+use bharat_math::math::{MNode, MRun, Math};
+use bharat_wordmodel::para::{InlineObject, OBJ};
+use bharat_wordmodel::props::CharProps;
+use bharat_wordmodel::{Document, Paragraph, para_block};
 
 /// Save a one-equation document whose equation keeps `omml` and has the nodes `NODES`.
 fn save(omml: &str, display: bool) -> (String, Document) {
@@ -14,12 +14,12 @@ fn save(omml: &str, display: bool) -> (String, Document) {
     p.insert_object(0, InlineObject::Equation { linear: "NODES".into(), display, math }, &CharProps::default()).unwrap();
     let mut doc = Document::new();
     doc.body = vec![para_block(p)];
-    let bytes = craft_docx::write(&doc).unwrap();
+    let bytes = bharat_docx::write(&doc).unwrap();
     let mut zip = zip::ZipArchive::new(std::io::Cursor::new(&bytes)).unwrap();
     let mut xml = String::new();
     std::io::Read::read_to_string(&mut zip.by_name("word/document.xml").unwrap(), &mut xml).unwrap();
     // The saved file must open again (the main part is read strictly).
-    let back = craft_docx::read(&bytes).unwrap_or_else(|e| panic!("{omml:?} doesn't reopen: {e}"));
+    let back = bharat_docx::read(&bytes).unwrap_or_else(|e| panic!("{omml:?} doesn't reopen: {e}"));
     (xml, back)
 }
 
@@ -30,7 +30,7 @@ fn texts(doc: &Document) -> Vec<String> {
         let Some(p) = b.as_para() else { continue };
         for o in &p.objects {
             if let InlineObject::Equation { math, .. } = o {
-                out.push(craft_math::math::to_linear(&math.nodes));
+                out.push(bharat_math::math::to_linear(&math.nodes));
             }
         }
         let text: String = p.text.chars().filter(|c| *c != OBJ).collect();

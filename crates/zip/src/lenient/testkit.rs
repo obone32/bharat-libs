@@ -1,4 +1,4 @@
-//! Test fixtures from Craft Anything's testkit: known-good compressed streams built with the
+//! Test fixtures from Bharat Anything's testkit: known-good compressed streams built with the
 //! reference encoders (`xz`, `bzip2`, `zstd`), a stored-only ZIP writer and a noise generator.
 
 #![allow(clippy::cast_possible_truncation, dead_code)]

@@ -1,5 +1,5 @@
 [package]
-name = "craft-pdn"
+name = "bharat-pdn"
 description = "Paint.NET documents (.pdn, PDN3): the header, the .NET binary serialization graph (MS-NRBF, data only), the layer list and the chunked gzip pixel blocks, read with bounded sizes."
 version.workspace = true
 edition.workspace = true

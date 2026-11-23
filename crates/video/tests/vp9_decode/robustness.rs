@@ -2,7 +2,7 @@
 
 use crate::common;
 
-use craft_video::vp9::decode::Decoder;
+use bharat_video::vp9::decode::Decoder;
 use std::time::{Duration, Instant};
 
 fn xorshift(seed: &mut u64) -> u64 {
@@ -120,7 +120,7 @@ fn frame_over_the_memory_budget_is_rejected() {
             v[i / 8] |= 0x80 >> (i % 8);
         }
     }
-    let over_budget = |e: craft_video::vp9::decode::Error| e.to_string().contains("memory budget");
+    let over_budget = |e: bharat_video::vp9::decode::Error| e.to_string().contains("memory budget");
     // One 64x64 4:2:0 picture is 12288 bytes at two bytes a sample; one thread holds 12 of them.
     let mut dec = Decoder::with_threads(1);
     dec.set_memory_budget(12 * 12288 - 1);

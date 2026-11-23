@@ -1,4 +1,4 @@
-use craft_cms::sony_lut::{MAX_SIDE, parse_spi3d, parse_spimtx};
+use bharat_cms::sony_lut::{MAX_SIDE, parse_spi3d, parse_spimtx};
 
 #[test]
 fn spimtx_is_finite_exact_and_scales_offsets() {

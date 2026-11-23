@@ -1,6 +1,6 @@
-use craft_pkcs7::der::{self, tag};
-use craft_pkcs7::inspection::InspectionError;
-use craft_pkcs7::inspection::cms::{SignedDataView, SignerInfoView};
+use bharat_pkcs7::der::{self, tag};
+use bharat_pkcs7::inspection::InspectionError;
+use bharat_pkcs7::inspection::cms::{SignedDataView, SignerInfoView};
 
 fn fixture(key_id: bool, attrs: bool) -> (Vec<u8>, Vec<u8>) {
     let digest = der::seq(&[&der::oid("2.16.840.1.101.3.4.2.1")]);
@@ -57,7 +57,7 @@ fn signer_prefix_does_not_hide_optional_tail_or_consume_next_signer() {
 
 // Ordinary optional sets and complete trailing TLVs, never interpreted as trust evidence here.
 fn optional_fixture(certificate_count: usize, with_crl: bool, tails: bool) -> (Vec<u8>, Vec<u8>, Vec<u8>) {
-    let certificate = craft_pkcs7::x509::load_certificates(include_bytes!("../data/ca.crt.pem")).unwrap().remove(0).raw;
+    let certificate = bharat_pkcs7::x509::load_certificates(include_bytes!("../data/ca.crt.pem")).unwrap().remove(0).raw;
     let (base, signer) = fixture(false, true);
     let (view, _) = SignedDataView::parse(&base).unwrap();
     let certificates = der::tlv(tag::ctx(0), &certificate.repeat(certificate_count));

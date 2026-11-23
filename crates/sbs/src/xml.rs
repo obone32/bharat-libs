@@ -36,7 +36,7 @@ pub fn xml_escape(text: &str) -> String {
         if i != 0 {
             out.push_str("&apos;");
         }
-        craft_xml::push_esc_attr(&mut out, part);
+        bharat_xml::push_esc_attr(&mut out, part);
     }
     out
 }

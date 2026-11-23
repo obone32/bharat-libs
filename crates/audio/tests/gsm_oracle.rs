@@ -1,8 +1,8 @@
 //! GSM 06.10 against ffmpeg's decoder as the reference (oracle; skipped when ffmpeg is absent, a
-//! failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`): ffmpeg decodes what our encoder writes, in both
+//! failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`): ffmpeg decodes what our encoder writes, in both
 //! packings, to exactly the samples our decoder returns, and so does arbitrary frame data.
 
-use craft_audio::gsm::{Packing, decode, encode};
+use bharat_audio::gsm::{Packing, decode, encode};
 use std::path::Path;
 use std::process::Command;
 
@@ -77,7 +77,7 @@ fn random_frames(n: usize, seed: &mut u32) -> Vec<u8> {
     let speech = encode(&signal(n), Packing::Raw);
     let mut out = Vec::new();
     for b in speech.as_chunks::<33>().0 {
-        let mut frame = craft_audio::gsm::Frame::from_raw(b).expect("frame");
+        let mut frame = bharat_audio::gsm::Frame::from_raw(b).expect("frame");
         for s in &mut frame.sub {
             s.lag = 40 + (xorshift(seed) % 81) as u8;
             s.gain = (xorshift(seed) % 3) as u8;
@@ -94,8 +94,8 @@ fn random_frames(n: usize, seed: &mut u32) -> Vec<u8> {
 
 #[test]
 fn ffmpeg_decodes_our_raw_streams_to_the_same_samples() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("gsm");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("gsm");
     for frames in [1usize, 2, 7, 50, 120] {
         let bytes = encode(&signal(frames), Packing::Raw);
         let file = dir.join(format!("ours_{frames}.gsm"));
@@ -109,8 +109,8 @@ fn ffmpeg_decodes_our_raw_streams_to_the_same_samples() {
 
 #[test]
 fn ffmpeg_decodes_our_wav49_streams_to_the_same_samples() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("gsm");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("gsm");
     for frames in [2usize, 4, 20, 100] {
         let pcm = signal(frames);
         let bytes = encode(&pcm, Packing::Wav49);
@@ -125,8 +125,8 @@ fn ffmpeg_decodes_our_wav49_streams_to_the_same_samples() {
 
 #[test]
 fn ffmpeg_and_we_decode_arbitrary_frames_identically() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("gsm");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("gsm");
     let mut seed = 0xC0FF_EE11u32;
     let bytes = random_frames(300, &mut seed);
     let file = dir.join("random.gsm");

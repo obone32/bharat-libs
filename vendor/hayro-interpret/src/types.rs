@@ -107,7 +107,7 @@ impl RasterImage<'_> {
 }
 
 impl RasterImage<'_> {
-    /// Craft patch (flatten): the image's samples as inks, in its own color space (see
+    /// Bharat patch (flatten): the image's samples as inks, in its own color space (see
     /// [`InkImage`]); process colour converts through `simulation` where plate mode converts it.
     pub fn with_inks(
         &self,
@@ -120,7 +120,7 @@ impl RasterImage<'_> {
     }
 }
 
-/// Craft patch (flatten): a raster image decoded into inks rather than RGB.
+/// Bharat patch (flatten): a raster image decoded into inks rather than RGB.
 #[derive(Clone)]
 pub struct InkImage {
     /// The width in samples.

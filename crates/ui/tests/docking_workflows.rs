@@ -1,9 +1,9 @@
 //! Content-bearing offscreen acceptance of the shared docking surface. No OS windows are opened.
-//! Set CRAFT_UI_DOCK_VISUAL_DIR to retain every stage of the pointer-driven workflow.
+//! Set BHARAT_UI_DOCK_VISUAL_DIR to retain every stage of the pointer-driven workflow.
 
 use std::{collections::BTreeMap, path::PathBuf};
 
-use craft_ui::{
+use bharat_ui::{
     docking::{Action, DockArea, DockStyle, Floating, Layout, Node, Permissions},
     layout::{SplitAxis, SplitSize},
 };
@@ -225,7 +225,7 @@ impl Harness {
 
 #[test]
 fn floating_brushes_merge_detach_and_redock_through_real_pointer_input() {
-    let output = std::env::var_os("CRAFT_UI_DOCK_VISUAL_DIR").map(PathBuf::from);
+    let output = std::env::var_os("BHARAT_UI_DOCK_VISUAL_DIR").map(PathBuf::from);
     for dark in [true, false] {
         for width in [640.0, 1000.0] {
             for scale in [1.0, 2.0] {
@@ -263,7 +263,7 @@ fn floating_brushes_merge_detach_and_redock_through_real_pointer_input() {
 /// command, then writes and reads back unchanged.
 #[cfg(all(feature = "serde", feature = "testing"))]
 mod v1_fixtures {
-    use craft_ui::docking::{DockCommand, DockContent, Hit, Layout, Node, Permissions, ResizeEdge, Side, testing::DockDriver};
+    use bharat_ui::docking::{DockCommand, DockContent, Hit, Layout, Node, Permissions, ResizeEdge, Side, testing::DockDriver};
     use egui::{Pos2, Rect, pos2};
     use serde_json::{Value, json};
 
@@ -424,9 +424,9 @@ mod v1_fixtures {
             // Float the column by command, then drag its window back to the start edge.
             let float: DockCommand<String> =
                 serde_json::from_value(json!({"command": "window.panel.float", "panel": bars[0], "column": true})).unwrap();
-            let space = craft_ui::docking::float_space(&d.ctx, d.id).unwrap();
+            let space = bharat_ui::docking::float_space(&d.ctx, d.id).unwrap();
             let actions =
-                float.to_actions_with(&craft_ui::docking::Workspace::new(d.layout.clone()), false, &space, |p| d.content.permissions(p)).unwrap();
+                float.to_actions_with(&bharat_ui::docking::Workspace::new(d.layout.clone()), false, &space, |p| d.content.permissions(p)).unwrap();
             d.layout.apply_all(actions, |p| d.content.permissions(p)).unwrap_or_else(|e| panic!("{at}: {e}"));
             d.settle();
             assert!(start_columns(&d.layout).is_empty(), "{at}: floated");

@@ -2,14 +2,14 @@
 
 use std::collections::HashSet;
 
-use craft_dxf::model::text::{MText, MTextColumns};
-use craft_dxf::model::write::{BlockDef, Drawing, Format, entity_tags, fixed};
-use craft_dxf::model::{
+use bharat_dxf::model::text::{MText, MTextColumns};
+use bharat_dxf::model::write::{BlockDef, Drawing, Format, entity_tags, fixed};
+use bharat_dxf::model::{
     Attrib, Color, Common, DashElement, Dimension, Document, Entity, EntityKind, Gradient, Hatch, HatchEdge, HatchLoop, HatchPath, Helix, Image,
     Insert, Layer, Leader, Linetype, Lineweight, LwPolyline, LwVertex, MLine, MLineVertex, PatternLine, Polyline, Spline, Text, TextStyle,
     Transparency, Vertex, Viewport, records,
 };
-use craft_dxf::{Tag, parse, write_ascii_as};
+use bharat_dxf::{Tag, parse, write_ascii_as};
 
 fn common(layer: &str) -> Common {
     Common {
@@ -644,7 +644,7 @@ fn one_entity_for_a_file_the_caller_writes() {
     let mut next = 0x10;
     let tags =
         entity_tags(&Entity { common: Common { handle: Some(0x5), ..insert.common.clone() }, ..insert.clone() }, Format::R2018, 0x1F, &mut next);
-    let (recs, strays) = craft_dxf::model::entity_records(&records(&tags));
+    let (recs, strays) = bharat_dxf::model::entity_records(&records(&tags));
     assert_eq!((recs.len(), strays), (1, 0));
     let back = Entity::read(&recs[0]);
     assert_eq!((back.common.handle, back.common.owner), (Some(0x5), Some(0x1F)), "its own handle, whatever its number");
@@ -655,7 +655,7 @@ fn one_entity_for_a_file_the_caller_writes() {
 
 #[test]
 fn records_kept_from_another_file_are_renumbered() {
-    use craft_dxf::model::write::{is_pointer_code, remap_handles};
+    use bharat_dxf::model::write::{is_pointer_code, remap_handles};
     let kept = parse(
         b"0\nMULTILEADER\n5\n80\n102\n{ACAD_REACTORS\n330\n81\n102\n}\n330\n1F\n100\nAcDbEntity\n8\n0\n340\n0\n344\nZZ\n1001\nAPP\n1005\n82\n0\nDIMSTYLE\n105\n90\n2\nX\n340\n81\n",
     )

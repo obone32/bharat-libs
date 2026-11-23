@@ -1,11 +1,11 @@
 //! The Vorbis decoder against ffmpeg's as the reference (oracle; skipped when ffmpeg is absent, a
-//! failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`). Streams come from two encoders, this crate's and
+//! failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`). Streams come from two encoders, this crate's and
 //! ffmpeg's own, so the setups differ: different floors, residues, block sizes, channel counts and
 //! coupling. Both decoders must return the same samples.
 
-use craft_audio::AudioBuffer;
-use craft_audio::vorbis::decoder::{Decoder, decode_ogg};
-use craft_audio::{OggVorbisOptions, encode_ogg_vorbis};
+use bharat_audio::AudioBuffer;
+use bharat_audio::vorbis::decoder::{Decoder, decode_ogg};
+use bharat_audio::{OggVorbisOptions, encode_ogg_vorbis};
 use std::path::Path;
 use std::process::Command;
 
@@ -89,8 +89,8 @@ fn assert_prefix(name: &str, ours: &[Vec<f32>], theirs: &[Vec<f32>], exact: bool
 
 #[test]
 fn ffmpeg_decodes_our_encoders_streams_to_the_same_samples() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("vorbis_decode");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("vorbis_decode");
     for (rate, channels, quality) in
         [(44_100u32, 2usize, 6.0f32), (44_100, 1, 3.0), (48_000, 2, -1.0), (22_050, 1, 10.0), (44_100, 6, 5.0), (32_000, 8, 4.0)]
     {
@@ -114,8 +114,8 @@ fn ffmpeg_decodes_our_encoders_streams_to_the_same_samples() {
 /// way as we do are covered, on both channels, in `vorbis_decode_synthetic.rs`.
 #[test]
 fn we_decode_ffmpegs_encoder_streams_like_symphonia() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("vorbis_decode");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("vorbis_decode");
     for (rate, bitrate) in [(44_100u32, "128k"), (48_000, "96k"), (22_050, "48k"), (32_000, "64k")] {
         let channels = 2usize;
         let pcm: Vec<f32> = {
@@ -140,7 +140,7 @@ fn we_decode_ffmpegs_encoder_streams_like_symphonia() {
         let ogg = std::fs::read(&file).expect("read");
         let ours = decode_ogg(&ogg).expect("decode");
         assert_eq!(ours.damaged_packets, 0, "{}", file.display());
-        let (_, symphonia) = craft_audio::decode(&ogg, Some("ogg")).expect("symphonia");
+        let (_, symphonia) = bharat_audio::decode(&ogg, Some("ogg")).expect("symphonia");
         let name = format!("ffmpeg-encoded {rate} Hz {bitrate}");
         assert_prefix(&name, &ours.channels, &symphonia.channels, false);
         // The first channel also agrees with ffmpeg's decoder.
@@ -153,8 +153,8 @@ fn we_decode_ffmpegs_encoder_streams_like_symphonia() {
 fn packets_decode_one_at_a_time_to_the_file_result() {
     let buf = AudioBuffer { sample_rate: 44_100, channels: signal(44_100, 2, 30_000) };
     let ogg = encode_ogg_vorbis(&buf, &OggVorbisOptions::default().with_quality(5.0)).expect("encode");
-    let file = craft_media::ogg::open(ogg.as_slice()).expect("open");
-    let s = &file.streams[file.stream_of(craft_media::ogg::Codec::Vorbis).expect("vorbis")];
+    let file = bharat_media::ogg::open(ogg.as_slice()).expect("open");
+    let s = &file.streams[file.stream_of(bharat_media::ogg::Codec::Vorbis).expect("vorbis")];
     let mut dec = Decoder::new(&s.headers[0], &s.headers[1], &s.headers[2]).expect("decoder");
     assert_eq!((dec.identification().channels, dec.identification().sample_rate), (2, 44_100));
     let mut got: Vec<Vec<f32>> = vec![Vec::new(); 2];
@@ -199,7 +199,7 @@ fn a_libvorbis_stream_decodes_like_ffmpeg() {
     assert_eq!((ours.sample_rate, ours.channels.len(), ours.damaged_packets), (8000, 1, 0));
     assert!(ours.comments.vendor.contains("Lavf") || ours.comments.vendor.contains("libVorbis"), "vendor {:?}", ours.comments.vendor);
     assert!(ours.channels[0].iter().any(|s| s.abs() > 0.1), "the fixture is a tone");
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
     assert_prefix("libvorbis tone.ogg", &ours.channels, &ffmpeg_decode(&ffmpeg, &path, 1), false);
 }
 

@@ -1,6 +1,6 @@
-//! Throughput: `cargo test --release -p craft-video --features dnx,threads --test dnx perf:: -- --ignored --nocapture`.
+//! Throughput: `cargo test --release -p bharat-video --features dnx,threads --test dnx perf:: -- --ignored --nocapture`.
 
-use craft_video::dnx::{ChromaFormat, DecodeOptions, Encoder, EncoderConfig, Frame, Profile, decode_frame_with};
+use bharat_video::dnx::{ChromaFormat, DecodeOptions, Encoder, EncoderConfig, Frame, Profile, decode_frame_with};
 use std::time::Instant;
 
 fn busy(w: u32, h: u32, chroma: ChromaFormat, depth: u8) -> Frame {

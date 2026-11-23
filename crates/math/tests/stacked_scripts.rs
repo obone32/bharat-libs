@@ -2,7 +2,7 @@
 //! superscript of `a^b^c` is `b^c`, so `a^b^c` is `a^(b^c)`. Mixed scripts still make one
 //! sub-superscript, and brackets still group to the left.
 
-use craft_math::math::{MNode, MRun, ScriptKind, parse_linear};
+use bharat_math::math::{MNode, MRun, ScriptKind, parse_linear};
 
 fn a(t: &str) -> Vec<MNode> {
     vec![MNode::Run(MRun::new(t))]

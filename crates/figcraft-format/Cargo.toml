@@ -1,5 +1,5 @@
 [package]
-name = "craft-figcraft-format"
+name = "bharat-figcraft-format"
 description = "The native FigCraft document JSON and archive contract."
 version.workspace = true
 edition.workspace = true
@@ -13,6 +13,6 @@ workspace = true
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
-craft-zip = { workspace = true }
+bharat-zip = { workspace = true }
 zip = { version = "9", default-features = false, features = ["deflate-flate2"] }
 thiserror = { workspace = true }

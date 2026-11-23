@@ -1,4 +1,4 @@
-use craft_image_codecs::{exr_stream::Decoder, *};
+use bharat_image_codecs::{exr_stream::Decoder, *};
 use std::io::Cursor;
 
 fn fixture(layout: ChannelLayout, sample: SampleType, compression: ExrCompression) -> Vec<u8> {

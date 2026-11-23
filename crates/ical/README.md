@@ -1,4 +1,4 @@
-# craft-ical
+# bharat-ical
 
 iCalendar (RFC 5545) building blocks, read and written. Times are `chrono` values; instants are
 `i64` seconds since 1970-01-01T00:00:00Z.

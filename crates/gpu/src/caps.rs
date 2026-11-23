@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 /// Per RFC-0022's acceptance requirements, a backend that has a device fills every field here
 /// from that created device, never from the adapter it was created on: an adapter advertises more
 /// than a device may grant (`required_features`/`required_limits` at `request_device` time narrow
-/// both). `craft-gpu-wgpu` reports [`Default`]-shaped conservative values only on the defined
+/// both). `bharat-gpu-wgpu` reports [`Default`]-shaped conservative values only on the defined
 /// no-adapter path (no GPU present, the feature compiled out, or the `wasm32` worker-init gap
 /// described in `docs/gpu-backends.md`), never as a stand-in for a real device's own caps.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]

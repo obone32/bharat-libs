@@ -49,7 +49,7 @@ impl Env<'_> {
     }
 
     fn ui(&self, source: &str, args: &[(&str, &str)]) -> String {
-        craft_i18n::fmt(&self.text.ui(source), args)
+        bharat_i18n::fmt(&self.text.ui(source), args)
     }
 }
 
@@ -985,7 +985,7 @@ impl DialogState {
         self.outcome = Some(Outcome::ExportAs { format, name, keymap: Box::new(env.keymap.clone()) });
     }
 
-    /// A craft-keymap JSON set the app read: a new set, loaded; without sets its overrides replace
+    /// A bharat-keymap JSON set the app read: a new set, loaded; without sets its overrides replace
     /// the keymap's as one undo step.
     pub(crate) fn import_json(&mut self, env: &mut Env, text: &str) -> Result<String, ProfileError> {
         let result = match env.sets.as_mut() {
@@ -1137,7 +1137,7 @@ fn profile_error(env: &Env, e: &ProfileError) -> String {
         ProfileError::BuiltIn => env.ui("Built-in sets cannot be changed", &[]),
         ProfileError::TooMany => env.ui("There are too many sets", &[]),
         ProfileError::BadFile => env.ui("This is not a shortcut set file", &[]),
-        ProfileError::WrongFormat => env.ui("This is not a craft-keymap file", &[]),
+        ProfileError::WrongFormat => env.ui("This is not a bharat-keymap file", &[]),
         ProfileError::NewerVersion(v) => env.ui("This file is from a newer version (format {n})", &[("n", &v.to_string())]),
         ProfileError::TooLarge => env.ui("The file is too large", &[]),
     }

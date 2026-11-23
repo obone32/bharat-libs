@@ -1,12 +1,12 @@
-//! DDS compatibility facade; parsing, mip layout and BC block codecs live in craft-dds.
+//! DDS compatibility facade; parsing, mip layout and BC block codecs live in bharat-dds.
 use crate::{CodecError, Image, Limits, SampleType, bridge};
-use craft_image_codecs::Format;
+use bharat_image_codecs::Format;
 
 pub fn looks_like_dds(bytes: &[u8]) -> bool {
-    craft_image_codecs::detect(bytes) == Some(Format::Dds)
+    bharat_image_codecs::detect(bytes) == Some(Format::Dds)
 }
 pub fn has_additional_images(bytes: &[u8]) -> Result<bool, CodecError> {
-    craft_image_codecs::has_unretained_source_data(bytes).map_err(bridge::from_shared_error)
+    bharat_image_codecs::has_unretained_source_data(bytes).map_err(bridge::from_shared_error)
 }
 pub fn decode(bytes: &[u8], limits: &Limits) -> Result<Image, CodecError> {
     bridge::format(Format::Dds, bytes, limits)
@@ -64,13 +64,13 @@ pub fn encode(image: &Image, options: DdsOptions) -> Result<Vec<u8>, CodecError>
         return Err(CodecError::encode("DDS", format!("{:?} pixels can't be written as `{}`", image.layout(), options.compression.name())));
     }
     let compression = match options.compression {
-        DdsCompression::None => craft_image_codecs::DdsCompression::None,
-        DdsCompression::Bc1 => craft_image_codecs::DdsCompression::Bc1,
-        DdsCompression::Bc2 => craft_image_codecs::DdsCompression::Bc2,
-        DdsCompression::Bc3 => craft_image_codecs::DdsCompression::Bc3,
+        DdsCompression::None => bharat_image_codecs::DdsCompression::None,
+        DdsCompression::Bc1 => bharat_image_codecs::DdsCompression::Bc1,
+        DdsCompression::Bc2 => bharat_image_codecs::DdsCompression::Bc2,
+        DdsCompression::Bc3 => bharat_image_codecs::DdsCompression::Bc3,
     };
     let opts =
-        craft_image_codecs::EncodeOptions { dds: craft_image_codecs::DdsOptions { compression, mipmaps: options.mipmaps }, ..Default::default() };
+        bharat_image_codecs::EncodeOptions { dds: bharat_image_codecs::DdsOptions { compression, mipmaps: options.mipmaps }, ..Default::default() };
     bridge::encode(image, Format::Dds, &opts)
 }
 
@@ -85,38 +85,38 @@ pub struct DdsInfo {
     pub compression: Option<DdsCompression>,
 }
 
-fn dds_error(error: craft_dds::DdsError) -> CodecError {
+fn dds_error(error: bharat_dds::DdsError) -> CodecError {
     match error {
-        craft_dds::DdsError::Malformed(reason) => CodecError::malformed("DDS", reason),
-        craft_dds::DdsError::Unsupported(reason) => CodecError::unsupported("DDS", reason),
-        craft_dds::DdsError::Encode(reason) => CodecError::encode("DDS", reason),
-        craft_dds::DdsError::Alloc(len) => CodecError::LimitExceeded(format!("cannot allocate {len} bytes for DDS")),
-        craft_dds::DdsError::LimitExceeded { required, limit } => {
+        bharat_dds::DdsError::Malformed(reason) => CodecError::malformed("DDS", reason),
+        bharat_dds::DdsError::Unsupported(reason) => CodecError::unsupported("DDS", reason),
+        bharat_dds::DdsError::Encode(reason) => CodecError::encode("DDS", reason),
+        bharat_dds::DdsError::Alloc(len) => CodecError::LimitExceeded(format!("cannot allocate {len} bytes for DDS")),
+        bharat_dds::DdsError::LimitExceeded { required, limit } => {
             CodecError::LimitExceeded(format!("decoded DDS requires {required} bytes, exceeding limit {limit}"))
         }
         other => CodecError::malformed("DDS", other),
     }
 }
 
-fn layout(texture: &craft_dds::Texture<'_>) -> crate::ChannelLayout {
+fn layout(texture: &bharat_dds::Texture<'_>) -> crate::ChannelLayout {
     match texture.layout() {
-        craft_dds::Layout::Gray => crate::ChannelLayout::Gray,
-        craft_dds::Layout::GrayA => crate::ChannelLayout::GrayA,
-        craft_dds::Layout::Rgb => crate::ChannelLayout::Rgb,
-        craft_dds::Layout::Rgba => crate::ChannelLayout::Rgba,
+        bharat_dds::Layout::Gray => crate::ChannelLayout::Gray,
+        bharat_dds::Layout::GrayA => crate::ChannelLayout::GrayA,
+        bharat_dds::Layout::Rgb => crate::ChannelLayout::Rgb,
+        bharat_dds::Layout::Rgba => crate::ChannelLayout::Rgba,
     }
 }
 
 pub fn info(bytes: &[u8]) -> Result<DdsInfo, CodecError> {
-    let texture = craft_dds::Texture::parse(bytes).map_err(dds_error)?;
+    let texture = bharat_dds::Texture::parse(bytes).map_err(dds_error)?;
     let compression = match texture.compression() {
-        craft_dds::DdsCompression::None => Some(DdsCompression::None),
-        craft_dds::DdsCompression::Bc1 => Some(DdsCompression::Bc1),
-        craft_dds::DdsCompression::Bc2 => Some(DdsCompression::Bc2),
-        craft_dds::DdsCompression::Bc3 => Some(DdsCompression::Bc3),
+        bharat_dds::DdsCompression::None => Some(DdsCompression::None),
+        bharat_dds::DdsCompression::Bc1 => Some(DdsCompression::Bc1),
+        bharat_dds::DdsCompression::Bc2 => Some(DdsCompression::Bc2),
+        bharat_dds::DdsCompression::Bc3 => Some(DdsCompression::Bc3),
         _ => None,
     };
-    let alpha = matches!(texture.layout(), craft_dds::Layout::GrayA | craft_dds::Layout::Rgba);
+    let alpha = matches!(texture.layout(), bharat_dds::Layout::GrayA | bharat_dds::Layout::Rgba);
     Ok(DdsInfo { width: texture.width(), height: texture.height(), levels: texture.levels(), alpha, compression })
 }
 
@@ -124,7 +124,7 @@ pub fn info(bytes: &[u8]) -> Result<DdsInfo, CodecError> {
 /// Cancellation is checked before each level; no partial chain is returned. Channels wider than
 /// 8 bits decode at 16 bits, as [`decode`] opens the top level.
 pub fn decode_levels(bytes: &[u8], limits: &Limits, cancel: &dyn Fn() -> bool) -> Result<Vec<Image>, CodecError> {
-    let texture = craft_dds::Texture::parse(bytes).map_err(dds_error)?;
+    let texture = bharat_dds::Texture::parse(bytes).map_err(dds_error)?;
     let wide = texture.bits_per_channel() > 8;
     let mut images = Vec::new();
     images.try_reserve_exact(texture.levels() as usize).map_err(|_| CodecError::LimitExceeded("cannot allocate DDS mip list".into()))?;

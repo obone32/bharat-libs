@@ -3,17 +3,17 @@
 //! later.
 //!
 //! Start `tests/web/serve_fonts.py` (127.0.0.1:8137; another address through
-//! `CRAFT_UI_FONT_SERVER` when building), then run
+//! `BHARAT_UI_FONT_SERVER` when building), then run
 //!
 //! ```text
-//! cargo test -p craft-ui --target wasm32-unknown-unknown --test web_fonts
+//! cargo test -p bharat-ui --target wasm32-unknown-unknown --test web_fonts
 //! ```
 //!
 //! with `wasm-bindgen-test-runner` as the target's runner: headless through a WebDriver, or with
 //! `NO_HEADLESS=1`, which serves the test page for any browser to open.
 #![cfg(target_arch = "wasm32")]
 
-use craft_ui::fonts::{I18nScripts, ServedFace, SystemFonts, UiFonts};
+use bharat_ui::fonts::{I18nScripts, ServedFace, SystemFonts, UiFonts};
 use egui::{FontDefinitions, FontFamily, FontId};
 use wasm_bindgen::JsCast as _;
 use wasm_bindgen_futures::JsFuture;
@@ -22,7 +22,7 @@ use wasm_bindgen_test::{wasm_bindgen_test, wasm_bindgen_test_configure};
 wasm_bindgen_test_configure!(run_in_browser);
 
 fn url(path: &str) -> &'static str {
-    let server = option_env!("CRAFT_UI_FONT_SERVER").unwrap_or("http://127.0.0.1:8137");
+    let server = option_env!("BHARAT_UI_FONT_SERVER").unwrap_or("http://127.0.0.1:8137");
     Box::leak(format!("{server}{path}").into_boxed_str())
 }
 
@@ -31,7 +31,7 @@ fn face(family: &'static str, scripts: &'static [&'static str], path: &str, cove
 }
 
 fn coverage_of(font: &[u8]) -> Vec<u8> {
-    craft_fonts_build::coverage::of_face(font, 0).expect("a font")
+    bharat_fonts_build::coverage::of_face(font, 0).expect("a font")
 }
 
 async fn sleep(millis: i32) {
@@ -67,7 +67,7 @@ async fn requested() -> Vec<String> {
 
 #[wasm_bindgen_test]
 async fn a_missing_character_fetches_the_face_that_has_it_and_a_failed_one_is_retried() {
-    let encode = craft_fonts_build::coverage::encode;
+    let encode = bharat_fonts_build::coverage::encode;
     let served = [
         face("Noto Sans", &["Latn", "Cyrl", "Grek", "Deva"], "/fonts/NotoSans-test.ttf", coverage_of(include_bytes!("fonts/NotoSans-test.ttf"))),
         face("Noto Color Emoji", &["Zsye"], "/missing/NotoColorEmoji.ttf", encode(&[(0x1F300, 0x1FAFF)])),

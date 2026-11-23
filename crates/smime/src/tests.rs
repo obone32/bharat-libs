@@ -617,10 +617,10 @@ fn the_search_for_a_path_keeps_to_its_budget() {
 
 /// `cms` with its signers' information put in place of its own, in this order.
 fn with_signers(cms: &[u8], infos: &[&[u8]]) -> Vec<u8> {
-    let (info, _) = craft_ber::read(cms).unwrap();
-    let fields = craft_ber::children(info.value).unwrap();
-    let (sd, _) = craft_ber::read(fields[1].value).unwrap();
-    let parts = craft_ber::children(sd.value).unwrap();
+    let (info, _) = bharat_ber::read(cms).unwrap();
+    let fields = bharat_ber::children(info.value).unwrap();
+    let (sd, _) = bharat_ber::read(fields[1].value).unwrap();
+    let parts = bharat_ber::children(sd.value).unwrap();
     let mut inner: Vec<u8> = parts[..parts.len() - 1].iter().flat_map(|p| p.whole.to_vec()).collect();
     inner.extend(tlv(0x31, &infos.concat()));
     let mut ci = fields[0].whole.to_vec();
@@ -630,11 +630,11 @@ fn with_signers(cms: &[u8], infos: &[&[u8]]) -> Vec<u8> {
 
 /// The first signer's information in `cms`, as it is written.
 fn first_signer(cms: &[u8]) -> Vec<u8> {
-    let (info, _) = craft_ber::read(cms).unwrap();
-    let fields = craft_ber::children(info.value).unwrap();
-    let (sd, _) = craft_ber::read(fields[1].value).unwrap();
-    let parts = craft_ber::children(sd.value).unwrap();
-    craft_ber::children(parts.last().unwrap().value).unwrap()[0].whole.to_vec()
+    let (info, _) = bharat_ber::read(cms).unwrap();
+    let fields = bharat_ber::children(info.value).unwrap();
+    let (sd, _) = bharat_ber::read(fields[1].value).unwrap();
+    let parts = bharat_ber::children(sd.value).unwrap();
+    bharat_ber::children(parts.last().unwrap().value).unwrap()[0].whole.to_vec()
 }
 
 /// The second try of a signature without signed attributes, over the content in its canonical
@@ -758,10 +758,10 @@ fn tlv(tag: u8, content: &[u8]) -> Vec<u8> {
 
 /// `cms` with `extra` put into its SignedData just before the signers.
 fn smuggled(cms: &[u8], extra: &[u8]) -> Vec<u8> {
-    let (info, _) = craft_ber::read(cms).unwrap();
-    let fields = craft_ber::children(info.value).unwrap();
-    let (sd, _) = craft_ber::read(fields[1].value).unwrap();
-    let parts = craft_ber::children(sd.value).unwrap();
+    let (info, _) = bharat_ber::read(cms).unwrap();
+    let fields = bharat_ber::children(info.value).unwrap();
+    let (sd, _) = bharat_ber::read(fields[1].value).unwrap();
+    let parts = bharat_ber::children(sd.value).unwrap();
     let mut inner = Vec::new();
     for (i, p) in parts.iter().enumerate() {
         if i == parts.len() - 1 {
@@ -790,9 +790,9 @@ fn signed_data_with_anything_else_in_it_cant_be_checked() {
     let mut after = with_signers(&cms, &[&signers]);
     assert_eq!(verdict(&after, CONTENT, &anchors, "ada@example.org"), (Verdict::Verified, None));
     after = {
-        let (info, _) = craft_ber::read(&after).unwrap();
-        let fields = craft_ber::children(info.value).unwrap();
-        let (sd, _) = craft_ber::read(fields[1].value).unwrap();
+        let (info, _) = bharat_ber::read(&after).unwrap();
+        let fields = bharat_ber::children(info.value).unwrap();
+        let (sd, _) = bharat_ber::read(fields[1].value).unwrap();
         let mut inner = sd.value.to_vec();
         inner.extend(tlv(0x04, b"after"));
         let mut ci = fields[0].whole.to_vec();
@@ -827,27 +827,27 @@ fn signed_data_with_anything_else_in_it_cant_be_checked() {
 #[test]
 fn an_opaque_signatures_content_is_given_for_showing() {
     let cms = base64(body(OPAQUE));
-    let content = craft_ber::signed_content(&cms).unwrap();
+    let content = bharat_ber::signed_content(&cms).unwrap();
     assert!(String::from_utf8_lossy(&content).contains("Hello Bob"), "the signed MIME entity");
     let ber = base64(body(OPAQUE_BER));
-    assert_eq!(craft_ber::signed_content(&ber), Some(content));
+    assert_eq!(bharat_ber::signed_content(&ber), Some(content));
     let (_, detached) = halves(DETACHED);
-    assert_eq!(craft_ber::signed_content(&detached), None);
+    assert_eq!(bharat_ber::signed_content(&detached), None);
 }
 
 #[test]
 fn the_ber_reader_keeps_der_as_it_is_and_joins_pieces() {
-    assert_eq!(craft_ber::to_der(CA).as_deref(), Some(CA));
+    assert_eq!(bharat_ber::to_der(CA).as_deref(), Some(CA));
     // SEQUENCE (indefinite) { OCTET STRING in pieces "ab" "c" }.
     let ber = [0x30, 0x80, 0x24, 0x80, 0x04, 0x02, b'a', b'b', 0x04, 0x01, b'c', 0x00, 0x00, 0x00, 0x00];
-    assert_eq!(craft_ber::to_der(&ber), Some(vec![0x30, 0x05, 0x04, 0x03, b'a', b'b', b'c']));
+    assert_eq!(bharat_ber::to_der(&ber), Some(vec![0x30, 0x05, 0x04, 0x03, b'a', b'b', b'c']));
     // A definite length inside, written longer than it need be (a certificate's, say, which its
     // signature covers), is kept as it was written.
     let ber = [0x30, 0x80, 0x30, 0x81, 0x03, 0x02, 0x01, 0x05, 0x00, 0x00];
-    assert_eq!(craft_ber::to_der(&ber), Some(vec![0x30, 0x06, 0x30, 0x81, 0x03, 0x02, 0x01, 0x05]));
+    assert_eq!(bharat_ber::to_der(&ber), Some(vec![0x30, 0x06, 0x30, 0x81, 0x03, 0x02, 0x01, 0x05]));
     // Nesting past the bound is refused, not followed.
     let deep: Vec<u8> = std::iter::repeat_n([0x30u8, 0x80], 200).flatten().chain(std::iter::repeat_n(0u8, 400)).collect();
-    assert_eq!(craft_ber::to_der(&deep), None);
+    assert_eq!(bharat_ber::to_der(&deep), None);
 }
 
 proptest! {
@@ -859,7 +859,7 @@ proptest! {
         let context = Context { anchors: &anchors, from: "alice@smime.example", now: NOW, known: &[&bytes], coverage: Coverage::Whole };
         let _ = check(Signed::Opaque(&bytes), &context);
         let _ = check(Signed::Detached { content: b"x", signature: &bytes }, &context);
-        let _ = craft_ber::to_der(&bytes);
+        let _ = bharat_ber::to_der(&bytes);
         let _ = Anchors::new([&bytes]);
     }
 
@@ -885,9 +885,9 @@ proptest! {
 #[test]
 fn certificate_rejects_mismatched_outer_signature_algorithm() {
     assert!(crate::cert::Cert::from_der(CA).is_some());
-    let (outer, _) = craft_ber::read(CA).unwrap();
-    let fields = craft_ber::children(outer.value).unwrap();
-    let (algorithm, _) = craft_ber::read(fields[1].value).unwrap();
+    let (outer, _) = bharat_ber::read(CA).unwrap();
+    let fields = bharat_ber::children(outer.value).unwrap();
+    let (algorithm, _) = bharat_ber::read(fields[1].value).unwrap();
     assert_eq!(algorithm.tag, 0x06);
     let offset = CA.len() - outer.value.len() + fields[0].whole.len() + fields[1].whole.len() - fields[1].value.len() + algorithm.whole.len() - 1;
     let mut changed = CA.to_vec();
@@ -1039,7 +1039,7 @@ fn opaque_binary_content_is_verified_as_exact_octets_with_or_without_attributes(
         let mut data = info.content.decode_as::<SignedData>().unwrap();
         data.encap_content_info.econtent = Some(Any::encode_from(&OctetString::new(CHANGED.to_vec()).unwrap()).unwrap());
         let changed = ContentInfo { content_type: info.content_type, content: Any::encode_from(&data).unwrap() }.to_der().unwrap();
-        assert_eq!(craft_ber::signed_content(&changed).unwrap(), CHANGED);
+        assert_eq!(bharat_ber::signed_content(&changed).unwrap(), CHANGED);
         assert_eq!(check(Signed::Opaque(&changed), &context).unwrap().signature.verdict, Verdict::Changed);
     }
 }

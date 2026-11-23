@@ -81,8 +81,8 @@ pub(crate) type PacketFrames = fn(&[u8], u64) -> Option<u64>;
 /// every decoded sample is returned.
 ///
 /// ```no_run
-/// # fn demo(params: &craft_audio::CodecParams, packets: &[Vec<u8>]) -> craft_audio::Result<()> {
-/// use craft_audio::TrackDecoder;
+/// # fn demo(params: &bharat_audio::CodecParams, packets: &[Vec<u8>]) -> bharat_audio::Result<()> {
+/// use bharat_audio::TrackDecoder;
 ///
 /// let lookahead: Vec<&[u8]> = packets.iter().take(8).map(Vec::as_slice).collect();
 /// let mut dec = TrackDecoder::new(params, &lookahead)?;
@@ -133,7 +133,7 @@ impl TrackDecoder {
     /// ALAC needs its magic cookie in `extradata`.
     ///
     /// Codecs without a native packet decoder yet (FLAC, Vorbis) are
-    /// [`AudioError::Unsupported`]; `craft_audio::decode` decodes them through symphonia when the
+    /// [`AudioError::Unsupported`]; `bharat_audio::decode` decodes them through symphonia when the
     /// `symphonia` feature is on.
     pub fn new(params: &CodecParams, lookahead: &[&[u8]]) -> Result<TrackDecoder> {
         #[cfg(not(feature = "aac-decode"))]
@@ -597,7 +597,7 @@ fn unsupported(codec: CodecId) -> AudioError {
         // A codec this crate decodes, in a build without its feature.
         Some(f) => AudioError::Unsupported(format!("decoding {} needs the `{f}` feature", codec.name())),
         None if cfg!(feature = "symphonia") && matches!(codec, CodecId::Flac | CodecId::Vorbis) => {
-            AudioError::Unsupported(format!("no native {} packet decoder yet (craft_audio::decode reads it through symphonia)", codec.name()))
+            AudioError::Unsupported(format!("no native {} packet decoder yet (bharat_audio::decode reads it through symphonia)", codec.name()))
         }
         None => AudioError::Unsupported(format!("no native {} packet decoder yet", codec.name())),
     }
@@ -990,7 +990,7 @@ mod tests {
     /// One ADTS frame (stereo, 48 kHz, or channel configuration 0 with a PCE) of silence.
     #[cfg(feature = "aac-decode")]
     fn adts_frame(channel_config: u8) -> Vec<u8> {
-        use craft_media::bitstream::BitWriter;
+        use bharat_media::bitstream::BitWriter;
         let mut bw = BitWriter::new();
         if channel_config == 0 {
             bw.write_bits(5, 3); // ID_PCE
@@ -1034,7 +1034,7 @@ mod tests {
     #[cfg(feature = "aac-decode")]
     #[test]
     fn he_aac_is_found_in_the_lookahead_and_upsampled() {
-        use craft_media::bitstream::BitWriter;
+        use bharat_media::bitstream::BitWriter;
         let unit = |sbr: bool| {
             let mut bw = BitWriter::new();
             bw.write_bits(0, 7); // ID_SCE, tag 0
@@ -1065,7 +1065,7 @@ mod tests {
     fn an_sbr_rate_other_than_twice_the_core_plays_the_core() {
         // AOT 5, 24 kHz, mono, extension 44.1 kHz, core AOT 2
         let asc = {
-            use craft_media::bitstream::BitWriter;
+            use bharat_media::bitstream::BitWriter;
             let mut bw = BitWriter::new();
             for (value, bits) in [(5, 5), (6, 4), (1, 4), (4, 4), (2, 5), (0, 3)] {
                 bw.write_bits(value, bits);
@@ -1144,7 +1144,7 @@ mod tests {
     /// 22 bits (a CPE's are preceded by its `common_window` bit).
     #[cfg(feature = "aac-decode")]
     fn au_of(pce: Option<&aac::ProgramConfig>, elements: &[(u32, u32)]) -> Vec<u8> {
-        use craft_media::bitstream::BitWriter;
+        use bharat_media::bitstream::BitWriter;
         let mut bw = BitWriter::new();
         if let Some(pce) = pce {
             bw.write_bits(5, 3); // ID_PCE
@@ -1172,7 +1172,7 @@ mod tests {
     #[cfg(feature = "aac-decode")]
     #[test]
     fn sbr_in_a_later_adts_frame_of_a_packet_is_found() {
-        use craft_media::bitstream::BitWriter;
+        use bharat_media::bitstream::BitWriter;
         let unit = |sbr: bool| {
             let mut bw = BitWriter::new();
             bw.write_bits(0, 7); // ID_SCE, tag 0

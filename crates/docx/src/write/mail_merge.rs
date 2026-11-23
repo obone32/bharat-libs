@@ -1,7 +1,7 @@
 //! Preserve a mail-merge main document, never open its external sources or run its query.
 use std::collections::BTreeMap;
 
-use craft_wordmodel::Document;
+use bharat_wordmodel::Document;
 
 use super::PartRels;
 use crate::DocxError;

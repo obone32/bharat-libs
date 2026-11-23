@@ -6,8 +6,8 @@
 //! 6a76d280168ebad42198de184d03ac11bf31f647, MIT OR Apache-2.0).
 #![cfg(feature = "raster")]
 
-use craft_pdf::interpret::InterpreterSettings;
-use craft_pdf::{
+use bharat_pdf::interpret::InterpreterSettings;
+use bharat_pdf::{
     open_slice,
     raster::{self, Options, RenderCache},
 };

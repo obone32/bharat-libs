@@ -29,16 +29,16 @@ impl Default for Limits {
 /// The longest `mimetype` file read: media types are short, and a longer one is no media type.
 const MAX_MIMETYPE: u64 = 255;
 
-pub(crate) fn zip_err(e: craft_zip::Error) -> Error {
+pub(crate) fn zip_err(e: bharat_zip::Error) -> Error {
     match e {
-        craft_zip::Error::NotZip(m) | craft_zip::Error::Write(m) => Error::Zip(m),
+        bharat_zip::Error::NotZip(m) | bharat_zip::Error::Write(m) => Error::Zip(m),
         e => Error::Zip(e.to_string()),
     }
 }
 
 /// An OpenDocument package open for reading.
 pub struct Package<'a> {
-    zip: craft_zip::Archive<'a>,
+    zip: bharat_zip::Archive<'a>,
     /// The files' names (folders and names that are not text left out), in the ZIP's order.
     names: Vec<String>,
     limits: Limits,
@@ -54,9 +54,9 @@ impl<'a> Package<'a> {
         // This reader keeps its own count (a damaged file is charged what it cost), so the
         // archive's total is not used.
         let zip =
-            craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries, max_total_bytes: u64::MAX }).map_err(
+            bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries, max_total_bytes: u64::MAX }).map_err(
                 |e| match e {
-                    craft_zip::Error::TooManyEntries { declared, limit } => {
+                    bharat_zip::Error::TooManyEntries { declared, limit } => {
                         Error::TooManyEntries(format!("the package has {declared} entries, more than {limit}"))
                     }
                     e => zip_err(e),
@@ -217,8 +217,8 @@ impl PackageWriter {
 
     /// The package's bytes.
     pub fn finish(self) -> Result<Vec<u8>, Error> {
-        use craft_zip::Compression::{Deflated, Stored};
-        let mut z = craft_zip::Writer::new();
+        use bharat_zip::Compression::{Deflated, Stored};
+        let mut z = bharat_zip::Writer::new();
         z.add("mimetype", self.mime.as_bytes(), Stored).map_err(zip_err)?;
         let manifest = self.manifest_xml.unwrap_or_else(|| self.manifest.to_xml());
         z.add(MANIFEST_PATH, manifest.as_bytes(), Deflated).map_err(zip_err)?;

@@ -9,8 +9,8 @@ impl DockStyle {
     /// chrome in one place:
     ///
     /// ```
-    /// fn dock_style(ui: &egui::Ui) -> craft_ui::docking::DockStyle {
-    ///     craft_ui::docking::DockStyle::from_ui(ui).localized(|key| match key {
+    /// fn dock_style(ui: &egui::Ui) -> bharat_ui::docking::DockStyle {
+    ///     bharat_ui::docking::DockStyle::from_ui(ui).localized(|key| match key {
     ///         "dock.close" => Some("Fermer le panneau".to_owned()),
     ///         _ => None,
     ///     })
@@ -54,7 +54,7 @@ impl DockStyle {
     /// showing panels of the same title still share a name:
     ///
     /// ```
-    /// let style = craft_ui::docking::DockStyle::default().localized(|key| match key {
+    /// let style = bharat_ui::docking::DockStyle::default().localized(|key| match key {
     ///     "dock.moveGroup" => Some("Move the {name} tab group".to_owned()),
     ///     "dock.moveColumn" => Some("Move the {name} panel column".to_owned()),
     ///     _ => None,

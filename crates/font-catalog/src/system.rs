@@ -166,7 +166,7 @@ mod imp {
 
         #[test]
         fn store_files_leave_out_large_collections_and_deep_folders_and_follow_links() {
-            let dir = std::env::temp_dir().join(format!("craft-font-catalog-store-files-{}", std::process::id()));
+            let dir = std::env::temp_dir().join(format!("bharat-font-catalog-store-files-{}", std::process::id()));
             let _ = std::fs::remove_dir_all(&dir);
             let family = dir.join("source/family");
             std::fs::create_dir_all(&family).unwrap();
@@ -210,7 +210,7 @@ mod imp {
             use write_fonts::tables::os2::Os2;
             use write_fonts::types::{GlyphId, NameId};
             let font = |style: &str, weight: u16| {
-                let records = [(1, "Craft Store Sans".to_string()), (2, style.to_string()), (6, format!("CraftStoreSans-{style}"))]
+                let records = [(1, "Bharat Store Sans".to_string()), (2, style.to_string()), (6, format!("BharatStoreSans-{style}"))]
                     .map(|(id, text)| NameRecord::new(3, 1, 0x409, NameId::new(id), text.into()));
                 let mut builder = FontBuilder::new();
                 builder.add_table(&Name::new(records.into())).unwrap();
@@ -218,7 +218,7 @@ mod imp {
                 builder.add_table(&Cmap::from_mappings([('a', GlyphId::new(1))]).unwrap()).unwrap();
                 builder.build()
             };
-            let dir = std::env::temp_dir().join(format!("craft-font-catalog-load-store-{}", std::process::id()));
+            let dir = std::env::temp_dir().join(format!("bharat-font-catalog-load-store-{}", std::process::id()));
             let _ = std::fs::remove_dir_all(&dir);
             let family = dir.join("source/store-sans");
             std::fs::create_dir_all(&family).unwrap();
@@ -227,7 +227,7 @@ mod imp {
             }
             let mut collection = Collection::new(CollectionOptions { shared: false, system_fonts: false });
             load_store(&mut collection, &dir);
-            let fonts = collection.family_by_name("Craft Store Sans").unwrap().fonts().len();
+            let fonts = collection.family_by_name("Bharat Store Sans").unwrap().fonts().len();
             assert_eq!(fonts, 3);
             let _ = std::fs::remove_dir_all(&dir);
         }

@@ -3,7 +3,7 @@
 //! reader keeps accumulated.
 
 use crate::fixtures;
-use craft_docx::read;
+use bharat_docx::read;
 
 const W_NS: &str = r#"xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships""#;
 

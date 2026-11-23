@@ -11,15 +11,15 @@
 //!
 //! A [`Decoder`] is made from the 816-byte file header and holds one picture of palette indices.
 //! Each video frame updates a rectangle of it: [`Decoder::decode`] takes the rectangle and the
-//! palette flag from the frame's record in the file's table of contents (`craft_media::vmd`
+//! palette flag from the frame's record in the file's table of contents (`bharat_media::vmd`
 //! reads both) and the frame data. The first frame of a file paints the whole picture; every
 //! later frame depends on the ones before it, so decoding starts at the first frame.
 //!
 //! ```no_run
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! # let bytes: Vec<u8> = Vec::new();
-//! use craft_media::vmd::{FrameKind, open};
-//! use craft_video::vmd::{Decoder, Rect};
+//! use bharat_media::vmd::{FrameKind, open};
+//! use bharat_video::vmd::{Decoder, Rect};
 //!
 //! let file = open(&bytes)?;
 //! let mut decoder = Decoder::new(file.header_bytes())?;
@@ -85,7 +85,7 @@ pub struct Rect {
 }
 
 impl From<(u16, u16, u16, u16)> for Rect {
-    /// From `(left, top, right, bottom)`, as `craft_media::vmd::VmdFile::picture_rect` returns
+    /// From `(left, top, right, bottom)`, as `bharat_media::vmd::VmdFile::picture_rect` returns
     /// it.
     fn from((left, top, right, bottom): (u16, u16, u16, u16)) -> Rect {
         Rect { left, top, right, bottom }

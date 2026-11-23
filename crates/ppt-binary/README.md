@@ -1,19 +1,19 @@
-# craft-ppt-binary
+# bharat-ppt-binary
 
 Reader for the PowerPoint 97-2003 binary file format (`.ppt`, `.pot` and `.pps`) into the
-`craft-pptx` presentation model. It is DeckCraft's reader, on `craft-cfb` for the compound file.
+`bharat-pptx` presentation model. It is DeckCraft's reader, on `bharat-cfb` for the compound file.
 Import only: there is no `.ppt` writer.
 
 | Document | Used for |
 |---|---|
 | [MS-PPT] PowerPoint (.ppt) Binary File Format (Microsoft Open Specifications) | the Current User stream, the edit chain and persist directories, documents, masters, slides, notes, text and its styles, headers and footers |
 | [MS-ODRAW] Office Drawing Binary File Formats | shapes, their property tables and geometry, the BLIP store and its pictures |
-| [MS-CFB] Compound File Binary File Format | through `craft-cfb` |
+| [MS-CFB] Compound File Binary File Format | through `bharat-cfb` |
 
 ```rust
 // Not a compound file: an error, never a panic.
-assert!(!craft_ppt_binary::sniff(b"not a .ppt"));
-assert!(craft_ppt_binary::import(b"not a .ppt", &craft_pptx::Plain).is_err());
+assert!(!bharat_ppt_binary::sniff(b"not a .ppt"));
+assert!(bharat_ppt_binary::import(b"not a .ppt", &bharat_pptx::Plain).is_err());
 ```
 
 - `sniff(bytes)`, `import(bytes, &defaults)` and `import_checked(bytes, &defaults)`, which also
@@ -49,12 +49,12 @@ its own background: a solid colour, or none when the slide's background has no f
 says whether it shows the master's objects and whether it uses the master's colour scheme or its
 own. The slides are empty: shapes, placeholders and their text, pictures and notes come later.
 
-The caller's `craft_pptx::Defaults` supplies the master each of the file's masters starts from:
+The caller's `bharat_pptx::Defaults` supplies the master each of the file's masters starts from:
 its layouts and placeholders. The file's masters then place and style the placeholders that
-master has. With `craft_pptx::Plain` (one blank layout, no placeholders), the slides still read
+master has. With `bharat_pptx::Plain` (one blank layout, no placeholders), the slides still read
 with their own boxes.
 
 The reader was written for DeckCraft (storytold/deckcraft#1137); the history of
 `crates/ppt-binary` names its authors. Its tests build `.ppt` files from records; no file made
 by PowerPoint is used. One optional test reads real PowerPoint 95 files from the directory
-`CRAFT_PPT95_SAMPLES` names, and does nothing when it is unset; no such file is in the repository.
+`BHARAT_PPT95_SAMPLES` names, and does nothing when it is unset; no such file is in the repository.

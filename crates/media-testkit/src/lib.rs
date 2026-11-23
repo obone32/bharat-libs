@@ -1,23 +1,23 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
-//! Oracle-test support for the craft-libs media crates (craft-media, craft-audio, and the video
+//! Oracle-test support for the bharat-libs media crates (bharat-media, bharat-audio, and the video
 //! crate to come): ffmpeg/ffprobe discovery, the skip-or-fail rule, and fixture locations.
 //! ffmpeg is used only as an external fixture generator and oracle (never linked). Test support
 //! only: unpublished, and used as a dev-dependency.
 //!
-//! Tool search order: `CRAFT_MEDIA_FFMPEG` / `CRAFT_MEDIA_FFPROBE` (an explicit path; a wrong
+//! Tool search order: `BHARAT_MEDIA_FFMPEG` / `BHARAT_MEDIA_FFPROBE` (an explicit path; a wrong
 //! path fails the test), then `PATH`, then well-known install directories. A missing tool, a
 //! failed fixture generator or a failed ffprobe run prints `SKIPPED` and the test passes, unless
-//! `CRAFT_MEDIA_REQUIRE_ORACLES=1` is set: then each of these fails the test.
-//! Fixtures are generated into `$CRAFT_MEDIA_FIXTURES_DIR` or `<workspace>/target/fixtures`, one
+//! `BHARAT_MEDIA_REQUIRE_ORACLES=1` is set: then each of these fails the test.
+//! Fixtures are generated into `$BHARAT_MEDIA_FIXTURES_DIR` or `<workspace>/target/fixtures`, one
 //! directory per crate or format, and never committed.
 //!
 //! [`hostile::hammer`] runs a parser over every truncation and mutations of a valid input and fails
-//! on a panic or a case that does not finish in time; `CRAFT_MEDIA_HOSTILE_MULT=10` runs ten times
-//! the iterations and `CRAFT_HOSTILE_DIVISOR=8` an eighth of them. It and [`with_deadline`] call
-//! `craft_testkit`.
+//! on a panic or a case that does not finish in time; `BHARAT_MEDIA_HOSTILE_MULT=10` runs ten times
+//! the iterations and `BHARAT_HOSTILE_DIVISOR=8` an eighth of them. It and [`with_deadline`] call
+//! `bharat_testkit`.
 //! [`vmd`] writes Sierra VMD fixtures, which ffmpeg can read but not write.
 //!
-//! Failing loudly is what a test helper is for: a wrong `CRAFT_MEDIA_*` setting or an unwritable
+//! Failing loudly is what a test helper is for: a wrong `BHARAT_MEDIA_*` setting or an unwritable
 //! fixture directory panics, which fails the test that asked.
 
 pub mod hostile;
@@ -28,7 +28,7 @@ use std::process::Command;
 use std::sync::OnceLock;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-const REQUIRE_ENV: &str = "CRAFT_MEDIA_REQUIRE_ORACLES";
+const REQUIRE_ENV: &str = "BHARAT_MEDIA_REQUIRE_ORACLES";
 
 const KNOWN_DIRS: &[&str] = &[
     "/opt/homebrew/bin",
@@ -42,7 +42,7 @@ const KNOWN_DIRS: &[&str] = &[
 ];
 
 fn env_var(name: &str) -> String {
-    format!("CRAFT_MEDIA_{}", name.to_ascii_uppercase())
+    format!("BHARAT_MEDIA_{}", name.to_ascii_uppercase())
 }
 
 #[allow(clippy::panic)]
@@ -114,20 +114,20 @@ fn tool_or_skip(name: &str) -> Option<PathBuf> {
     tool(name).or_else(|| skip(&format!("{name} not found (set {} or put {name} on PATH)", env_var(name))))
 }
 
-/// ffmpeg, or `None` after printing `SKIPPED` (a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// ffmpeg, or `None` after printing `SKIPPED` (a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 pub fn ffmpeg() -> Option<PathBuf> {
     tool_or_skip("ffmpeg")
 }
 
-/// ffprobe, or `None` after printing `SKIPPED` (a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// ffprobe, or `None` after printing `SKIPPED` (a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 pub fn ffprobe() -> Option<PathBuf> {
     tool_or_skip("ffprobe")
 }
 
-/// `$CRAFT_MEDIA_FIXTURES_DIR/<name>` or `<workspace>/target/fixtures/<name>`, created if missing.
+/// `$BHARAT_MEDIA_FIXTURES_DIR/<name>` or `<workspace>/target/fixtures/<name>`, created if missing.
 #[allow(clippy::unwrap_used)]
 pub fn fixture_subdir(name: &str) -> PathBuf {
-    let d = match std::env::var_os("CRAFT_MEDIA_FIXTURES_DIR").filter(|v| !v.is_empty()) {
+    let d = match std::env::var_os("BHARAT_MEDIA_FIXTURES_DIR").filter(|v| !v.is_empty()) {
         Some(d) => PathBuf::from(d),
         None => {
             let here = Path::new(env!("CARGO_MANIFEST_DIR"));
@@ -149,7 +149,7 @@ pub fn private_dir(tag: &str) -> PathBuf {
     let nanos = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_nanos());
     for _ in 0..100 {
         let n = N.fetch_add(1, Ordering::Relaxed);
-        let d = std::env::temp_dir().join(format!("craft-media-{tag}-{}-{nanos:x}-{n}", std::process::id()));
+        let d = std::env::temp_dir().join(format!("bharat-media-{tag}-{}-{nanos:x}-{n}", std::process::id()));
         match std::fs::create_dir(&d) {
             Ok(()) => return d,
             Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {}
@@ -205,7 +205,7 @@ fn parse_has_encoder(stdout: &str, encoder: &str) -> bool {
 }
 
 /// Report a skipped test that is not an oracle check (an unsupported platform or an optional
-/// encoder capability). Unlike [`skip`], this never fails under `CRAFT_MEDIA_REQUIRE_ORACLES=1`.
+/// encoder capability). Unlike [`skip`], this never fails under `BHARAT_MEDIA_REQUIRE_ORACLES=1`.
 pub fn skip_test(what: &str, reason: &str) {
     eprintln!("SKIPPED ({what}): {reason}");
 }
@@ -220,19 +220,19 @@ pub fn set_progress(label: &str) {
     eprintln!("PROGRESS: {label}");
 }
 
-/// Run closure with an execution deadline of `secs` seconds, which `CRAFT_TEST_TIMEOUT_SECS`
-/// replaces, through [`craft_testkit::with_deadline`]. Panics when the closure does not finish in
+/// Run closure with an execution deadline of `secs` seconds, which `BHARAT_TEST_TIMEOUT_SECS`
+/// replaces, through [`bharat_testkit::with_deadline`]. Panics when the closure does not finish in
 /// time, when `secs` is zero, or when the variable is not a whole number of seconds above zero.
 #[cfg(not(target_arch = "wasm32"))]
 #[track_caller]
 pub fn with_deadline<F: FnOnce() + Send + 'static>(secs: u64, f: F) {
-    with_limit(craft_testkit::DeadlineLimit::new(std::time::Duration::from_secs(secs)), f);
+    with_limit(bharat_testkit::DeadlineLimit::new(std::time::Duration::from_secs(secs)), f);
 }
 
 #[cfg(not(target_arch = "wasm32"))]
 #[track_caller]
-fn with_limit<F: FnOnce() + Send + 'static>(limit: craft_testkit::DeadlineLimit<'_>, f: F) {
-    craft_testkit::with_deadline(limit, "the test body", f);
+fn with_limit<F: FnOnce() + Send + 'static>(limit: bharat_testkit::DeadlineLimit<'_>, f: F) {
+    bharat_testkit::with_deadline(limit, "the test body", f);
 }
 
 /// Return fixture directory for a crate/category, creating it if needed.
@@ -251,7 +251,7 @@ pub mod fixtures {
 
     /// Generate fixture `out` using generator closure if it does not already exist. A generator
     /// that returns `false`, or whose output cannot be moved into place, skips (see
-    /// [`skip`](super::skip)): a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`, so a required
+    /// [`skip`](super::skip)): a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`, so a required
     /// oracle run cannot pass with a fixture missing.
     pub fn generate<F: FnOnce(&Path) -> bool>(out: &Path, f: F) -> Option<PathBuf> {
         generate_with(out, super::oracles_required(), f)
@@ -330,7 +330,7 @@ Encoders:
     #[should_panic(expected = "the test body did not finish within 1s")]
     fn with_deadline_times_out() {
         let (_keep, rx) = std::sync::mpsc::channel::<()>();
-        let limit = craft_testkit::DeadlineLimit::new(std::time::Duration::from_secs(1)).with_variable("CRAFT_MEDIA_TESTKIT_UNSET_IN_TESTS");
+        let limit = bharat_testkit::DeadlineLimit::new(std::time::Duration::from_secs(1)).with_variable("BHARAT_MEDIA_TESTKIT_UNSET_IN_TESTS");
         with_limit(limit, move || {
             let _ = rx.recv();
         });
@@ -346,12 +346,12 @@ Encoders:
     fn with_deadline_names_a_bad_timeout_variable() {
         let out = Command::new(std::env::current_exe().unwrap())
             .args(["--exact", "tests::with_deadline_completes", "--nocapture", "--test-threads=1"])
-            .env("CRAFT_TEST_TIMEOUT_SECS", "soon")
+            .env("BHARAT_TEST_TIMEOUT_SECS", "soon")
             .output()
             .unwrap();
         let printed = format!("{}{}", String::from_utf8_lossy(&out.stdout), String::from_utf8_lossy(&out.stderr));
         assert!(printed.contains("running 1 test"), "the child did not run the test:\n{printed}");
         assert!(!out.status.success(), "the child passed:\n{printed}");
-        assert!(printed.contains(r#"CRAFT_TEST_TIMEOUT_SECS="soon" is not a whole number of seconds"#), "{printed}");
+        assert!(printed.contains(r#"BHARAT_TEST_TIMEOUT_SECS="soon" is not a whole number of seconds"#), "{printed}");
     }
 }

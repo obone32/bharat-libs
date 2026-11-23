@@ -1,8 +1,8 @@
 //! PowerPoint 95 files built here from records, written from the format notes (never files made
-//! by PowerPoint), and an optional check over real ones named by `CRAFT_PPT95_SAMPLES`.
+//! by PowerPoint), and an optional check over real ones named by `BHARAT_PPT95_SAMPLES`.
 #![allow(clippy::unwrap_used)]
 
-use craft_pptx::{Background, ColorRef, Fill, LayoutType, Presentation, Rgba, SchemeSlot};
+use bharat_pptx::{Background, ColorRef, Fill, LayoutType, Presentation, Rgba, SchemeSlot};
 
 use super::rt;
 use crate::tests::{AppDefaults, build};
@@ -368,12 +368,12 @@ fn slides_the_count_says_are_missing_are_named() {
     assert_eq!(checked(u32::MAX).1.len(), super::MAX_SLIDES);
 }
 
-/// Real PowerPoint 95 files, when `CRAFT_PPT95_SAMPLES` names a directory of them (they are not in
+/// Real PowerPoint 95 files, when `BHARAT_PPT95_SAMPLES` names a directory of them (they are not in
 /// the repository). Each imports with the slide count and size its DocumentAtom gives, and nothing
 /// lost.
 #[test]
 fn powerpoint_95_samples() {
-    let Some(dir) = std::env::var_os("CRAFT_PPT95_SAMPLES") else { return };
+    let Some(dir) = std::env::var_os("BHARAT_PPT95_SAMPLES") else { return };
     let mut seen = 0;
     for entry in std::fs::read_dir(&dir).unwrap() {
         let path = entry.unwrap().path();
@@ -384,7 +384,7 @@ fn powerpoint_95_samples() {
         let bytes = std::fs::read(&path).unwrap();
         let (p, lost) = crate::import_checked(&bytes, &AppDefaults).unwrap_or_else(|e| panic!("{name}: {e}"));
         assert!(lost.is_empty(), "{name}: {lost:?}");
-        let file = craft_cfb::CompoundFile::open(&bytes).unwrap();
+        let file = bharat_cfb::CompoundFile::open(&bytes).unwrap();
         let stream = file.read_path_capped("PowerPoint Document", bytes.len() as u64).unwrap();
         let atom = super::document(&stream).and_then(|d| d.child(rt::DOCUMENT_ATOM)).unwrap();
         assert_eq!(p.slides.len(), atom.u32(32).unwrap() as usize, "{name}");

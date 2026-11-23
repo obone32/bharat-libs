@@ -1,6 +1,6 @@
 //! Portable standalone HTML document writer (no PDF layout, reading order, or export policy).
 
-pub use craft_mime::transfer::base64;
+pub use bharat_mime::transfer::base64;
 
 /// Whether a character may appear in the output. XML 1.0 forbids the C0 controls other than tab,
 /// line feed and carriage return, and U+FFFE/U+FFFF.

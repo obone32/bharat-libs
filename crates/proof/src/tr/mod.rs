@@ -155,7 +155,7 @@ mod tests {
     }
 
     /// Ignore words in UPPERCASE reaches Turkish's own entry points too, so `NATO` and `TBMM` are
-    /// right by default and checked when the option is off (craft-libs#495 review).
+    /// right by default and checked when the option is off (bharat-libs#495 review).
     #[test]
     fn turkish_ignores_capitals_unless_told_otherwise() {
         test_dict::install();

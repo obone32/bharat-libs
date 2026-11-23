@@ -1,5 +1,5 @@
 [package]
-name = "craft-jsonrpc"
+name = "bharat-jsonrpc"
 description = "Bounded JSON-RPC 2.0 server envelopes without transport or application routing"
 version.workspace = true
 edition.workspace = true

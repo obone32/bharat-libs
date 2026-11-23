@@ -607,7 +607,7 @@ mod spline_tests {
 
     // The previous importer accepted cubic fits based on seven fixed probes, then bisected the
     // parameter interval. Keep this test-only reference to compare real legacy output with the
-    // conservative fit used by craft-dxf.
+    // conservative fit used by bharat-dxf.
     fn prior_fit(path: &mut BezPath, bezier: &[Homogeneous], t0: f64, t1: f64, tolerance: f64, depth: u32) -> Option<()> {
         let (p0, d0) = eval_spline_bezier(bezier, t0)?;
         let (p3, d3) = eval_spline_bezier(bezier, t1)?;

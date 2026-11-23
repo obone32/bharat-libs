@@ -5,7 +5,7 @@ mod common;
 use std::cell::Cell;
 
 use common::*;
-use craft_doc::{Error, Limits, info, info_with_cancel, outline, outline_with_cancel, renditions, renditions_with_cancel};
+use bharat_doc::{Error, Limits, info, info_with_cancel, outline, outline_with_cancel, renditions, renditions_with_cancel};
 
 type Read = fn(&[u8], &Limits, &dyn Fn() -> bool) -> Result<(), Error>;
 
@@ -140,7 +140,7 @@ fn controlled_full_composites_preserve_provenance_and_selected_reads() {
     let manifest = pcraft_manifest(1, "[]", r#", "full_composite":"composite/full.png", "composite":"composite/preview.png""#);
     let file = zip(&[store("manifest.json", manifest.as_bytes()), store("composite/full.png", &full)]);
     let limits = Limits::default();
-    let selected = craft_doc::rendition(&file, craft_doc::RenditionKind::Composite, &limits).unwrap().unwrap();
+    let selected = bharat_doc::rendition(&file, bharat_doc::RenditionKind::Composite, &limits).unwrap().unwrap();
     let controlled = renditions_with_cancel(&file, &limits, &|| false).unwrap();
     assert_eq!(controlled, vec![selected]);
     assert_eq!(controlled[0].bytes, full);

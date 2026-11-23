@@ -1,6 +1,6 @@
 //! Channel labels, text metadata and padding in the DSF and DSDIFF readers and writers.
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
-use craft_audio::dsd::{encode_dsdiff, encode_dsf, read_metadata, read_raw};
+use bharat_audio::dsd::{encode_dsdiff, encode_dsf, read_metadata, read_raw};
 
 const RATE: u32 = 2_822_400;
 

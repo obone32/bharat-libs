@@ -8,7 +8,7 @@ use crate::text::{
 };
 use crate::{Xfrm, pt_to_emu};
 
-use craft_xml::Writer;
+use bharat_xml::Writer;
 
 use crate::part::Sink;
 use crate::xmlx::{A, TagExt};

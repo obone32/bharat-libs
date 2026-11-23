@@ -1,9 +1,9 @@
 //! ADPCM (feature `adpcm`): every family decodes what ffmpeg's encoder writes to ffmpeg's own
 //! samples, and ffmpeg decodes what our encoder writes to our own decoder's samples (oracle;
-//! skipped when ffmpeg is absent, a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`); plus the
+//! skipped when ffmpeg is absent, a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`); plus the
 //! round trip through our own encoder and decoder, and damaged input.
 
-use craft_audio::adpcm::{ima, ms, swf, yamaha};
+use bharat_audio::adpcm::{ima, ms, swf, yamaha};
 use std::path::Path;
 use std::process::Command;
 
@@ -340,8 +340,8 @@ fn wav(tag: u16, channels: usize, align: usize, bits: u16, extra: &[u8], data: &
 
 #[test]
 fn we_decode_what_ffmpeg_encodes_to_the_samples_ffmpeg_decodes() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("adpcm");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("adpcm");
     for channels in [1usize, 2] {
         let x = signal(channels, 30_000);
         let pcm = dir.join(format!("in{channels}.pcm"));
@@ -397,8 +397,8 @@ fn we_decode_what_ffmpeg_encodes_to_the_samples_ffmpeg_decodes() {
 
 #[test]
 fn ffmpeg_decodes_what_we_encode_to_the_samples_we_decode() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("adpcm");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("adpcm");
     for channels in [1usize, 2] {
         let x = signal(channels, 12_000);
         let coefs: Vec<u8> = ms::COEFFICIENTS.iter().flat_map(|&(a, b)| [a as i16, b as i16].into_iter().flat_map(i16::to_le_bytes)).collect();
@@ -479,8 +479,8 @@ fn flv(stereo: bool, tags: &[Vec<u8>]) -> Vec<u8> {
 
 #[test]
 fn flash_adpcm_matches_ffmpeg_in_both_directions() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("adpcm");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("adpcm");
     for channels in [1usize, 2] {
         let x = signal(channels, 4096 * 3);
         let pcm = dir.join(format!("swf_in{channels}.pcm"));

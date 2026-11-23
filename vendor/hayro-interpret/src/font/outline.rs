@@ -15,9 +15,9 @@ pub struct OutlineFontData {
     pub data: crate::font::FontData,
     /// Cache key for font deduplication.
     pub cache_key: u128,
-    /// Craft patch (flatten): the face index of `data` in a font collection.
+    /// Bharat patch (flatten): the face index of `data` in a font collection.
     pub index: u32,
-    /// Craft patch (flatten): true when `data` comes from the PDF (`FontFile*`); false when it
+    /// Bharat patch (flatten): true when `data` comes from the PDF (`FontFile*`); false when it
     /// is the font resolver's substitute for a font the PDF doesn't embed.
     pub embedded: bool,
     /// PostScript name (e.g., "TimesNewRomanPS-BoldMT").
@@ -127,7 +127,7 @@ impl OutlineFont {
     /// Returns None for Type1 (`FontFile`), standard and non-embedded simple fonts.
     pub(crate) fn font_data(&self) -> Option<OutlineFontData> {
         match self {
-            // Craft patch (flatten): Type1C (`FontFile3`) fonts hand out their bare CFF bytes.
+            // Bharat patch (flatten): Type1C (`FontFile3`) fonts hand out their bare CFF bytes.
             // The font dictionary's descriptive fields are not read.
             Self::Type1(t) => Some(OutlineFontData {
                 data: t.font_data()?,
@@ -143,7 +143,7 @@ impl OutlineFont {
             Self::TrueType(t) => Some(OutlineFontData {
                 data: t.font_data()?,
                 cache_key: t.cache_key(),
-                // Craft patch (flatten): only an embedded `FontFile2`, read as face 0, has bytes.
+                // Bharat patch (flatten): only an embedded `FontFile2`, read as face 0, has bytes.
                 index: 0,
                 embedded: true,
                 postscript_name: t.postscript_name().map(|s| s.to_string()),
@@ -155,7 +155,7 @@ impl OutlineFont {
             Self::Type0(t) => Some(OutlineFontData {
                 data: t.font_data()?,
                 cache_key: t.cache_key(),
-                // Craft patch (flatten): a substitute from the resolver is not embedded.
+                // Bharat patch (flatten): a substitute from the resolver is not embedded.
                 index: t.font_index(),
                 embedded: t.is_embedded(),
                 postscript_name: t.postscript_name().map(|s| s.to_string()),

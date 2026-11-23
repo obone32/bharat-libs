@@ -1,4 +1,4 @@
-//! A build with no Language data embedded (no `CRAFT_I18N_DIR`): every public entry point still
+//! A build with no Language data embedded (no `BHARAT_I18N_DIR`): every public entry point still
 //! works and never panics. English spelling still marks misspellings, against an English
 //! Hunspell dictionary installed on the system or else the Moby word list built into the crate;
 //! the dialect variants and hyphenation that need the data are off, and grammar (code, not data)
@@ -74,7 +74,7 @@ fn english_spelling_still_marks_misspellings() {
         assert!(matches!(source, Some(EnglishSource::Hunspell(_) | EnglishSource::CoreList)), "{l:?}");
         // Any English dictionary marks junk and knows `the`; the word-by-word results below are
         // the built-in list's, so an installed dictionary (with `teh`, without `because`) is
-        // not held to them (craft-libs#482 and #487 reviews).
+        // not held to them (bharat-libs#482 and #487 reviews).
         assert!(!crate::is_correct_in("zxqvbnwk", l) && crate::is_correct_in("the", l), "{l:?}");
         if !matches!(source, Some(EnglishSource::CoreList)) {
             continue;

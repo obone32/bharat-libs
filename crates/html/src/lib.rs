@@ -15,7 +15,7 @@
 //! Input is hostile. Nothing here panics on any string, and the work is linear in the input.
 //!
 //! ```
-//! use craft_html::{Lexer, Options, Token, unescape};
+//! use bharat_html::{Lexer, Options, Token, unescape};
 //!
 //! let opts = Options { drop: &["script"], ..Options::default() };
 //! let mut text = String::new();

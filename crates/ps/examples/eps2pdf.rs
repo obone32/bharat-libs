@@ -1,4 +1,4 @@
-//! `cargo run -p craft-ps --features read --example eps2pdf -- in.eps out.pdf`: convert one EPS.
+//! `cargo run -p bharat-ps --features read --example eps2pdf -- in.eps out.pdf`: convert one EPS.
 
 fn main() -> std::process::ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -14,7 +14,7 @@ fn main() -> std::process::ExitCode {
         }
     };
     let t = std::time::Instant::now();
-    match craft_ps::read::eps_to_pdf(&bytes, craft_ps::read::Limits::default()) {
+    match bharat_ps::read::eps_to_pdf(&bytes, bharat_ps::read::Limits::default()) {
         Ok(c) => {
             eprintln!(
                 "{input}: {:.0} ms, bbox {:?}, {} warnings, {} steps, {} KiB",

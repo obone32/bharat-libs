@@ -4,9 +4,9 @@
 
 use crate::text::tests::{NS_T, content_of, package};
 use crate::text::{export, import};
-use craft_wordmodel::para::{InlineObject, OBJ, ShapeKind, Wrap};
-use craft_wordmodel::props::Rgb;
-use craft_wordmodel::{Document, Paragraph, para_block};
+use bharat_wordmodel::para::{InlineObject, OBJ, ShapeKind, Wrap};
+use bharat_wordmodel::props::Rgb;
+use bharat_wordmodel::{Document, Paragraph, para_block};
 
 const NS_D: &str =
     r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0""#;
@@ -88,7 +88,7 @@ fn shapes_open_with_their_kind_size_look_and_text() {
     let Some(InlineObject::Shape { float, .. }) = d.body[2].as_para().unwrap().objects.first() else { panic!() };
     assert_eq!((float.x, float.y), (72.0, 0.0));
     assert_eq!(float.wrap, Wrap::BehindText);
-    let Some(InlineObject::Shape { fill: Some(craft_wordmodel::fill::Fill::Solid { transparency, .. }), .. }) =
+    let Some(InlineObject::Shape { fill: Some(bharat_wordmodel::fill::Fill::Solid { transparency, .. }), .. }) =
         d.body[0].as_para().unwrap().objects.first()
     else {
         panic!("the first shape has a solid fill");
@@ -107,7 +107,7 @@ fn shapes_round_trip() {
     let back = import(&bytes).unwrap();
     assert_eq!(shapes(&back), shapes(&d));
     assert!(c.contains("draw:opacity=\"50%\""));
-    let Some(InlineObject::Shape { fill: Some(craft_wordmodel::fill::Fill::Solid { transparency, .. }), .. }) =
+    let Some(InlineObject::Shape { fill: Some(bharat_wordmodel::fill::Fill::Solid { transparency, .. }), .. }) =
         back.body[0].as_para().unwrap().objects.first()
     else {
         panic!("the first shape has a solid fill");
@@ -142,7 +142,7 @@ fn every_wordcraft_shape_kind_is_written_and_read_back() {
             kind: k,
             w: 50.0,
             h: 40.0,
-            fill: Some(craft_wordmodel::fill::Fill::solid(Rgb(1, 2, 3))),
+            fill: Some(bharat_wordmodel::fill::Fill::solid(Rgb(1, 2, 3))),
             stroke: Some(Rgb(4, 5, 6)),
             stroke_width: 1.5,
             float: Default::default(),
@@ -152,7 +152,7 @@ fn every_wordcraft_shape_kind_is_written_and_read_back() {
             extra: Default::default(),
         });
     }
-    p.runs = vec![craft_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
     let mut d = Document::new();
     d.body = vec![para_block(p)];
     let back = import(&export(&d).unwrap()).unwrap();
@@ -213,7 +213,7 @@ fn a_frame_shape_is_written_as_a_border_with_a_hole() {
         kind: ShapeKind::Frame,
         w: 200.0,
         h: 100.0,
-        fill: Some(craft_wordmodel::fill::Fill::solid(Rgb(1, 2, 3))),
+        fill: Some(bharat_wordmodel::fill::Fill::solid(Rgb(1, 2, 3))),
         stroke: None,
         stroke_width: 0.0,
         float: Default::default(),
@@ -221,9 +221,9 @@ fn a_frame_shape_is_written_as_a_border_with_a_hole() {
         freeform: None,
         effects: Default::default(),
         // A border a tenth of the shorter side: 10 pt.
-        extra: craft_wordmodel::connector::ShapeExtra { corner: Some(10_000), ..Default::default() },
+        extra: bharat_wordmodel::connector::ShapeExtra { corner: Some(10_000), ..Default::default() },
     });
-    p.runs = vec![craft_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
     let mut d = Document::new();
     d.body = vec![para_block(p)];
     let odt = export(&d).unwrap();

@@ -1,7 +1,7 @@
 //! Original OOXML fixtures. ScreenTips are hyperlink data, not run formatting.
 use std::io::{Read, Write};
 
-use craft_wordmodel::{CharProps, Pos};
+use bharat_wordmodel::{CharProps, Pos};
 
 fn package() -> Vec<u8> {
     let mut zip = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
@@ -27,10 +27,10 @@ fn package() -> Vec<u8> {
 
 #[test]
 fn hyperlink_screentips_survive_edited_saves_without_merging_different_hints() {
-    let mut doc = craft_docx::read(&package()).unwrap();
+    let mut doc = bharat_docx::read(&package()).unwrap();
     for _ in 0..2 {
         doc.insert_text(&Pos::body(0, 0), "Edit. ", &CharProps::default()).unwrap();
-        let bytes = craft_docx::write(&doc).unwrap();
+        let bytes = bharat_docx::write(&doc).unwrap();
         let mut xml = String::new();
         zip::ZipArchive::new(std::io::Cursor::new(&bytes)).unwrap().by_name("word/document.xml").unwrap().read_to_string(&mut xml).unwrap();
         assert_eq!(xml.matches("w:tooltip=").count(), 3, "{xml}");
@@ -38,7 +38,7 @@ fn hyperlink_screentips_survive_edited_saves_without_merging_different_hints() {
             assert!(xml.contains(&format!("w:tooltip=\"{tip}\"")), "{xml}");
         }
         assert!(xml.contains("w:anchor=\"target\""));
-        doc = craft_docx::read(&bytes).unwrap();
+        doc = bharat_docx::read(&bytes).unwrap();
         let paragraph = doc.body[0].as_para().unwrap();
         for (text, tip) in [("First", "Original café & \"Ω\""), ("Second", "Different hint"), ("Internal", "Internal hint")] {
             let offset = paragraph.text.find(text).unwrap();
@@ -61,7 +61,7 @@ fn oversized_screentips_share_one_utf8_bounded_value_and_save_at_the_same_size()
     let mut zip = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
     zip.start_file("word/document.xml", zip::write::SimpleFileOptions::default()).unwrap();
     zip.write_all(xml.as_bytes()).unwrap();
-    let mut doc = craft_docx::read(&zip.finish().unwrap().into_inner()).unwrap();
+    let mut doc = bharat_docx::read(&zip.finish().unwrap().into_inner()).unwrap();
     let p = doc.body[0].as_para().unwrap();
     assert_eq!(p.runs.len(), 32);
     let first = p.runs[0].props.link_tooltip.as_ref().unwrap();
@@ -71,7 +71,7 @@ fn oversized_screentips_share_one_utf8_bounded_value_and_save_at_the_same_size()
     // Native model data can arrive without going through the XML reader.
     let props = CharProps { link: Some("#target".into()), link_tooltip: Some(Arc::from(tip)), ..CharProps::default() };
     doc.insert_text(&Pos::body(0, 0), "Native ", &props).unwrap();
-    let saved = craft_docx::write(&doc).unwrap();
+    let saved = bharat_docx::write(&doc).unwrap();
     let mut xml = String::new();
     zip::ZipArchive::new(std::io::Cursor::new(&saved)).unwrap().by_name("word/document.xml").unwrap().read_to_string(&mut xml).unwrap();
     assert_eq!(xml.matches("w:tooltip=").count(), 1);

@@ -3,9 +3,9 @@
 //! or a DNG 1.7 JPEG XL preview IFD stored as a single tile/strip (a standalone `.jxl` file, as the spec
 //! recommends for previews).
 
-use craft_tiff::image::chunk_bytes;
-use craft_tiff::tags as t;
-use craft_tiff::{Ifd, Tiff, makernote};
+use bharat_tiff::image::chunk_bytes;
+use bharat_tiff::tags as t;
+use bharat_tiff::{Ifd, Tiff, makernote};
 
 /// Colour space of an embedded JPEG when the enclosing raw supplies it instead of the JPEG.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -28,8 +28,8 @@ pub struct DecodedPreview {
 /// Decode the largest usable rendered JPEG XL preview in a DNG, within `limits`.
 #[cfg(feature = "jxl")]
 pub fn embedded_jxl_preview(bytes: &[u8], limits: &crate::Limits) -> Option<DecodedPreview> {
-    use craft_tiff::image::chunk_bytes;
-    use craft_tiff::tags as t;
+    use bharat_tiff::image::chunk_bytes;
+    use bharat_tiff::tags as t;
     let tiff = Tiff::parse(bytes).ok()?;
     let ifd0 = tiff.ifds.first()?;
     if !ifd0.contains(t::DNG_VERSION) {
@@ -120,7 +120,7 @@ pub fn embedded_preview_color_space(bytes: &[u8]) -> Option<PreviewColorSpace> {
 /// maker note says which, else an EXIF ColorSpace of sRGB is taken.
 #[cfg(feature = "cr3")]
 fn cr3_color_space(bytes: &[u8]) -> Option<PreviewColorSpace> {
-    let cr3 = craft_metadata::cr3::parse_cr3(bytes)?;
+    let cr3 = bharat_metadata::cr3::parse_cr3(bytes)?;
     let first = |i: usize| cr3.cmt[i].and_then(|b| Tiff::parse(b).ok()).and_then(|t| t.ifds.into_iter().next());
     if let Some(space) = first(2).and_then(|mn| canon_color_space(&mn)) {
         return Some(space);
@@ -274,7 +274,7 @@ fn jpeg_end(s: &[u8], budget: &mut usize) -> Option<usize> {
 fn candidates<'a>(data: &'a [u8], ifd: &Ifd, base: u64, out: &mut Vec<&'a [u8]>, budget: &mut usize) {
     // whole JPEG files stored as an undefined-type tag value (e.g. Panasonic `JpgFromRaw` 0x002e)
     for e in &ifd.entries {
-        if matches!(e.value, craft_tiff::Value::Undefined(_))
+        if matches!(e.value, bharat_tiff::Value::Undefined(_))
             && e.count() > 1024
             && let Some(s) = file_span(data, e.offset, e.count() as u64, budget)
             && s.starts_with(&[0xff, 0xd8])
@@ -391,7 +391,7 @@ fn preview_covering(bytes: &[u8], min_edge: Option<u32>, jpeg_only: bool) -> Opt
         if let Some(mn) = makernote::parse_makernote(bytes, e.offset, e.count() as u64, tiff.order, &make) {
             candidates(bytes, &mn.ifd, mn.base, &mut found, &mut budget);
             if let Some(off) = mn.ifd.u64(0x0011)
-                && let Ok((pifd, _)) = craft_tiff::parse_ifd_at(bytes, mn.base + off, mn.order, mn.base, false, &Default::default())
+                && let Ok((pifd, _)) = bharat_tiff::parse_ifd_at(bytes, mn.base + off, mn.order, mn.base, false, &Default::default())
             {
                 candidates(bytes, &pifd, mn.base, &mut found, &mut budget);
             }
@@ -637,7 +637,7 @@ fn scan_with_budget(data: &[u8], budget: usize) -> (Option<Vec<u8>>, u64) {
     (jpeg, walked)
 }
 
-/// Canon CR3: the full-size JPEG track (see `craft_metadata::cr3`), else the `PRVW` / `THMB` boxes.
+/// Canon CR3: the full-size JPEG track (see `bharat_metadata::cr3`), else the `PRVW` / `THMB` boxes.
 #[cfg(feature = "cr3")]
 fn cr3_preview(bytes: &[u8]) -> Option<&[u8]> {
     cr3_full_jpeg(bytes).or_else(|| cr3_preview_boxes(bytes))
@@ -646,11 +646,11 @@ fn cr3_preview(bytes: &[u8]) -> Option<&[u8]> {
 /// A CR3's full-size JPEG track, when it holds a DCT JPEG.
 #[cfg(feature = "cr3")]
 fn cr3_full_jpeg(bytes: &[u8]) -> Option<&[u8]> {
-    let cr3 = craft_metadata::cr3::parse_cr3(bytes)?;
+    let cr3 = bharat_metadata::cr3::parse_cr3(bytes)?;
     // An unusable preview track must not hide a later usable one. Share the marker budget
     // across candidates so overlapping hostile track ranges cannot cause quadratic walks.
     let mut work = CR3_MAX_WALK;
-    cr3.tracks.iter().filter(|t| t.kind == craft_metadata::cr3::Cr3TrackKind::Jpeg).find_map(|t| {
+    cr3.tracks.iter().filter(|t| t.kind == bharat_metadata::cr3::Cr3TrackKind::Jpeg).find_map(|t| {
         let (at, len) = t.data?;
         let jpeg = bytes.get(at..at.checked_add(len)?)?;
         first_frame_within(jpeg, &mut work).filter(|(m, _)| matches!(m, 0xc0..=0xc2)).map(|_| jpeg)

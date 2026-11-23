@@ -1,5 +1,5 @@
 use super::*;
-use craft_tiff::{Entry, IfdBuilder, ImageData, TiffWriter};
+use bharat_tiff::{Entry, IfdBuilder, ImageData, TiffWriter};
 
 fn ifd(tags: Vec<(u16, Value)>) -> Ifd {
     let mut entries: Vec<_> = tags.into_iter().map(|(tag, value)| Entry { tag, value, offset: 0 }).collect();
@@ -156,7 +156,7 @@ fn understated_strip_dng_with(width: u32, height: u32, counted: u32, active_area
     bytes
 }
 
-/// storytold/craft-libs#2040: the DJI Mavic 3 counts 5280 x 3956 x 2 bytes for a strip that holds 5376-wide rows
+/// obone32/bharat-libs#2040: the DJI Mavic 3 counts 5280 x 3956 x 2 bytes for a strip that holds 5376-wide rows
 /// to the end of the file.
 #[test]
 fn a_strip_counted_only_active_area_wide_is_read_in_full() {

@@ -1,5 +1,5 @@
 [package]
-name = "craft-dds"
+name = "bharat-dds"
 description = "DirectDraw Surface (DDS) textures: uncompressed and BC1-BC5 block compression, read and write, without dependencies"
 version.workspace = true
 edition.workspace = true

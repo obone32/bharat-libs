@@ -1,4 +1,4 @@
-use craft_midi::{CtrlEvent, CtrlKind, Note, Sequence};
+use bharat_midi::{CtrlEvent, CtrlKind, Note, Sequence};
 
 fn n(pitch: u8, start: i64, length: i64) -> Note {
     Note { pitch, velocity: 100, release_velocity: 64, channel: 0, start, length }

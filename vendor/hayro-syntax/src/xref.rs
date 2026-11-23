@@ -1867,7 +1867,7 @@ mod tests {
         assert_eq!(pdf.pages().len(), 1);
     }
 
-    // PdfCraft patch tests (ported from craft-libs): xref stream entries are bounded by the
+    // PdfCraft patch tests (ported from bharat-libs): xref stream entries are bounded by the
     // decoded data, and the type field is read at its full width.
     #[test]
     fn cancellation_stops_before_a_whole_xref_subsection_is_read() {

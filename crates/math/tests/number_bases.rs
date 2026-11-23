@@ -4,7 +4,7 @@
 //! `.` before a digit starts one (`.5`). Letters and signs are separate items. Every expected tree is the
 //! one Word for Windows (build 16.0.20527) builds from the same text.
 
-use craft_math::math::{FracKind, MNode, MRun, ScriptKind, parse_linear};
+use bharat_math::math::{FracKind, MNode, MRun, ScriptKind, parse_linear};
 
 fn r(t: &str) -> MNode {
     MNode::Run(MRun::new(t))
@@ -96,7 +96,7 @@ fn a_comma_between_digits_in_brackets_joins_them() {
 /// Linear text and back: the same tree.
 #[track_caller]
 fn prints_back(t: Vec<MNode>, want: &str) {
-    let lin = craft_math::math::to_linear(&t);
+    let lin = bharat_math::math::to_linear(&t);
     assert_eq!(lin, want);
     assert_eq!(parse_linear(&lin), t, "{lin}");
 }
@@ -115,11 +115,11 @@ fn a_comma_before_a_digit_after_a_script_stays_outside_it() {
     prints_back(vec![sup("x", "2"), r(",3")], "x^2 ,3");
     prints_back(vec![sup("x", "a"), r(",3")], "x^a ,3");
     // Also when the comma and the digit are separate runs (read back as one).
-    let lin = craft_math::math::to_linear(&[sup("x", "2"), r(","), r("3")]);
+    let lin = bharat_math::math::to_linear(&[sup("x", "2"), r(","), r("3")]);
     assert_eq!(lin, "x^2 ,3");
     assert_eq!(parse_linear(&lin), vec![sup("x", "2"), r(",3")]);
     // A comma before anything else ends the script on its own: no space is added.
-    assert_eq!(craft_math::math::to_linear(&[sup("x", "2"), r(", y")]), "x^2, y");
+    assert_eq!(bharat_math::math::to_linear(&[sup("x", "2"), r(", y")]), "x^2, y");
 }
 
 #[test]

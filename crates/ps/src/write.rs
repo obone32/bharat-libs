@@ -6,7 +6,7 @@
 //! can break out of a literal.
 //!
 //! ```
-//! use craft_ps::write::{num, push_path, string, PathOps};
+//! use bharat_ps::write::{num, push_path, string, PathOps};
 //! use kurbo::BezPath;
 //!
 //! assert_eq!(num(1.5), "1.5");
@@ -675,7 +675,7 @@ mod tests {
     }
 
     /// Times the base formatter against `push_num_places` on path coordinates. Run with
-    /// `cargo test --release -p craft-ps --features write number_writing_timing -- --ignored --nocapture`.
+    /// `cargo test --release -p bharat-ps --features write number_writing_timing -- --ignored --nocapture`.
     #[test]
     #[ignore = "timing probe"]
     fn number_writing_timing() {

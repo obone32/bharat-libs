@@ -1,7 +1,7 @@
 #![no_main]
 
 use libfuzzer_sys::fuzz_target;
-use craft_image_codecs::{decode_as_with, decode_webp_frames, DecodeOptions, Format, Limits};
+use bharat_image_codecs::{decode_as_with, decode_webp_frames, DecodeOptions, Format, Limits};
 
 fuzz_target!(|data: &[u8]| {
     let opts = DecodeOptions {

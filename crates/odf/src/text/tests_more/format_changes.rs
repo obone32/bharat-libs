@@ -5,8 +5,8 @@
 
 use crate::text::tests::{NS_T, content_of, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::RevisionKind;
+use bharat_wordmodel::Document;
+use bharat_wordmodel::RevisionKind;
 
 const NS_DC: &str = r#"xmlns:dc="http://purl.org/dc/elements/1.1/""#;
 

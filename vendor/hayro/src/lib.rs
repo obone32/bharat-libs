@@ -278,7 +278,7 @@ pub fn render_into<'a>(
     // the highlight kept its own flat color and the words under it vanished into the band
     // (#1548). Reading colors replace the page's colors anyway; for document colors the
     // background stays outside, or every separable mode but Normal, Multiply, Darken and
-    // HardLight would blend with the white paper. Craft patch: a plate render keeps the
+    // HardLight would blend with the white paper. Bharat patch: a plate render keeps the
     // background inside as well, so blend modes on a separation's film blend with the paper.
     let backdrop_inside =
         render_settings.color_replacement.is_some() || interpreter_settings.plate.is_some();

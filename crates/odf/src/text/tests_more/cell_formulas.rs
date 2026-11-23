@@ -6,7 +6,7 @@
 use crate::text::cell_formula::{odf_of, word_of};
 use crate::text::import;
 use crate::text::tests::{NS_T, content_of, package};
-use craft_wordmodel::InlineObject;
+use bharat_wordmodel::InlineObject;
 
 #[test]
 fn libreoffice_formulas_say_what_word_formulas_do() {
@@ -59,14 +59,14 @@ const TABLE: &str = r#"<table:table table:name="T"><table:table-column table:num
 <table:table-row><table:table-cell table:formula="ooow:sum &lt;A1:A2&gt;" office:value-type="float" office:value="4"><text:p>4</text:p></table:table-cell><table:table-cell table:formula="ooow:&lt;Table9.B1&gt;" office:value-type="float" office:value="2.5"><text:p>2.5</text:p></table:table-cell></table:table-row>
 </table:table>"#;
 
-fn open() -> craft_wordmodel::Document {
+fn open() -> bharat_wordmodel::Document {
     let content =
         format!(r#"<office:document-content {NS_T}><office:body><office:text>{TABLE}</office:text></office:body></office:document-content>"#);
     import(&package(&content, None)).unwrap()
 }
 
 /// The fields in the table's cells: (row, column, code, result).
-fn fields(d: &craft_wordmodel::Document) -> Vec<(usize, usize, String, String)> {
+fn fields(d: &bharat_wordmodel::Document) -> Vec<(usize, usize, String, String)> {
     let mut out = Vec::new();
     let Some(t) = d.body.iter().find_map(|b| b.as_table()) else { return out };
     for (r, row) in t.rows.iter().enumerate() {

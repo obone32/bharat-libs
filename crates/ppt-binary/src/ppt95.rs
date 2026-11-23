@@ -12,7 +12,7 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use craft_pptx::{Background, ColorRef, Defaults, Fill, LayoutType, Master, Presentation, Rgba, Size, Slide, SlideId};
+use bharat_pptx::{Background, ColorRef, Defaults, Fill, LayoutType, Master, Presentation, Rgba, Size, Slide, SlideId};
 
 use crate::convert::{Scheme, layout_kind, layout_table, page_side, scheme_theme};
 use crate::record::u32_at;

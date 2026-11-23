@@ -1,4 +1,4 @@
-//! Bounded decoders for the bzip2, ZIP LZMA, XZ and Zstandard entry methods, from Craft
+//! Bounded decoders for the bzip2, ZIP LZMA, XZ and Zstandard entry methods, from Bharat
 //! Anything's `decompress.rs`. Each caps its output at `max_out` bytes (`TooLarge` rather than
 //! allocating without limit) and never panics on a corrupt or truncated stream.
 

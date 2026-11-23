@@ -26,7 +26,7 @@ concurrency:
 jobs:
   # Whether this run needs the macOS and Windows legs. On a pull request they run only when it can
   # change platform behaviour: a crate with platform cfg code or one that depends on it, the build
-  # setup, or a file outside the crates (craft-common-actions' select-platforms). The full-ci label
+  # setup, or a file outside the crates (bharat-common-actions' select-platforms). The full-ci label
   # runs them anyway from the next push or manual run; every other event runs them.
   platforms:
     name: select platforms
@@ -46,7 +46,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 2
       - id: select
-        uses: storytold/craft-common-actions/actions/select-platforms@d65d611f0ef67eaa94039351be5afce61102dbb0
+        uses: storytold/bharat-common-actions/actions/select-platforms@d65d611f0ef67eaa94039351be5afce61102dbb0
         with:
           os: '["ubuntu-latest","windows-latest","macos-latest"]'
           select-os: '["windows-latest","macos-latest"]'
@@ -61,7 +61,7 @@ jobs:
   # cold lint leg is still shorter than its gate leg.
   native:
     name: Workspace
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/gate.yml@main
     with:
       os: '["ubuntu-latest"]'
       cache-workspace-crates: true
@@ -71,17 +71,17 @@ jobs:
       # Every leg runs its tests with nextest, and its doctests with cargo test (.config/nextest.toml).
       tools: &tools cargo-nextest@0.9.150
       packages: mesa-vulkan-drivers libvulkan1
-      craft-fonts-ref: &craft-fonts b076417b5880bd4154bd22f00695b1d28c6bea83
+      bharat-fonts-ref: &bharat-fonts b076417b5880bd4154bd22f00695b1d28c6bea83
       linux-env: WGPU_BACKEND=vulkan
       # Test binaries without debug info or symbols: about a third of the size, and a panic still
       # names its file and line.
       dev-strip: true
       # The fuzz-style tests run a fraction of their cases here: every hostile-input hammer and
-      # sweep 1/8 (craft-testkit's CRAFT_HOSTILE_DIVISOR), every proptest without its own case
+      # sweep 1/8 (bharat-testkit's BHARAT_HOSTILE_DIVISOR), every proptest without its own case
       # count 64 cases instead of 256. nightly.yml runs them all in full.
       env: &env |
-        CRAFT_PRINT_REQUIRE_QUEUE=0
-        CRAFT_HOSTILE_DIVISOR=8
+        BHARAT_PRINT_REQUIRE_QUEUE=0
+        BHARAT_HOSTILE_DIVISOR=8
         PROPTEST_CASES=64
       setup-command: &setup bash scripts/ci-test-inputs.sh
       # The PhotoCraft corpora, keyed on the script that pins them: a hit skips the PhotoCraft
@@ -110,9 +110,9 @@ jobs:
         # first clippy run; the last command runs the crates whose tests check behaviour with a
         # feature off, which an all-features build cannot reach.
         cargo nextest run --workspace --all-features --locked --profile ci --lib --bins --tests
-        cargo nextest run -p craft-aep -p craft-video --all-features --locked --profile ci --example stubicc --example h264_h264enc_bench
+        cargo nextest run -p bharat-aep -p bharat-video --all-features --locked --profile ci --example stubicc --example h264_h264enc_bench
         cargo test --workspace --doc --all-features --locked
-        cargo nextest run -p craft-image-codecs -p craft-text --locked --profile ci --lib --bins --tests
+        cargo nextest run -p bharat-image-codecs -p bharat-text --locked --profile ci --lib --bins --tests
 
   # The macOS and Windows legs, when `platforms` says this run needs them, with the Linux leg's
   # inputs.
@@ -120,19 +120,19 @@ jobs:
     name: Workspace
     needs: platforms
     if: needs.platforms.outputs.platform == 'true'
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/gate.yml@main
     with:
       os: '["windows-latest","macos-latest"]'
       lint-cache: false
       timeout-minutes: *timeout
       tools: *tools
-      craft-fonts-ref: *craft-fonts
+      bharat-fonts-ref: *bharat-fonts
       dev-strip: true
       # No debuginfo on Windows: writing PDBs for every test binary is a large part of its link
       # time. A panic still names its file and line; only backtrace frames lose theirs, and the
       # Linux and macOS legs keep line tables.
       windows-env: |
-        CRAFT_PRINT_REQUIRE_QUEUE=1
+        BHARAT_PRINT_REQUIRE_QUEUE=1
         CARGO_PROFILE_DEV_DEBUG=0
       env: *env
       setup-command: *setup
@@ -144,9 +144,9 @@ jobs:
       windows-command: |
         powershell.exe -NoProfile -Command '$ErrorActionPreference = "Stop"; Start-Service Spooler; Add-PrinterDriver -Name "Generic / Text Only"'
         cargo nextest run --workspace --all-features --locked --profile ci --lib --bins --tests
-        cargo nextest run -p craft-aep -p craft-video --all-features --locked --profile ci --example stubicc --example h264_h264enc_bench
+        cargo nextest run -p bharat-aep -p bharat-video --all-features --locked --profile ci --example stubicc --example h264_h264enc_bench
         cargo test --workspace --doc --all-features --locked
-        cargo nextest run -p craft-image-codecs -p craft-text --locked --profile ci --lib --bins --tests
+        cargo nextest run -p bharat-image-codecs -p bharat-text --locked --profile ci --lib --bins --tests
 
   # Each main run's Linux leg saves a rolling cache entry of its own (`cache-workspace-crates`), and
   # every run restores only the newest. This deletes the older ones as soon as the Linux leg is
@@ -189,7 +189,7 @@ jobs:
 
   msrv:
     name: Rust 1.95
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/gate.yml@main
     with:
       # Its own dependency-cache entry: the calls in this file share one job id, so without a name
       # they would write the same key.
@@ -198,7 +198,7 @@ jobs:
       toolchain: 1.95.0
       targets: ""
       tools: ""
-      craft-fonts-ref: ""
+      bharat-fonts-ref: ""
       require-craft-fonts: false
       timeout-minutes: 15
       dev-debug: ""
@@ -206,13 +206,13 @@ jobs:
 
   wasm:
     name: UI and settings WASM
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/gate.yml@main
     with:
       cache-name: wasm
       os: '["ubuntu-latest"]'
       targets: wasm32-unknown-unknown
       tools: ""
-      craft-fonts-ref: ""
+      bharat-fonts-ref: ""
       require-craft-fonts: false
       timeout-minutes: 15
-      command: cargo check -p craft-ui -p craft-settings --all-features --locked --target wasm32-unknown-unknown
+      command: cargo check -p bharat-ui -p bharat-settings --all-features --locked --target wasm32-unknown-unknown

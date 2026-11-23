@@ -61,8 +61,8 @@ fn package(body: &str, doc_rels: &[(&str, &str, &str)], root_rels: &[(&str, &str
     zip(&entries)
 }
 
-fn save(doc: &craft_wordmodel::Document) -> BTreeMap<String, Vec<u8>> {
-    unzip(&craft_docx::write(doc).expect("write"))
+fn save(doc: &bharat_wordmodel::Document) -> BTreeMap<String, Vec<u8>> {
+    unzip(&bharat_docx::write(doc).expect("write"))
 }
 
 const SETTINGS: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -86,7 +86,7 @@ fn pos(s: &str, needle: &str) -> usize {
 
 #[test]
 fn unmodelled_settings_survive_a_save_and_owned_ones_follow_the_model() {
-    let mut doc = craft_docx::read(&with_settings(SETTINGS)).unwrap();
+    let mut doc = bharat_docx::read(&with_settings(SETTINGS)).unwrap();
     assert!(doc.settings.track_changes);
     doc.settings.track_changes = false;
     let files = save(&doc);
@@ -132,7 +132,7 @@ fn unmodelled_settings_survive_a_save_and_owned_ones_follow_the_model() {
     let p = text(&save(&private), "word/settings.xml");
     assert!(!p.contains("removePersonalInformation") && !p.contains("removeDateAndTime"), "{p}");
     // A second generation is identical.
-    let again = craft_docx::read(&craft_docx::write(&doc).unwrap()).unwrap();
+    let again = bharat_docx::read(&bharat_docx::write(&doc).unwrap()).unwrap();
     assert_eq!(text(&save(&again), "word/settings.xml"), s);
 }
 
@@ -141,10 +141,10 @@ fn changed_zoom_survives_merged_settings_and_reads_back_as_page_width() {
     let old_zoom = r#"<w:zoom w:percent="120"/>"#;
     let updated_zoom = r#"<w:zoom w:val="bestFit" w:percent="145"/>"#;
     for original in [SETTINGS.to_string(), SETTINGS.replace(old_zoom, "")] {
-        let mut doc = craft_docx::read(&with_settings(&original)).unwrap();
+        let mut doc = bharat_docx::read(&with_settings(&original)).unwrap();
         assert!(doc.passthrough.contains_key("wordcraft:settings.orig"));
-        doc.settings.zoom = Some(craft_wordmodel::Zoom { percent: 145, fit: Some(craft_wordmodel::ZoomFit::PageWidth) });
-        let bytes = craft_docx::write(&doc).unwrap();
+        doc.settings.zoom = Some(bharat_wordmodel::Zoom { percent: 145, fit: Some(bharat_wordmodel::ZoomFit::PageWidth) });
+        let bytes = bharat_docx::write(&doc).unwrap();
         let settings = text(&unzip(&bytes), "word/settings.xml");
         assert_eq!(settings.matches("<w:zoom ").count(), 1, "{settings}");
         assert!(settings.contains(updated_zoom), "{settings}");
@@ -159,18 +159,18 @@ fn changed_zoom_survives_merged_settings_and_reads_back_as_page_width() {
             assert!(settings.contains(kept), "{kept} lost: {settings}");
         }
         assert!(pos(&settings, "<w:zoom ") < pos(&settings, "<w:proofState"));
-        let again = craft_docx::read(&bytes).unwrap();
+        let again = bharat_docx::read(&bytes).unwrap();
         let zoom = again.settings.zoom.unwrap();
         assert_eq!(zoom.percent, 145);
-        assert!(matches!(zoom.fit, Some(craft_wordmodel::ZoomFit::PageWidth)));
+        assert!(matches!(zoom.fit, Some(bharat_wordmodel::ZoomFit::PageWidth)));
         assert_eq!(text(&save(&again), "word/settings.xml"), settings);
     }
 }
 
 #[test]
 fn settings_written_by_wordcraft_keep_no_original() {
-    let doc = craft_wordmodel::Document::new();
-    let back = craft_docx::read(&craft_docx::write(&doc).unwrap()).unwrap();
+    let doc = bharat_wordmodel::Document::new();
+    let back = bharat_docx::read(&bharat_docx::write(&doc).unwrap()).unwrap();
     assert!(!back.passthrough.contains_key("wordcraft:settings.orig"), "{:?}", back.passthrough.keys());
     assert_eq!(text(&save(&back), "word/settings.xml"), text(&save(&doc), "word/settings.xml"));
 }
@@ -181,7 +181,7 @@ fn settings_written_by_wordcraft_keep_no_original() {
 #[test]
 fn do_not_track_moves_round_trips() {
     let original = SETTINGS.replace("<w:trackRevisions/>", "<w:trackRevisions/><w:doNotTrackMoves/>");
-    let mut doc = craft_docx::read(&with_settings(&original)).unwrap();
+    let mut doc = bharat_docx::read(&with_settings(&original)).unwrap();
     assert!(!doc.settings.track_moves);
     let s = text(&save(&doc), "word/settings.xml");
     assert_eq!(s.matches("<w:doNotTrackMoves/>").count(), 1, "{s}");
@@ -193,14 +193,14 @@ fn do_not_track_moves_round_trips() {
 
     // `w:val="false"` keeps moves tracked.
     let off = SETTINGS.replace("<w:trackRevisions/>", r#"<w:trackRevisions/><w:doNotTrackMoves w:val="false"/>"#);
-    assert!(craft_docx::read(&with_settings(&off)).unwrap().settings.track_moves);
+    assert!(bharat_docx::read(&with_settings(&off)).unwrap().settings.track_moves);
 
     // A document of our own: absent by default, written when off, and read back.
-    let mut doc = craft_wordmodel::Document::new();
+    let mut doc = bharat_wordmodel::Document::new();
     assert!(doc.settings.track_moves);
     assert!(!text(&save(&doc), "word/settings.xml").contains("doNotTrackMoves"));
     doc.settings.track_moves = false;
     let s = text(&save(&doc), "word/settings.xml");
     assert!(s.contains("<w:doNotTrackMoves/>"), "{s}");
-    assert!(!craft_docx::read(&craft_docx::write(&doc).unwrap()).unwrap().settings.track_moves);
+    assert!(!bharat_docx::read(&bharat_docx::write(&doc).unwrap()).unwrap().settings.track_moves);
 }

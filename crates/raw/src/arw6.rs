@@ -543,9 +543,9 @@ mod tests {
     use super::*;
     use crate::arw6_testenc::*;
     use crate::huffman::Bits;
-    use craft_tiff::Tiff;
-    use craft_tiff::image::chunk_bytes;
-    use craft_tiff::tags as t;
+    use bharat_tiff::Tiff;
+    use bharat_tiff::image::chunk_bytes;
+    use bharat_tiff::tags as t;
 
     fn planes(w2: usize, h2: usize, seed: u64) -> (Plane, Plane, Plane, Plane) {
         let mut x = seed.max(1);

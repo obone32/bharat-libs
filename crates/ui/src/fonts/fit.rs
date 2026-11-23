@@ -13,8 +13,8 @@ use skrifa::instance::{LocationRef, Size};
 use skrifa::outline::{DrawSettings, OutlinePen};
 use skrifa::{FontRef, MetadataProvider as _};
 
-const BASE: &str = "craft-ui base face";
-const SCRIPT: &str = "craft-ui script face";
+const BASE: &str = "bharat-ui base face";
+const SCRIPT: &str = "bharat-ui script face";
 
 /// The app's face and the UI language's script face, each as its own family.
 #[derive(Clone)]
@@ -157,7 +157,7 @@ struct Fitted {
 type Shared = Arc<Mutex<Fitted>>;
 
 fn id() -> egui::Id {
-    egui::Id::unique("craft_ui::fonts::fitted")
+    egui::Id::unique("bharat_ui::fonts::fitted")
 }
 
 fn lock(shared: &Shared) -> MutexGuard<'_, Fitted> {
@@ -213,7 +213,7 @@ struct Refit;
 
 impl egui::plugin::Plugin for Refit {
     fn debug_name(&self) -> &'static str {
-        "craft_ui::fonts::Refit"
+        "bharat_ui::fonts::Refit"
     }
 
     fn on_begin_pass(&mut self, ui: &mut egui::Ui) {

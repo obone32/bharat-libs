@@ -41,7 +41,7 @@ impl core::error::Error for Error {}
 /// Returns [`Error::TruncatedVarint`] if the slice ends before the integer is complete.
 ///
 /// ```
-/// use craft_sqlite::read_varint;
+/// use bharat_sqlite::read_varint;
 ///
 /// assert_eq!(read_varint(&[0x81, 0x00, 0xff]), Ok((128, 2)));
 /// ```
@@ -69,7 +69,7 @@ pub fn read_varint(input: &[u8]) -> Result<(u64, usize), Error> {
 /// Returns [`Error::ReservedSerialType`] for codes 10 and 11.
 ///
 /// ```
-/// use craft_sqlite::serial_type_len;
+/// use bharat_sqlite::serial_type_len;
 ///
 /// assert_eq!(serial_type_len(3), Ok(3));
 /// assert_eq!(serial_type_len(17), Ok(2));

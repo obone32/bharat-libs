@@ -98,7 +98,7 @@ pub fn path_to_file_url(path: &str, localhost: bool) -> String {
 }
 
 /// Join `rel`, a relative media reference, to `base`, the folder of the document that names it.
-/// Lexical, like `craft-docpath`, and with the same roots: none (a relative folder), `/`, a drive
+/// Lexical, like `bharat-docpath`, and with the same roots: none (a relative folder), `/`, a drive
 /// (`C:\`, or `C:` alone for a drive-relative folder), a share (`\\host\share`, `//host/share`) or a
 /// `\\?\` prefix with its drive or `UNC\host\share`. Below the root, empty names (repeated
 /// separators) and `.` are dropped, and a `..` takes off the last name: at the root of an absolute

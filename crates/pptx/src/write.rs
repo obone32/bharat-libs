@@ -7,12 +7,12 @@ mod timing;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use craft_drawingml::Xfrm;
-use craft_drawingml::part::Sink;
-use craft_drawingml::write as dml;
-use craft_drawingml::xmlx::{self, A, TagExt};
-use craft_opc::{PackageOut, RelsOut};
-use craft_xml::{Local, Writer};
+use bharat_drawingml::Xfrm;
+use bharat_drawingml::part::Sink;
+use bharat_drawingml::write as dml;
+use bharat_drawingml::xmlx::{self, A, TagExt};
+use bharat_opc::{PackageOut, RelsOut};
+use bharat_xml::{Local, Writer};
 
 use crate::text::{ListStyle, Paragraph, TextBody};
 use crate::theme::Theme;
@@ -20,8 +20,8 @@ use crate::{
     Background, Comment, Defaults, Error, Layout, LayoutId, Master, MediaId, PhType, Placeholder, Presentation, Shape, ShapeId, Slide, SlideId,
 };
 
-pub(crate) const NS_A: &str = craft_drawingml::ns::NS_A;
-pub(crate) const NS_R: &str = craft_drawingml::ns::NS_R;
+pub(crate) const NS_A: &str = bharat_drawingml::ns::NS_A;
+pub(crate) const NS_R: &str = bharat_drawingml::ns::NS_R;
 pub(crate) const NS_P: &str = "http://schemas.openxmlformats.org/presentationml/2006/main";
 pub(crate) const NS_MC: &str = "http://schemas.openxmlformats.org/markup-compatibility/2006";
 pub(crate) const NS_P188: &str = "http://schemas.microsoft.com/office/powerpoint/2018/8/main";
@@ -125,7 +125,7 @@ impl Sink for Snk<'_, '_> {
     }
     fn slide_rel(&mut self, slide: SlideId) -> Option<String> {
         let target = self.0.slide_parts.get(&slide)?;
-        Some(self.1.rels.add("slide", &craft_opc::relative(&self.1.name, target), false))
+        Some(self.1.rels.add("slide", &bharat_opc::relative(&self.1.name, target), false))
     }
     fn custom_show_index(&self, name: &str) -> Option<usize> {
         self.0.p.custom_shows.iter().position(|c| c.name == name)
@@ -220,7 +220,7 @@ impl<'a> Exp<'a> {
             return Some(o.rels.add(kind, &link, true));
         }
         let part = self.media_part(id)?;
-        Some(o.rels.add(kind, &craft_opc::relative(&o.name, &part), false))
+        Some(o.rels.add(kind, &bharat_opc::relative(&o.name, &part), false))
     }
     pub fn media_rel_new(&mut self, o: &mut Out, id: MediaId, kind: &str) -> Option<String> {
         let m = self.media(id)?;
@@ -228,7 +228,7 @@ impl<'a> Exp<'a> {
             return None;
         }
         let part = self.media_part(id)?;
-        Some(o.rels.add(kind, &craft_opc::relative(&o.name, &part), false))
+        Some(o.rels.add(kind, &bharat_opc::relative(&o.name, &part), false))
     }
     /// A tiny transparent PNG for pictures whose image is missing.
     pub fn placeholder_rel(&mut self, o: &mut Out) -> String {
@@ -242,7 +242,7 @@ impl<'a> Exp<'a> {
                 name
             }
         };
-        o.rels.add("image", &craft_opc::relative(&o.name, &part), false)
+        o.rels.add("image", &bharat_opc::relative(&o.name, &part), false)
     }
     /// The number of the next SmartArt graphic's parts.
     pub fn next_diagram(&mut self) -> u32 {
@@ -260,7 +260,7 @@ impl<'a> Exp<'a> {
         }
         w.close();
         self.pkg.xml_part(&name, CT_TAGS, w.into_bytes());
-        o.rels.add_new("tags", &craft_opc::relative(&o.name, &name), false)
+        o.rels.add_new("tags", &bharat_opc::relative(&o.name, &name), false)
     }
     /// An unchanged Office 2016 chart's `chartEx` part and its relationship id.
     pub fn chartex_rel(&mut self, o: &mut Out, c: &crate::Chart) -> Option<String> {
@@ -273,7 +273,7 @@ impl<'a> Exp<'a> {
         } else if !c.kept.parts.is_empty() {
             log::warn!("pptx: chart data changed; the embedded workbook was not written back");
         }
-        Some(o.rels.add_new(RT_CHARTEX, &craft_opc::relative(&o.name, &name), false))
+        Some(o.rels.add_new(RT_CHARTEX, &bharat_opc::relative(&o.name, &name), false))
     }
 
     pub fn chart_rel(&mut self, o: &mut Out, c: &crate::Chart) -> String {
@@ -286,7 +286,7 @@ impl<'a> Exp<'a> {
         } else if !c.kept.parts.is_empty() {
             log::warn!("pptx: chart data changed; the embedded workbook was not written back");
         }
-        o.rels.add_new("chart", &craft_opc::relative(&o.name, &name), false)
+        o.rels.add_new("chart", &bharat_opc::relative(&o.name, &name), false)
     }
 }
 
@@ -384,7 +384,7 @@ fn clr_map_attrs(map: &[(String, String)]) -> A {
             .iter()
             .find(|(mk, _)| mk == k)
             .map(|(_, v)| v.as_str())
-            .filter(|v| craft_drawingml::color::SchemeSlot::from_xml(v).is_some_and(|s| craft_drawingml::color::SchemeSlot::THEME.contains(&s)))
+            .filter(|v| bharat_drawingml::color::SchemeSlot::from_xml(v).is_some_and(|s| bharat_drawingml::color::SchemeSlot::THEME.contains(&s)))
             .unwrap_or(d);
         a = a.a(k, v);
     }
@@ -429,7 +429,7 @@ fn notes_master_shapes(size: crate::Size) -> Vec<Shape> {
     };
     let mut img = mk(4, "Slide Image Placeholder 3", PhType::SlideImage, 2, w * 0.125, h * 0.125, w * 0.75, h * 0.375);
     img.fill = Some(crate::Fill::None);
-    img.line = Some(crate::Line::solid(crate::ColorRef::rgb(craft_drawingml::color::Rgba::BLACK), 1.0));
+    img.line = Some(crate::Line::solid(crate::ColorRef::rgb(bharat_drawingml::color::Rgba::BLACK), 1.0));
     let mut body = mk(5, "Notes Placeholder 4", PhType::Body, 3, w * 0.1, h * 0.53, w * 0.8, h * 0.36);
     if let Some(t) = body.text.as_mut() {
         t.paragraphs = vec![Paragraph::new("Click to edit Master text styles")];
@@ -462,7 +462,7 @@ fn notes_master_write(p: &Presentation) -> Option<NotesMasterWrite> {
     if !has_notes && nm.is_none() {
         return None;
     }
-    let default_bg = || Background::Ref { idx: 1001, color: crate::ColorRef::scheme(craft_drawingml::color::SchemeSlot::Bg1) };
+    let default_bg = || Background::Ref { idx: 1001, color: crate::ColorRef::scheme(bharat_drawingml::color::SchemeSlot::Bg1) };
     Some(match kept {
         Some(m) => NotesMasterWrite {
             shapes: m.shapes.clone(),
@@ -493,7 +493,7 @@ fn notes_style() -> ListStyle {
                 run: crate::text::RunProps {
                     size: Some(12.0),
                     font: Some("+mn-lt".into()),
-                    fill: Some(crate::Fill::solid(crate::ColorRef::scheme(craft_drawingml::color::SchemeSlot::Tx1))),
+                    fill: Some(crate::Fill::solid(crate::ColorRef::scheme(bharat_drawingml::color::SchemeSlot::Tx1))),
                     ..Default::default()
                 },
             },
@@ -608,17 +608,17 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
             n_layout += 1;
             let lname = format!("ppt/slideLayouts/slideLayout{n_layout}.xml");
             layout_parts.insert(l.id, lname.clone());
-            let rid = mo.rels.add("slideLayout", &craft_opc::relative(&mname, &lname), false);
+            let rid = mo.rels.add("slideLayout", &bharat_opc::relative(&mname, &lname), false);
             lrids.push(rid);
             let mut lo = Out::new(&lname);
-            lo.rels.add("slideMaster", &craft_opc::relative(&lname, &mname), false);
+            lo.rels.add("slideMaster", &bharat_opc::relative(&lname, &mname), false);
             let xml = layout_xml(&mut x, &mut lo, l);
             x.pkg.xml_part(&lname, CT_LAYOUT, xml);
             x.pkg.rels(&lname, &lo.rels);
         }
-        mo.rels.add("theme", &craft_opc::relative(&mname, &tname), false);
+        mo.rels.add("theme", &bharat_opc::relative(&mname, &tname), false);
         let mut to = Out::new(&tname);
-        let txml = craft_drawingml::theme::theme_xml(&mut Snk(&mut x, &mut to), &m.theme);
+        let txml = bharat_drawingml::theme::theme_xml(&mut Snk(&mut x, &mut to), &m.theme);
         x.pkg.xml_part(&tname, CT_THEME, txml);
         x.pkg.rels(&tname, &to.rels);
         let master_id = big_id;
@@ -631,7 +631,7 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
         let xml = master_xml(&mut x, &mut mo, m, &layout_ids);
         x.pkg.xml_part(&mname, CT_MASTER, xml);
         x.pkg.rels(&mname, &mo.rels);
-        master_rids.push((master_id, pres.rels.add("slideMaster", &craft_opc::relative("ppt/presentation.xml", &mname), false)));
+        master_rids.push((master_id, pres.rels.add("slideMaster", &bharat_opc::relative("ppt/presentation.xml", &mname), false)));
     }
 
     // Notes master when a slide has notes, or the file already has one (its header and footer
@@ -641,10 +641,10 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
     if let Some(nm) = notes_master_write(p) {
         let tname = format!("ppt/theme/theme{}.xml", p.masters.len() + 1);
         let mut no = Out::new(notes_master);
-        no.rels.add("theme", &craft_opc::relative(notes_master, &tname), false);
+        no.rels.add("theme", &bharat_opc::relative(notes_master, &tname), false);
         let theme = nm.theme.or_else(|| p.masters.first().map(|m| m.theme.clone())).unwrap_or_default();
         let mut to = Out::new(&tname);
-        let txml = craft_drawingml::theme::theme_xml(&mut Snk(&mut x, &mut to), &theme);
+        let txml = bharat_drawingml::theme::theme_xml(&mut Snk(&mut x, &mut to), &theme);
         x.pkg.xml_part(&tname, CT_THEME, txml);
         x.pkg.rels(&tname, &to.rels);
         let mut w = Writer::document();
@@ -655,7 +655,7 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
         w.close();
         x.pkg.xml_part(notes_master, CT_NOTES_MASTER, w.into_bytes());
         x.pkg.rels(notes_master, &no.rels);
-        notes_master_rid = Some(pres.rels.add("notesMaster", &craft_opc::relative("ppt/presentation.xml", notes_master), false));
+        notes_master_rid = Some(pres.rels.add("notesMaster", &bharat_opc::relative("ppt/presentation.xml", notes_master), false));
     }
 
     // Handout master. Its header, footer, date and slide-number text live on this part; a deck
@@ -666,9 +666,9 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
         let tindex = p.masters.len() + 1 + usize::from(notes_master_rid.is_some());
         let tname = format!("ppt/theme/theme{tindex}.xml");
         let mut ho = Out::new(handout_path);
-        ho.rels.add("theme", &craft_opc::relative(handout_path, &tname), false);
+        ho.rels.add("theme", &bharat_opc::relative(handout_path, &tname), false);
         let mut to = Out::new(&tname);
-        let txml = craft_drawingml::theme::theme_xml(&mut Snk(&mut x, &mut to), &hm.theme);
+        let txml = bharat_drawingml::theme::theme_xml(&mut Snk(&mut x, &mut to), &hm.theme);
         x.pkg.xml_part(&tname, CT_THEME, txml);
         x.pkg.rels(&tname, &to.rels);
         let mut w = Writer::document();
@@ -678,7 +678,7 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
         w.close();
         x.pkg.xml_part(handout_path, CT_HANDOUT_MASTER, w.into_bytes());
         x.pkg.rels(handout_path, &ho.rels);
-        handout_rid = Some(pres.rels.add("handoutMaster", &craft_opc::relative("ppt/presentation.xml", handout_path), false));
+        handout_rid = Some(pres.rels.add("handoutMaster", &bharat_opc::relative("ppt/presentation.xml", handout_path), false));
     }
 
     // Comment authors.
@@ -692,14 +692,14 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
         let sname = format!("ppt/slides/slide{}.xml", i + 1);
         let mut so = Out::new(&sname);
         if let Some(lp) = layout_parts.get(&s.layout) {
-            so.rels.add("slideLayout", &craft_opc::relative(&sname, lp), false);
+            so.rels.add("slideLayout", &bharat_opc::relative(&sname, lp), false);
         }
         if !s.notes.is_empty() || s.has_notes_slide {
             let nname = format!("ppt/notesSlides/notesSlide{}.xml", i + 1);
-            so.rels.add("notesSlide", &craft_opc::relative(&sname, &nname), false);
+            so.rels.add("notesSlide", &bharat_opc::relative(&sname, &nname), false);
             let mut no = Out::new(&nname);
-            no.rels.add("notesMaster", &craft_opc::relative(&nname, notes_master), false);
-            no.rels.add("slide", &craft_opc::relative(&nname, &sname), false);
+            no.rels.add("notesMaster", &bharat_opc::relative(&nname, notes_master), false);
+            no.rels.add("slide", &bharat_opc::relative(&nname, &sname), false);
             let xml = notes_xml(&mut x, &mut no, &s.notes);
             x.pkg.xml_part(&nname, CT_NOTES, xml);
             x.pkg.rels(&nname, &no.rels);
@@ -708,20 +708,20 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
         if !s.comments.is_empty() {
             n_comments += 1;
             let cname = format!("ppt/comments/comment{n_comments}.xml");
-            so.rels.add("comments", &craft_opc::relative(&sname, &cname), false);
+            so.rels.add("comments", &bharat_opc::relative(&sname, &cname), false);
             x.pkg.xml_part(&cname, CT_COMMENTS, comments_xml(&s.comments, &mut authors, &mut author_map));
             // The modern threaded part next to the flattened legacy one:
             // PowerPoint 2021+ and DeckCraft read replies and resolved state from it,
             // older readers keep the legacy part.
             let mname = format!("ppt/comments/modernComment{n_comments}.xml");
-            let rid = so.rels.add(RT_COMMENTS_MODERN, &craft_opc::relative(&sname, &mname), false);
+            let rid = so.rels.add(RT_COMMENTS_MODERN, &bharat_opc::relative(&sname, &mname), false);
             x.pkg.xml_part(&mname, CT_COMMENTS_MODERN, modern_comments_xml(&s.comments, &cname, &mut authors, &mut author_map));
             comment_rel = Some(rid);
         }
         let xml = slide_xml(&mut x, &mut so, s, comment_rel.as_deref());
         x.pkg.xml_part(&sname, CT_SLIDE, xml);
         x.pkg.rels(&sname, &so.rels);
-        slide_rids.push(pres.rels.add("slide", &craft_opc::relative("ppt/presentation.xml", &sname), false));
+        slide_rids.push(pres.rels.add("slide", &bharat_opc::relative("ppt/presentation.xml", &sname), false));
     }
     if !authors.is_empty() {
         let name = "ppt/commentAuthors.xml";
@@ -758,7 +758,7 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
     pres.rels.add("tableStyles", "tableStyles.xml", false);
     x.pkg.xml_part("ppt/presProps.xml", CT_PRES_PROPS, pres_props_xml(p));
     x.pkg.xml_part("ppt/viewProps.xml", CT_VIEW_PROPS, view_props_xml(p));
-    let ts = craft_drawingml::table::styles::table_styles_xml(&x.table_styles, &p.table_styles, defaults.application());
+    let ts = bharat_drawingml::table::styles::table_styles_xml(&x.table_styles, &p.table_styles, defaults.application());
     x.pkg.xml_part("ppt/tableStyles.xml", CT_TABLE_STYLES, ts);
     let pxml = presentation_xml(&mut x, &mut pres, &master_rids, notes_master_rid.as_deref(), handout_rid.as_deref(), &slide_rids);
     x.pkg.xml_part("ppt/presentation.xml", main_ct, pxml);
@@ -778,7 +778,7 @@ pub fn export(p: &Presentation, defaults: &dyn Defaults, main_ct: &str) -> Resul
         })
         .collect();
     for k in kept.iter().filter(|k| !k.rel_type.is_empty() && !k.from_root) {
-        pres.rels.add_new(&k.rel_type, &craft_opc::relative("ppt/presentation.xml", &k.name), false);
+        pres.rels.add_new(&k.rel_type, &bharat_opc::relative("ppt/presentation.xml", &k.name), false);
     }
     x.pkg.rels("ppt/presentation.xml", &pres.rels);
     for k in &kept {
@@ -955,7 +955,7 @@ fn modern_comment(
     let author = authors.get(ai).map(|(n, _, _)| n.clone()).unwrap_or_default();
     let dt = if valid_date(&c.date) { c.date.clone() } else { "2024-01-01T00:00:00.000".into() };
     let mut a = A::new()
-        .a("id", craft_drawingml::table::styles::guid(&format!("deckcraft-comment:{part}:{ti}")))
+        .a("id", bharat_drawingml::table::styles::guid(&format!("deckcraft-comment:{part}:{ti}")))
         .a("authorId", author_guid(&author))
         .a("created", dt);
     if c.resolved {
@@ -972,7 +972,7 @@ fn modern_comment(
             let r_author = authors.get(ri_ai).map(|(n, _, _)| n.clone()).unwrap_or_default();
             let rdt = if valid_date(&r.date) { r.date.clone() } else { "2024-01-01T00:00:00.000".into() };
             let mut ra = A::new()
-                .a("id", craft_drawingml::table::styles::guid(&format!("deckcraft-comment:{part}:{ti}:{ri}")))
+                .a("id", bharat_drawingml::table::styles::guid(&format!("deckcraft-comment:{part}:{ti}:{ri}")))
                 .a("authorId", author_guid(&r_author))
                 .a("created", rdt);
             if r.resolved {
@@ -1006,7 +1006,7 @@ fn tx_body(w: &mut Writer, text: &str) {
 /// The modern author id for a name: the same GUID the authors part writes. The `deckcraft-`
 /// seeds here and on comment ids are part of the format: files written earlier carry them.
 fn author_guid(name: &str) -> String {
-    craft_drawingml::table::styles::guid(&format!("deckcraft-comment-author:{name}"))
+    bharat_drawingml::table::styles::guid(&format!("deckcraft-comment-author:{name}"))
 }
 
 /// The slide's extension list, plus the modern-comments anchor when the slide has a threaded
@@ -1123,7 +1123,7 @@ fn write_embedded_fonts(x: &mut Exp, o: &mut Out) -> Vec<WrittenFont> {
         n = n.saturating_add(1);
         let name = format!("ppt/fonts/font{n}.fntdata");
         x.pkg.binary(&name, "application/x-fontdata", bytes);
-        let rid = o.rels.add("font", &craft_opc::relative("ppt/presentation.xml", &name), false);
+        let rid = o.rels.add("font", &bharat_opc::relative("ppt/presentation.xml", &name), false);
         seen_part.insert(id, rid.clone());
         Some(rid)
     };
@@ -1205,7 +1205,7 @@ fn presentation_xml(x: &mut Exp, o: &mut Out, masters: &[(u64, String)], notes: 
             w.open("p:sldLst", &[]);
             for sid in &cs.slides {
                 if let Some(part) = x.slide_parts.get(sid).cloned() {
-                    let rid = o.rels.add("slide", &craft_opc::relative("ppt/presentation.xml", &part), false);
+                    let rid = o.rels.add("slide", &bharat_opc::relative("ppt/presentation.xml", &part), false);
                     w.tag("p:sld").attr("r:id", rid).empty();
                 }
             }
@@ -1225,7 +1225,7 @@ fn presentation_xml(x: &mut Exp, o: &mut Out, masters: &[(u64, String)], notes: 
             inner.tag("p:ext").attr("uri", crate::SECTION_EXT_URI).open();
             inner.tag("p14:sectionLst").attr("xmlns:p14", NS_P14).open();
             for (i, (name, list)) in sections.iter().enumerate() {
-                inner.tag("p14:section").attr("name", name).attr("id", craft_drawingml::table::styles::guid(&format!("section:{i}:{name}"))).open();
+                inner.tag("p14:section").attr("name", name).attr("id", bharat_drawingml::table::styles::guid(&format!("section:{i}:{name}"))).open();
                 inner.open("p14:sldIdLst", &[]);
                 for si in list {
                     inner.tag("p14:sldId").attr("id", 256 + si).empty();

@@ -145,7 +145,7 @@ pub fn same_download_url(url: &str, expected: &str) -> bool {
 /// Whether `url` is a download that truly belongs to `repo`.
 ///
 /// A raw `starts_with(prefix)` check is not enough: a value such as
-/// `https://github.com/storytold/craft-launcher/releases/download/../../../ATTACKER/REPO/releases/download/v1/x`
+/// `https://github.com/storytold/bharat-launcher/releases/download/../../../ATTACKER/REPO/releases/download/v1/x`
 /// shares the prefix textually, yet its interpreted path escapes the repository. The link is
 /// accepted only when the text after the prefix is exactly `<tag>/<name>` — two non-empty path
 /// segments with no traversal (`.`/`..`), no additional slashes, no query or fragment, and no
@@ -295,7 +295,7 @@ pub fn valid_tag(tag: &str) -> bool {
     tag.len() <= 64 && !tag.starts_with('.') && plain_name(tag)
 }
 
-/// Non-empty and only `[A-Za-z0-9._+-]`, the characters every Craft release tag and asset uses.
+/// Non-empty and only `[A-Za-z0-9._+-]`, the characters every Bharat release tag and asset uses.
 fn plain_name(s: &str) -> bool {
     !s.is_empty() && s.bytes().all(|b| b.is_ascii_alphanumeric() || b"._-+".contains(&b))
 }
@@ -682,7 +682,7 @@ mod tests {
         }
     }
 
-    /// The tag rule the launcher's feed shares (craft-launcher#1024): plain characters, no
+    /// The tag rule the launcher's feed shares (bharat-launcher#1024): plain characters, no
     /// leading dot, at most 64 bytes, for the API's `tag_name`, a redirect and a download link.
     #[test]
     fn tags_are_plain() {

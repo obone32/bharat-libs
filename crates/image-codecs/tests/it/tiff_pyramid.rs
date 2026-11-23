@@ -1,7 +1,7 @@
 //! TIFF "Save Image Pyramid" (#8827): reduced-resolution levels after the full image, each half
 //! the size of the one before, that every reader skips when it opens the file.
 
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 fn pyramid() -> EncodeOptions {
     EncodeOptions { tiff_pyramid: true, ..Default::default() }

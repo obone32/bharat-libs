@@ -2,9 +2,9 @@ use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable as _;
 
 use super::{JAPANESE, KOREAN, Screens, compose, ime_events};
-use crate::fonts::CraftFace;
+use crate::fonts::BharatFace;
 
-const ARABIC: CraftFace = CraftFace {
+const ARABIC: BharatFace = BharatFace {
     family: "Noto Sans Arabic",
     style: "Regular",
     scripts: &["Arab"],
@@ -12,7 +12,7 @@ const ARABIC: CraftFace = CraftFace {
     index: 0,
 };
 // The subset has the test strings' kana, Han and Hangul, so it stands in for every CJK face.
-const CJK: CraftFace = CraftFace {
+const CJK: BharatFace = BharatFace {
     family: "Noto Sans CJK SC",
     style: "Regular",
     scripts: &["Jpan", "Kore", "Hans", "Hant"],
@@ -21,7 +21,7 @@ const CJK: CraftFace = CraftFace {
 };
 
 fn screens() -> Screens {
-    Screens::new("unit").size([300.0, 80.0]).fonts(|fonts| fonts.craft_faces(&[ARABIC, CJK]))
+    Screens::new("unit").size([300.0, 80.0]).fonts(|fonts| fonts.bharat_faces(&[ARABIC, CJK]))
 }
 
 #[test]

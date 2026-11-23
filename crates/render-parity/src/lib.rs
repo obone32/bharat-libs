@@ -1,20 +1,20 @@
 //! Render parity: how far two renders of the same photo are apart, and whether that is within a
 //! stated [`Tolerance`].
 //!
-//! The shared develop pipeline (craft-libs#587) has to give LightCraft and PhotoCraft the same
+//! The shared develop pipeline (bharat-libs#587) has to give LightCraft and PhotoCraft the same
 //! picture. A stage moved from an app, or an app switched to the shared crate, is checked by
 //! rendering the same fixture both ways and comparing them here. The [`Report`] names the worst
 //! pixel, so a failure points at where to look.
 //!
 //! Renders are scene-linear RGB with Rec. 709 / sRGB primaries and a D65 white, interleaved, with
 //! 1.0 as diffuse white. Colour difference is CIEDE2000 in CIELAB relative to D65 (from
-//! [`craft_cms::math`]); values above 1.0 are allowed and compared as they are.
+//! [`bharat_cms::math`]); values above 1.0 are allowed and compared as they are.
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
 use std::fmt;
 
-use craft_cms::math::{delta_e2000, xyz_to_lab};
+use bharat_cms::math::{delta_e2000, xyz_to_lab};
 
 /// Linear Rec. 709 RGB → CIE XYZ (D65), IEC 61966-2-1.
 const RGB_TO_XYZ: [[f64; 3]; 3] = [[0.4124, 0.3576, 0.1805], [0.2126, 0.7152, 0.0722], [0.0193, 0.1192, 0.9505]];
@@ -83,7 +83,7 @@ pub struct Tolerance {
 }
 
 impl Tolerance {
-    /// The baseline parity of craft-libs#587: well below a visible difference (CIEDE2000 1.0), and
+    /// The baseline parity of bharat-libs#587: well below a visible difference (CIEDE2000 1.0), and
     /// within a 10-bit code value in any channel.
     pub const BASELINE: Self = Self { max_delta_e: 0.5, mean_delta_e: 0.05, max_channel: 1.0 / 1024.0 };
 }

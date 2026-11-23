@@ -1,7 +1,7 @@
 //! Original nested-picture controls. No native output or external assets are embedded.
-use craft_wordmodel::para::{Anchor, CanvasStyle, Float, GroupChild, ShapeKind, Wrap};
-use craft_wordmodel::props::Rgb;
-use craft_wordmodel::{Document, InlineObject, Paragraph, PartKind, Pos, StoryRef, TextBody, para_block};
+use bharat_wordmodel::para::{Anchor, CanvasStyle, Float, GroupChild, ShapeKind, Wrap};
+use bharat_wordmodel::props::Rgb;
+use bharat_wordmodel::{Document, InlineObject, Paragraph, PartKind, Pos, StoryRef, TextBody, para_block};
 use std::{io::Write, sync::Arc};
 
 // Original solid RGB(0,72,192), generated in code for these controls.
@@ -31,12 +31,12 @@ fn model_box() -> Document {
     doc.media.insert("original-blue.png".into(), Arc::new(BLUE_PNG.to_vec()));
     let id = doc.add_part(PartKind::TextBox, vec![para_block(Paragraph::with_text("Parent", Default::default()))]);
     doc.parts.get_mut(&id).unwrap().body = TextBody { auto_fit: true, inset: Some([0; 4]), ..Default::default() };
-    doc.insert_object(&Pos { story: StoryRef::Part(id), path: craft_wordmodel::Path(vec![0]), off: 0 }, picture(), &Default::default()).unwrap();
+    doc.insert_object(&Pos { story: StoryRef::Part(id), path: bharat_wordmodel::Path(vec![0]), off: 0 }, picture(), &Default::default()).unwrap();
     let parent = InlineObject::Shape {
         kind: ShapeKind::TextBox,
         w: 180.0,
         h: 80.0,
-        fill: Some(craft_wordmodel::fill::Fill::solid(Rgb(240, 248, 240))),
+        fill: Some(bharat_wordmodel::fill::Fill::solid(Rgb(240, 248, 240))),
         stroke: Some(Rgb(192, 0, 0)),
         stroke_width: 1.0,
         float: Float { wrap: Wrap::InFrontOfText, h_rel: Anchor::Page, v_rel: Anchor::Page, x: 72.0, y: 100.0, ..Default::default() },
@@ -91,14 +91,14 @@ fn package(xml: &str) -> Vec<u8> {
 fn model_nested_picture_roundtrip() {
     let doc = model_box();
     check_box(&doc);
-    let bytes = craft_docx::write(&doc).unwrap();
-    check_box(&craft_docx::read(&bytes).unwrap());
+    let bytes = bharat_docx::write(&doc).unwrap();
+    check_box(&bharat_docx::read(&bytes).unwrap());
 }
 #[test]
 fn original_inline_xml_keeps_box() {
-    let doc = craft_docx::read(&package(INLINE_XML)).unwrap();
+    let doc = bharat_docx::read(&package(INLINE_XML)).unwrap();
     check_box(&doc);
-    check_box(&craft_docx::read(&craft_docx::write(&doc).unwrap()).unwrap());
+    check_box(&bharat_docx::read(&bharat_docx::write(&doc).unwrap()).unwrap());
 }
 #[test]
 fn picture_group_canvas_keep_kind() {
@@ -115,7 +115,7 @@ fn picture_group_canvas_keep_kind() {
         let mut doc = Document::new();
         doc.media.insert("original-blue.png".into(), Arc::new(BLUE_PNG.to_vec()));
         doc.insert_object(&Pos::body(0, 0), original.clone(), &Default::default()).unwrap();
-        let got = craft_docx::read(&craft_docx::write(&doc).unwrap()).unwrap();
+        let got = bharat_docx::read(&bharat_docx::write(&doc).unwrap()).unwrap();
         let object = &got.body[0].as_para().unwrap().objects[0];
         match (&original, object) {
             (InlineObject::Image { .. }, InlineObject::Image { w, h, media, .. }) => {
@@ -147,7 +147,7 @@ fn own_picture_fill_keeps_image() {
     let end = INLINE_XML.find("</wps:wsp>").unwrap();
     let payload = r#"<wps:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="2286000" cy="1016000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:blipFill><a:blip r:embed="rIdIsolationRect"/><a:stretch><a:fillRect/></a:stretch></a:blipFill></wps:spPr><wps:bodyPr/>"#;
     let xml = format!("{}{}{}", &INLINE_XML[..start], payload, &INLINE_XML[end..]);
-    let doc = craft_docx::read(&package(&xml)).unwrap();
+    let doc = bharat_docx::read(&package(&xml)).unwrap();
     assert!(doc.parts.is_empty());
     let objects = &doc.body[0].as_para().unwrap().objects;
     assert_eq!(objects.len(), 1);
@@ -167,9 +167,9 @@ fn nested_picture_soft_edges_survive_repeated_saves() {
         let effect = format!(r#"<a:effectLst><a:softEdge rad="{input_radius}"/></a:effectLst></pic:spPr>"#);
         let mut bytes = package(&INLINE_XML.replace("</pic:spPr>", &effect));
         for _ in 0..2 {
-            let doc = craft_docx::read(&bytes).unwrap();
+            let doc = bharat_docx::read(&bytes).unwrap();
             check_box(&doc);
-            bytes = craft_docx::write(&doc).unwrap();
+            bytes = bharat_docx::write(&doc).unwrap();
             let mut zip = zip::ZipArchive::new(std::io::Cursor::new(&bytes)).unwrap();
             let mut xml = String::new();
             zip.by_name("word/document.xml").unwrap().read_to_string(&mut xml).unwrap();
@@ -181,6 +181,6 @@ fn nested_picture_soft_edges_survive_repeated_saves() {
                 assert!(effects.all(|e| e.starts_with(&attr)), "{xml}");
             }
         }
-        check_box(&craft_docx::read(&bytes).unwrap());
+        check_box(&bharat_docx::read(&bytes).unwrap());
     }
 }

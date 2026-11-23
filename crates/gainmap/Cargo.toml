@@ -1,5 +1,5 @@
 [package]
-name = "craft-gainmap"
+name = "bharat-gainmap"
 description = "HDR gain maps (ISO 21496-1, Adobe hdrgm, Apple): metadata reader and writer, and the arithmetic that measures and applies a gain map."
 version.workspace = true
 edition.workspace = true

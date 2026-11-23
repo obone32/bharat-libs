@@ -1,7 +1,7 @@
 //! What a reader or writer needs from the package around the part it works on. The caller
 //! implements these over its package layer, so nothing here opens or writes a package.
 
-use craft_xml::El;
+use bharat_xml::El;
 
 use crate::{MediaId, SlideId};
 
@@ -151,13 +151,13 @@ mod tests {
         let Some(Fill::Picture(pf)) = crate::read::fill_el(&mut part, &el) else { panic!("no picture fill") };
         assert_eq!(pf.media, MediaId(7));
         assert_eq!(part.asked, [("ppt/media/image1.png".to_string(), false)]);
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         crate::write::blip_fill(&mut w, &mut part, "a:blipFill", &pf);
         assert!(w.finish().contains(r#"<a:blip r:embed="rId1""#));
         assert_eq!(part.written, [("image".to_string(), "../media/image1.png".to_string(), false)]);
         // A missing picture gets the stand-in.
         let mut part = Part::new();
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         crate::write::blip_fill(&mut w, &mut part, "a:blipFill", &PictureFill { media: MediaId(99), ..pf });
         assert_eq!(part.written[0].1, "../media/missing.png");
     }
@@ -174,7 +174,7 @@ mod tests {
         assert_eq!(s.action, Action::Slide { slide: SlideId(2) });
         assert!(crate::read::hyperlink(&mut part, &none).is_none());
         assert!(crate::read::hyperlink(&mut NoSource, &slide).is_none());
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         crate::write::hyperlink(&mut w, &mut part, "a:hlinkClick", &Hyperlink { action: Action::Slide { slide: SlideId(2) }, ..h });
         assert_eq!(w.finish(), r#"<a:hlinkClick r:id="rId1" action="ppaction://hlinksldjump"/>"#);
     }
@@ -340,27 +340,27 @@ mod tests {
         );
         assert_eq!(ls.level(0).and_then(|l| l.run.size), Some(44.0));
         for tag in ["p:defaultTextStyle", "p:titleStyle", "p:bodyStyle", "p:otherStyle", "p:notesStyle", "a:lstStyle"] {
-            let mut w = craft_xml::Writer::new();
+            let mut w = bharat_xml::Writer::new();
             crate::write::list_style(&mut w, &mut Part::new(), tag, &ls);
             let xml = format!(r#"<p:x xmlns:a="a" xmlns:p="p">{}</p:x>"#, w.finish());
             assert!(xml.find("<a:defPPr").unwrap() < xml.find("<a:lvl1pPr").unwrap(), "{tag}: {xml}");
-            let back = crate::read::list_style(&mut Part::new(), parse(xml.as_bytes()).unwrap().child(craft_xml::Local(&tag[2..])).unwrap());
+            let back = crate::read::list_style(&mut Part::new(), parse(xml.as_bytes()).unwrap().child(bharat_xml::Local(&tag[2..])).unwrap());
             assert_eq!(back, ls, "{tag}");
         }
         // A text body's own list style, and an explicit but empty `a:defPPr`.
         let tb = TextBody { list_style: ls.clone(), ..TextBody::from_text("x") };
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         crate::write::text_body(&mut w, &mut Part::new(), "p:txBody", &tb, false);
         let xml = format!(r#"<r xmlns:a="a" xmlns:p="p">{}</r>"#, w.finish());
-        let back = crate::read::text_body(&mut Part::new(), parse(xml.as_bytes()).unwrap().child(craft_xml::Local("txBody")).unwrap());
+        let back = crate::read::text_body(&mut Part::new(), parse(xml.as_bytes()).unwrap().child(bharat_xml::Local("txBody")).unwrap());
         assert_eq!(back.list_style, ls);
         let empty = ListStyle { default_level: Some(Box::default()), ..Default::default() };
         assert!(!empty.is_empty());
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         crate::write::list_style(&mut w, &mut Part::new(), "p:defaultTextStyle", &empty);
         assert_eq!(w.finish(), "<p:defaultTextStyle><a:defPPr/></p:defaultTextStyle>");
         // Without `a:defPPr` none is written.
-        let mut w = craft_xml::Writer::new();
+        let mut w = bharat_xml::Writer::new();
         crate::write::list_style(&mut w, &mut Part::new(), "p:defaultTextStyle", &ListStyle { default_level: None, ..ls });
         assert!(!w.finish().contains("defPPr"));
     }

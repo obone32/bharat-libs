@@ -2,7 +2,7 @@
 //! which read PDF files can test with a real file instead of a binary fixture.
 //!
 //! ```
-//! use craft_pdf::testing::Pdf;
+//! use bharat_pdf::testing::Pdf;
 //!
 //! let bytes = Pdf::new()
 //!     .obj("<< /Type /Catalog /Pages 2 0 R >>")

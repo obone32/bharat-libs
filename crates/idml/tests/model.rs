@@ -1,11 +1,11 @@
 //! The layout model: spreads, pages, guides, page items, graphics and geometry.
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_idml::model::{
+use bharat_idml::model::{
     GraphicKind, IDENTITY, ItemChild, ItemKind, MAX_PATH_POINTS, PageChild, PathGeometry, PathPoint, Spread, SpreadChild, SubPath, Values, apply,
     concat, spreads,
 };
-use craft_idml::{El, Package, designmap_xml, parse_part, part_root, part_xml, write_package};
+use bharat_idml::{El, Package, designmap_xml, parse_part, part_root, part_xml, write_package};
 
 /// A spread shaped as InDesign writes one: a page with margins and guides, then the page items
 /// back to front (an image frame, a threaded text frame, a group, an open line), with elements the
@@ -116,7 +116,7 @@ fn page_items_give_their_geometry_links_and_threads() {
     assert_eq!(image.contents().as_deref(), Some(&b"hello world"[..]));
     let link = image.link().unwrap();
     assert_eq!((link.uri(), link.format()), (Some("file:/Users/a/My%20Pictures/p.jpg"), Some("$ID/JPEG")));
-    assert_eq!(craft_idml::value::uri_to_path(link.uri().unwrap()), "/Users/a/My Pictures/p.jpg");
+    assert_eq!(bharat_idml::value::uri_to_path(link.uri().unwrap()), "/Users/a/My Pictures/p.jpg");
 
     let text = items[1];
     assert_eq!(text.kind, ItemKind::TextFrame);
@@ -176,7 +176,7 @@ fn a_package_gives_its_spreads_and_parent_spreads() {
     parent.values.set("NamePrefix", "A");
     parent.values.set("BaseName", "Parent");
     let designmap = El::new("Document")
-        .with_attr("xmlns:idPkg", craft_idml::PACKAGING_NS)
+        .with_attr("xmlns:idPkg", bharat_idml::PACKAGING_NS)
         .with_child(El::new("idPkg:MasterSpread").with_attr("src", "MasterSpreads/MasterSpread_ud1.xml"))
         .with_child(El::new("idPkg:Spread").with_attr("src", "Spreads/Spread_ud3.xml"));
     let bytes = write_package(&[
@@ -273,17 +273,17 @@ fn text_variable_decoration_uses_preference_and_falls_back_to_legacy_root_values
         br#"<TextVariable Name="Last Page Number" VariableType="LastPageNumberType" TextBefore="legacy " TextAfter=" legacy"><PageNumberVariablePreference TextBefore="of " TextAfter=" pages" Scope="SectionScope"/></TextVariable>"#,
     )
     .unwrap();
-    let variable = craft_idml::model::TextVariableValues::from_el(&preferred);
+    let variable = bharat_idml::model::TextVariableValues::from_el(&preferred);
     assert_eq!((variable.before.as_str(), variable.after.as_str()), ("of ", " pages"));
 
     let legacy = parse_part(br#"<TextVariable Name="Last Page Number" TextBefore="of " TextAfter=" pages"/>"#).unwrap();
-    let variable = craft_idml::model::TextVariableValues::from_el(&legacy);
+    let variable = bharat_idml::model::TextVariableValues::from_el(&legacy);
     assert_eq!((variable.before.as_str(), variable.after.as_str()), ("of ", " pages"));
 }
 
 #[test]
 fn designmap_schema_elements_roundtrip_expected_attributes() {
-    use craft_idml::model::{
+    use bharat_idml::model::{
         ConditionValues, KinsokuTableValues, MojikumiRow, MojikumiTableValues, NumberingListValues, TextDateKind, TextVariableKind,
         TextVariableValues, default_languages, default_xref_text_variables,
     };
@@ -355,7 +355,7 @@ fn designmap_schema_elements_roundtrip_expected_attributes() {
 
 #[test]
 fn designmap_layers_sections_and_hyperlinks_roundtrip_expected_attributes() {
-    use craft_idml::model::{
+    use bharat_idml::model::{
         LayerColorValue, LayerValues, SectionValues, hyperlink_el, hyperlink_page_destination_el, hyperlink_page_item_source_el,
         hyperlink_url_destination_el, root_color_group_el,
     };
@@ -411,8 +411,8 @@ fn designmap_layers_sections_and_hyperlinks_roundtrip_expected_attributes() {
 
 #[test]
 fn preferences_styles_spread_and_story_schema_helpers_roundtrip() {
-    use craft_idml::Node;
-    use craft_idml::model::{
+    use bharat_idml::Node;
+    use bharat_idml::model::{
         CellStyleValues, EpubSplitValues, GuideValues, MarginPreference, StrokeValues, TableStyleValues, TextPreferenceValues, TocStyleEntryValues,
         TocStyleValues, ViewPreferenceValues, object_style_effects_category_settings, pasteboard_preference_el, text_variable_instance_el,
         tracked_change_el, transparency_preference_el,
@@ -517,6 +517,6 @@ fn preferences_styles_spread_and_story_schema_helpers_roundtrip() {
 
     let tv = text_variable_instance_el("u9", "Chapter", "1", "dTextVariablenChapter");
     assert_eq!(tv.attr("ResultText"), Some("1"));
-    let ch = tracked_change_el("u10", "InsertedText", vec![Node::El(craft_idml::El::new("Content"))]);
+    let ch = tracked_change_el("u10", "InsertedText", vec![Node::El(bharat_idml::El::new("Content"))]);
     assert_eq!(ch.attr("ChangeType"), Some("InsertedText"));
 }

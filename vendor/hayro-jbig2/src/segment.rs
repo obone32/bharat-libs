@@ -429,7 +429,7 @@ mod tests {
         assert_eq!(header.data_length, Some(32));
     }
 
-    /// PdfCraft patch test (ported from craft-libs): a long-form referred-to count over
+    /// PdfCraft patch test (ported from bharat-libs): a long-form referred-to count over
     /// `MAX_REFERRED_TO_SEGMENTS` is refused before its retention bytes are read.
     #[test]
     fn test_referred_to_count_is_capped() {

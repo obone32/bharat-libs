@@ -95,7 +95,7 @@ pub fn encode(bytes: &[u8]) -> Result<String, String> {
     encoder.write_all(bytes).map_err(|e| e.to_string())?;
     let raw = encoder.finish().map_err(|e| e.to_string())?;
 
-    Ok(craft_mime::transfer::base64(&raw))
+    Ok(bharat_mime::transfer::base64(&raw))
 }
 
 #[cfg(test)]

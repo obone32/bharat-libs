@@ -67,7 +67,7 @@ impl From<encoder::Mode> for Mode {
 }
 
 /// Channel order for Vorbis-ordered surround (mapping family 1, RFC 7845 §5.1.1.2): output channel
-/// → decoded channel, giving the WAV/SMPTE order (L R C LFE back… side…) the rest of craft-audio
+/// → decoded channel, giving the WAV/SMPTE order (L R C LFE back… side…) the rest of bharat-audio
 /// uses. From FilmCraft's `filmcraft-codecs`.
 #[cfg(feature = "opus-decode")]
 pub fn wav_order(channels: usize) -> Option<&'static [usize]> {

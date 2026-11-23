@@ -322,7 +322,7 @@ pub fn fill_pattern(ip: &mut Interp, path: &[Seg], eo: bool) -> R<bool> {
         return Ok(false);
     }
     let Some(Obj::Dict(sh)) = p.get_name(b"Shading") else { return Ok(false) };
-    let m = match p.get_name(b"CraftPsMatrix") {
+    let m = match p.get_name(b"BharatPsMatrix") {
         Some(Obj::Array(a, _)) => matrix_of(&a)?,
         _ => M::ID,
     };
@@ -357,7 +357,7 @@ fn cell(ip: &mut Interp, p: &PDict, color: Option<Vec<f64>>) -> R<usize> {
     if step.0 == 0.0 || step.1 == 0.0 || !step.0.is_finite() || !step.1.is_finite() {
         return err("rangecheck");
     }
-    let m = match p.get_name(b"CraftPsMatrix") {
+    let m = match p.get_name(b"BharatPsMatrix") {
         Some(Obj::Array(a, _)) => matrix_of(&a)?,
         _ => M::ID,
     };

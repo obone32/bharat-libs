@@ -1,4 +1,4 @@
-use craft_gpu::{GpuContext, GpuFault, GpuJob, GpuJobOutcome, GpuProvider};
+use bharat_gpu::{GpuContext, GpuFault, GpuJob, GpuJobOutcome, GpuProvider};
 
 /// No-op dispatch for wiring tests; shared readback/composite providers live in sibling modules.
 pub struct NoopProvider;

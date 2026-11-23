@@ -20,7 +20,7 @@ pub struct ReadOutcome {
     pub result: Result<Vec<u8>, GpuFault>,
 }
 
-/// Device/queue abstraction implemented by `craft-gpu-wgpu` and `craft-gpu-null`.
+/// Device/queue abstraction implemented by `bharat-gpu-wgpu` and `bharat-gpu-null`.
 ///
 /// ## Device loss
 ///
@@ -47,7 +47,7 @@ pub struct ReadOutcome {
 /// primitives every backend implements directly, because WebGPU (and therefore native wgpu's
 /// `buffer.map_async`) can only map a buffer asynchronously. The completion is delivered the same
 /// way a `GpuJob` batch's outcome is delivered to a worker's host: queued, then collected on a
-/// later poll, analogous to `craft-worker-host`'s `HostMessage::GpuJobs` being answered later by
+/// later poll, analogous to `bharat-worker-host`'s `HostMessage::GpuJobs` being answered later by
 /// `WorkerMessage::GpuBatchDone`.
 ///
 /// Both bundled backends override `read_buffer`'s default body, since the default has nowhere
@@ -106,7 +106,7 @@ pub trait GpuContext {
     fn free_buffer(&mut self, handle: HandleId);
 
     /// Blocking convenience for callers that need bytes now, such as the CPU-stand-in providers
-    /// in `craft-gpu-providers`. The default drains [`request_read`](Self::request_read) and
+    /// in `bharat-gpu-providers`. The default drains [`request_read`](Self::request_read) and
     /// [`poll_reads`](Self::poll_reads) in a loop; see the trait docs for which backends honestly
     /// support blocking here and which override this to fail instead of hanging.
     ///

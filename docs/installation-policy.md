@@ -1,7 +1,7 @@
-# Installing the Craft apps on Windows
+# Installing the Bharat apps on Windows
 
 This is a proposed policy, not a claim about a published release. Preparation covers every
-current Craft app with a Windows MSI, plus the launcher's new-install folder. The
+current Bharat app with a Windows MSI, plus the launcher's new-install folder. The
 [adoption inventory](windows-installation-adoption.md) records the scope and remaining gates.
 Folders are preserved except for the proposed automatic migration of an exact former default
 path (see below). That exception also covers a manually chosen path with the same spelling;
@@ -29,9 +29,9 @@ in the [adoption inventory](windows-installation-adoption.md).
 | Per-user (the package's authored default; kept for existing copies) | `%LOCALAPPDATA%\Programs\ArtCraft\<App>` | An MSI run with no scope property; the wizard's "Only for me" choice; copies installed per-user keep their context on update |
 
 **Permission prompts.** Each all-users install or update asks Windows for permission. One
-prompt per **Update all** run was built (craft-launcher#974) with a hidden PowerShell, which
-antivirus flagged; it was reverted (craft-launcher#1077). The launcher's signed installer
-helper (craft-launcher#1080, in review) does all-users downgrades under one prompt, with no script.
+prompt per **Update all** run was built (bharat-launcher#974) with a hidden PowerShell, which
+antivirus flagged; it was reverted (bharat-launcher#1077). The launcher's signed installer
+helper (bharat-launcher#1080, in review) does all-users downgrades under one prompt, with no script.
 Update all keeps one prompt per all-users package until it uses that helper too. No resident
 service is planned.
 
@@ -93,8 +93,8 @@ picks "Everyone" in the wizard.
 - **The chosen folder survives elevation.** `INSTALLFOLDER` is a secure MSI property, so
   the elevated installer receives the same exact destination selected in the setup wizard.
 - **Custom folders stay first-class.** A chosen exact app folder is used as-is; a chosen
-  suite root gets the app subfolder appended once (`D:\Craft` becomes `D:\Craft\PhotoCraft`,
-  never `D:\Craft\PhotoCraft\PhotoCraft`). A missing drive or an unavailable folder is a
+  suite root gets the app subfolder appended once (`D:\Bharat` becomes `D:\Bharat\PhotoCraft`,
+  never `D:\Bharat\PhotoCraft\PhotoCraft`). A missing drive or an unavailable folder is a
   visible error, not permission to fall back to the default.
 
 ## What an app must still do without the launcher

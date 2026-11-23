@@ -255,7 +255,7 @@ fn draw_form_xobject_once<'a, 'b>(
         if x_object.is_knockout {
             device.set_knockout();
         }
-        // Craft patch (flatten): tell the device the group is isolated.
+        // Bharat patch (flatten): tell the device the group is isolated.
         if x_object.is_isolated {
             device.set_isolated();
         }
@@ -485,7 +485,7 @@ pub(crate) fn draw_image_xobject<'a, 'b>(
 
     device.set_soft_mask(None);
     device.set_blend_mode(BlendMode::default());
-    // Craft patch (flatten): tell the device the overprint parameters.
+    // Bharat patch (flatten): tell the device the overprint parameters.
     set_overprint(context, device);
     // PdfCraft patch (46): the group just pushed applies the fill opacity, so a stencil mask's
     // paint (the fill color) must not carry it again: at `ca 0.5` a mask was drawn at a
@@ -1094,7 +1094,7 @@ fn decode_context<'a>(
             (d.width, d.height)
         })
         .unwrap_or((obj.width, obj.height));
-    // Craft patch: the size an image codec decoded to is held to the same limit.
+    // Bharat patch: the size an image codec decoded to is held to the same limit.
     if !image_size_within(width, height, obj.stream.decode_limits().max_image_pixels()) {
         (obj.warning_sink)(InterpreterWarning::ImageDecodeFailure);
         return None;
@@ -1232,7 +1232,7 @@ fn decode_raster(
                 scale_factors: ctx.scale_factors,
             }))
         } else if ctx.color_space.is_device_rgb() {
-            // Craft patch: `DeviceRGB` samples are taken as they are, without a second buffer
+            // Bharat patch: `DeviceRGB` samples are taken as they are, without a second buffer
             // of the image's size (`fix_image_length` made them whole rows).
             rgb_moved = true;
             Some(ImageData::Rgb(RgbData {
@@ -1384,7 +1384,7 @@ fn decode_raster(
     Some(DecodedRaster { image, alpha })
 }
 
-/// Craft patch (flatten): the image's samples in its own space's inks (see
+/// Bharat patch (flatten): the image's samples in its own space's inks (see
 /// [`RasterImage::with_inks`](crate::RasterImage::with_inks)): `/Decode` and `/Matte` applied,
 /// process colour converted as [`ColorSpace::ink_values`] does, transfer functions left out
 /// (as on a plate).
@@ -1543,7 +1543,7 @@ fn decode_mask_bytes(
     Some(data)
 }
 
-/// Craft patch: `rgb_moved` says that `image_data` holds the image's own 8-bit `DeviceRGB`
+/// Bharat patch: `rgb_moved` says that `image_data` holds the image's own 8-bit `DeviceRGB`
 /// samples, moved out of `decoded` (see `decode_raster`).
 #[allow(clippy::too_many_arguments)]
 fn resolve_alpha(

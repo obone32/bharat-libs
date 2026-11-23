@@ -1,4 +1,4 @@
-use craft_zip::{Compression, Writer};
+use bharat_zip::{Compression, Writer};
 use std::io::{Cursor, Read, Write};
 
 #[test]

@@ -3,7 +3,7 @@
 //! brackets, `〖mc〗^2`, as Word linearizes it. Single characters, numbers and upright function
 //! names stay bare.
 
-use craft_math::math::{MNode, MRun, ScriptKind, parse_linear, to_linear};
+use bharat_math::math::{MNode, MRun, ScriptKind, parse_linear, to_linear};
 
 fn a(t: &str) -> Vec<MNode> {
     vec![MNode::Run(MRun::new(t))]

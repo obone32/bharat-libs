@@ -2,7 +2,7 @@
 //!
 //! These views are evidence, not validated certificates or signature/trust verdicts. They do
 //! not replace [`crate::x509::Certificate`]. Unknown algorithms and original encodings are kept.
-//! The profile follows Craft Anything's inspection reader (including Afloat's raw-field and
+//! The profile follows Bharat Anything's inspection reader (including Afloat's raw-field and
 //! non-minimal-length work); callers retain their existing semantic and verification checks.
 
 use crate::der::{Tlv, tag};

@@ -1,8 +1,8 @@
 //! Legacy PowerPoint 97–2003 import (`.ppt`, `.pot`, `.pps`), written from Microsoft's public
 //! Open Specifications: [MS-PPT] (the presentation records) and [MS-ODRAW] (the shapes and
-//! pictures), on `craft-cfb` for the compound file ([MS-CFB]).
+//! pictures), on `bharat-cfb` for the compound file ([MS-CFB]).
 //!
-//! [`import`] reads a presentation leniently into a [`craft_pptx::Presentation`]: unknown records
+//! [`import`] reads a presentation leniently into a [`bharat_pptx::Presentation`]: unknown records
 //! are skipped, damaged ones are left out, and every size, count and depth is bounded. The caller's
 //! [`Defaults`] supply each master's layouts and placeholders, which the file's masters then
 //! place and style. There is no `.ppt` writer.
@@ -29,8 +29,8 @@ mod ppt95;
 mod record;
 mod text;
 
-use craft_cfb::{CompoundFile, Error as CfbError};
-use craft_pptx::{Defaults, Presentation};
+use bharat_cfb::{CompoundFile, Error as CfbError};
+use bharat_pptx::{Defaults, Presentation};
 
 /// Name of the stream holding the presentation.
 const DOCUMENT_STREAM: &str = "PowerPoint Document";
@@ -50,7 +50,7 @@ pub enum PptError {
 /// Does this look like a PowerPoint 95 or 97–2003 file (a compound file with a `PowerPoint
 /// Document` stream)?
 pub fn sniff(bytes: &[u8]) -> bool {
-    craft_cfb::sniff(bytes) && CompoundFile::open(bytes).is_ok_and(|f| f.has_stream(DOCUMENT_STREAM))
+    bharat_cfb::sniff(bytes) && CompoundFile::open(bytes).is_ok_and(|f| f.has_stream(DOCUMENT_STREAM))
 }
 
 /// Read a `.ppt` / `.pot` / `.pps` file. `defaults` gives the master each of the file's masters

@@ -7,7 +7,7 @@
 use crate::common;
 use common::Rng;
 use common::tiffgen::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 const ORDERS: [(bool, bool); 4] = [(true, false), (false, false), (true, true), (false, true)];
 
@@ -820,9 +820,9 @@ fn poke(bytes: &[u8]) {
 
 #[test]
 fn zoo_decodes_and_never_panics_when_cut_or_corrupted() {
-    // CRAFT_HOSTILE_DIVISOR=N (pull requests) runs every N-th cut and flip, from a different offset
+    // BHARAT_HOSTILE_DIVISOR=N (pull requests) runs every N-th cut and flip, from a different offset
     // for each file, and 1/N of the random rounds.
-    let step = craft_media_testkit::hostile::divisor();
+    let step = bharat_media_testkit::hostile::divisor();
     for (k, f) in zoo().into_iter().enumerate() {
         let info = tiff_info(&f).unwrap();
         for i in 0..info.pages.len() {

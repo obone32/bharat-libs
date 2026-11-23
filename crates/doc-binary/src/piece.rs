@@ -5,7 +5,7 @@
 //! plain byte offset: 8-bit text in the code page of its piece's or run's font (or the document's),
 //! or UTF-16 in a file with the FIB's fExtChar flag.
 
-use craft_codepage::{code_page_byte, cp1252, is_byte_code_page};
+use bharat_codepage::{code_page_byte, cp1252, is_byte_code_page};
 
 use crate::DocbinError;
 

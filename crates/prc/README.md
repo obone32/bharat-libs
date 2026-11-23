@@ -1,4 +1,4 @@
-# craft-prc
+# bharat-prc
 
 A reader and triangle-mesh writer for PRC (ISO 14739-1), the 3D model format a PDF `/3D` stream of `/Subtype /PRC` carries (ISO 32000-2 §13.6.3).
 

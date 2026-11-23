@@ -1,7 +1,7 @@
 //! VP9 in MP4 (a `vpcC` record, which the decoder does not need).
 
 use crate::common;
-use craft_media::CodecId;
+use bharat_media::CodecId;
 
 #[test]
 fn mp4() {

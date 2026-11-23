@@ -234,7 +234,7 @@ impl Bar {
     }
 
     fn nav(&self) -> Nav {
-        Nav::current(&self.ctx, Id::unique("craft-menu-bar").with("nav"))
+        Nav::current(&self.ctx, Id::unique("bharat-menu-bar").with("nav"))
     }
 
     /// Is row `i` of `level` entirely inside its level's visible (scrolled) part, in the window?

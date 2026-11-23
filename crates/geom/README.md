@@ -1,4 +1,4 @@
-# craft-geom
+# bharat-geom
 
 Plane geometry for photo editing, from LightCraft's `lightcraft-geom` at `a75497d6`. Image
 coordinates are y-down; *normalised* coordinates map the full (uncropped, oriented) image to
@@ -11,4 +11,4 @@ coordinates are y-down; *normalised* coordinates map the full (uncropped, orient
 - `drag_crop` and `CropHandle`: what dragging a crop handle or edge does, with aspect lock.
 - `Real`: the scalar the coordinate formulas are generic over, `f64` or `Interval` (bounds on the results over a range of inputs, such as a block of output pixels), so one formula serves both.
 
-No dependencies beyond `serde`. It is shared by `craft-develop-model` and the develop pipeline.
+No dependencies beyond `serde`. It is shared by `bharat-develop-model` and the develop pipeline.
