@@ -1,7 +1,7 @@
-# craft-latex
+# bharat-latex
 
-LaTeX documents, read and written, to and from the [craft-flow](../flow/README.md) model and a
-craft-wordmodel `Document`.
+LaTeX documents, read and written, to and from the [bharat-flow](../flow/README.md) model and a
+bharat-wordmodel `Document`.
 
 - **Write** (`export`): a standalone LaTeX 2ε `article` that compiles with pdfLaTeX, XeLaTeX or
   LuaLaTeX using only packages every distribution ships (`fontenc`, `ulem`, `xcolor`, `multirow`,
@@ -14,12 +14,12 @@ craft-wordmodel `Document`.
   (kept as equations), text formatting commands and declarations, colours, links, labels, accents,
   special characters and ligatures. It is not a TeX engine: macros are not expanded. Unknown
   commands are dropped with their braced arguments kept as text; layout commands are dropped
-  with their arguments. Bytes that name no encoding are decoded by `craft_mime::detect`.
+  with their arguments. Bytes that name no encoding are decoded by `bharat_mime::detect`.
 
 ```rust
-let doc = craft_latex::import(br"\section*{Intro} Some \textbf{bold} text and $x^2$.");
+let doc = bharat_latex::import(br"\section*{Intro} Some \textbf{bold} text and $x^2$.");
 assert!(doc.plain_text(Default::default()).starts_with("Intro\nSome bold text and"));
-let tex = craft_latex::export(&doc);
+let tex = bharat_latex::export(&doc);
 assert!(tex.contains(r"\section*{Intro}") && tex.contains(r"\textbf{bold}") && tex.contains("$x^2$"));
 ```
 
@@ -29,7 +29,7 @@ and the work is linear.
 ## Math
 
 A document's math is converted to and from the linear format equations are kept in by
-`craft_math::latex_text` (re-exported here as `latex_to_linear` and `linear_to_latex`), which works
+`bharat_math::latex_text` (re-exported here as `latex_to_linear` and `linear_to_latex`), which works
 on the text and keeps the source's spacing.
 
 Moved from WordCraft (`crates/formats/src/latex`, `07f97737`) with its tests and the LaTeX parts

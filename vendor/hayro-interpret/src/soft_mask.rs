@@ -76,9 +76,9 @@ struct Repr<'a> {
     background: Color,
     xref: &'a XRef,
     nesting_depth: u32,
-    /// Craft patch (CMYK masks): the group's `/CS` is DeviceCMYK.
+    /// Bharat patch (CMYK masks): the group's `/CS` is DeviceCMYK.
     device_cmyk: bool,
-    /// Craft patch (CMYK masks): the page plate's printing condition, for [`SoftMask::plate`].
+    /// Bharat patch (CMYK masks): the page plate's printing condition, for [`SoftMask::plate`].
     simulation: Option<CmykSimulation>,
 }
 
@@ -196,7 +196,7 @@ impl<'a> SoftMask<'a> {
         })))
     }
 
-    /// Craft patch (CMYK masks): whether the mask group's color space is DeviceCMYK. A
+    /// Bharat patch (CMYK masks): whether the mask group's color space is DeviceCMYK. A
     /// luminosity mask then takes its values from the group's CMYK by the ISO 32000-2 §10.4.2.2
     /// formula, `1 - min(1, 0.3c + 0.59m + 0.11y + k)`, rather than from its colors as drawn:
     /// drawn through a CMYK profile, K 100% is not black.
@@ -204,7 +204,7 @@ impl<'a> SoftMask<'a> {
         self.0.device_cmyk
     }
 
-    /// Craft patch (CMYK masks): the plate of process `ink` that the mask group composites on a
+    /// Bharat patch (CMYK masks): the plate of process `ink` that the mask group composites on a
     /// CMYK device, for [`Self::interpret_plate`] and [`Plate::tint`] of the backdrop. Spot
     /// colorants paint through their alternate space, and nothing overprints.
     pub fn plate(&self, ink: Ink) -> Plate {
@@ -216,7 +216,7 @@ impl<'a> SoftMask<'a> {
         }
     }
 
-    /// Craft patch (CMYK masks): interpret the mask's contents as the film of `plate`'s ink
+    /// Bharat patch (CMYK masks): interpret the mask's contents as the film of `plate`'s ink
     /// (see [`Self::plate`]).
     pub fn interpret_plate(&self, device: &mut impl Device<'a>, plate: Plate) {
         let state = State::new(self.0.root_transform);

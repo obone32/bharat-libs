@@ -1,5 +1,5 @@
 [package]
-name = "craft-image-codecs-fuzz"
+name = "bharat-image-codecs-fuzz"
 version = "0.0.0"
 publish = false
 edition = "2024"
@@ -14,7 +14,7 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-craft-image-codecs = { path = "..", features = ["heif", "avif-decode"] }
+bharat-image-codecs = { path = "..", features = ["heif", "avif-decode"] }
 # Called directly too: the codec turns its panics into errors (see decode_heif.rs).
 heic-rs = "=0.1.4"
 

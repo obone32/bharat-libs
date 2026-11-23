@@ -1,8 +1,8 @@
-# VP9 decoder (`craft_video::vp9::decode`, feature `vp9-decode`)
+# VP9 decoder (`bharat_video::vp9::decode`, feature `vp9-decode`)
 
 Clean-room, pure-Rust (no `unsafe`) VP9 decoder, implemented from the public *VP9 Bitstream &
 Decoding Process Specification* v0.6 (WebM project). It depends only on
-`craft_media::bitstream`, `thiserror`, and optionally `rayon` (feature `threads`), and builds
+`bharat_media::bitstream`, `thiserror`, and optionally `rayon` (feature `threads`), and builds
 for `wasm32-unknown-unknown` with and without `threads`.
 
 The constant tables (probability defaults, scans, coefficient bands, quantizer lookups, Pareto
@@ -33,7 +33,7 @@ is used only as an external fixture generator and test oracle.
 ## API
 
 ```rust
-use craft_video::vp9::decode::{Decoder, Plane};
+use bharat_video::vp9::decode::{Decoder, Plane};
 
 let mut dec = Decoder::new(); // or Decoder::with_threads(n)
 for (pts, chunk) in chunks {  // one IVF / WebM block / MP4 sample each (frame or superframe)
@@ -51,8 +51,8 @@ dec.reset(); // forget references / contexts (seek), keeps the thread pool
 let stats = dec.stats(); // what the stream exercised (frame kinds, tiles, compound, scaling...)
 
 // Random access points: does a container sample start with a key frame (and its parameters)?
-let key: bool = craft_video::vp9::decode::is_keyframe(chunk);
-let info: Option<craft_video::vp9::decode::KeyframeInfo> = craft_video::vp9::decode::keyframe_info(chunk);
+let key: bool = bharat_video::vp9::decode::is_keyframe(chunk);
+let info: Option<bharat_video::vp9::decode::KeyframeInfo> = bharat_video::vp9::decode::keyframe_info(chunk);
 ```
 
 `is_keyframe` lets a caller check a container sync sample before starting a decode there, so
@@ -100,11 +100,11 @@ inter prediction calls, reconstruction), `intra`, `inter`, `transform`, `loopfil
 A frame is refused when its luma plane has more than 2^26 samples, or when the pictures the
 decoder would hold at that size (eight reference slots, the new frame and those in flight, at two
 bytes a sample on the 64-sample grid) do not fit `Decoder::set_memory_budget`
-(`craft_video::budget::DECODE_MEMORY_BUDGET` by default: 4 GiB, 1 GiB on 32-bit targets).
+(`bharat_video::budget::DECODE_MEMORY_BUDGET` by default: 4 GiB, 1 GiB on 32-bit targets).
 
 ## Tests
 
-`cargo test --release -p craft-video --features vp9-decode,threads`. Fixtures are generated on first use into
+`cargo test --release -p bharat-video --features vp9-decode,threads`. Fixtures are generated on first use into
 `target/fixtures/vp9/` with ffmpeg + libvpx-vp9 (tests print a message and skip when ffmpeg or
 libvpx is unavailable). Every frame is compared sample-exactly with `ffmpeg -c:v vp9 -f rawvideo`
 output with 1 thread, 3 threads (frame threading with a small pool) and every core; the first
@@ -166,8 +166,8 @@ Backward adaptation is on (`-frame-parallel 0`) unless noted.
 
 ## Performance
 
-`cargo test --release -p craft-video --features vp9-decode,threads --test vp9_decode perf:: -- --ignored --nocapture` (bit-exactness is
-verified first), or `VP9_THREADS=n VP9_LOOPS=k cargo run --release -p craft-video --features vp9-decode,threads --example
+`cargo test --release -p bharat-video --features vp9-decode,threads --test vp9_decode perf:: -- --ignored --nocapture` (bit-exactness is
+verified first), or `VP9_THREADS=n VP9_LOOPS=k cargo run --release -p bharat-video --features vp9-decode,threads --example
 vp9_vp9dec -- in.ivf` (decodes the file k times and prints the statistics; `VP9_DRAFT=1` for draft
 mode).
 

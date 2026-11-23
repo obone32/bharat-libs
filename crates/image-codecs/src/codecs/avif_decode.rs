@@ -2,7 +2,7 @@
 //! targets only.
 //!
 //! The container is HEIF (ISO/IEC 23008-12) over ISO-BMFF. This module reads the boxes itself
-//! (`meta`, `pitm`, `iloc`, `iinf`, `iref`, `iprp`/`ipco`/`ipma`, `idat`), and `craft-video`'s
+//! (`meta`, `pitm`, `iloc`, `iinf`, `iref`, `iprp`/`ipco`/`ipma`, `idat`), and `bharat-video`'s
 //! clean-room AV1 decoder (`av1-decode`, pure Rust, no `unsafe`) decodes the AV1 still pictures.
 //! The container reader, colour conversion and transforms are adapted from @emmertex's LightCraft
 //! AVIF importer (storytold/lightcraft#3017).
@@ -28,7 +28,7 @@
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
-use craft_video::av1::decode as av1;
+use bharat_video::av1::decode as av1;
 
 use crate::Format;
 use crate::cicp::Cicp;
@@ -41,7 +41,7 @@ const F: Format = Format::Avif;
 const MAX_DEPTH: u32 = 8;
 /// Most boxes, items, properties, associations or extents accepted: far above real files.
 const MAX_ITEMS: usize = 1 << 16;
-/// The AV1 decoder's own picture-store cap (`craft-video`'s default on 64-bit targets).
+/// The AV1 decoder's own picture-store cap (`bharat-video`'s default on 64-bit targets).
 const AV1_MEMORY_BUDGET: u64 = 4 << 30;
 /// The `auxC` types of an alpha plane (AVIF and the older HEVC-in-HEIF spelling).
 const ALPHA_URNS: [&[u8]; 2] = [b"urn:mpeg:mpegB:cicp:systems:auxiliary:alpha", b"urn:mpeg:hevc:2015:auxid:1"];

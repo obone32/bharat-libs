@@ -18,7 +18,7 @@ use std::collections::{HashMap, HashSet};
 
 use crate::time::{FrameRate, TICKS_PER_SECOND, Tick};
 
-use craft_xml::{El, Limits, Node, Options, UnknownEntity};
+use bharat_xml::{El, Limits, Node, Options, UnknownEntity};
 
 use crate::{Cue, Document, Error, Result};
 
@@ -46,7 +46,7 @@ const MAX_XML_DEPTH: usize = 128;
 
 /// How names are read: by namespace, whatever prefixes the file uses. The 2006 drafts keep
 /// their own prefixes because the April draft spells agent ids differently.
-const CANONICAL: craft_xml::Canonical<'static> = craft_xml::Canonical::new(&[
+const CANONICAL: bharat_xml::Canonical<'static> = bharat_xml::Canonical::new(&[
     ("tt", NS_TT),
     ("tt10", "http://www.w3.org/2006/10/ttaf1"),
     ("tt04", "http://www.w3.org/2006/04/ttaf1"),
@@ -94,7 +94,7 @@ fn esc(s: &str) -> String {
             '"' => o.push_str("&quot;"),
             '\'' => o.push_str("&apos;"),
             // XML 1.0 forbids these (C0 controls, U+FFFE, U+FFFF), even escaped
-            c if !craft_xml::is_xml_char(c) => {}
+            c if !bharat_xml::is_xml_char(c) => {}
             c => o.push(c),
         }
     }
@@ -248,7 +248,7 @@ fn inline(text: &str) -> String {
 
 /// An XML name without a colon (Namespaces in XML, NCName).
 fn is_ncname(s: &str) -> bool {
-    craft_xml::is_name(s) && !s.contains(':')
+    bharat_xml::is_name(s) && !s.contains(':')
 }
 
 fn cue_ids(doc: &Document) -> Vec<String> {
@@ -783,7 +783,7 @@ pub fn parse(text: &str) -> Result<Document> {
     let options = Options { unknown_entity: UnknownEntity::Error, ..Options::canonical(&CANONICAL).strict().with_limits(limits) };
     let root = match options.parse(text.as_bytes()) {
         Ok(root) => root,
-        Err(craft_xml::Error::TooDeep(_)) => {
+        Err(bharat_xml::Error::TooDeep(_)) => {
             return Err(Error::Syntax { line: 1, msg: format!("TTML XML nesting exceeds {MAX_XML_DEPTH} elements") });
         }
         Err(e) if e.is_limit() => return Err(Error::Syntax { line: 1, msg: e.to_string() }),

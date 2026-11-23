@@ -4,8 +4,8 @@
 //! consumes (a budget, a preflight, a bounded read) is enough to hold the line, and
 //! that the examples in the crate README work as written.
 
-use craft_zip::preflight::{self as zip, Limits as ZipLimits};
-use craft_zip::{Budget, Exceeded};
+use bharat_zip::preflight::{self as zip, Limits as ZipLimits};
+use bharat_zip::{Budget, Exceeded};
 
 /// A reader that never runs out of bytes, standing in for a decompression bomb.
 struct Endless;

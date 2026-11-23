@@ -8,8 +8,8 @@
 
 use crate::tiffraw::{Packing, read_image};
 use crate::{Limits, RawData, Result};
-use craft_tiff::Tiff;
-use craft_tiff::tags::{self as t, photometric};
+use bharat_tiff::Tiff;
+use bharat_tiff::tags::{self as t, photometric};
 
 /// At most this many mask IFDs are read from one file.
 pub const MAX_MASKS: usize = 16;
@@ -53,7 +53,7 @@ pub fn semantic_masks(bytes: &[u8]) -> Vec<SemanticMask> {
         .collect()
 }
 
-fn read_mask(bytes: &[u8], tiff: &Tiff, ifd: &craft_tiff::Ifd) -> Result<Option<SemanticMask>> {
+fn read_mask(bytes: &[u8], tiff: &Tiff, ifd: &bharat_tiff::Ifd) -> Result<Option<SemanticMask>> {
     let Some(name) = ifd.string(t::SEMANTIC_NAME).filter(|n| !n.is_empty()) else { return Ok(None) };
     let info = ifd.image()?;
     let (w, h) = (info.width as usize, info.height as usize);

@@ -4,14 +4,14 @@
 
 use std::ops::Range;
 
-use craft_timeline::fx::Standard;
-use craft_timeline::model::{
+use bharat_timeline::fx::Standard;
+use bharat_timeline::model::{
     AudioStreamInfo, Catalog, ClipId, EffectDef, EffectInstance, EffectKind, Generator, ItemId, ItemKind, Label, MediaClip, MediaInfo, MediaKind,
     MediaRef, ParamDef, ParamValue, Project, Sequence, SequenceSettings, Track, TrackId, TrackItem, TrackKind, Transition, TransitionAlign,
     TransitionId, VideoStreamInfo,
 };
-use craft_timeline::time::{FrameRate, TICKS_PER_SECOND, Tick, TimeRange};
-use craft_timeline::{Error, ExportOptions, Format, ImportOptions, Imported, Report, fcp7, fcpxml, otio};
+use bharat_timeline::time::{FrameRate, TICKS_PER_SECOND, Tick, TimeRange};
+use bharat_timeline::{Error, ExportOptions, Format, ImportOptions, Imported, Report, fcp7, fcpxml, otio};
 
 /// [`Standard`] and a few effects an application adds: a blur, a grade, two transitions.
 pub struct TestCatalog;
@@ -302,7 +302,7 @@ pub fn f(rate: FrameRate, n: i64) -> Tick {
 
 /// Import `bytes` as `format`, as an application does: text decoded, the catalog and namespace of these tests.
 pub fn import(bytes: &[u8], format: Format, base_dir: Option<&str>) -> Result<(Imported, Report), Error> {
-    let text = craft_timeline::decode_text(bytes);
+    let text = bharat_timeline::decode_text(bytes);
     let mut report = Report::default();
     let opts = iopts(base_dir);
     let imported = match format {

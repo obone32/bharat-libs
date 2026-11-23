@@ -371,7 +371,7 @@ mod tests {
         PackLocale::new(t).unwrap()
     }
 
-    /// Review follow-up (craft-libs#485): a full list of locales with no dictionary forgets its
+    /// Review follow-up (bharat-libs#485): a full list of locales with no dictionary forgets its
     /// oldest one, not all of them, so a document in more languages doesn't look every one up again.
     #[test]
     fn missing_locales_forget_the_oldest_first() {
@@ -386,7 +386,7 @@ mod tests {
         assert!(missing.contains(&tag(10)) && missing.contains(&tag(MAX_MISSING + 9)), "the rest stay");
     }
 
-    /// Review follow-up (craft-libs#485): a panic inside a check (caught by the app) doesn't leave
+    /// Review follow-up (bharat-libs#485): a panic inside a check (caught by the app) doesn't leave
     /// this thread's dictionaries pinned past the budget for good.
     #[test]
     fn a_panic_inside_a_check_ends_it() {
@@ -401,7 +401,7 @@ mod tests {
         assert_eq!(CHECK_FROM.with(Cell::get), None);
     }
 
-    /// Review follow-up (craft-libs#485): a word with no letter in the dictionary's scripts is
+    /// Review follow-up (bharat-libs#485): a word with no letter in the dictionary's scripts is
     /// in another script (a Cyrillic word in a Dutch run); a word in its script is always checked,
     /// even with letters no dictionary word uses (CodeRabbit on #496: `zzzz`).
     #[test]

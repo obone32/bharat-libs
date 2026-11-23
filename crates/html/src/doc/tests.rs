@@ -27,8 +27,8 @@ fn numeric_entity_rejects_sign() {
 #[test]
 fn important_declarations_win_the_cascade() {
     let color = |html: &str| fmt_of(paras(&parse(html))[0]).color;
-    let red = Some(craft_wordmodel::Rgb(255, 0, 0));
-    let blue = Some(craft_wordmodel::Rgb(0, 0, 255));
+    let red = Some(bharat_wordmodel::Rgb(255, 0, 0));
+    let blue = Some(bharat_wordmodel::Rgb(0, 0, 255));
     assert_eq!(color("<style>p { color: red }</style><p style='color: blue'>x</p>"), blue);
     assert_eq!(color("<style>p { color: red !important }</style><p style='color: blue'>x</p>"), red);
     assert_eq!(color("<style>p { color: red !important }</style><p style='color: blue !important'>x</p>"), blue);
@@ -56,9 +56,9 @@ fn texts(f: &Flow) -> Vec<String> {
 }
 
 fn table_style(html: &str) -> Option<String> {
-    let doc = craft_flow::to_doc(&parse(html));
+    let doc = bharat_flow::to_doc(&parse(html));
     doc.body.iter().find_map(|b| match &**b {
-        craft_wordmodel::Block::Table(t) => Some(t.props.style.clone().unwrap_or_default()),
+        bharat_wordmodel::Block::Table(t) => Some(t.props.style.clone().unwrap_or_default()),
         _ => None,
     })
 }
@@ -84,7 +84,7 @@ fn borderless_tables_export_without_cell_borders() {
         ("<table><tr><td>A<td>B</table>", false),
         ("<table border=1><tr><td>A<td>B</table>", true),
     ] {
-        let out = export(&craft_flow::to_doc(&parse(src)));
+        let out = export(&bharat_flow::to_doc(&parse(src)));
         assert_eq!(out.contains("border:1px"), grid, "{src}: {out}");
         assert_eq!(table_style(&out).as_deref(), Some(if grid { "TableGrid" } else { "" }), "{src}");
         assert!(out.contains(">A</td>") && out.contains(">B</td>"), "{out}");
@@ -174,7 +174,7 @@ fn styles_and_links() {
     let f = parse("<p style='text-align:center'><span style=\"color:#ff0000;font-weight:700\">red</span> <a href=\"http://x\">l</a><br>n</p>");
     let FBlock::Para(p) = &f.blocks[0] else { panic!() };
     assert_eq!(p.align, Some(Align::Center));
-    assert!(matches!(&p.inlines[0], Inline::Text(t, f) if t == "red" && f.bold && f.color == Some(craft_wordmodel::Rgb(255,0,0))));
+    assert!(matches!(&p.inlines[0], Inline::Text(t, f) if t == "red" && f.bold && f.color == Some(bharat_wordmodel::Rgb(255,0,0))));
     assert!(p.inlines.iter().any(|i| matches!(i, Inline::Text(t, f) if t == "l" && f.link.as_deref() == Some("http://x"))));
     assert!(p.text().ends_with("l\nn"));
 }
@@ -386,14 +386,14 @@ fn font_names_are_written_as_css_strings() {
 
 /// A document that reads "I read " then a phonetic guide over `base`, then " daily.".
 fn ruby_doc(base: &str, ruby: &str) -> Document {
-    let props = craft_wordmodel::CharProps::default();
-    let mut p = craft_wordmodel::Paragraph::with_text("I read ", props.clone());
+    let props = bharat_wordmodel::CharProps::default();
+    let mut p = bharat_wordmodel::Paragraph::with_text("I read ", props.clone());
     let n = p.len();
-    p.insert_object(n, craft_flow::ruby_object(base.into(), ruby.into(), 20.0), &props).unwrap();
+    p.insert_object(n, bharat_flow::ruby_object(base.into(), ruby.into(), 20.0), &props).unwrap();
     let n = p.len();
     p.insert_text(n, " daily.", &props).unwrap();
     let mut d = Document::new();
-    d.body = vec![craft_wordmodel::para_block(p)];
+    d.body = vec![bharat_wordmodel::para_block(p)];
     d
 }
 
@@ -411,8 +411,8 @@ fn ruby_of(f: &Flow) -> Option<(String, String)> {
 /// The first document ruby: its base text and reading.
 fn doc_ruby(d: &Document) -> Option<(String, String)> {
     d.body.iter().find_map(|b| match &**b {
-        craft_wordmodel::Block::Para(p) => p.objects.iter().find_map(|o| match o {
-            craft_wordmodel::InlineObject::Ruby { base, ruby, .. } => Some((base.clone(), ruby.clone())),
+        bharat_wordmodel::Block::Para(p) => p.objects.iter().find_map(|o| match o {
+            bharat_wordmodel::InlineObject::Ruby { base, ruby, .. } => Some((base.clone(), ruby.clone())),
             _ => None,
         }),
         _ => None,
@@ -420,10 +420,10 @@ fn doc_ruby(d: &Document) -> Option<(String, String)> {
 }
 
 /// The first document ruby: base size, ruby size, raise and alignment.
-fn doc_ruby_attrs(d: &Document) -> Option<(f32, f32, f32, craft_wordmodel::para::RubyAlign)> {
+fn doc_ruby_attrs(d: &Document) -> Option<(f32, f32, f32, bharat_wordmodel::para::RubyAlign)> {
     d.body.iter().find_map(|b| match &**b {
-        craft_wordmodel::Block::Para(p) => p.objects.iter().find_map(|o| match o {
-            craft_wordmodel::InlineObject::Ruby { base_size, size, raise, align, .. } => Some((*base_size, *size, *raise, *align)),
+        bharat_wordmodel::Block::Para(p) => p.objects.iter().find_map(|o| match o {
+            bharat_wordmodel::InlineObject::Ruby { base_size, size, raise, align, .. } => Some((*base_size, *size, *raise, *align)),
             _ => None,
         }),
         _ => None,
@@ -449,7 +449,7 @@ fn ruby_imports_with_its_surrounding_text() {
     assert!(matches!(&p.inlines[0], Inline::Text(t, _) if t == "I read "), "{:?}", p.inlines);
     assert!(matches!(p.inlines.last(), Some(Inline::Text(t, _)) if t == " daily."), "{:?}", p.inlines);
     // One document object, holding the base text and the reading.
-    assert_eq!(doc_ruby(&craft_flow::to_doc(&f)), Some(("漢字".into(), "かんじ".into())));
+    assert_eq!(doc_ruby(&bharat_flow::to_doc(&f)), Some(("漢字".into(), "かんじ".into())));
 }
 
 #[test]
@@ -459,7 +459,7 @@ fn ruby_rb_and_rp_fallbacks_import_as_one_guide() {
     let f = parse("<p><ruby><rb>漢</rb><rb>字</rb><rp>(</rp><rt>かんじ</rt><rp>)</rp></ruby></p>");
     assert_eq!(ruby_of(&f), Some(("漢字".into(), "かんじ".into())));
     assert_eq!(texts(&f), vec!["NormalNone:漢字"]);
-    assert_eq!(doc_ruby(&craft_flow::to_doc(&f)), Some(("漢字".into(), "かんじ".into())));
+    assert_eq!(doc_ruby(&bharat_flow::to_doc(&f)), Some(("漢字".into(), "かんじ".into())));
 }
 
 #[test]
@@ -488,12 +488,12 @@ fn ruby_survives_an_html_round_trip() {
 
 #[test]
 fn ruby_keeps_the_run_formatting() {
-    let props = craft_wordmodel::CharProps { bold: Some(true), ..Default::default() };
-    let mut p = craft_wordmodel::Paragraph::with_text("I read ", props.clone());
+    let props = bharat_wordmodel::CharProps { bold: Some(true), ..Default::default() };
+    let mut p = bharat_wordmodel::Paragraph::with_text("I read ", props.clone());
     let n = p.len();
-    p.insert_object(n, craft_flow::ruby_object("漢字".into(), "かんじ".into(), 20.0), &props).unwrap();
+    p.insert_object(n, bharat_flow::ruby_object("漢字".into(), "かんじ".into(), 20.0), &props).unwrap();
     let mut d = Document::new();
-    d.body = vec![craft_wordmodel::para_block(p)];
+    d.body = vec![bharat_wordmodel::para_block(p)];
     assert!(export(&d).contains("<strong><ruby>漢字<rt>かんじ</rt></ruby></strong>"), "{}", export(&d));
     // Importing it back keeps the formatting for the base text and the reading.
     let f = parse("<p><strong><ruby>漢字<rt>かんじ</rt></ruby></strong></p>");
@@ -550,7 +550,7 @@ fn css_important_casing_and_spacing() {
     assert_eq!(p.align, Some(Align::Center));
     match &p.inlines[0] {
         Inline::Text(_, fmt) => {
-            assert_eq!(fmt.color, Some(craft_wordmodel::props::Rgb(0xFF, 0x00, 0x00)));
+            assert_eq!(fmt.color, Some(bharat_wordmodel::props::Rgb(0xFF, 0x00, 0x00)));
             assert_eq!(fmt.size, Some(16.0));
             assert!(fmt.bold);
         }
@@ -565,8 +565,8 @@ fn table_cell_vertical_alignment() {
     assert_eq!(t.rows[0][0].valign, Some(VAlign::Top));
     assert_eq!(t.rows[0][1].valign, Some(VAlign::Center));
     assert_eq!(t.rows[0][2].valign, Some(VAlign::Bottom));
-    let doc = craft_flow::to_doc(&f);
-    let craft_wordmodel::Block::Table(dt) = &*doc.body[0] else { panic!() };
+    let doc = bharat_flow::to_doc(&f);
+    let bharat_wordmodel::Block::Table(dt) = &*doc.body[0] else { panic!() };
     assert_eq!(dt.rows[0].cells[0].props.valign, Some(VAlign::Top));
     assert_eq!(dt.rows[0].cells[1].props.valign, Some(VAlign::Center));
     assert_eq!(dt.rows[0].cells[2].props.valign, Some(VAlign::Bottom));
@@ -633,7 +633,7 @@ fn style_sheet_rules_apply_in_cascade_order() {
     );
     let ps = paras(&f);
     let (plain, big, inline, digits) = (fmt_of(ps[0]), fmt_of(ps[1]), fmt_of(ps[2]), fmt_of(ps[3]));
-    assert_eq!((plain.color, plain.size, plain.bold, plain.italic), (Some(craft_wordmodel::Rgb(0, 255, 0)), Some(10.0), false, false));
+    assert_eq!((plain.color, plain.size, plain.bold, plain.italic), (Some(bharat_wordmodel::Rgb(0, 255, 0)), Some(10.0), false, false));
     assert_eq!((big.size, big.bold), (Some(20.0), true));
     assert_eq!(inline.size, Some(8.0));
     assert_eq!(ps[3].align, Some(Align::Center));
@@ -679,7 +679,7 @@ fn a_page_opens_as_word_opens_one() {
     let FBlock::Para(cp) = &t.rows[0][0].blocks[0] else { panic!() };
     assert_eq!(cp.spacing.line, Some(LineSpacing::Multiple(1.0)));
     let head = fmt_of(ps[1]);
-    assert_eq!((head.bold, head.size, head.color), (true, Some(24.0), Some(craft_wordmodel::Rgb(0, 0, 0))));
+    assert_eq!((head.bold, head.size, head.color), (true, Some(24.0), Some(bharat_wordmodel::Rgb(0, 0, 0))));
     // A colour the heading inherits stays.
     // A generic family names a face on a page; pasted text keeps the document's font.
     let generic = parse_in("<p style='font-family: sans-serif'>a</p><p style='font-family: serif'>b</p>", &|_| None, true);
@@ -687,7 +687,7 @@ fn a_page_opens_as_word_opens_one() {
     assert_eq!(fonts, [Some("Arial".to_string()), Some(PAGE_FONT.to_string())]);
     assert_eq!(fmt_of(paras(&parse("<p style='font-family: sans-serif'>a</p>"))[0]).font, None);
     let inherited = parse_in("<body style='color: #000080'><h1>Head</h1></body>", &|_| None, true);
-    assert_eq!(fmt_of(paras(&inherited)[0]).color, Some(craft_wordmodel::Rgb(0, 0, 0x80)));
+    assert_eq!(fmt_of(paras(&inherited)[0]).color, Some(bharat_wordmodel::Rgb(0, 0, 0x80)));
     // Automatic spacing where a p or heading leaves its margins out (layout drops it at the
     // top of the page and of a cell).
     let auto = |p: &Para| (p.spacing.before_auto, p.spacing.after_auto, p.spacing.before, p.spacing.after);
@@ -701,7 +701,7 @@ fn a_page_opens_as_word_opens_one() {
     // The document says so, and the empty paragraph's mark keeps its size.
     let d = model::to_doc(&f);
     let props = |i: usize| match &*d.body[i] {
-        craft_wordmodel::Block::Para(p) => p.clone(),
+        bharat_wordmodel::Block::Para(p) => p.clone(),
         b => panic!("{b:?}"),
     };
     assert_eq!((props(0).props.space_before_auto, props(0).props.space_after_auto), (Some(true), Some(true)));
@@ -789,7 +789,7 @@ fn col_elements_give_table_column_widths() {
 
 #[test]
 fn word_html_vertical_merge_is_preserved() {
-    use craft_wordmodel::props::VMerge;
+    use bharat_wordmodel::props::VMerge;
     let html = "<table>\
         <tr><td style='mso-yfti-vmerge:restart'>Top</td><td>B1</td></tr>\
         <tr><td style='mso-yfti-vmerge:continue'>Cont</td><td>B2</td></tr>\
@@ -803,7 +803,7 @@ fn word_html_vertical_merge_is_preserved() {
     assert!(t.rows[1][0].covered);
 
     let doc = model::to_doc(&f);
-    let craft_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
     assert_eq!(tb.rows[0].cells[0].props.vmerge, VMerge::Restart);
     assert_eq!(tb.rows[1].cells[0].props.vmerge, VMerge::Continue);
     assert_eq!(tb.rows[1].cells.len(), 2, "table model second row has exactly 2 cells");
@@ -825,7 +825,7 @@ fn html_multiple_colgroups_do_not_backfill_earlier_groups() {
 
 #[test]
 fn word_html_rowspan_with_explicit_vmerge_continue_no_duplicate_cell() {
-    use craft_wordmodel::props::VMerge;
+    use bharat_wordmodel::props::VMerge;
     let html = "<table>\
         <tr><td rowspan=2 style='mso-yfti-vmerge:restart'>A</td><td>B1</td></tr>\
         <tr><td style='mso-yfti-vmerge:continue'>A_cont</td><td>B2</td></tr>\
@@ -839,7 +839,7 @@ fn word_html_rowspan_with_explicit_vmerge_continue_no_duplicate_cell() {
     assert!(t.rows[1][0].covered);
 
     let doc = model::to_doc(&f);
-    let craft_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
     assert_eq!(tb.rows[0].cells[0].props.vmerge, VMerge::Restart);
     assert_eq!(tb.rows[1].cells[0].props.vmerge, VMerge::Continue);
     assert_eq!(tb.rows[1].cells.len(), 2);
@@ -848,7 +848,7 @@ fn word_html_rowspan_with_explicit_vmerge_continue_no_duplicate_cell() {
 
 #[test]
 fn to_doc_normalises_row_0_continue_cell() {
-    use craft_wordmodel::props::VMerge;
+    use bharat_wordmodel::props::VMerge;
     // Case 1: Row 0 has continue and Row 1 has continue -> Row 0 normalised to Restart.
     let html_multi = "<table>\
         <tr><td style='mso-yfti-vmerge:continue'>TopCont</td><td>B1</td></tr>\
@@ -856,7 +856,7 @@ fn to_doc_normalises_row_0_continue_cell() {
     </table>";
     let f_multi = parse(html_multi);
     let doc_multi = model::to_doc(&f_multi);
-    let craft_wordmodel::Block::Table(tb_multi) = &*doc_multi.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb_multi) = &*doc_multi.body[0] else { panic!() };
     assert_eq!(tb_multi.rows[0].cells[0].props.vmerge, VMerge::Restart, "row 0 continue normalised to restart");
     assert_eq!(tb_multi.rows[1].cells[0].props.vmerge, VMerge::Continue);
 
@@ -866,7 +866,7 @@ fn to_doc_normalises_row_0_continue_cell() {
     </table>";
     let f_single = parse(html_single);
     let doc_single = model::to_doc(&f_single);
-    let craft_wordmodel::Block::Table(tb_single) = &*doc_single.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb_single) = &*doc_single.body[0] else { panic!() };
     assert_eq!(tb_single.rows[0].cells[0].props.vmerge, VMerge::None, "orphaned row 0 continue normalised to none");
 
     // Case 3: Row 0 col 1 has continue, Row 1 has a spanning continue starting at col 0 -> col 1 normalised to None.
@@ -876,7 +876,7 @@ fn to_doc_normalises_row_0_continue_cell() {
     </table>";
     let f_span = parse(html_span);
     let doc_span = model::to_doc(&f_span);
-    let craft_wordmodel::Block::Table(tb_span) = &*doc_span.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb_span) = &*doc_span.body[0] else { panic!() };
     assert_eq!(tb_span.rows[0].cells[1].props.vmerge, VMerge::None, "unaligned spanning continuation in row 1 must not mark row 0 cell as restart");
 }
 
@@ -884,7 +884,7 @@ fn to_doc_normalises_row_0_continue_cell() {
 /// no restart cell above spans it.
 #[test]
 fn covered_continuation_with_rowspan_expands_into_next_row() {
-    use craft_wordmodel::props::VMerge;
+    use bharat_wordmodel::props::VMerge;
     let html = "<table>\
         <tr><td style='mso-yfti-vmerge:restart'>Top</td><td>B0</td></tr>\
         <tr><td rowspan='2' style='mso-yfti-vmerge:continue'>Mid</td><td>B1</td></tr>\
@@ -892,7 +892,7 @@ fn covered_continuation_with_rowspan_expands_into_next_row() {
     </table>";
     let f = parse(html);
     let doc = model::to_doc(&f);
-    let craft_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
     assert_eq!(tb.rows.len(), 3);
     assert_eq!(tb.rows[2].cells.len(), 2, "row 2 should have placeholder + B2");
     assert_eq!(tb.rows[2].cells[0].props.vmerge, VMerge::Continue);
@@ -903,38 +903,38 @@ fn covered_continuation_with_rowspan_expands_into_next_row() {
 /// is the first `<td>` in row 1.
 #[test]
 fn rowspan_before_explicit_vmerge_continue_keeps_grid_columns() {
-    use craft_wordmodel::props::VMerge;
+    use bharat_wordmodel::props::VMerge;
     let html = "<table>\
         <tr><td rowspan='2'>A</td><td rowspan='2' style='mso-yfti-vmerge:restart'>B</td><td>D</td></tr>\
         <tr><td style='mso-yfti-vmerge:continue'>B_cont</td><td>D1</td></tr>\
     </table>";
     let f = parse(html);
     let doc = model::to_doc(&f);
-    let craft_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
     assert_eq!(tb.rows.len(), 2);
     assert_eq!(tb.rows[0].cells.len(), 3);
     assert_eq!(tb.rows[1].cells.len(), 3, "row 1 should have placeholder for A, B_cont, and D1");
     assert_eq!(tb.rows[1].cells[0].props.vmerge, VMerge::Continue);
     assert_eq!(tb.rows[1].cells[1].props.vmerge, VMerge::Continue);
-    let craft_wordmodel::Block::Para(p1) = &*tb.rows[1].cells[1].blocks[0] else { panic!() };
+    let bharat_wordmodel::Block::Para(p1) = &*tb.rows[1].cells[1].blocks[0] else { panic!() };
     assert_eq!(p1.text, "B_cont");
     assert_eq!(tb.rows[1].cells[2].props.vmerge, VMerge::None);
-    let craft_wordmodel::Block::Para(p2) = &*tb.rows[1].cells[2].blocks[0] else { panic!() };
+    let bharat_wordmodel::Block::Para(p2) = &*tb.rows[1].cells[2].blocks[0] else { panic!() };
     assert_eq!(p2.text, "D1");
 }
 
 #[test]
 fn cells_take_their_css_borders() {
-    use craft_wordmodel::props::{Border, BorderStyle};
+    use bharat_wordmodel::props::{Border, BorderStyle};
     let f = parse(
         "<style>td.b { border-top: solid windowtext 1px; border-bottom: 2pt double #ff0000; border-left: none; border-right: 0px solid; vertical-align: bottom }</style><table><tr><td class=b>a</td><td>b</td></tr></table>",
     );
     let FBlock::Table(t) = &f.blocks[0] else { panic!() };
     // The style sheet's other cell properties apply too.
-    assert_eq!(t.rows[0][0].valign, Some(craft_wordmodel::props::VAlign::Bottom));
+    assert_eq!(t.rows[0][0].valign, Some(bharat_wordmodel::props::VAlign::Bottom));
     let b = t.rows[0][0].borders.expect("borders");
     assert_eq!(b.top, Some(Border::single(0.75)));
-    assert_eq!(b.bottom, Some(Border { style: BorderStyle::Double, width: 2.0, color: Some(craft_wordmodel::Rgb(255, 0, 0)), space: 0.0 }));
+    assert_eq!(b.bottom, Some(Border { style: BorderStyle::Double, width: 2.0, color: Some(bharat_wordmodel::Rgb(255, 0, 0)), space: 0.0 }));
     assert_eq!(b.left.map(|l| l.style), Some(BorderStyle::None));
     // A border of no width is none (OOXML has no zero-width line).
     assert_eq!(b.right.map(|r| r.style), Some(BorderStyle::None));
@@ -951,7 +951,7 @@ fn style_sheet_edge_cases() {
     );
     let ps = paras(&f);
     // A rule right after statement at-rules still applies.
-    assert_eq!(fmt_of(ps[0]).color, Some(craft_wordmodel::Rgb(0, 0, 255)));
+    assert_eq!(fmt_of(ps[0]).color, Some(bharat_wordmodel::Rgb(0, 0, 255)));
     // The body's margins aren't the paragraphs' indents.
     assert_eq!((ps[1].spacing.left, ps[1].spacing.before), (None, None));
     // Bare numbers, percentages and keywords state no margin: automatic spacing stays.
@@ -959,7 +959,7 @@ fn style_sheet_edge_cases() {
     // The `style` attribute wins even over a sheet with more declarations than are read.
     let many = (0..600).map(|i| format!("x-{i}: 1")).collect::<Vec<_>>().join(";");
     let f = parse(&format!("<style>p {{ {many}; color: #ff0000 }}</style><p style='color: #00ff00'>c</p>"));
-    assert_eq!(fmt_of(paras(&f)[0]).color, Some(craft_wordmodel::Rgb(0, 255, 0)));
+    assert_eq!(fmt_of(paras(&f)[0]).color, Some(bharat_wordmodel::Rgb(0, 255, 0)));
 }
 
 #[test]
@@ -1016,7 +1016,7 @@ fn export_flow_preserves_orphan_covered_continuation_content() {
 
 #[test]
 fn html_roundtrip_preserves_colgroups_widths_and_vmerge() {
-    use craft_wordmodel::props::VMerge;
+    use bharat_wordmodel::props::VMerge;
 
     let html = "<table>\
         <colgroup><col style='width: 80pt'></colgroup>\
@@ -1036,7 +1036,7 @@ fn html_roundtrip_preserves_colgroups_widths_and_vmerge() {
     assert!(t1.rows[1][0].covered);
 
     let doc1 = model::to_doc(&f1);
-    let craft_wordmodel::Block::Table(tb1) = &*doc1.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb1) = &*doc1.body[0] else { panic!() };
     assert_eq!(tb1.rows[0].cells[0].props.vmerge, VMerge::Restart);
     assert_eq!(tb1.rows[1].cells[0].props.vmerge, VMerge::Continue);
     assert_eq!(tb1.vertical_extent(0, 0), Some((0, 2)));
@@ -1059,14 +1059,14 @@ fn html_roundtrip_preserves_colgroups_widths_and_vmerge() {
     assert_eq!(t2.rows[1][0].covered, t1.rows[1][0].covered, "row 1 cell 0 covered flag must match");
 
     let doc2 = model::to_doc(&f2);
-    let craft_wordmodel::Block::Table(tb2) = &*doc2.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb2) = &*doc2.body[0] else { panic!() };
     assert_eq!(tb2.rows[0].cells[0].props.vmerge, tb1.rows[0].cells[0].props.vmerge, "vmerge restart matches");
     assert_eq!(tb2.rows[1].cells[0].props.vmerge, tb1.rows[1].cells[0].props.vmerge, "vmerge continue matches");
     assert_eq!(tb2.vertical_extent(0, 0), tb1.vertical_extent(0, 0), "vertical merge extent matches");
 }
 
-fn assert_single_col_vmerge_table(tb: &craft_wordmodel::Table) {
-    use craft_wordmodel::props::VMerge;
+fn assert_single_col_vmerge_table(tb: &bharat_wordmodel::Table) {
+    use bharat_wordmodel::props::VMerge;
     assert_eq!(tb.rows.len(), 3, "table must have 3 rows");
     assert_eq!(tb.grid.len(), 1, "table must have 1 column");
     assert_eq!(tb.rows[0].cells.len(), 1);
@@ -1078,7 +1078,7 @@ fn assert_single_col_vmerge_table(tb: &craft_wordmodel::Table) {
     assert_eq!(tb.vertical_extent(0, 0), Some((0, 2)));
     assert_eq!(tb.grid_col(2, 0), 0, "Bottom cell must be at grid column 0");
     let bottom_text = match &*tb.rows[2].cells[0].blocks[0] {
-        craft_wordmodel::Block::Para(p) => &p.text,
+        bharat_wordmodel::Block::Para(p) => &p.text,
         _ => panic!("expected paragraph in Bottom cell"),
     };
     assert_eq!(bottom_text, "Bottom", "Bottom must be at row 2, cell 0");
@@ -1107,7 +1107,7 @@ fn html_roundtrip_preserves_fully_covered_row_and_single_column_table() {
     assert!(!t1.rows[2][0].covered);
 
     let doc1 = model::to_doc(&f1);
-    let craft_wordmodel::Block::Table(tb1) = &*doc1.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb1) = &*doc1.body[0] else { panic!() };
     assert_single_col_vmerge_table(tb1);
 
     // Export to HTML via export()
@@ -1130,13 +1130,13 @@ fn html_roundtrip_preserves_fully_covered_row_and_single_column_table() {
 
     // Convert round-tripped flow to document model
     let doc2 = model::to_doc(&f2);
-    let craft_wordmodel::Block::Table(tb2) = &*doc2.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb2) = &*doc2.body[0] else { panic!() };
     assert_single_col_vmerge_table(tb2);
 }
 
 #[test]
 fn vmerge_validation_requires_matching_spans() {
-    use craft_wordmodel::props::VMerge;
+    use bharat_wordmodel::props::VMerge;
 
     // 1. Later-row check: row 0 has colspan=2, row 1 has continuation with colspan=1.
     // Mismatched spans must clear continuation to None and NOT promote row 0 cell to Restart.
@@ -1149,7 +1149,7 @@ fn vmerge_validation_requires_matching_spans() {
         ..Default::default()
     };
     let doc = model::to_doc(&Flow { blocks: vec![FBlock::Table(ft_mismatched)], ..Default::default() });
-    let craft_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb) = &*doc.body[0] else { panic!() };
     assert_eq!(tb.rows[0].cells[0].props.vmerge, VMerge::None, "mismatched span must not promote to Restart");
     assert_eq!(tb.rows[1].cells[0].props.vmerge, VMerge::None, "mismatched span must clear Continue to None");
 
@@ -1164,7 +1164,7 @@ fn vmerge_validation_requires_matching_spans() {
         ..Default::default()
     };
     let doc0 = model::to_doc(&Flow { blocks: vec![FBlock::Table(ft_row0_mismatched)], ..Default::default() });
-    let craft_wordmodel::Block::Table(tb0) = &*doc0.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb0) = &*doc0.body[0] else { panic!() };
     assert_eq!(tb0.rows[0].cells[0].props.vmerge, VMerge::None, "mismatched span in row 0 must clear to None");
     assert_eq!(tb0.rows[1].cells[0].props.vmerge, VMerge::None, "mismatched span in row 1 must clear to None");
 
@@ -1176,20 +1176,20 @@ fn vmerge_validation_requires_matching_spans() {
         ..Default::default()
     };
     let doc_m = model::to_doc(&Flow { blocks: vec![FBlock::Table(ft_matching)], ..Default::default() });
-    let craft_wordmodel::Block::Table(tb_m) = &*doc_m.body[0] else { panic!() };
+    let bharat_wordmodel::Block::Table(tb_m) = &*doc_m.body[0] else { panic!() };
     assert_eq!(tb_m.rows[0].cells[0].props.vmerge, VMerge::Restart);
     assert_eq!(tb_m.rows[1].cells[0].props.vmerge, VMerge::Continue);
 }
 
 #[test]
 fn export_table_preserves_first_grid_column_alignment() {
-    let mut doc = craft_wordmodel::Document::default();
-    let mut table = craft_wordmodel::Table::new(2, 3, 240.0);
+    let mut doc = bharat_wordmodel::Document::default();
+    let mut table = bharat_wordmodel::Table::new(2, 3, 240.0);
     table.grid = vec![40.0, 80.0, 120.0];
-    table.rows[0].cells = vec![craft_wordmodel::Cell::with_text("A"), craft_wordmodel::Cell::with_text("B"), craft_wordmodel::Cell::with_text("C")];
+    table.rows[0].cells = vec![bharat_wordmodel::Cell::with_text("A"), bharat_wordmodel::Cell::with_text("B"), bharat_wordmodel::Cell::with_text("C")];
     table.rows[1].props.grid_before = 1;
-    table.rows[1].cells = vec![craft_wordmodel::Cell::with_text("D"), craft_wordmodel::Cell::with_text("E")];
-    doc.body = vec![std::sync::Arc::new(craft_wordmodel::Block::Table(table))];
+    table.rows[1].cells = vec![bharat_wordmodel::Cell::with_text("D"), bharat_wordmodel::Cell::with_text("E")];
+    doc.body = vec![std::sync::Arc::new(bharat_wordmodel::Block::Table(table))];
 
     // Flow representation should preserve the leading grid position
     let flow = model::from_doc(&doc);
@@ -1215,12 +1215,12 @@ fn container_background_color_does_not_leak_into_character_shading() {
     let html = r#"<div style="background-color:#1e1e1e;color:#d4d4d4"><span>code</span></div>"#;
     let doc = import(html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert!(!p.runs.is_empty(), "expected nonempty runs");
     assert_eq!(&p.text, "code");
-    assert_eq!(p.props.shading, Some(craft_wordmodel::Rgb(0x1e, 0x1e, 0x1e)), "container div background is preserved as paragraph shading");
+    assert_eq!(p.props.shading, Some(bharat_wordmodel::Rgb(0x1e, 0x1e, 0x1e)), "container div background is preserved as paragraph shading");
     for r in &p.runs {
         assert_eq!(r.props.shading, None, "character should have no shading from container div");
     }
@@ -1238,7 +1238,7 @@ fn table_background_inherits_through_row_groups() {
         .body
         .iter()
         .filter_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .collect();
@@ -1251,7 +1251,7 @@ fn table_background_inherits_through_row_groups() {
             "cell should inherit shading from table or row group"
         );
         let p = &cell.blocks[0];
-        let craft_wordmodel::Block::Para(p) = &**p else {
+        let bharat_wordmodel::Block::Para(p) = &**p else {
             panic!("expected table cell block to be a paragraph");
         };
         assert!(!p.runs.is_empty(), "expected nonempty runs");
@@ -1268,12 +1268,12 @@ fn block_element_backgrounds_preserve_paragraph_shading() {
     let html = r#"<p style="background:#1e1e1e;color:white">text</p><pre style="background:#2a2a2a">code</pre><div style="background:#3a3a3a"><p>inner</p></div>"#;
     let doc = import(html);
     assert_eq!(doc.body.len(), 3);
-    let craft_wordmodel::Block::Para(p1) = &*doc.body[0] else { panic!("expected Para") };
-    let craft_wordmodel::Block::Para(p2) = &*doc.body[1] else { panic!("expected Para") };
-    let craft_wordmodel::Block::Para(p3) = &*doc.body[2] else { panic!("expected Para") };
-    assert_eq!(p1.props.shading, Some(craft_wordmodel::Rgb(0x1e, 0x1e, 0x1e)));
-    assert_eq!(p2.props.shading, Some(craft_wordmodel::Rgb(0x2a, 0x2a, 0x2a)));
-    assert_eq!(p3.props.shading, Some(craft_wordmodel::Rgb(0x3a, 0x3a, 0x3a)));
+    let bharat_wordmodel::Block::Para(p1) = &*doc.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p2) = &*doc.body[1] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p3) = &*doc.body[2] else { panic!("expected Para") };
+    assert_eq!(p1.props.shading, Some(bharat_wordmodel::Rgb(0x1e, 0x1e, 0x1e)));
+    assert_eq!(p2.props.shading, Some(bharat_wordmodel::Rgb(0x2a, 0x2a, 0x2a)));
+    assert_eq!(p3.props.shading, Some(bharat_wordmodel::Rgb(0x3a, 0x3a, 0x3a)));
     assert_eq!(&p1.text, "text");
     assert_eq!(&p2.text, "code");
     assert_eq!(&p3.text, "inner");
@@ -1301,10 +1301,10 @@ fn paragraph_shading_survives_an_html_round_trip() {
     assert!(out.contains("background-color:#2A2A2A"), "code block shading is exported: {out}");
 
     let back = import(&out);
-    let craft_wordmodel::Block::Para(p1) = &*back.body[0] else { panic!("expected Para") };
-    let craft_wordmodel::Block::Para(p2) = &*back.body[1] else { panic!("expected Para") };
-    assert_eq!(p1.props.shading, Some(craft_wordmodel::Rgb(0x1e, 0x1e, 0x1e)));
-    assert_eq!(p2.props.shading, Some(craft_wordmodel::Rgb(0x2a, 0x2a, 0x2a)));
+    let bharat_wordmodel::Block::Para(p1) = &*back.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p2) = &*back.body[1] else { panic!("expected Para") };
+    assert_eq!(p1.props.shading, Some(bharat_wordmodel::Rgb(0x1e, 0x1e, 0x1e)));
+    assert_eq!(p2.props.shading, Some(bharat_wordmodel::Rgb(0x2a, 0x2a, 0x2a)));
 }
 
 /// Verify that paragraph shading inside a single-paragraph table cell survives an HTML round trip (#1786).
@@ -1320,14 +1320,14 @@ fn table_cell_paragraph_shading_survives_an_html_round_trip() {
         .body
         .iter()
         .find_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .expect("expected table");
     let cell = &table.rows[0].cells[0];
     assert_eq!(cell.props.shading, None, "paragraph shading must not become cell shading");
-    let craft_wordmodel::Block::Para(p) = &*cell.blocks[0] else { panic!("expected Para") };
-    assert_eq!(p.props.shading, Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)));
+    let bharat_wordmodel::Block::Para(p) = &*cell.blocks[0] else { panic!("expected Para") };
+    assert_eq!(p.props.shading, Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)));
 }
 
 /// Verify that consecutive code paragraphs with different backgrounds export their own `<pre>`.
@@ -1343,15 +1343,15 @@ fn consecutive_code_blocks_keep_their_own_shading() {
 #[test]
 fn paragraph_shading_from_a_style_survives_html_export() {
     let mut doc = Document::new();
-    std::sync::Arc::make_mut(&mut doc.styles).styles.push(craft_wordmodel::Style {
+    std::sync::Arc::make_mut(&mut doc.styles).styles.push(bharat_wordmodel::Style {
         id: "Shaded".into(),
         name: "Shaded".into(),
-        para: craft_wordmodel::props::ParaProps { shading: Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)), ..Default::default() },
+        para: bharat_wordmodel::props::ParaProps { shading: Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)), ..Default::default() },
         ..Default::default()
     });
-    let mut p = craft_wordmodel::Paragraph::with_text("text", craft_wordmodel::CharProps::default());
+    let mut p = bharat_wordmodel::Paragraph::with_text("text", bharat_wordmodel::CharProps::default());
     p.props.style = Some("Shaded".into());
-    doc.body = vec![craft_wordmodel::para_block(p)];
+    doc.body = vec![bharat_wordmodel::para_block(p)];
 
     let out = export(&doc);
     assert!(out.contains("background-color:#123456"), "style shading is exported: {out}");
@@ -1362,17 +1362,17 @@ fn paragraph_shading_from_a_style_survives_html_export() {
 fn background_shorthand_unbalanced_closing_paren_is_ignored() {
     let html = r#"<span style="background-color:#ff0000"><span style="background: ) none repeat">text</span></span>"#;
     let doc = import(html);
-    let craft_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
-    assert_eq!(p.runs[0].props.shading, Some(craft_wordmodel::Rgb(0xff, 0x00, 0x00)), "invalid shorthand must not clear inherited shading");
+    let bharat_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
+    assert_eq!(p.runs[0].props.shading, Some(bharat_wordmodel::Rgb(0xff, 0x00, 0x00)), "invalid shorthand must not clear inherited shading");
 }
 
 /// A shaded paragraph keeps its shading on both sides of an internal page break (#1786).
 #[test]
 fn paragraph_shading_survives_an_internal_page_break() {
-    let mut p = craft_wordmodel::Paragraph::with_text("before\u{000C}after", craft_wordmodel::CharProps::default());
-    p.props.shading = Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56));
+    let mut p = bharat_wordmodel::Paragraph::with_text("before\u{000C}after", bharat_wordmodel::CharProps::default());
+    p.props.shading = Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56));
     let mut doc = Document::new();
-    doc.body = vec![craft_wordmodel::para_block(p)];
+    doc.body = vec![bharat_wordmodel::para_block(p)];
     let out = export(&doc);
     assert_eq!(out.matches("background-color:#123456").count(), 2, "{out}");
 }
@@ -1382,10 +1382,10 @@ fn paragraph_shading_survives_an_internal_page_break() {
 #[test]
 fn background_shorthand_escaped_quotes_in_url() {
     let doc = import(r#"<p><span style='background: #123456 url("a\"b.png")'>text</span></p>"#);
-    let craft_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
     assert_eq!(&p.text, "text");
     assert!(!p.runs.is_empty());
-    assert_eq!(p.runs[0].props.shading, Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)));
+    assert_eq!(p.runs[0].props.shading, Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)));
 }
 
 /// Verify that valid multi-token CSS background shorthands without a color (such as `none repeat`)
@@ -1395,7 +1395,7 @@ fn background_shorthand_without_color_resets_background() {
     let html = r#"<span style="background-color: #ff0000"><span style="background: none repeat">plain</span></span>"#;
     let doc = import(html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert_eq!(p.runs[0].props.shading, None);
@@ -1403,10 +1403,10 @@ fn background_shorthand_without_color_resets_background() {
     let html_invalid = r#"<span style="background-color: #ff0000"><span style="background: none invalid_xyz">shaded</span></span>"#;
     let doc_invalid = import(html_invalid);
     let p_invalid = match &*doc_invalid.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_invalid.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p_invalid.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 }
 
 /// Verify that CSS `background: inherit` keeps inherited character shading instead of removing it (#1786).
@@ -1415,21 +1415,21 @@ fn background_inherit_retains_inline_shading() {
     let html = r#"<span style="background-color: #ff0000"><span style="background: inherit">shaded</span></span>"#;
     let doc = import(html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)), "background: inherit should retain inherited character shading");
+    assert_eq!(p.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)), "background: inherit should retain inherited character shading");
 
     // Also verify background-color: inherit retains shading.
     let html_color = r#"<span style="background-color: #ff0000"><span style="background-color: inherit">shaded</span></span>"#;
     let doc_color = import(html_color);
     let p_color = match &*doc_color.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert_eq!(
         p_color.runs[0].props.shading,
-        Some(craft_wordmodel::Rgb(255, 0, 0)),
+        Some(bharat_wordmodel::Rgb(255, 0, 0)),
         "background-color: inherit should retain inherited character shading"
     );
 
@@ -1437,12 +1437,12 @@ fn background_inherit_retains_inline_shading() {
     let html_mixed = r#"<span style="background-color: #00ff00"><span style="background: red inherit">green</span></span>"#;
     let doc_mixed = import(html_mixed);
     let p_mixed = match &*doc_mixed.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert_eq!(
         p_mixed.runs[0].props.shading,
-        Some(craft_wordmodel::Rgb(0, 255, 0)),
+        Some(bharat_wordmodel::Rgb(0, 255, 0)),
         "invalid shorthand mixing inherit with values should be ignored"
     );
 }
@@ -1454,7 +1454,7 @@ fn hostile_background_slashes_never_stack_overflow() {
     let html = format!(r#"<span style="background: {slashes}">hostile</span>"#);
     let doc = import(&html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert_eq!(p.runs[0].props.shading, None);
@@ -1466,12 +1466,12 @@ fn background_whitespace_preserves_nbsp() {
     let html = "<span style=\"background-color: #ff0000\"><span style=\"background: none\u{00A0}repeat\">shaded</span></span>";
     let doc = import(html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert_eq!(
         p.runs[0].props.shading,
-        Some(craft_wordmodel::Rgb(255, 0, 0)),
+        Some(bharat_wordmodel::Rgb(255, 0, 0)),
         "non-breaking space is not CSS whitespace and should not clear shading"
     );
 }
@@ -1487,12 +1487,12 @@ fn background_shorthand_truncated_rejects_unapplied() {
     let html = format!(r#"<span style="background-color: #ff0000"><span style="background: {layers}">retained</span></span>"#);
     let doc = import(&html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert_eq!(
         p.runs[0].props.shading,
-        Some(craft_wordmodel::Rgb(255, 0, 0)),
+        Some(bharat_wordmodel::Rgb(255, 0, 0)),
         "truncated shorthand should be rejected and leave inherited background untouched"
     );
 }
@@ -1503,18 +1503,18 @@ fn background_shorthand_valid_functions_preserve_color() {
     let html_image_set = r#"<span style="background: #123456 image-set(url(a.png) 1x)">image-set</span>"#;
     let doc = import(html_image_set);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p.runs[0].props.shading, Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)));
+    assert_eq!(p.runs[0].props.shading, Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)));
 
     let html_calc = r#"<span style="background: #123456 url(a.png) calc(50% - 2px)">calc</span>"#;
     let doc_calc = import(html_calc);
     let p_calc = match &*doc_calc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_calc.runs[0].props.shading, Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)));
+    assert_eq!(p_calc.runs[0].props.shading, Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)));
 }
 
 /// Verify that multi-layer background shorthands validate slashes per layer and preserve final-layer color (#1786).
@@ -1523,29 +1523,29 @@ fn background_shorthand_multi_layer_slashes_apply_color() {
     let html = r#"<span style="background: url(a) center/cover, url(b) center/contain #123456">multi-layer</span>"#;
     let doc = import(html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p.runs[0].props.shading, Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)));
+    assert_eq!(p.runs[0].props.shading, Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)));
 
     // Color in a non-final layer is invalid CSS and must be ignored.
     let html_invalid_color = r#"<span style="background-color: #ff0000"><span style="background: #123456, url(b)">invalid</span></span>"#;
     let doc_invalid_color = import(html_invalid_color);
     let p_invalid_color = match &*doc_invalid_color.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_invalid_color.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p_invalid_color.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 
     // Multiple slashes in a single layer makes the declaration invalid.
     let html_multi_slash =
         r#"<span style="background-color: #ff0000"><span style="background: url(a) center/cover/extra, #123456">invalid</span></span>"#;
     let doc_multi_slash = import(html_multi_slash);
     let p_multi_slash = match &*doc_multi_slash.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_multi_slash.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p_multi_slash.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 }
 
 /// Verify that background shorthands with empty layers (leading, trailing, or double commas) are rejected (#1786).
@@ -1555,28 +1555,28 @@ fn background_shorthand_rejects_empty_layers() {
     let html_leading = r#"<span style="background-color: #ff0000"><span style="background: , #00ff00">leading</span></span>"#;
     let doc_leading = import(html_leading);
     let p_leading = match &*doc_leading.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_leading.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p_leading.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 
     // Trailing comma
     let html_trailing = r#"<span style="background-color: #ff0000"><span style="background: transparent,">trailing</span></span>"#;
     let doc_trailing = import(html_trailing);
     let p_trailing = match &*doc_trailing.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_trailing.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p_trailing.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 
     // Double comma
     let html_double = r#"<span style="background-color: #ff0000"><span style="background: #00ff00,,#0000ff">double</span></span>"#;
     let doc_double = import(html_double);
     let p_double = match &*doc_double.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_double.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p_double.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 }
 
 /// Verify that zero-alpha colors in background shorthands or declarations remain transparent (#1786).
@@ -1586,7 +1586,7 @@ fn background_zero_alpha_colors_are_transparent() {
         let html = format!(r#"<span style="background-color: #ff0000"><span style="background: {decl}">transparent</span></span>"#);
         let doc = import(&html);
         let p = match &*doc.body[0] {
-            craft_wordmodel::Block::Para(p) => p,
+            bharat_wordmodel::Block::Para(p) => p,
             _ => panic!("expected paragraph"),
         };
         assert_eq!(p.runs[0].props.shading, None, "zero-alpha color `{decl}` must clear background rather than composite over white");
@@ -1609,18 +1609,18 @@ fn transparent_table_layers_preserve_ancestor_table_shading() {
         .body
         .iter()
         .find_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .unwrap();
     assert_eq!(
         table.rows[0].cells[0].props.shading,
-        Some(craft_wordmodel::Rgb(0xe8, 0xf0, 0xfa)),
+        Some(bharat_wordmodel::Rgb(0xe8, 0xf0, 0xfa)),
         "table background must show through transparent tbody, tr, and td"
     );
     assert_eq!(
         table.rows[0].cells[1].props.shading,
-        Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)),
+        Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)),
         "cell with explicit background must override table background"
     );
 }
@@ -1632,7 +1632,7 @@ fn block_background_explicit_inherit() {
     let html_indirect = r#"<div style="background-color: #ff0000"><p><span style="background-color: inherit">text</span></p></div>"#;
     let doc_indirect = import(html_indirect);
     let p_indirect = match &*doc_indirect.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert_eq!(p_indirect.runs[0].props.shading, None);
@@ -1641,18 +1641,18 @@ fn block_background_explicit_inherit() {
     let html_direct = r#"<div style="background-color: #ff0000"><span style="background-color: inherit">text</span></div>"#;
     let doc_direct = import(html_direct);
     let p_direct = match &*doc_direct.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_direct.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p_direct.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 
     let html_shorthand = r#"<div style="background: #00ff00"><span style="background: inherit">text</span></div>"#;
     let doc_shorthand = import(html_shorthand);
     let p_shorthand = match &*doc_shorthand.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_shorthand.runs[0].props.shading, Some(craft_wordmodel::Rgb(0, 255, 0)));
+    assert_eq!(p_shorthand.runs[0].props.shading, Some(bharat_wordmodel::Rgb(0, 255, 0)));
 }
 
 /// Verify that CSS-escaped quotes inside background URLs do not close the quote or drop declaration colors (#1786).
@@ -1661,18 +1661,18 @@ fn background_escaped_quote_url() {
     let html = r#"<span style='background: #123456 url("a\"b.png")'>text</span>"#;
     let doc = import(html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p.runs[0].props.shading, Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)));
+    assert_eq!(p.runs[0].props.shading, Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)));
 
     let html_single = r#"<span style="background: #654321 url('a\'b.png')">text</span>"#;
     let doc_single = import(html_single);
     let p_single = match &*doc_single.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_single.runs[0].props.shading, Some(craft_wordmodel::Rgb(0x65, 0x43, 0x21)));
+    assert_eq!(p_single.runs[0].props.shading, Some(bharat_wordmodel::Rgb(0x65, 0x43, 0x21)));
 }
 
 /// Verify that invalid hex color declarations like `#ggg0` do not clear inherited shading (#1786).
@@ -1681,10 +1681,10 @@ fn background_invalid_hex_retains_shading() {
     let html = r#"<span style="background-color: #ff0000"><span style="background-color: #ggg0">text</span></span>"#;
     let doc = import(html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 }
 
 /// Verify that background size keywords (`cover`, `contain`) without preceding position and slash are invalid and retain shading (#1786).
@@ -1693,23 +1693,23 @@ fn background_cover_without_slash_invalid() {
     let html_cover = r#"<span style="background-color: #ff0000"><span style="background: cover">text</span></span>"#;
     let doc_cover = import(html_cover);
     let p_cover = match &*doc_cover.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_cover.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p_cover.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 
     let html_contain = r#"<span style="background-color: #ff0000"><span style="background: contain">text</span></span>"#;
     let doc_contain = import(html_contain);
     let p_contain = match &*doc_contain.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p_contain.runs[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(p_contain.runs[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 
     let html_valid = r#"<span style="background-color: #ff0000"><span style="background: center / cover">text</span></span>"#;
     let doc_valid = import(html_valid);
     let p_valid = match &*doc_valid.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert_eq!(p_valid.runs[0].props.shading, None);
@@ -1731,12 +1731,12 @@ fn table_row_group_background_inheritance() {
         .body
         .iter()
         .find_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .unwrap();
-    assert_eq!(table.rows[0].cells[0].props.shading, Some(craft_wordmodel::Rgb(0, 255, 0)));
-    assert_eq!(table.rows[1].cells[0].props.shading, Some(craft_wordmodel::Rgb(0, 0, 255)));
+    assert_eq!(table.rows[0].cells[0].props.shading, Some(bharat_wordmodel::Rgb(0, 255, 0)));
+    assert_eq!(table.rows[1].cells[0].props.shading, Some(bharat_wordmodel::Rgb(0, 0, 255)));
 }
 
 /// Verify that background shorthand with slashes inside URL functions correctly identifies the position/size slash (#1786).
@@ -1745,10 +1745,10 @@ fn background_url_with_slashes_and_position_size() {
     let html = r#"<span style="background: url(/img/bg.png) center/cover #123456">text</span>"#;
     let doc = import(html);
     let p = match &*doc.body[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
-    assert_eq!(p.runs[0].props.shading, Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)));
+    assert_eq!(p.runs[0].props.shading, Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)));
 }
 
 /// Verify that a table inside an inline element with background shading does not turn character shading into table/cell background (#1786).
@@ -1760,7 +1760,7 @@ fn table_inside_inline_element_does_not_inherit_character_shading() {
         .body
         .iter()
         .find_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .unwrap();
@@ -1776,13 +1776,13 @@ fn cell_inherit_uses_cell_background_not_table_fallback() {
         .body
         .iter()
         .find_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .unwrap();
-    assert_eq!(table.rows[0].cells[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(table.rows[0].cells[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
     let p = match &*table.rows[0].cells[0].blocks[0] {
-        craft_wordmodel::Block::Para(p) => p,
+        bharat_wordmodel::Block::Para(p) => p,
         _ => panic!("expected paragraph"),
     };
     assert_eq!(p.runs[0].props.shading, None);
@@ -1797,7 +1797,7 @@ fn bgcolor_overridden_by_css_transparent() {
         .body
         .iter()
         .find_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .unwrap();
@@ -1812,7 +1812,7 @@ fn list_continuation_preserves_nested_container_shading() {
     assert_eq!(flow.blocks.len(), 1);
     let FBlock::Para(p) = &flow.blocks[0] else { panic!("expected Para") };
     assert!(p.list.is_some(), "expected list item");
-    let dark = Some(craft_wordmodel::Rgb(0x11, 0x11, 0x11));
+    let dark = Some(bharat_wordmodel::Rgb(0x11, 0x11, 0x11));
     let inside = p
         .inlines
         .iter()
@@ -1824,7 +1824,7 @@ fn list_continuation_preserves_nested_container_shading() {
     assert_eq!(inside, dark, "nested container shading should be preserved on merged run");
 
     let doc = import(html);
-    let craft_wordmodel::Block::Para(p_doc) = &*doc.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p_doc) = &*doc.body[0] else { panic!("expected Para") };
     let mut offset = 0usize;
     let mut inside_shading = None;
     for r in &p_doc.runs {
@@ -1849,12 +1849,12 @@ fn consecutive_row_groups_with_omitted_end_tag_do_not_leak_shading() {
         .body
         .iter()
         .find_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .unwrap();
     assert_eq!(table.rows.len(), 2);
-    assert_eq!(table.rows[0].cells[0].props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    assert_eq!(table.rows[0].cells[0].props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
     assert_eq!(table.rows[1].cells[0].props.shading, None, "second cell should not inherit shading from closed tbody");
 }
 
@@ -1865,9 +1865,9 @@ fn shaded_container_first_in_list_item_preserves_unshaded_trailing_text() {
     let html = r#"<ul><li style="color:#111111"><div style="background:#111111;color:white">inside</div>after</li></ul>"#;
     let doc = import(html);
     assert_eq!(doc.body.len(), 1);
-    let craft_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
     assert_eq!(p.props.shading, None, "list paragraph as a whole should have no background when regions differ");
-    let dark = Some(craft_wordmodel::Rgb(0x11, 0x11, 0x11));
+    let dark = Some(bharat_wordmodel::Rgb(0x11, 0x11, 0x11));
     let mut offset = 0usize;
     let mut inside_shading = None;
     let mut after_shading = None;
@@ -1893,11 +1893,11 @@ fn container_background_behind_table_preserved_on_cells() {
         .body
         .iter()
         .find_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .unwrap();
-    assert_eq!(table.rows[0].cells[0].props.shading, Some(craft_wordmodel::Rgb(0x11, 0x11, 0x11)));
+    assert_eq!(table.rows[0].cells[0].props.shading, Some(bharat_wordmodel::Rgb(0x11, 0x11, 0x11)));
 
     // Nested table inside an unshaded cell stops at the cell boundary:
     let nested_html = r#"<div style="background:#111111"><table><tr><td><table><tr><td>nested</td></tr></table></td></tr></table></div>"#;
@@ -1906,13 +1906,13 @@ fn container_background_behind_table_preserved_on_cells() {
         .body
         .iter()
         .find_map(|b| match &**b {
-            craft_wordmodel::Block::Table(t) => Some(t),
+            bharat_wordmodel::Block::Table(t) => Some(t),
             _ => None,
         })
         .unwrap();
-    assert_eq!(outer_table.rows[0].cells[0].props.shading, Some(craft_wordmodel::Rgb(0x11, 0x11, 0x11)));
+    assert_eq!(outer_table.rows[0].cells[0].props.shading, Some(bharat_wordmodel::Rgb(0x11, 0x11, 0x11)));
     let inner_table = match &*outer_table.rows[0].cells[0].blocks[0] {
-        craft_wordmodel::Block::Table(t) => t,
+        bharat_wordmodel::Block::Table(t) => t,
         _ => panic!("expected nested Table"),
     };
     assert_eq!(inner_table.rows[0].cells[0].props.shading, None, "nested table in unshaded cell must stop at cell boundary");
@@ -1923,16 +1923,16 @@ fn container_background_behind_table_preserved_on_cells() {
 fn root_background_preserved_on_page_import_only() {
     let html = r#"<body style="background:#111111;color:white"><p>text</p></body>"#;
     let page_doc = import_page(html, &|_| None);
-    let craft_wordmodel::Block::Para(p_page) = &*page_doc.body[0] else { panic!("expected Para") };
-    assert_eq!(p_page.props.shading, Some(craft_wordmodel::Rgb(0x11, 0x11, 0x11)), "page import must preserve body background on paragraphs");
+    let bharat_wordmodel::Block::Para(p_page) = &*page_doc.body[0] else { panic!("expected Para") };
+    assert_eq!(p_page.props.shading, Some(bharat_wordmodel::Rgb(0x11, 0x11, 0x11)), "page import must preserve body background on paragraphs");
     assert_eq!(
         p_page.runs[0].props.color,
-        Some(craft_wordmodel::TextColor::Rgb(craft_wordmodel::Rgb(0xff, 0xff, 0xff))),
+        Some(bharat_wordmodel::TextColor::Rgb(bharat_wordmodel::Rgb(0xff, 0xff, 0xff))),
         "page import keeps the root foreground with its background"
     );
 
     let frag_doc = import(html);
-    let craft_wordmodel::Block::Para(p_frag) = &*frag_doc.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p_frag) = &*frag_doc.body[0] else { panic!("expected Para") };
     assert_eq!(p_frag.props.shading, None, "fragment paste must not turn body background into paragraph shading");
     assert_eq!(p_frag.runs[0].props.color, None, "fragment paste drops the root foreground with its background");
 }
@@ -1942,14 +1942,14 @@ fn root_background_preserved_on_page_import_only() {
 fn pasted_body_background_not_inherited_by_inline_child() {
     let html = r#"<body style="background:#111111"><span style="background:inherit">text</span></body>"#;
     let frag_doc = import(html);
-    let craft_wordmodel::Block::Para(p_frag) = &*frag_doc.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p_frag) = &*frag_doc.body[0] else { panic!("expected Para") };
     assert_eq!(p_frag.runs[0].props.shading, None, "inline child in pasted fragment must not inherit character shading from body background");
 
     let page_doc = import_page(html, &|_| None);
-    let craft_wordmodel::Block::Para(p_page) = &*page_doc.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p_page) = &*page_doc.body[0] else { panic!("expected Para") };
     assert_eq!(
         p_page.runs[0].props.shading,
-        Some(craft_wordmodel::Rgb(0x11, 0x11, 0x11)),
+        Some(bharat_wordmodel::Rgb(0x11, 0x11, 0x11)),
         "inline child in page import inherits body background via inherit"
     );
 }
@@ -1958,53 +1958,53 @@ fn pasted_body_background_not_inherited_by_inline_child() {
 fn root_background_on_html_and_foreground_on_body() {
     let html = r#"<html style="background:#111111"><body style="color:white"><p>text</p></body></html>"#;
     let frag_doc = import(html);
-    let craft_wordmodel::Block::Para(p_frag) = &*frag_doc.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p_frag) = &*frag_doc.body[0] else { panic!("expected Para") };
     assert_eq!(p_frag.props.shading, None, "fragment paste drops html background");
     assert_eq!(p_frag.runs[0].props.color, None, "fragment paste drops body foreground when html supplied suppressed background");
 
     let page_doc = import_page(html, &|_| None);
-    let craft_wordmodel::Block::Para(p_page) = &*page_doc.body[0] else { panic!("expected Para") };
-    assert_eq!(p_page.props.shading, Some(craft_wordmodel::Rgb(0x11, 0x11, 0x11)));
-    assert_eq!(p_page.runs[0].props.color, Some(craft_wordmodel::TextColor::Rgb(craft_wordmodel::Rgb(0xff, 0xff, 0xff))));
+    let bharat_wordmodel::Block::Para(p_page) = &*page_doc.body[0] else { panic!("expected Para") };
+    assert_eq!(p_page.props.shading, Some(bharat_wordmodel::Rgb(0x11, 0x11, 0x11)));
+    assert_eq!(p_page.runs[0].props.color, Some(bharat_wordmodel::TextColor::Rgb(bharat_wordmodel::Rgb(0xff, 0xff, 0xff))));
 }
 
 #[test]
 fn background_unitless_zero_lengths() {
     let html = r#"<div style="background:#123456 0.0 0"><p>text</p></div>"#;
     let doc = import(html);
-    let craft_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
-    assert_eq!(p.props.shading, Some(craft_wordmodel::Rgb(0x12, 0x34, 0x56)));
+    let bharat_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
+    assert_eq!(p.props.shading, Some(bharat_wordmodel::Rgb(0x12, 0x34, 0x56)));
 
     let html2 = r#"<div style="background:#654321 -0 +0.0"><p>text</p></div>"#;
     let doc2 = import(html2);
-    let craft_wordmodel::Block::Para(p2) = &*doc2.body[0] else { panic!("expected Para") };
-    assert_eq!(p2.props.shading, Some(craft_wordmodel::Rgb(0x65, 0x43, 0x21)));
+    let bharat_wordmodel::Block::Para(p2) = &*doc2.body[0] else { panic!("expected Para") };
+    assert_eq!(p2.props.shading, Some(bharat_wordmodel::Rgb(0x65, 0x43, 0x21)));
 }
 
 #[test]
 fn background_comments_skipped_outside_strings() {
     let html = r#"<div style="background:#111111 /* dark */;color:white"><p>text</p></div>"#;
     let doc = import(html);
-    let craft_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
-    assert_eq!(p.props.shading, Some(craft_wordmodel::Rgb(0x11, 0x11, 0x11)));
+    let bharat_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
+    assert_eq!(p.props.shading, Some(bharat_wordmodel::Rgb(0x11, 0x11, 0x11)));
 
     let html2 = r#"<div style="background:#222222 /* comment / with / slashes */"><p>text</p></div>"#;
     let doc2 = import(html2);
-    let craft_wordmodel::Block::Para(p2) = &*doc2.body[0] else { panic!("expected Para") };
-    assert_eq!(p2.props.shading, Some(craft_wordmodel::Rgb(0x22, 0x22, 0x22)));
+    let bharat_wordmodel::Block::Para(p2) = &*doc2.body[0] else { panic!("expected Para") };
+    assert_eq!(p2.props.shading, Some(bharat_wordmodel::Rgb(0x22, 0x22, 0x22)));
 }
 
 #[test]
 fn invalid_color_does_not_clear_preceding_background() {
     let html = r#"<div style="background-color:red;background-color:rgba(bogus / 0)"><p>text</p></div>"#;
     let doc = import(html);
-    let craft_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
-    assert_eq!(p.props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    let bharat_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
+    assert_eq!(p.props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 
     let html2 = r#"<div style="background:red;background:rgba(bogus / 0)"><p>text</p></div>"#;
     let doc2 = import(html2);
-    let craft_wordmodel::Block::Para(p2) = &*doc2.body[0] else { panic!("expected Para") };
-    assert_eq!(p2.props.shading, Some(craft_wordmodel::Rgb(255, 0, 0)));
+    let bharat_wordmodel::Block::Para(p2) = &*doc2.body[0] else { panic!("expected Para") };
+    assert_eq!(p2.props.shading, Some(bharat_wordmodel::Rgb(255, 0, 0)));
 }
 
 #[test]
@@ -2021,20 +2021,20 @@ fn code_block_export_preserves_foreground_color() {
 fn background_comments_inside_functions() {
     let html = r#"<div style="background:linear-gradient(/* stops */ #111111,#222222) #111111;color:white"><p>text</p></div>"#;
     let doc = import(html);
-    let craft_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
-    assert_eq!(p.props.shading, Some(craft_wordmodel::Rgb(0x11, 0x11, 0x11)));
-    assert_eq!(p.runs[0].props.color, Some(craft_wordmodel::TextColor::Rgb(craft_wordmodel::Rgb(0xff, 0xff, 0xff))));
+    let bharat_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
+    assert_eq!(p.props.shading, Some(bharat_wordmodel::Rgb(0x11, 0x11, 0x11)));
+    assert_eq!(p.runs[0].props.color, Some(bharat_wordmodel::TextColor::Rgb(bharat_wordmodel::Rgb(0xff, 0xff, 0xff))));
 }
 
 #[test]
 fn zero_alpha_colors_with_none_channels() {
     let html = r#"<div style="background-color:red;background-color:rgb(none none none / 0)"><p>text</p></div>"#;
     let doc = import(html);
-    let craft_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p) = &*doc.body[0] else { panic!("expected Para") };
     assert_eq!(p.props.shading, None);
 
     let html2 = r#"<div style="background:red;background:rgb(none none none / 0)"><p>text</p></div>"#;
     let doc2 = import(html2);
-    let craft_wordmodel::Block::Para(p2) = &*doc2.body[0] else { panic!("expected Para") };
+    let bharat_wordmodel::Block::Para(p2) = &*doc2.body[0] else { panic!("expected Para") };
     assert_eq!(p2.props.shading, None);
 }

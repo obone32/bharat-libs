@@ -1,5 +1,5 @@
 //! Decode throughput and per-stage breakdown (ignored; run with
-//! `cargo test --release -p craft-video --features av1-decode,threads --test av1_decode perf:: -- --ignored --nocapture`).
+//! `cargo test --release -p bharat-video --features av1-decode,threads --test av1_decode perf:: -- --ignored --nocapture`).
 //!
 //! The machine may be busy (other builds), so single-threaded work is also measured with the
 //! thread CPU clock, which is robust to load; wall-clock figures are printed next to the load
@@ -7,7 +7,7 @@
 
 use crate::common;
 use common::*;
-use craft_video::av1::decode::{DecodeStats, Decoder, Stage};
+use bharat_video::av1::decode::{DecodeStats, Decoder, Stage};
 use std::time::Instant;
 
 fn thread_cpu_secs() -> Option<f64> {

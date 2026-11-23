@@ -11,7 +11,7 @@
 //! mutations, one case after another on a worker thread, with a time limit for each case. It fails
 //! the test, naming the case and the input length, when the parser panics or does not finish in
 //! time. The number of rounds is a count the caller gives, multiplied by a variable the caller
-//! names. [`DIVISOR_VARIABLE`] (`CRAFT_HOSTILE_DIVISOR`) runs a fraction of every sweep for quick
+//! names. [`DIVISOR_VARIABLE`] (`BHARAT_HOSTILE_DIVISOR`) runs a fraction of every sweep for quick
 //! runs such as pull requests: every N-th truncation and 1/N of the rounds; [`divisor`] reads it
 //! for sweeps written without [`hammer`]. [`hammer`], [`HammerConfig`] and [`divisor`] are not
 //! built for `wasm32`.
@@ -37,19 +37,19 @@ use std::time::{Duration, Instant};
 
 /// The name of the thread [`hammer`] runs its cases on.
 #[cfg(not(target_arch = "wasm32"))]
-const WORKER_NAME: &str = "craft-testkit hostile";
+const WORKER_NAME: &str = "bharat-testkit hostile";
 
 /// The variable that multiplies a [`HammerConfig`]'s rounds unless
 /// [`HammerConfig::with_multiplier_variable`] names another.
-pub const DEFAULT_MULTIPLIER_VARIABLE: &str = "CRAFT_HOSTILE_MULT";
+pub const DEFAULT_MULTIPLIER_VARIABLE: &str = "BHARAT_HOSTILE_MULT";
 
 /// The variable that divides every hostile-input sweep: with `N`, [`hammer`] runs the unmodified
 /// seed, every N-th truncation (lengths 0, N, 2N, ...) and 1/N of its rounds, rounded up. Unset, or
 /// 1, runs everything. The Workspace gate sets it and the nightly full run leaves it unset; a
 /// failing case is found again with the same value.
-pub const DIVISOR_VARIABLE: &str = "CRAFT_HOSTILE_DIVISOR";
+pub const DIVISOR_VARIABLE: &str = "BHARAT_HOSTILE_DIVISOR";
 
-/// The default limit for one case of [`hammer`]. The limit's variable, `CRAFT_TEST_TIMEOUT_SECS`
+/// The default limit for one case of [`hammer`]. The limit's variable, `BHARAT_TEST_TIMEOUT_SECS`
 /// unless [`HammerConfig::with_timeout`] names another, replaces it.
 #[cfg(not(target_arch = "wasm32"))]
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(5);
@@ -64,7 +64,7 @@ const EXTREMES: [u64; 8] = [0, 1, 0x7F, 0x80, 0xFF, 0xFFFF, 0x8000_0000, u64::MA
 /// The xorshift64* generator behind [`mutations`].
 ///
 /// ```
-/// use craft_testkit::hostile::Rng;
+/// use bharat_testkit::hostile::Rng;
 ///
 /// let mut rng = Rng(1);
 /// assert_eq!(rng.next_u64(), 0x47E4_CE4B_896C_DD1D);
@@ -101,7 +101,7 @@ pub struct Mutation {
 /// An empty seed yields no copies, since there is no byte to edit.
 ///
 /// ```
-/// use craft_testkit::hostile::mutations;
+/// use bharat_testkit::hostile::mutations;
 ///
 /// let all: Vec<_> = mutations(&[0, 1, 2, 3], 2).collect();
 /// assert_eq!(all[1].label, "trunc2");
@@ -192,16 +192,16 @@ impl ExactSizeIterator for Mutations<'_> {}
 ///
 /// ```
 /// use std::time::Duration;
-/// use craft_testkit::hostile::HammerConfig;
+/// use bharat_testkit::hostile::HammerConfig;
 ///
-/// // 2,000 rounds, times CRAFT_HOSTILE_MULT when it is set; 5 s per case, or CRAFT_TEST_TIMEOUT_SECS.
+/// // 2,000 rounds, times BHARAT_HOSTILE_MULT when it is set; 5 s per case, or BHARAT_TEST_TIMEOUT_SECS.
 /// let config = HammerConfig::new("png seed 3", 2_000);
 ///
 /// // The app's own variables instead.
 /// let config = HammerConfig::new("mxf primer", 5_000)
-///     .with_multiplier_variable("CRAFT_MEDIA_HOSTILE_MULT")
-///     .with_timeout(craft_testkit::DeadlineLimit::new(Duration::from_secs(5)).with_variable("FILMCRAFT_HOSTILE_TIMEOUT_SECS"));
-/// assert_eq!(config.multiplier_variable(), "CRAFT_MEDIA_HOSTILE_MULT");
+///     .with_multiplier_variable("BHARAT_MEDIA_HOSTILE_MULT")
+///     .with_timeout(bharat_testkit::DeadlineLimit::new(Duration::from_secs(5)).with_variable("FILMCRAFT_HOSTILE_TIMEOUT_SECS"));
+/// assert_eq!(config.multiplier_variable(), "BHARAT_MEDIA_HOSTILE_MULT");
 /// ```
 #[cfg(not(target_arch = "wasm32"))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -354,7 +354,7 @@ fn parse_multiplier(value: &str) -> Result<usize, &'static str> {
 /// variable, when the value is not a whole number above zero.
 ///
 /// ```
-/// let step = craft_testkit::hostile::divisor();
+/// let step = bharat_testkit::hostile::divisor();
 /// let positions: Vec<usize> = (0..64).filter(|i| (i + 3) % step == 0).collect();
 /// assert!(!positions.is_empty());
 /// ```
@@ -398,7 +398,7 @@ fn read_variable(name: &str) -> Option<OsString> {
 /// cases, fails the test before `parse` is called.
 ///
 /// ```
-/// use craft_testkit::hostile::{HammerConfig, hammer};
+/// use bharat_testkit::hostile::{HammerConfig, hammer};
 ///
 /// hammer(&HammerConfig::new("length prefix", 200), &[3, b'a', b'b', b'c'], |data| {
 ///     if let Some((&n, rest)) = data.split_first() {
@@ -605,7 +605,7 @@ mod tests {
     use std::sync::mpsc;
 
     /// A variable no test sets, so the environment cannot change a test's rounds or limits.
-    const UNSET: &str = "CRAFT_TESTKIT_HOSTILE_UNSET_IN_TESTS";
+    const UNSET: &str = "BHARAT_TESTKIT_HOSTILE_UNSET_IN_TESTS";
 
     fn config(label: &'static str, iterations: usize) -> HammerConfig<'static> {
         HammerConfig::new(label, iterations)
@@ -776,9 +776,9 @@ mod tests {
 
     #[test]
     fn uses_caller_multiplier_variable() {
-        let config = config("mult", 7).with_multiplier_variable("CRAFT_MEDIA_HOSTILE_MULT");
+        let config = config("mult", 7).with_multiplier_variable("BHARAT_MEDIA_HOSTILE_MULT");
         let lookup = |name: &str| match name {
-            "CRAFT_MEDIA_HOSTILE_MULT" => Some(OsString::from("3")),
+            "BHARAT_MEDIA_HOSTILE_MULT" => Some(OsString::from("3")),
             DEFAULT_MULTIPLIER_VARIABLE => Some(OsString::from("100")),
             _ => None,
         };
@@ -788,7 +788,7 @@ mod tests {
         hammer_with(&config, &[5, 6], move |_| *count.lock().unwrap() += 1, lookup).unwrap();
         // The seed, two truncations and 21 rounds.
         assert_eq!(*calls.lock().unwrap(), 24);
-        assert_eq!(HammerConfig::new("default", 7).multiplier_variable(), "CRAFT_HOSTILE_MULT");
+        assert_eq!(HammerConfig::new("default", 7).multiplier_variable(), "BHARAT_HOSTILE_MULT");
         assert_eq!(config.rounds_with(unset), Ok(7));
     }
 
@@ -811,7 +811,7 @@ mod tests {
         let flag = Arc::clone(&called);
         let lookup = |name: &str| (name == DIVISOR_VARIABLE).then(|| OsString::from("0"));
         let message = hammer_with(&config("bad divisor", 3), &[1, 2], move |_| *flag.lock().unwrap() = true, lookup).unwrap_err();
-        assert_eq!(message, r#"bad divisor: CRAFT_HOSTILE_DIVISOR="0" is zero; set it to a whole number above zero"#);
+        assert_eq!(message, r#"bad divisor: BHARAT_HOSTILE_DIVISOR="0" is zero; set it to a whole number above zero"#);
         assert!(!*called.lock().unwrap());
     }
 

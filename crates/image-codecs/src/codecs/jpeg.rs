@@ -1,5 +1,5 @@
 //! JPEG: decode via `zune-jpeg` (gray, YCbCr, CMYK, YCCK; arithmetic-coded and 12-bit files
-//! via [`craft_jpeg`]), encode via
+//! via [`bharat_jpeg`]), encode via
 //! `jpeg-encoder` (gray, RGB, CMYK). Metadata (APP0 JFIF density, APP1
 //! EXIF/XMP, APP2 multi-segment ICC, APP13 Photoshop resources, APP14 Adobe) is
 //! parsed by our own marker scanner so behaviour does not depend on decoder internals.
@@ -136,7 +136,7 @@ fn held_coefficients(marker: u8, seg: &[u8], scan_components: Option<u8>) -> u64
 ///   without its components, no `0xFF` where a marker belongs) charges the costliest frame,
 ///   four components sampled 4 × 4, at the first frame's size (as `scan_metadata` reads it), and 0 without one.
 ///
-/// Never less than either rule. Frames `craft-jpeg` decodes (arithmetic, lossless, 12-bit)
+/// Never less than either rule. Frames `bharat-jpeg` decodes (arithmetic, lossless, 12-bit)
 /// enforce `max_alloc` on their own buffers, and SOF6/SOF14 (hierarchical) are not decoded at all,
 /// so charging them is only a conservative budget. Arithmetic saturates; the scan is linear.
 pub(crate) fn worst_case_coefficients(b: &[u8]) -> u64 {
@@ -488,22 +488,22 @@ fn first_component_subsampled(b: &[u8]) -> bool {
     false
 }
 
-/// Whether `craft-jpeg` (rather than `zune-jpeg`) decodes the file: arithmetic coding
+/// Whether `bharat-jpeg` (rather than `zune-jpeg`) decodes the file: arithmetic coding
 /// (SOF9–SOF11), lossless (SOF3), or a DCT frame whose precision isn't 8 bits (#4934, #5003).
-/// This includes 12-bit progressive Huffman (SOF2), which `craft-jpeg` supports.
+/// This includes 12-bit progressive Huffman (SOF2), which `bharat-jpeg` supports.
 fn uses_craft_jpeg(bytes: &[u8]) -> bool {
-    match craft_jpeg::frame(bytes) {
+    match bharat_jpeg::frame(bytes) {
         Some(f) if (0xC9..=0xCB).contains(&f.marker) || f.marker == 0xC3 => true,
         Some(f) if matches!(f.marker, 0xC0..=0xC2) => f.precision != 8,
         _ => false,
     }
 }
 
-fn craft_jpeg_error(e: craft_jpeg::Error) -> CodecError {
+fn bharat_jpeg_error(e: bharat_jpeg::Error) -> CodecError {
     match e {
-        craft_jpeg::Error::Malformed(m) => err(m),
-        craft_jpeg::Error::Unsupported(m) => CodecError::unsupported(F, m),
-        craft_jpeg::Error::LimitExceeded(m) => CodecError::LimitExceeded(m),
+        bharat_jpeg::Error::Malformed(m) => err(m),
+        bharat_jpeg::Error::Unsupported(m) => CodecError::unsupported(F, m),
+        bharat_jpeg::Error::LimitExceeded(m) => CodecError::LimitExceeded(m),
         e => err(e),
     }
 }
@@ -523,26 +523,26 @@ fn undo_craft_cmyk_inversion_u16(samples: &mut [u16], enabled: bool) {
 /// Decode a file [`uses_craft_jpeg`] routes away from `zune-jpeg`; `damaged` says entropy-coded
 /// data was cut short or corrupt.
 fn decode_craft_jpeg(bytes: &[u8], limits: &Limits, adobe_transform: Option<u8>, adobe_marker: bool) -> Result<(Image, bool), CodecError> {
-    let mut lim = craft_jpeg::Limits::default();
+    let mut lim = bharat_jpeg::Limits::default();
     lim.max_pixels = limits.max_pixels;
     lim.max_alloc = limits.max_alloc;
-    let d = craft_jpeg::decode(bytes, &lim, adobe_transform).map_err(craft_jpeg_error)?;
+    let d = bharat_jpeg::decode(bytes, &lim, adobe_transform).map_err(bharat_jpeg_error)?;
     let layout = match d.components {
         1 => ChannelLayout::Gray,
         3 => ChannelLayout::Rgb,
         4 => ChannelLayout::Cmyk,
         n => return Err(err(format!("{n} components"))),
     };
-    // craft-jpeg returns non-YCC CMYK samples with Adobe's inversion already undone,
+    // bharat-jpeg returns non-YCC CMYK samples with Adobe's inversion already undone,
     // regardless of whether the file actually has an Adobe marker. Unmarked four-component
     // streams are also found with direct ink samples, so restore those when using this backend.
     let restore_unmarked_cmyk = !adobe_marker && matches!(layout, ChannelLayout::Cmyk);
     let img = match d.samples {
-        craft_jpeg::Samples::U8(mut px) => {
+        bharat_jpeg::Samples::U8(mut px) => {
             undo_craft_cmyk_inversion_u8(&mut px, restore_unmarked_cmyk);
             Image::from_raw(d.width, d.height, layout, SampleType::U8, px)?
         }
-        craft_jpeg::Samples::U16(mut px) => {
+        bharat_jpeg::Samples::U16(mut px) => {
             undo_craft_cmyk_inversion_u16(&mut px, restore_unmarked_cmyk);
             Image::from_u16(d.width, d.height, layout, &px)?
         }
@@ -555,10 +555,10 @@ fn decode_craft_jpeg(bytes: &[u8], limits: &Limits, adobe_transform: Option<u8>,
 /// truncated or not, are far above this.
 const MAX_PIXELS_PER_BYTE: u64 = 2048;
 
-/// Decode with craft-jpeg: the files [`uses_craft_jpeg`] routes away from `zune-jpeg`, and the
+/// Decode with bharat-jpeg: the files [`uses_craft_jpeg`] routes away from `zune-jpeg`, and the
 /// ones `zune-jpeg` panics on.
 fn decode_whole(bytes: &[u8], limits: &Limits, meta: JpegMeta, end: DataEnd, scan_bytes: u64) -> Result<Image, CodecError> {
-    // craft-jpeg sizes its buffers from the frame header before it reads a scan.
+    // bharat-jpeg sizes its buffers from the frame header before it reads a scan.
     if scan_bytes == 0 {
         return Err(err("the file has no scan data"));
     }
@@ -626,7 +626,7 @@ pub(crate) fn decode(bytes: &[u8], limits: &Limits) -> Result<Image, CodecError>
     }
     dec.set_options(dec.options().jpeg_set_out_colorspace(out_cs));
     // zune-jpeg 0.5 asserts on some subsampled four-component frames whose first component isn't
-    // the largest (its upsampler's scratch row is sized from that component): craft-jpeg reads them.
+    // the largest (its upsampler's scratch row is sized from that component): bharat-jpeg reads them.
     let Ok(decoded) = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| dec.decode())) else {
         return decode_whole(bytes, limits, meta, end, scan_bytes);
     };
@@ -942,7 +942,7 @@ mod tests {
         assert_eq!(held(&frame(0xC0, 8, &[0x11, 0x11, 0x11], Some(1))), Some(all_444));
         assert_eq!(held(&frame(0xC1, 8, &[0x11, 0x11, 0x11], Some(2))), Some(all_444));
         // A sequential first scan with every component is read a line of MCUs at a time, and a
-        // 12-bit progressive frame goes to craft-jpeg: they hold none.
+        // 12-bit progressive frame goes to bharat-jpeg: they hold none.
         assert_eq!(held(&frame(0xC0, 8, &[0x11, 0x11, 0x11], Some(3))), Some(0));
         assert_eq!(held(&frame(0xC0, 8, &[0x11, 0x11, 0x11], None)), Some(0));
         assert_eq!(held(&frame(0xC2, 12, &[0x11, 0x11, 0x11], None)), Some(0));
@@ -1067,7 +1067,7 @@ mod tests {
         assert_eq!(at(11), scan_metadata(&cases[11]).held_coefficients);
         assert!(at(11) > oracle(&cases[11]));
         assert!(at(2) > 0 && at(3) == 0 && at(0) == 0);
-        // 12-bit and arithmetic progressive frames are charged though craft-jpeg limits itself.
+        // 12-bit and arithmetic progressive frames are charged though bharat-jpeg limits itself.
         assert_eq!(at(5), at(4));
         // Sampling factors clamp: 0 acts as 1, 15 as 4.
         assert_eq!(at(10), 80 * 60 * 3 * 128);
@@ -1293,7 +1293,7 @@ mod tests {
         assert_eq!(scan_metadata(&bytes).dpi, Some((96.0, 96.0)));
     }
 
-    // --- Arithmetic-coded and 12-bit files, decoded by craft-jpeg ---
+    // --- Arithmetic-coded and 12-bit files, decoded by bharat-jpeg ---
 
     fn segment(out: &mut Vec<u8>, marker: u8, body: &[u8]) {
         out.extend_from_slice(&[0xFF, marker]);
@@ -1487,19 +1487,19 @@ mod tests {
 
     #[test]
     fn unmarked_cmyk_restores_direct_ink_polarity_on_craft_backend() {
-        // craft-jpeg always returns non-YCC four-component samples with Adobe inversion undone.
+        // bharat-jpeg always returns non-YCC four-component samples with Adobe inversion undone.
         // The adapter restores direct inks only when no APP14 marker identifies Adobe storage.
         let mut u8_samples = [0, 32, 200, 255];
         undo_craft_cmyk_inversion_u8(&mut u8_samples, true);
         assert_eq!(u8_samples, [255, 223, 55, 0]);
         undo_craft_cmyk_inversion_u8(&mut u8_samples, false);
-        assert_eq!(u8_samples, [255, 223, 55, 0], "marked samples keep craft-jpeg polarity");
+        assert_eq!(u8_samples, [255, 223, 55, 0], "marked samples keep bharat-jpeg polarity");
 
         let mut u16_samples = [0, 8192, 32768, 65535];
         undo_craft_cmyk_inversion_u16(&mut u16_samples, true);
         assert_eq!(u16_samples, [65535, 57343, 32767, 0]);
         undo_craft_cmyk_inversion_u16(&mut u16_samples, false);
-        assert_eq!(u16_samples, [65535, 57343, 32767, 0], "marked samples keep craft-jpeg polarity");
+        assert_eq!(u16_samples, [65535, 57343, 32767, 0], "marked samples keep bharat-jpeg polarity");
     }
 
     #[test]
@@ -1509,7 +1509,7 @@ mod tests {
         let sof = marked.windows(2).position(|pair| pair == [0xFF, 0xC0]).expect("baseline SOF0");
         marked[sof + 1] = 0xC1;
         marked[sof + 4] = 12;
-        assert!(uses_craft_jpeg(&marked), "12-bit SOF1 routes through craft-jpeg");
+        assert!(uses_craft_jpeg(&marked), "12-bit SOF1 routes through bharat-jpeg");
 
         let app14 = b"\xFF\xEE\x00\x0EAdobe";
         let start = marked.windows(app14.len()).position(|part| part == app14).expect("Adobe APP14 marker");

@@ -2,7 +2,7 @@
 //! without a panic and within their bounds, and nothing a caller hands the writer can add a
 //! header field or a part.
 
-use craft_mime::{Boundaries, Entity, File, Limits, Mailbox, Message, Part};
+use bharat_mime::{Boundaries, Entity, File, Limits, Mailbox, Message, Part};
 
 const PNG: &[u8] = b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR";
 
@@ -14,15 +14,15 @@ fn sample() -> Vec<u8> {
     page.fields.push(("Content-Location".into(), "https://example.test/reports/page.html".into()));
     let rich = Entity::multipart("related", &[("type", "text/html"), ("start", "<page>")], &[page, picture], &mut boundaries);
     let forms = Entity::multipart("alternative", &[], &[Entity::text("plain", "Grüße\n\nFrom here on.\n"), rich], &mut boundaries);
-    let inner = craft_mime::write_message(&[("Subject", "Inner")], &Entity::text("plain", "inner"));
+    let inner = bharat_mime::write_message(&[("Subject", "Inner")], &Entity::text("plain", "inner"));
     let attached = Entity::file(&File { media_type: "message/rfc822", name: "inner.eml", data: &inner, ..File::default() });
     let root = Entity::multipart("mixed", &[], &[forms, attached], &mut boundaries);
-    let to = craft_mime::format_address_list(&[
+    let to = bharat_mime::format_address_list(&[
         Mailbox { name: "Hopper, Grace".into(), email: "grace@example.org".into() },
         Mailbox { name: "Renée".into(), email: "renee@example.org".into() },
     ]);
-    let subject = craft_mime::encode_unstructured("Subject", &"Ünïcödé subject ".repeat(8));
-    craft_mime::write_message(
+    let subject = bharat_mime::encode_unstructured("Subject", &"Ünïcödé subject ".repeat(8));
+    bharat_mime::write_message(
         &[("Date", "Tue, 01 Jul 2003 10:52:37 +0200"), ("To", &to), ("Subject", &subject), ("Message-ID", "<abc@example.org>")],
         &root,
     )
@@ -60,7 +60,7 @@ epilogue\n"
 
 /// Everything a caller can ask of a message, and what must hold whatever the bytes were.
 fn exercise(bytes: &[u8], limits: &Limits) -> Message {
-    let message = craft_mime::parse(bytes, limits);
+    let message = bharat_mime::parse(bytes, limits);
     let mut stack = vec![(&message.root, 0usize)];
     let (mut parts, mut decoded) = (0usize, 0usize);
     while let Some((part, depth)) = stack.pop() {
@@ -69,23 +69,23 @@ fn exercise(bytes: &[u8], limits: &Limits) -> Message {
         assert!(depth <= limits.max_depth.min(Limits::HARD_MAX_DEPTH));
         assert!(part.headers.0.len() <= limits.max_header_fields);
         assert!(
-            part.headers.0.iter().all(|f| craft_mime::is_field_name(f.name.as_bytes()) && f.value.len() <= limits.max_header_value.saturating_mul(3))
+            part.headers.0.iter().all(|f| bharat_mime::is_field_name(f.name.as_bytes()) && f.value.len() <= limits.max_header_value.saturating_mul(3))
         );
         let _ = (part.text(), part.file_name(), part.content_id(), part.content_location(), part.disposition(), part.transfer_encoding());
         for field in &part.headers.0 {
-            let _ = (craft_mime::decode_words(&field.value), craft_mime::parse_address_list(&field.value), craft_mime::parse_date(&field.value));
+            let _ = (bharat_mime::decode_words(&field.value), bharat_mime::parse_address_list(&field.value), bharat_mime::parse_date(&field.value));
         }
         stack.extend(part.parts().iter().map(|p| (p, depth + 1)));
     }
     assert!(parts <= limits.max_parts.max(1));
     assert!(decoded <= limits.max_decoded.min(bytes.len()));
-    let resources = craft_mime::Resources::of(&message.root);
+    let resources = bharat_mime::Resources::of(&message.root);
     let _ = (
-        craft_mime::start_part(&message.root),
+        bharat_mime::start_part(&message.root),
         resources.find("page_files/dot.png", "file:///C:/page.htm"),
         resources.find("cid:logo@example.org", ""),
     );
-    assert_eq!(craft_mime::parse(bytes, limits), message, "reading is deterministic");
+    assert_eq!(bharat_mime::parse(bytes, limits), message, "reading is deterministic");
     message
 }
 
@@ -112,10 +112,10 @@ fn the_samples_read_whole() {
     let m = exercise(&archive(), &Limits::default());
     assert!(!m.truncated);
     assert_eq!(
-        craft_mime::start_part(&m.root).map(Part::text).as_deref(),
+        bharat_mime::start_part(&m.root).map(Part::text).as_deref(),
         Some("<p class=\"x\">članak, jedan red.</p><img src=\"page_files/dot.png\">")
     );
-    let picture = craft_mime::Resources::of(&m.root).find("page_files/dot.png", "file:///C:/page.htm");
+    let picture = bharat_mime::Resources::of(&m.root).find("page_files/dot.png", "file:///C:/page.htm");
     assert_eq!(picture.and_then(Part::file_name).as_deref(), Some("döt.png"));
     assert!(picture.is_some_and(|p| p.data().starts_with(b"\x89PNG")));
 }
@@ -128,7 +128,7 @@ fn every_truncation_reads() {
             exercise(cut, &Limits::default());
             exercise(cut, &SMALL);
             // An mbox reader takes any prefix too.
-            assert!(craft_mime::mbox_messages(cut).map(|m| m.len()).sum::<usize>() <= cut.len());
+            assert!(bharat_mime::mbox_messages(cut).map(|m| m.len()).sum::<usize>() <= cut.len());
         }
     }
 }
@@ -199,7 +199,7 @@ fn large_hostile_shapes_stay_linear() {
     ];
     for bytes in &shapes {
         exercise(bytes, &Limits::default());
-        let _ = craft_mime::mbox_messages(bytes).count();
+        let _ = bharat_mime::mbox_messages(bytes).count();
     }
 }
 
@@ -233,7 +233,7 @@ fn assert_no_injection(bytes: &[u8], allowed: &[&str]) {
         assert!(line.starts_with([' ', '\t']) || allowed.iter().any(|a| a.eq_ignore_ascii_case(name)), "an injected line: {line:?}");
     }
     // And a reader sees only those fields.
-    let m = craft_mime::parse(bytes, &Limits::default());
+    let m = bharat_mime::parse(bytes, &Limits::default());
     for field in &m.root.headers.0 {
         assert!(allowed.iter().any(|a| a.eq_ignore_ascii_case(&field.name)), "an injected field: {field:?}");
     }
@@ -244,16 +244,16 @@ fn header_values_cannot_inject_fields() {
     const ALLOWED: &[&str] = &["Subject", "X-Note", "To", "Message-ID", "MIME-Version", "Content-Type", "Content-Transfer-Encoding"];
     for evil in EVIL {
         // Raw, and through each encoder a caller would use.
-        let to = craft_mime::format_address_list(&[Mailbox { name: evil.to_string(), email: format!("a@example.org{evil}") }]);
-        let id = format!("<{}>", craft_mime::clean_id(evil));
-        for subject in [evil.to_string(), craft_mime::encode_unstructured("Subject", evil), craft_mime::encode_words(evil)] {
-            let note = craft_mime::seven_bit_value("X-Note", evil);
+        let to = bharat_mime::format_address_list(&[Mailbox { name: evil.to_string(), email: format!("a@example.org{evil}") }]);
+        let id = format!("<{}>", bharat_mime::clean_id(evil));
+        for subject in [evil.to_string(), bharat_mime::encode_unstructured("Subject", evil), bharat_mime::encode_words(evil)] {
+            let note = bharat_mime::seven_bit_value("X-Note", evil);
             let headers = [("Subject", subject.as_str()), ("X-Note", note.as_str()), ("To", to.as_str()), ("Message-ID", id.as_str())];
-            let out = craft_mime::write_message(&headers, &Entity::text("plain", "body"));
+            let out = bharat_mime::write_message(&headers, &Entity::text("plain", "body"));
             assert_no_injection(&out, ALLOWED);
-            let m = craft_mime::parse(&out, &Limits::default());
+            let m = bharat_mime::parse(&out, &Limits::default());
             assert_eq!(m.root.data(), b"body\r\n", "the body starts where the writer put it");
-            assert_eq!(craft_mime::parse_address_list(m.root.headers.get("to").unwrap_or_default()).len(), 1, "{to}");
+            assert_eq!(bharat_mime::parse_address_list(m.root.headers.get("to").unwrap_or_default()).len(), 1, "{to}");
         }
     }
 }
@@ -261,11 +261,11 @@ fn header_values_cannot_inject_fields() {
 #[test]
 fn header_names_cannot_inject_fields() {
     for name in ["X-A\r\nBcc", "X-A: 1\r\nBcc", "X A", "", "X-A\0", "Bcc:", "X-É"] {
-        let out = craft_mime::write_message(&[(name, "eve@example.org")], &Entity::text("plain", "body"));
+        let out = bharat_mime::write_message(&[(name, "eve@example.org")], &Entity::text("plain", "body"));
         assert_no_injection(&out, &["MIME-Version", "Content-Type", "Content-Transfer-Encoding"]);
         let mut entity = Entity::text("plain", "body");
         entity.fields.push((name.to_string(), "eve@example.org".to_string()));
-        assert_no_injection(&craft_mime::write_message(&[], &entity), &["MIME-Version", "Content-Type", "Content-Transfer-Encoding"]);
+        assert_no_injection(&bharat_mime::write_message(&[], &entity), &["MIME-Version", "Content-Type", "Content-Transfer-Encoding"]);
     }
 }
 
@@ -275,17 +275,17 @@ fn part_values_cannot_inject_fields_or_parts() {
     for evil in EVIL {
         let mut file = Entity::file(&File { media_type: evil, name: evil, inline: false, content_id: evil, data: b"data" });
         file.fields.push(("Content-Location".into(), evil.to_string()));
-        assert_no_injection(&craft_mime::write_message(&[], &file), ALLOWED);
-        assert_no_injection(&craft_mime::write_message(&[], &Entity::text(evil, "x")), ALLOWED);
+        assert_no_injection(&bharat_mime::write_message(&[], &file), ALLOWED);
+        assert_no_injection(&bharat_mime::write_message(&[], &Entity::text(evil, "x")), ALLOWED);
 
         // In a multipart: the subtype, a parameter's name and value, the boundary prefix, and
         // a body that holds what looks like a delimiter.
         let mut boundaries = Boundaries::new(evil);
         let text = Entity::text("plain", &format!("--{evil}\n--=_craft_\n{evil}"));
         let root = Entity::multipart(evil, &[("type", evil), (evil, "x"), ("boundary", "mine")], &[text, file], &mut boundaries);
-        let out = craft_mime::write_message(&[], &root);
+        let out = bharat_mime::write_message(&[], &root);
         assert_no_injection(&out, ALLOWED);
-        let m = craft_mime::parse(&out, &Limits::default());
+        let m = bharat_mime::parse(&out, &Limits::default());
         assert_eq!(m.root.parts().len(), 2, "{}", String::from_utf8_lossy(&out));
         assert_eq!(m.root.parts()[1].data(), b"data");
         for part in m.root.parts() {
@@ -296,13 +296,13 @@ fn part_values_cannot_inject_fields_or_parts() {
 
 #[test]
 fn mbox_values_cannot_inject_messages() {
-    let date = craft_mime::parse_date("Tue, 1 Jul 2003 08:52:37 +0000").unwrap_or_default();
+    let date = bharat_mime::parse_date("Tue, 1 Jul 2003 08:52:37 +0000").unwrap_or_default();
     for evil in EVIL {
         let mut out = Vec::new();
         let sender = format!("a@example.org{evil}\nFrom eve@example.org Tue Jul  1 08:52:37 2003");
         let message = format!("Subject: x\r\n\r\nFrom the top\r\n\r\nFrom eve@example.org Tue Jul  1 08:52:37 2003\r\n{evil}\r\n");
-        craft_mime::write_mbox_message(&mut out, &sender, &date, message.as_bytes());
-        let back: Vec<Vec<u8>> = craft_mime::mbox_messages(&out).collect();
+        bharat_mime::write_mbox_message(&mut out, &sender, &date, message.as_bytes());
+        let back: Vec<Vec<u8>> = bharat_mime::mbox_messages(&out).collect();
         assert_eq!(back, [message.into_bytes()]);
     }
 }

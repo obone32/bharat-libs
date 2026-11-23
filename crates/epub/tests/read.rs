@@ -3,7 +3,7 @@
 
 use std::io::{Cursor, Write};
 
-use craft_epub::{Epub, Error, Limits, dir_of, parse_container, parse_package, resolve};
+use bharat_epub::{Epub, Error, Limits, dir_of, parse_container, parse_package, resolve};
 
 fn zip_of(entries: &[(&str, &[u8])]) -> Vec<u8> {
     let mut z = zip::ZipWriter::new(Cursor::new(Vec::new()));
@@ -133,7 +133,7 @@ fn epub2_package_ncx_cover_and_dc_metadata() {
 #[test]
 fn opens_a_package_and_reads_its_files() {
     let bytes = sample_package();
-    assert!(!craft_epub::is_epub(&bytes), "this mimetype entry is compressed");
+    assert!(!bharat_epub::is_epub(&bytes), "this mimetype entry is compressed");
     let mut epub = Epub::open(&bytes).unwrap();
     assert_eq!(epub.opf_path, "OEBPS/content.opf");
     assert_eq!(epub.package.title, "Test Book");
@@ -257,6 +257,6 @@ fn a_package_document_past_the_entry_limit_is_refused() {
 /// the raw bytes, before the archive is indexed.
 #[test]
 fn an_archive_declaring_too_many_entries_is_refused_before_it_is_indexed() {
-    let bomb = craft_zip::zip64_entry_count_sample(100_001);
+    let bomb = bharat_zip::zip64_entry_count_sample(100_001);
     assert_eq!(Epub::open(&bomb).err(), Some(Error::TooManyEntries { found: 100_001, limit: 100_000 }));
 }

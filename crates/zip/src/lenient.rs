@@ -15,7 +15,7 @@
 //! [`ZipError::Unsupported`]. [`file::read_named_entry`] reads one entry from a seekable file
 //! without loading the archive. With the `serde` feature the listing types are `Serialize`.
 //!
-//! From Craft Anything (`crates/formats/src/zip.rs` and `zip_file.rs`), with its hardening:
+//! From Bharat Anything (`crates/formats/src/zip.rs` and `zip_file.rs`), with its hardening:
 //! directory and extra-field bounds, ZIP64 end-record recovery after a prepended stub, refusal of
 //! multi-volume archives, Info-ZIP Unicode Path names checked by CRC, decoded sizes checked
 //! against the directory, and CRC-32 verification.

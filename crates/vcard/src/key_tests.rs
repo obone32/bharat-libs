@@ -2,7 +2,7 @@
 //! secret key material never kept, written back as 3.0, capped, and never a panic.
 
 use crate::{Contact, ContactKey, KeyKind};
-use craft_mime::base64::STANDARD;
+use bharat_mime::base64::STANDARD;
 use proptest::prelude::*;
 
 use crate::{parse, write};

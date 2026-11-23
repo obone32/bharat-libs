@@ -1,9 +1,9 @@
-//! IFF/ILBM compatibility facade; implementation lives in craft-image-codecs.
+//! IFF/ILBM compatibility facade; implementation lives in bharat-image-codecs.
 use crate::{CodecError, Image, Limits, bridge};
-use craft_image_codecs::Format;
+use bharat_image_codecs::Format;
 
 pub fn looks_like_iff(bytes: &[u8]) -> bool {
-    craft_image_codecs::detect(bytes) == Some(Format::Iff)
+    bharat_image_codecs::detect(bytes) == Some(Format::Iff)
 }
 pub fn decode(bytes: &[u8], limits: &Limits) -> Result<Image, CodecError> {
     bridge::format(Format::Iff, bytes, limits)

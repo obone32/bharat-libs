@@ -1,7 +1,7 @@
 //! Styling identity must not depend on XML attribute order or foreign extensions.
 
-use craft_captions::{Format, parse};
-use craft_captions::{TICKS_PER_SECOND, Tick};
+use bharat_captions::{Format, parse};
+use bharat_captions::{TICKS_PER_SECOND, Tick};
 
 #[test]
 fn recognized_styling_namespaces_have_fixed_priority() {

@@ -4,8 +4,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::props::{CharProps, ParaProps, TextColor};
-use craft_wordmodel::{Document, Paragraph, Rgb, para_block};
+use bharat_wordmodel::props::{CharProps, ParaProps, TextColor};
+use bharat_wordmodel::{Document, Paragraph, Rgb, para_block};
 
 fn libreoffice_styles(heading1: &str) -> String {
     format!(
@@ -54,7 +54,7 @@ fn heading_styles_round_trip() {
     let mut d = Document::new();
     let mut p = Paragraph::new();
     p.text = "Head".into();
-    p.runs = vec![craft_wordmodel::para::Run { len: 4, props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: 4, props: Default::default() }];
     p.props.style = Some("Heading2".into());
     d.body = vec![para_block(p)];
     let back = import(&export(&d).unwrap()).unwrap();

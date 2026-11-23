@@ -1,9 +1,9 @@
-//! Netpbm compatibility facade; implementation and bounds live in craft-image-codecs.
+//! Netpbm compatibility facade; implementation and bounds live in bharat-image-codecs.
 use crate::{CodecError, Image, Limits, bridge};
-use craft_image_codecs::Format;
+use bharat_image_codecs::Format;
 
 pub fn looks_like_pnm(bytes: &[u8]) -> bool {
-    craft_image_codecs::detect(bytes) == Some(Format::Pnm)
+    bharat_image_codecs::detect(bytes) == Some(Format::Pnm)
 }
 pub fn decode(bytes: &[u8], limits: &Limits) -> Result<Image, CodecError> {
     bridge::format(Format::Pnm, bytes, limits)

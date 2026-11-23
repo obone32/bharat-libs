@@ -1,4 +1,4 @@
-# craft-idml
+# bharat-idml
 
 IDML (InDesign Markup Language) packages, and InDesign Tagged Text. No `unsafe`.
 
@@ -17,17 +17,17 @@ story as one XML document, is read and written too (`icml`).
 ## Reading
 
 ```rust
-# fn main() -> craft_idml::Result<()> {
+# fn main() -> bharat_idml::Result<()> {
 # let bytes: Vec<u8> = Vec::new();
 # if bytes.is_empty() { return Ok(()); }
-use craft_idml::{Local, Props};
+use bharat_idml::{Local, Props};
 
-let mut package = craft_idml::Package::open(&bytes)?;
+let mut package = bharat_idml::Package::open(&bytes)?;
 let doc = package.document()?;          // designmap.xml with its includes in place
 for story in doc.top.iter().filter(|e| e.name == "Story") {
     for range in story.find_all(Local("CharacterStyleRange")) {
         let size = range.num("PointSize");          // attribute or <Properties> child
-        let font = range.value("AppliedFont").and_then(|f| craft_idml::value::font_family(&f));
+        let font = range.value("AppliedFont").and_then(|f| bharat_idml::value::font_family(&f));
     }
 }
 for line in &doc.warnings { /* a part designmap.xml lists and the package lacks */ }
@@ -39,7 +39,7 @@ for line in &doc.warnings { /* a part designmap.xml lists and the package lacks 
 - `Package::document` refuses a package whose `mimetype` says something else, that has no
   `designmap.xml`, or whose root is not `Document`. An included part that is missing is a
   warning; one that cannot be read is an error.
-- Elements are `craft_xml::El`, names as written (`idPkg:Story`), text exact. Processing
+- Elements are `bharat_xml::El`, names as written (`idPkg:Story`), text exact. Processing
   instructions inside elements are kept (`<?ACE 18?>` is how InDesign writes special
   characters). Parts are read strictly: one that is cut off is an error, not half a part.
 - `Props` reads a property in either spelling: an attribute, or a child of `<Properties>`.
@@ -54,27 +54,27 @@ for line in &doc.warnings { /* a part designmap.xml lists and the package lacks 
 | `xml.max_depth` | 256 | `Error::Part` |
 | `xml.max_nodes`, `xml.max_attrs_total` (one part) | 8,000,000 and 32,000,000 | `Error::Part` |
 
-The ZIP layer is craft-zip: the declared entry count is checked before the archive is indexed, and
+The ZIP layer is bharat-zip: the declared entry count is checked before the archive is indexed, and
 sizes are checked against what a part really expands to, not what the archive declares.
 
 ## Writing
 
 ```rust
-use craft_idml::{El, part_root, part_xml, designmap_xml, write_package, prop, with_props};
+use bharat_idml::{El, part_root, part_xml, designmap_xml, write_package, prop, with_props};
 
 let range = with_props(El::new("CharacterStyleRange").with_attr("PointSize", "9"), vec![prop("Leading", "unit", "14")]);
 let story = part_root("Story").with_child(El::new("Story").with_attr("Self", "u1").with_child(range));
 let designmap = El::new("Document")
-    .with_attr("xmlns:idPkg", craft_idml::PACKAGING_NS)
-    .with_attr("DOMVersion", craft_idml::DOM_VERSION)
+    .with_attr("xmlns:idPkg", bharat_idml::PACKAGING_NS)
+    .with_attr("DOMVersion", bharat_idml::DOM_VERSION)
     .with_child(El::new("idPkg:Story").with_attr("src", "Stories/Story_u1.xml"));
 let bytes = write_package(&[
-    ("META-INF/container.xml", craft_idml::CONTAINER_XML.as_bytes().to_vec()),
+    ("META-INF/container.xml", bharat_idml::CONTAINER_XML.as_bytes().to_vec()),
     ("designmap.xml", designmap_xml(&designmap)),
     ("Stories/Story_u1.xml", part_xml(&story)),
 ])?;
-assert!(craft_idml::is_idml(&bytes));
-# Ok::<(), craft_idml::Error>(())
+assert!(bharat_idml::is_idml(&bytes));
+# Ok::<(), bharat_idml::Error>(())
 ```
 
 Parts are written with an element that has only element children one child per line, and any
@@ -83,12 +83,12 @@ other element on one line, so story text is never changed by indentation.
 ## The layout model
 
 ```rust
-# fn main() -> craft_idml::Result<()> {
+# fn main() -> bharat_idml::Result<()> {
 # let bytes: Vec<u8> = Vec::new();
 # if bytes.is_empty() { return Ok(()); }
-use craft_idml::model::{apply, spreads};
+use bharat_idml::model::{apply, spreads};
 
-let doc = craft_idml::Package::open(&bytes)?.document()?;
+let doc = bharat_idml::Package::open(&bytes)?.document()?;
 for spread in spreads(&doc) {
     for page in spread.pages() {
         let _bounds = page.geometric_bounds();      // top left bottom right
@@ -127,10 +127,10 @@ for spread in spreads(&doc) {
 ## Stories
 
 ```rust
-use craft_idml::model::{Ace, TextNode, stories};
+use bharat_idml::model::{Ace, TextNode, stories};
 
-# fn main() -> Result<(), craft_xml::Error> {
-let part = craft_idml::parse_part(br#"<idPkg:Story><Story Self="u1"><ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Body">
+# fn main() -> Result<(), bharat_xml::Error> {
+let part = bharat_idml::parse_part(br#"<idPkg:Story><Story Self="u1"><ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Body">
   <CharacterStyleRange PointSize="9"><Content>Page <?ACE 18?></Content><Br/></CharacterStyleRange>
 </ParagraphStyleRange></Story></idPkg:Story>"#)?;
 let story = stories(&part.elements().cloned().collect::<Vec<_>>()).remove(0);
@@ -179,7 +179,7 @@ mark the file.
 
 ## Values
 
-`craft_idml::value`: `num` and `point_str` (numbers as IDML writes them), `nums`, `matrix`,
+`bharat_idml::value`: `num` and `point_str` (numbers as IDML writes them), `nums`, `matrix`,
 `point`, `tint`, `escape_id` / `unescape_id` / `uid` (`Self` ids), `style_name_in` /
 `style_name_out` / `style_self` (style groups and built-in names), `font_family`
 (`AppliedFont`), `xmp_value` (dates in `META-INF/metadata.xml`), `base64_encode` /
@@ -187,10 +187,10 @@ mark the file.
 
 ## Tagged Text
 
-`craft_idml::tagged` reads and writes InDesign Tagged Text: plain text with `<Tag:value>` markup.
+`bharat_idml::tagged` reads and writes InDesign Tagged Text: plain text with `<Tag:value>` markup.
 
 ```rust
-use craft_idml::tagged;
+use bharat_idml::tagged;
 
 let file = b"<ASCII-WIN>\r\n<Version:8>\r\n<ParaStyle:Body>A <CharStyle:Em>word<CharStyle:>";
 assert!(tagged::is_tagged(file));
@@ -209,4 +209,4 @@ to `MAX_NAME_CHARS` (256). Every input reads as something.
 
 DesignCraft's `crates/idml` (the package reader and writer, the `<Properties>` accessors, the
 value codecs) and `crates/textimport/src/tagged.rs`. DesignCraft's own XML tree is replaced by
-craft-xml.
+bharat-xml.

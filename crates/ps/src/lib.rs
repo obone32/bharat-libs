@@ -1,4 +1,4 @@
-//! PostScript and EPS for the Craft apps.
+//! PostScript and EPS for the Bharat apps.
 //!
 //! - [`write`] (feature `write`): numbers, strings, matrices, path data and Flate, so an app can
 //!   emit a PostScript or EPS program.

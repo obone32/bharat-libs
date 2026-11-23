@@ -1,5 +1,5 @@
 [package]
-name = "craft-document-bundle"
+name = "bharat-document-bundle"
 description = "A reusable JSON document bundle envelope over ZIP: metadata, previews, asset entries and legacy inline asset extraction."
 version.workspace = true
 edition.workspace = true
@@ -11,7 +11,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-zip = { workspace = true }
+bharat-zip = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 zip = { version = "9", default-features = false, features = ["deflate-flate2"] }

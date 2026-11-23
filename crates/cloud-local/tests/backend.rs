@@ -1,14 +1,14 @@
-//! Drives [`craft_cloud_local::LocalBackend`] the way an app does: through
-//! `craft_ui::cloud`'s own public functions, never by calling the backend
+//! Drives [`bharat_cloud_local::LocalBackend`] the way an app does: through
+//! `bharat_ui::cloud`'s own public functions, never by calling the backend
 //! directly. That is the seam this crate exists to prove, so the tests stay
 //! on the application's side of it.
 
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use craft_cloud::{Entry, EntryKind};
-use craft_cloud_local::LocalBackend;
-use craft_ui::cloud::{self, Account, CloudApp, CloudFiles, Destination, DocumentKind, Job};
+use bharat_cloud::{Entry, EntryKind};
+use bharat_cloud_local::LocalBackend;
+use bharat_ui::cloud::{self, Account, CloudApp, CloudFiles, Destination, DocumentKind, Job};
 
 const NOTE: DocumentKind = DocumentKind { extensions: &["txt"], mimes: &["text/plain"], noun: "note", default_extension: "txt" };
 
@@ -17,11 +17,11 @@ type OpenedDocs = Arc<Mutex<Vec<(String, Vec<u8>)>>>;
 
 /// The least a [`CloudApp`] can be. What it was told to open is recorded, so a
 /// round trip can be checked by content and not only by the entry metadata
-/// `craft_ui` itself remembers.
+/// `bharat_ui` itself remembers.
 struct Harness {
     cloud: CloudFiles,
-    share: craft_ui::share::ShareDialog,
-    presence: craft_ui::presence::PresenceBar,
+    share: bharat_ui::share::ShareDialog,
+    presence: bharat_ui::presence::PresenceBar,
     opened: OpenedDocs,
     said: Arc<Mutex<Vec<String>>>,
 }
@@ -30,8 +30,8 @@ impl Harness {
     fn new() -> Harness {
         Harness {
             cloud: CloudFiles::new(),
-            share: craft_ui::share::ShareDialog::new(),
-            presence: craft_ui::presence::PresenceBar::new(),
+            share: bharat_ui::share::ShareDialog::new(),
+            presence: bharat_ui::presence::PresenceBar::new(),
             opened: Arc::new(Mutex::new(Vec::new())),
             said: Arc::new(Mutex::new(Vec::new())),
         }
@@ -70,11 +70,11 @@ impl CloudApp for Harness {
 
     fn close(&mut self, _uid: u64) {}
 
-    fn sharing(&mut self) -> &mut craft_ui::share::ShareDialog {
+    fn sharing(&mut self) -> &mut bharat_ui::share::ShareDialog {
         &mut self.share
     }
 
-    fn presence(&mut self) -> &mut craft_ui::presence::PresenceBar {
+    fn presence(&mut self) -> &mut bharat_ui::presence::PresenceBar {
         &mut self.presence
     }
 
@@ -127,7 +127,7 @@ fn account_and_sign_in_report_the_same_fixed_identity_with_no_browser_round_trip
         app.cloud().account,
         Some(Account {
             display: "Local disk".to_owned(),
-            capabilities: vec![craft_cloud::Capability::Files, craft_cloud::Capability::Etags],
+            capabilities: vec![bharat_cloud::Capability::Files, bharat_cloud::Capability::Etags],
             provider_linked: true
         })
     );

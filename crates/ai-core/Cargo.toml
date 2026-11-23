@@ -1,6 +1,6 @@
 [package]
-name = "craft-ai-core"
-description = "Shared data model for AI connections, roles, requests and jobs across the Craft apps"
+name = "bharat-ai-core"
+description = "Shared data model for AI connections, roles, requests and jobs across the Bharat apps"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

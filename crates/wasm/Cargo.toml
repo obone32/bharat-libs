@@ -1,5 +1,5 @@
 [package]
-name = "craft-wasm"
+name = "bharat-wasm"
 description = "Bounded WebAssembly module/component inspection, validation reports and WAT rendering; never executes code"
 version.workspace = true
 edition.workspace = true
@@ -14,4 +14,4 @@ thiserror = { workspace = true }
 wasmparser = { version = "0.261", default-features = false, features = ["std", "validate", "features", "component-model", "simd"] }
 wasmprinter = { version = "0.261", default-features = false, features = ["component-model"] }
 [dev-dependencies]
-craft-testkit = { workspace = true }
+bharat-testkit = { workspace = true }

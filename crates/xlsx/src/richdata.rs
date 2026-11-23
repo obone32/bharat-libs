@@ -10,9 +10,9 @@
 use std::collections::HashMap;
 use std::fmt::Write as _;
 
-use craft_opc::{Rel, Rels};
-use craft_xml::El;
-use craft_xml::esc;
+use bharat_opc::{Rel, Rels};
+use bharat_xml::El;
+use bharat_xml::esc;
 
 use crate::{Error, Package};
 
@@ -271,7 +271,7 @@ impl Package<'_> {
                 self.warn(format!("missing cell picture {}; its cell keeps its saved value", rel.target));
                 return Ok(None);
             }
-            Err(e) if matches!(e, craft_opc::Error::PackageTooLarge { .. }) => return Err(e.into()),
+            Err(e) if matches!(e, bharat_opc::Error::PackageTooLarge { .. }) => return Err(e.into()),
             Err(e) => {
                 self.warn(format!("cell picture {} not read: {e}; its cell keeps its saved value", rel.target));
                 return Ok(None);
@@ -321,7 +321,7 @@ pub(crate) fn metadata_parts(
     let mut data = format!("{DECL}<rvData xmlns=\"{NS_RICH}\" count=\"{}\">", pictures.len());
     let mut rel_list =
         format!("{DECL}<richValueRels xmlns=\"{NS_RICH_REL}\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">");
-    let mut image_rels = craft_opc::RelsOut::default();
+    let mut image_rels = bharat_opc::RelsOut::default();
     let mut total = 0usize;
     for (i, picture) in pictures.iter().enumerate() {
         total = total.saturating_add(picture.image.len());
@@ -332,7 +332,7 @@ pub(crate) fn metadata_parts(
             .image_type()
             .ok_or_else(|| Error::Invalid("a cell picture must be a PNG or JPEG of at most 8192 pixels a side and 16 million pixels".into()))?;
         let image = fresh("xl/media/cellImage", ext, true);
-        let rid = image_rels.add_new("image", &craft_opc::relative(&rel_part, &image), false);
+        let rid = image_rels.add_new("image", &bharat_opc::relative(&rel_part, &image), false);
         let _ = write!(rel_list, "<rel r:id=\"{rid}\"/>");
         let _ = write!(data, "<rv s=\"0\"><v>{i}</v><v>5</v><v>{}</v></rv>", esc(&picture.alt));
         out.parts.push((image, Some(mime), picture.image.clone()));
@@ -355,7 +355,7 @@ pub(crate) fn metadata_parts(
         out.workbook_rels.push((rt, name.clone()));
         out.parts.push((name, Some(ct), bytes));
     }
-    out.parts.push((craft_opc::rels_path(&rel_part), None, image_rels.to_xml()));
+    out.parts.push((bharat_opc::rels_path(&rel_part), None, image_rels.to_xml()));
     out.parts.push((meta, Some(CT_METADATA), metadata_xml(pictures.len(), dynamic_arrays).into_bytes()));
     Ok(out)
 }

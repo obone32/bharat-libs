@@ -123,7 +123,7 @@ fn collection(fonts: &[Vec<u8>]) -> Vec<u8> {
 
 fn temp(name: &str) -> PathBuf {
     static N: AtomicUsize = AtomicUsize::new(0);
-    let d = std::env::temp_dir().join(format!("craft-font-catalog-{name}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
+    let d = std::env::temp_dir().join(format!("bharat-font-catalog-{name}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
     let _ = std::fs::remove_dir_all(&d);
     std::fs::create_dir_all(&d).unwrap();
     d
@@ -239,7 +239,7 @@ fn macos_and_windows_folders() {
     assert!(dirs.contains(&PathBuf::from("/Users/me/Library/Fonts")));
     assert!(dirs.contains(&root.join("System/Library/AssetsV2/com_apple_MobileAsset_Font7")));
     assert!(!dirs.iter().any(|d| d.ends_with("com_apple_MobileAsset_Other")));
-    assert_eq!(font_store_dir(&env), Some(PathBuf::from("/Users/me/Library/Application Support/Craft Fonts")));
+    assert_eq!(font_store_dir(&env), Some(PathBuf::from("/Users/me/Library/Application Support/Bharat Fonts")));
 
     let env = FontEnv {
         os: Os::Windows,
@@ -251,7 +251,7 @@ fn macos_and_windows_folders() {
         font_dirs(&env),
         vec![PathBuf::from("C:\\Windows").join("Fonts"), PathBuf::from("C:\\Users\\me\\AppData\\Local").join("Microsoft\\Windows\\Fonts")]
     );
-    assert_eq!(font_store_dir(&env), Some(PathBuf::from("C:\\Users\\me\\AppData\\Local").join("Craft Fonts")));
+    assert_eq!(font_store_dir(&env), Some(PathBuf::from("C:\\Users\\me\\AppData\\Local").join("Bharat Fonts")));
     assert_eq!(office_font_dirs(&env).len(), 1);
 }
 
@@ -260,9 +260,9 @@ fn macos_and_windows_folders() {
 #[test]
 fn font_store_folder() {
     let env = FontEnv { os: Os::Unix, home: Some("/home/me".into()), ..Default::default() };
-    assert_eq!(font_store_dir(&env), Some(PathBuf::from("/home/me/.local/share/craft-fonts")));
+    assert_eq!(font_store_dir(&env), Some(PathBuf::from("/home/me/.local/share/bharat-fonts")));
     let env = FontEnv { xdg_data_home: Some("/data".into()), ..env };
-    assert_eq!(font_store_dir(&env), Some(PathBuf::from("/data/craft-fonts")));
+    assert_eq!(font_store_dir(&env), Some(PathBuf::from("/data/bharat-fonts")));
 }
 
 /// The store override wins with or without platform defaults; unsupported platforms have no default store.
@@ -302,7 +302,7 @@ fn system(root: &Path) -> Arc<Catalog> {
         &root.join("home/.local/share/fonts/Variable.ttf"),
         font(&Spec { instances: vec![("Regular", 400.0), ("Thin", 100.0), ("Black", 900.0)], ..spec("Test Variable", "Regular", 400) }),
     );
-    write(&root.join("home/.local/share/craft-fonts/Store/StoreFace.ttf"), font(&spec("Store Face", "Regular", 400)));
+    write(&root.join("home/.local/share/bharat-fonts/Store/StoreFace.ttf"), font(&spec("Store Face", "Regular", 400)));
     let service = root.join("service/.hidden/f1");
     write(&service, font(&Spec { fs_type: 2, ..spec("Service Font", "Regular", 400) }));
     Arc::new(Catalog::new(linux_env(root)).with_font_service(false).with_lister(Arc::new(move || vec![service.clone()])))
@@ -376,7 +376,7 @@ fn installed_and_removed_fonts_are_seen_without_a_restart() {
     assert_eq!(rx.recv_timeout(Duration::from_secs(10)).unwrap(), (Some("New Face".into()), None));
     assert!(cat.generation() > generation);
     // A font store install, then a removal.
-    write(&root.join("home/.local/share/craft-fonts/Later.ttf"), font(&spec("Later", "Regular", 400)));
+    write(&root.join("home/.local/share/bharat-fonts/Later.ttf"), font(&spec("Later", "Regular", 400)));
     assert_eq!(rx.recv_timeout(Duration::from_secs(10)).unwrap(), (Some("New Face".into()), Some("Later".into())));
     assert_eq!(cat.styles("Later")[0].source, Source::Store);
     std::fs::remove_file(root.join("usr/share/fonts/test/new/NewFace.otf")).unwrap();
@@ -561,7 +561,7 @@ fn repeated_name_records_are_bounded_before_pairing() {
 #[test]
 fn a_read_is_capped_where_the_file_has_grown() {
     use crate::catalog::read_capped;
-    let path = std::env::temp_dir().join(format!("craft-font-catalog-cap-{}", std::process::id()));
+    let path = std::env::temp_dir().join(format!("bharat-font-catalog-cap-{}", std::process::id()));
     std::fs::write(&path, b"0123456789").unwrap();
     assert_eq!(read_capped(&path, 10).unwrap(), b"0123456789");
     assert!(matches!(read_capped(&path, 9), Err(FontFileError::TooLarge { size: 10, max: 9 })));

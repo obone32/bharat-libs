@@ -1,6 +1,6 @@
 [package]
-name = "craft-press-print"
-description = "Press-accurate printing for the Craft apps: a PDF page separated into plates, composited into the printer's RGB profile and printed application-managed"
+name = "bharat-press-print"
+description = "Press-accurate printing for the Bharat apps: a PDF page separated into plates, composited into the printer's RGB profile and printed application-managed"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,7 +11,7 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-craft-cms = { workspace = true }
-craft-prepress = { workspace = true }
-craft-print = { workspace = true }
+bharat-cms = { workspace = true }
+bharat-prepress = { workspace = true }
+bharat-print = { workspace = true }
 thiserror = { workspace = true }

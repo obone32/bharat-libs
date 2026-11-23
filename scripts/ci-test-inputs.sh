@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The test inputs the Workspace gate and the nightly full run fetch before their tests: the
 # PhotoCraft test corpora (PSD, PSD tools, ATN, EXR, HEIF, PngSuite) at a pinned PhotoCraft commit,
-# and the licensed PDF test fonts. Exports CRAFT_PSD_CORPUS and CRAFT_PDF_TEST_FONT_DIR through
+# and the licensed PDF test fonts. Exports BHARAT_PSD_CORPUS and BHARAT_PDF_TEST_FONT_DIR through
 # $GITHUB_ENV. Run from the repository root.
 #
 # A corpus already in .test-inputs/photocraft/corpus (restored from the CI cache, which is keyed on
@@ -26,7 +26,7 @@ mkdir -p corpus
 cp -a "$fetcher/corpus/." corpus/
 
 python scripts/test-fetch-pdf-test-fonts.py
-python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/craft-pdf-test-fonts"
+python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/bharat-pdf-test-fonts"
 
-printf 'CRAFT_PSD_CORPUS=%s\n' "$GITHUB_WORKSPACE/$fetcher/corpus" >> "$GITHUB_ENV"
-printf 'CRAFT_PDF_TEST_FONT_DIR=%s\n' "$RUNNER_TEMP/craft-pdf-test-fonts" >> "$GITHUB_ENV"
+printf 'BHARAT_PSD_CORPUS=%s\n' "$GITHUB_WORKSPACE/$fetcher/corpus" >> "$GITHUB_ENV"
+printf 'BHARAT_PDF_TEST_FONT_DIR=%s\n' "$RUNNER_TEMP/bharat-pdf-test-fonts" >> "$GITHUB_ENV"

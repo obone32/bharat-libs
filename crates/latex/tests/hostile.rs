@@ -2,8 +2,8 @@
 //! nesting, column specs and labels are bounded and linear, the export carries no TeX commands
 //! from the document, and text survives a round trip.
 
-use craft_latex::{export, import, linear_to_latex};
-use craft_wordmodel::Document;
+use bharat_latex::{export, import, linear_to_latex};
+use bharat_wordmodel::Document;
 use std::time::{Duration, Instant};
 
 fn text(tex: &str) -> String {
@@ -76,14 +76,14 @@ fn latex_labels_in_a_row_are_read_in_linear_time() {
         assert!(large < small * 8 + Duration::from_millis(50), "{small:?} for 25,000, {large:?} for 100,000");
     }
     let d = import("\\label{one}First \\label{two}second \\label{three}third.".as_bytes());
-    let p = d.para_at(&craft_wordmodel::Pos::body(0, 0)).unwrap();
+    let p = d.para_at(&bharat_wordmodel::Pos::body(0, 0)).unwrap();
     let names: Vec<&str> = p
         .objects
         .iter()
-        .filter_map(|o| if let craft_wordmodel::InlineObject::BookmarkStart { name } = o { Some(name.as_str()) } else { None })
+        .filter_map(|o| if let bharat_wordmodel::InlineObject::BookmarkStart { name } = o { Some(name.as_str()) } else { None })
         .collect();
     assert_eq!(names, ["one", "two", "three"]);
-    assert_eq!(d.plain_text(craft_wordmodel::StoryRef::Body).replace('\u{FFFC}', ""), "First second third.");
+    assert_eq!(d.plain_text(bharat_wordmodel::StoryRef::Body).replace('\u{FFFC}', ""), "First second third.");
 }
 
 /// Empty optional arguments in a row after a definition are skipped in linear time: the text after

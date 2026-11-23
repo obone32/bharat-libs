@@ -1,6 +1,6 @@
 //! `ics_info` and helpers shared by the encoder and decoder (ISO/IEC 14496-3 §4.4.2.1, §4.5.2.3).
 
-use craft_media::bitstream::{BitReader, BitWriter};
+use bharat_media::bitstream::{BitReader, BitWriter};
 
 use crate::aac::mdct::WindowShape;
 use crate::aac::tables::{swb_offsets_long, swb_offsets_short};

@@ -1,10 +1,10 @@
 //! Bounded ZIP handling for dotLottie archives.
 //!
-//! The ZIP implementation delegates to `craft-zip`; this module applies dotLottie's relative
+//! The ZIP implementation delegates to `bharat-zip`; this module applies dotLottie's relative
 //! entry-name rule and caps archive expansion before returning entry bytes.
 
-use craft_zip::{Archive, Error, Writer};
-pub use craft_zip::{Compression, Limits};
+use bharat_zip::{Archive, Error, Writer};
+pub use bharat_zip::{Compression, Limits};
 
 /// Largest entry count accepted from a dotLottie archive.
 pub const MAX_ENTRIES: u64 = 10_000;

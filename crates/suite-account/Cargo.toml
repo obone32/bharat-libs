@@ -1,6 +1,6 @@
 [package]
-name = "craft-suite-account"
-description = "Shared suite-level account store: who is signed in, kept once for the whole Craft suite, with the token in the operating system's keychain"
+name = "bharat-suite-account"
+description = "Shared suite-level account store: who is signed in, kept once for the whole Bharat suite, with the token in the operating system's keychain"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

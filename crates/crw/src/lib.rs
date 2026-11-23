@@ -530,7 +530,7 @@ fn white_level(data: &[u16], bits: u32) -> f32 {
     }
 }
 
-/// White level estimate shared by the Craft raw decoders (LightCraft's `white_from_data`): the
+/// White level estimate shared by the Bharat raw decoders (LightCraft's `white_from_data`): the
 /// saturation plateau if a noticeable number of samples sit at the maximum value, otherwise the
 /// full `bits` range. A few stray samples above the plateau (hot pixels) don't hide it.
 fn saturation_plateau(data: &[u16], bits: u32) -> f32 {

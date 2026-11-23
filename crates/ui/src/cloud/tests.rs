@@ -6,7 +6,7 @@
 
 use std::sync::{Arc, Mutex};
 
-use craft_cloud::{Capability, Entry, EntryKind};
+use bharat_cloud::{Capability, Entry, EntryKind};
 
 use super::*;
 
@@ -406,7 +406,7 @@ fn a_conversation_uses_the_hosts_chat_opener() {
     app.cloud
         .events
         .0
-        .send(Event::Conversation(Ok(craft_cloud::Conversation { url: "https://cloud.example.net/call/room".to_owned(), name: "Talk".to_owned() })))
+        .send(Event::Conversation(Ok(bharat_cloud::Conversation { url: "https://cloud.example.net/call/room".to_owned(), name: "Talk".to_owned() })))
         .unwrap();
 
     pumped(&mut app, &ctx);
@@ -448,9 +448,9 @@ fn a_destination_is_named_after_the_account_it_belongs_to() {
 
 #[test]
 fn the_contracts_own_conflict_is_the_one_a_save_must_not_retry() {
-    assert_eq!(Fault::from(craft_cloud::Error::Conflict("Minutes.note".to_owned())), Fault::Conflict);
-    assert_eq!(Fault::from(craft_cloud::Error::Unauthenticated), Fault::Unauthenticated);
-    assert!(matches!(Fault::from(craft_cloud::Error::Unsupported("sharing")), Fault::Refused(_)));
+    assert_eq!(Fault::from(bharat_cloud::Error::Conflict("Minutes.note".to_owned())), Fault::Conflict);
+    assert_eq!(Fault::from(bharat_cloud::Error::Unauthenticated), Fault::Unauthenticated);
+    assert!(matches!(Fault::from(bharat_cloud::Error::Unsupported("sharing")), Fault::Refused(_)));
 }
 
 #[test]

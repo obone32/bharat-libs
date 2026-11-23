@@ -71,7 +71,7 @@ fn spaces(text: &str, v: &mut Vec<Issue>) {
 mod tests {
     use super::*;
 
-    /// craft-libs#495 review: intentional repeats aren't marked; others still are.
+    /// bharat-libs#495 review: intentional repeats aren't marked; others still are.
     #[test]
     fn intentional_repeats_are_fine() {
         for text in ["Ne ne, to nechci.", "Ano ano, přijdu.", "Už už odcházel.", "To to bylo krásné."] {

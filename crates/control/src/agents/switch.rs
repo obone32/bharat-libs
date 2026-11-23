@@ -9,21 +9,21 @@ use super::agents_allowed;
 /// How often [`AgentSwitch::watch`] reads the launcher's app list.
 pub const POLL: Duration = Duration::from_secs(2);
 
-/// The suite's `AI-MCP` flag (`ArtCraft/flags.toml` or `CRAFT_FLAGS`). Reads the flags file;
+/// The suite's `AI-MCP` flag (`ArtCraft/flags.toml` or `BHARAT_FLAGS`). Reads the flags file;
 /// what could not be read is logged.
 pub fn mcp_flag() -> bool {
-    let flags = craft_flags::load();
+    let flags = bharat_flags::load();
     for problem in &flags.problems {
         log::warn!("flags: {problem}");
     }
-    flags.enabled(&craft_flags::AI_MCP)
+    flags.enabled(&bharat_flags::AI_MCP)
 }
 
-/// The launcher's switch (Settings › AI agents › *Let AI agents use Craft apps*) lets agents use
+/// The launcher's switch (Settings › AI agents › *Let AI agents use Bharat apps*) lets agents use
 /// the app `app_id`: the `AI-MCP` flag is on and the launcher's app list names the app. Reads two
 /// small files; ask from a timer or a command, not every frame ([`AgentSwitch`] does that).
 pub fn launcher_allows(app_id: &str) -> bool {
-    mcp_flag() && craft_ai_agents::allowed(app_id)
+    mcp_flag() && bharat_ai_agents::allowed(app_id)
 }
 
 /// The launcher's switch for one app, watched on a thread so a frame can ask without touching the
@@ -44,7 +44,7 @@ impl AgentSwitch {
         if !flag {
             return Self::fixed(false, false);
         }
-        Self::watch_with(flag, move || craft_ai_agents::allowed(app_id), POLL, wake)
+        Self::watch_with(flag, move || bharat_ai_agents::allowed(app_id), POLL, wake)
     }
 
     /// A switch that never changes: tests, the web, an app without agents.

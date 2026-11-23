@@ -1,6 +1,6 @@
 [package]
-name = "craft-svg-paths"
-description = "The former name of craft-svg's geometry reader, CSS colour parser and SVG writer: re-exports them"
+name = "bharat-svg-paths"
+description = "The former name of bharat-svg's geometry reader, CSS colour parser and SVG writer: re-exports them"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,7 +11,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-svg = { workspace = true }
+bharat-svg = { workspace = true }
 
 [dev-dependencies]
 kurbo = { workspace = true }

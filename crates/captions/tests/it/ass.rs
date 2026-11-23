@@ -1,10 +1,10 @@
 //! SubStation Alpha / Advanced SubStation Alpha: reading, writing, and ffmpeg as the reference
-//! (oracle; skipped when ffmpeg is absent, a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+//! (oracle; skipped when ffmpeg is absent, a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 
-use craft_captions::{Cue, Document, Format, Tick, WriteOptions, detect, parse, write};
+use bharat_captions::{Cue, Document, Format, Tick, WriteOptions, detect, parse, write};
 use std::process::Command;
 
-const T: i64 = craft_captions::TICKS_PER_SECOND;
+const T: i64 = bharat_captions::TICKS_PER_SECOND;
 
 fn cs(n: i64) -> Tick {
     Tick(n * (T / 100))
@@ -79,8 +79,8 @@ const SRT: &str = "1\n00:00:01,500 --> 00:00:03,250\nHello, <i>world</i>\nsecond
 
 #[test]
 fn we_read_what_ffmpeg_writes() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("captions_ass");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("captions_ass");
     let (srt, ass) = (dir.join("in.srt"), dir.join("ffmpeg.ass"));
     std::fs::write(&srt, SRT).expect("write");
     ffmpeg_run(&ff, &["-i", srt.to_str().expect("path"), ass.to_str().expect("path")]);
@@ -97,8 +97,8 @@ fn we_read_what_ffmpeg_writes() {
 
 #[test]
 fn ffmpeg_reads_what_we_write() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("captions_ass");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("captions_ass");
     let mut doc = parse(SRT.as_bytes(), Format::Srt).expect("parse srt");
     doc.cues.push(Cue { start: cs(400_000), end: cs(400_100), text: r"C:\New\notes\hello and \N \n \h".into(), ..Default::default() });
     let (ass, srt) = (dir.join("ours.ass"), dir.join("back.srt"));

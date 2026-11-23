@@ -1,9 +1,9 @@
 //! Decode speed on a 1080p High-profile stream (ignored by default; run with
-//! `cargo test --release -p craft-video --features h264-decode,threads --test h264_decode perf:: -- --ignored --nocapture`).
+//! `cargo test --release -p bharat-video --features h264-decode,threads --test h264_decode perf:: -- --ignored --nocapture`).
 
 use crate::common;
 
-use craft_video::h264::decode::Decoder;
+use bharat_video::h264::decode::Decoder;
 use std::time::Instant;
 
 fn bench(data: &[u8], threads: usize, iters: usize) -> (usize, f64) {

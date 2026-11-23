@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "craft://schemas/link/instance-record/1",
-  "title": "Craft Link instance record",
-  "description": "Written by each running Craft app to <runtime_dir>/craft/<app>-<pid>.json (mode 0600). See PROTOCOL.md.",
+  "title": "Bharat Link instance record",
+  "description": "Written by each running Bharat app to <runtime_dir>/craft/<app>-<pid>.json (mode 0600). See PROTOCOL.md.",
   "type": "object",
   "required": ["v", "app", "app_version", "pid", "instance", "endpoint", "token", "started", "protocol", "docs"],
   "additionalProperties": true,
@@ -22,7 +22,7 @@
         {
           "type": "object",
           "required": ["kind", "name"],
-          "properties": { "kind": { "const": "pipe" }, "name": { "type": "string", "pattern": "^craft-" } }
+          "properties": { "kind": { "const": "pipe" }, "name": { "type": "string", "pattern": "^bharat-" } }
         },
         {
           "type": "object",

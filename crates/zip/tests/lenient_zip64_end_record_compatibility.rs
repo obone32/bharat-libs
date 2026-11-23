@@ -1,6 +1,6 @@
 #![cfg(feature = "lenient")]
-// From Craft Anything crates/formats/tests/zip64_end_record_compatibility.rs.
-use craft_zip::lenient::{self as zip, ZipArchive, ZipError};
+// From Bharat Anything crates/formats/tests/zip64_end_record_compatibility.rs.
+use bharat_zip::lenient::{self as zip, ZipArchive, ZipError};
 #[path = "lenient_common/mod.rs"]
 mod common;
 use common::zip_stored;

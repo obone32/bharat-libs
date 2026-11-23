@@ -3,9 +3,9 @@
 
 use crate::text::tests::{NS_T, content_of, package};
 use crate::text::{export, import};
-use craft_wordmodel::para::InlineObject;
+use bharat_wordmodel::para::InlineObject;
 
-fn open(p: &str) -> craft_wordmodel::Document {
+fn open(p: &str) -> bharat_wordmodel::Document {
     let content = format!(
         r#"<office:document-content {NS_T}><office:automatic-styles><style:style style:name="Ru1" style:family="ruby"><style:ruby-properties style:ruby-position="above" style:ruby-align="center"/></style:style></office:automatic-styles><office:body><office:text>{p}</office:text></office:body></office:document-content>"#
     );
@@ -13,14 +13,14 @@ fn open(p: &str) -> craft_wordmodel::Document {
 }
 
 /// Each ruby: (base, ruby text), and the paragraph's text.
-fn rubies(d: &craft_wordmodel::Document) -> (Vec<(String, String)>, String) {
+fn rubies(d: &bharat_wordmodel::Document) -> (Vec<(String, String)>, String) {
     let p = d.body.iter().find_map(|b| b.as_para()).unwrap();
     let r = p
         .objects
         .iter()
         .filter_map(|o| if let InlineObject::Ruby { base, ruby, .. } = o { Some((base.clone(), ruby.clone())) } else { None })
         .collect();
-    (r, p.text.replace(craft_wordmodel::para::OBJ, "[R]"))
+    (r, p.text.replace(bharat_wordmodel::para::OBJ, "[R]"))
 }
 
 #[test]

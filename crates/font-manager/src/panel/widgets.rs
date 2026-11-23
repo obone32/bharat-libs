@@ -59,13 +59,13 @@ impl Skin {
 
 /// Paints `galley` at the reading start of `rect`, centred vertically.
 pub fn paint_start(ui: &Ui, rect: Rect, galley: Arc<Galley>, color: Color32) {
-    let x = if craft_ui::direction::is_rtl(ui) { rect.right() - galley.size().x } else { rect.left() };
+    let x = if bharat_ui::direction::is_rtl(ui) { rect.right() - galley.size().x } else { rect.left() };
     ui.painter().galley_with_override_text_color(pos2(x, rect.center().y - galley.size().y / 2.0), galley, color);
 }
 
 /// Paints `galley` at the reading end of `rect`, centred vertically.
 pub fn paint_end(ui: &Ui, rect: Rect, galley: Arc<Galley>, color: Color32) {
-    let x = if craft_ui::direction::is_rtl(ui) { rect.left() } else { rect.right() - galley.size().x };
+    let x = if bharat_ui::direction::is_rtl(ui) { rect.left() } else { rect.right() - galley.size().x };
     ui.painter().galley_with_override_text_color(pos2(x, rect.center().y - galley.size().y / 2.0), galley, color);
 }
 
@@ -203,7 +203,7 @@ pub fn cells_column<T: PartialEq + Clone>(ui: &mut Ui, s: &Skin, value: &mut T, 
 pub fn cells_row<T: PartialEq + Clone>(ui: &mut Ui, s: &Skin, value: &mut T, options: &[Cell<'_, T>]) -> bool {
     let p = s.p;
     let mut changed = false;
-    let rtl = craft_ui::direction::is_rtl(ui) || ui.layout().prefer_right_to_left();
+    let rtl = bharat_ui::direction::is_rtl(ui) || ui.layout().prefer_right_to_left();
     let mut rects = Vec::with_capacity(options.len());
     ui.scope(|ui| {
         ui.spacing_mut().item_spacing.x = 0.0;
@@ -258,7 +258,7 @@ pub fn badge(ui: &mut Ui, s: &Skin, text: &str, color: Color32, dot: bool) -> Re
     let dot_w = if dot { 12.0 } else { 0.0 };
     let (rect, resp) = ui.allocate_exact_size(vec2(galley.size().x + 16.0 + dot_w, 22.0), Sense::hover());
     ui.painter().rect(rect, s.look.corner, s.p.sunken, s.hairline(), StrokeKind::Inside);
-    let rtl = craft_ui::direction::is_rtl(ui);
+    let rtl = bharat_ui::direction::is_rtl(ui);
     let inner = rect.shrink2(vec2(8.0, 0.0));
     if dot {
         let x = if rtl { inner.right() - 3.0 } else { inner.left() + 3.0 };
@@ -274,7 +274,7 @@ pub fn badge(ui: &mut Ui, s: &Skin, text: &str, color: Color32, dot: bool) -> Re
 pub fn progress_bar(ui: &Ui, s: &Skin, rect: Rect, fraction: Option<f32>) {
     let painter = ui.painter();
     painter.rect_filled(rect, egui::CornerRadius::ZERO, s.p.line);
-    let rtl = craft_ui::direction::is_rtl(ui);
+    let rtl = bharat_ui::direction::is_rtl(ui);
     match fraction {
         Some(f) => {
             let w = rect.width() * f.clamp(0.0, 1.0);
@@ -354,7 +354,7 @@ pub fn name(ui: &Ui, resp: &Response, label: &str) {
 /// A single-line field `width` wide, named `label`, with a search glyph at its start when
 /// `search`.
 pub fn field(ui: &mut Ui, s: &Skin, text: &mut String, hint: &str, label: &str, width: f32, search: bool) -> Response {
-    let rtl = craft_ui::direction::is_rtl(ui);
+    let rtl = bharat_ui::direction::is_rtl(ui);
     let pad = if search { 34.0 } else { 10.0 };
     let margin = if rtl {
         egui::Margin { left: 10, right: pad as i8, top: 0, bottom: 0 }
@@ -384,8 +384,8 @@ pub fn select<R>(ui: &mut Ui, id_salt: &str, label: &str, selected: &str, width:
 }
 
 /// The combo box of [`select`], for a menu with a header; name its response with [`name`].
-pub fn select_box<'a>(id_salt: &str, selected: &'a str, width: f32) -> craft_ui::ComboBox<'a> {
-    craft_ui::ComboBox::from_id_salt(id_salt).selected_text(selected).width(width).height(380.0).truncate()
+pub fn select_box<'a>(id_salt: &str, selected: &'a str, width: f32) -> bharat_ui::ComboBox<'a> {
+    bharat_ui::ComboBox::from_id_salt(id_salt).selected_text(selected).width(width).height(380.0).truncate()
 }
 
 /// An inline note in a sunken, hairline box: an info glyph, then `add`.
@@ -397,7 +397,7 @@ pub fn note<R>(ui: &mut Ui, s: &Skin, add: impl FnOnce(&mut Ui) -> R) -> R {
         .inner_margin(egui::Margin { left: 14, right: 12, top: 10, bottom: 10 })
         .show(ui, |ui| {
             ui.set_width(ui.available_width());
-            craft_ui::direction::horizontal(ui, |ui| {
+            bharat_ui::direction::horizontal(ui, |ui| {
                 let (rect, _) = ui.allocate_exact_size(vec2(16.0, s.h().min(28.0)), Sense::hover());
                 glyph(ui.painter(), Glyph::Info, rect.center(), 14.0, s.p.muted);
                 ui.add_space(4.0);
@@ -416,11 +416,11 @@ pub fn note_with_actions(ui: &mut Ui, s: &Skin, add: impl FnOnce(&mut Ui), butto
         buttons.iter().map(|b| s.button_galley(ui, b, s.p.ink).size().x + 28.0 + gap).sum::<f32>() + if closable { 28.0 + gap } else { 0.0 };
     note(ui, s, |ui| {
         let text_w = (ui.available_width() - actions_w - 8.0).max(120.0);
-        ui.allocate_ui_with_layout(vec2(text_w, 0.0), craft_ui::direction::column(ui), |ui| {
+        ui.allocate_ui_with_layout(vec2(text_w, 0.0), bharat_ui::direction::column(ui), |ui| {
             ui.spacing_mut().item_spacing.y = 2.0;
             add(ui);
         });
-        ui.allocate_ui_with_layout(vec2(ui.available_width(), 28.0), craft_ui::direction::trailing(ui), |ui| {
+        ui.allocate_ui_with_layout(vec2(ui.available_width(), 28.0), bharat_ui::direction::trailing(ui), |ui| {
             ui.spacing_mut().item_spacing.x = gap;
             if closable {
                 button(ui, buttons.len());

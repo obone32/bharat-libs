@@ -1,8 +1,8 @@
 //! The typed OBJECTS records and dimension style overrides.
 
-use craft_dxf::model::objects::{DimAssoc, Group, ImageDef, MLineStyle, PlotSettings, Scale, SortEntsTable, SpatialFilter, dim_overrides};
-use craft_dxf::model::{Color, Document, Entity, EntityKind};
-use craft_dxf::{Tag, parse};
+use bharat_dxf::model::objects::{DimAssoc, Group, ImageDef, MLineStyle, PlotSettings, Scale, SortEntsTable, SpatialFilter, dim_overrides};
+use bharat_dxf::model::{Color, Document, Entity, EntityKind};
+use bharat_dxf::{Tag, parse};
 
 fn tags(text: &str) -> Vec<Tag> {
     let lines: Vec<&str> = text.split(['\n', '|']).map(str::trim).filter(|l| !l.is_empty()).map(|l| if l == "~" { "" } else { l }).collect();

@@ -1,12 +1,12 @@
-# craft-crw
+# bharat-crw
 
-A clean-room Canon CRW (CIFF) raw decoder for the Craft apps: the raw format of Canon's bodies
+A clean-room Canon CRW (CIFF) raw decoder for the Bharat apps: the raw format of Canon's bodies
 before the CR2 era (EOS D30, D60, 10D, 300D / Digital Rebel; PowerShot G1 and G6). No `unsafe`,
 no panics on malformed input, and it builds for `wasm32-unknown-unknown`. The only dependency is
 `thiserror`.
 
 ```toml
-craft-crw = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-crw = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 The container (a CIFF heap file) follows Canon's published CIFF specification and ExifTool's prose
@@ -37,9 +37,9 @@ been seen in the wild. CHDK sensor dumps named `.CRW` are a different format and
 ## Use
 
 ```rust
-use craft_crw::{decode, header, probe, Error, Limits};
+use bharat_crw::{decode, header, probe, Error, Limits};
 
-if craft_crw::probe(&bytes) {
+if bharat_crw::probe(&bytes) {
     let img = decode(&bytes, &Limits::default())?;
     let h = &img.header;
     // h.width × h.height samples, h.bits deep, Bayer phase h.cfa at sensor (0, 0);
@@ -102,11 +102,11 @@ end-of-block code.
 ### Performance
 
 About 60 ms for a 6.5 MP EOS file and 70 ms for the 7.4 MP G6 in release mode on a 2024 laptop
-(`cargo test -p craft-crw --release --test samples -- --nocapture` prints the times).
+(`cargo test -p bharat-crw --release --test samples -- --nocapture` prints the times).
 
 ## Tests
 
-- `cargo test -p craft-crw`: synthetic CIFF files round-tripped through a test-only encoder (the
+- `cargo test -p bharat-crw`: synthetic CIFF files round-tripped through a test-only encoder (the
   model's inverse), the frozen tables' structure (prefix-free, all 162 symbols), hostile inputs
   (every truncation and byte mutation of a valid file, self-referencing heaps), and a proptest
   mutation sweep (`tests/robust.rs`). None needs sample files.
@@ -117,13 +117,13 @@ About 60 ms for a 6.5 MP EOS file and 70 ms for the 7.4 MP G6 in release mode on
 
   ```sh
   python scripts/fetch-crw-samples.py ~/crw-samples        # downloads and verifies by SHA-256
-  CRAFT_CRW_SAMPLES=~/crw-samples cargo test -p craft-crw --release --test samples -- --nocapture
+  BHARAT_CRW_SAMPLES=~/crw-samples cargo test -p bharat-crw --release --test samples -- --nocapture
   ```
 
-  Unset, the test prints that it skipped; CI sets `CRAFT_CRW_REQUIRE_SAMPLES=1` and runs it on
+  Unset, the test prints that it skipped; CI sets `BHARAT_CRW_REQUIRE_SAMPLES=1` and runs it on
   Linux (`.github/workflows/crw.yml`; lint and the synthetic tests run on Linux, Windows and
   macOS, plus a wasm32 check).
-- `CRAFT_CRW_ORACLE=<dir>` additionally compares against `<name>.crw.tiff` references next to the
+- `BHARAT_CRW_ORACLE=<dir>` additionally compares against `<name>.crw.tiff` references next to the
   files (the reference decoder's `unprocessed_raw -T` output), the check the derivation used.
   Those references are not distributable and stay outside the repository.
 

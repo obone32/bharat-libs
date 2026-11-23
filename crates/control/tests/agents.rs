@@ -9,13 +9,13 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use craft_control::agents::{
+use bharat_control::agents::{
     AgentSettings, AgentSwitch, CONNECTION_FILE, Connection, Consent, HeadlessFolders, Live, LiveConfig, Route, TOKEN_FILE, WhenAppClosed, Window,
     agents_allowed, find_window, read_connection, remove_connection, remove_stale_connection, write_connection,
 };
 
 fn temp_dir(tag: &str) -> tempfile::TempDir {
-    tempfile::Builder::new().prefix(&format!("craft-agents-{tag}-")).tempdir().expect("a temp dir")
+    tempfile::Builder::new().prefix(&format!("bharat-agents-{tag}-")).tempdir().expect("a temp dir")
 }
 
 /// Waits up to five seconds for `done`.

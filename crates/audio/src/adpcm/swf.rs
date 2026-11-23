@@ -10,7 +10,7 @@
 //! be shorter.
 
 use super::{Error, Result, clip16, step_at};
-use craft_media::bitstream::{BitReader, BitWriter};
+use bharat_media::bitstream::{BitReader, BitWriter};
 
 /// Samples per channel in a full block.
 pub const BLOCK_SAMPLES: usize = 4096;

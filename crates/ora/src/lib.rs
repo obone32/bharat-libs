@@ -16,7 +16,7 @@
 #[cfg(test)]
 mod tests;
 
-use craft_xml::El;
+use bharat_xml::El;
 
 /// Why an OpenRaster document was not read or written.
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
@@ -82,7 +82,7 @@ pub const SVG_COMPOSITE_OPS: [&str; 15] = [
 /// bytes, which is how OpenRaster (and Krita, OpenDocument, EPUB) mark their archives so the
 /// type is readable without unzipping.
 pub fn zip_mimetype(bytes: &[u8]) -> Option<&[u8]> {
-    craft_zip::stored_mimetype(bytes)
+    bharat_zip::stored_mimetype(bytes)
 }
 
 /// `true` for an OpenRaster archive (by its `mimetype` entry).
@@ -260,10 +260,10 @@ impl Image {
         if std::str::from_utf8(xml).is_err() {
             return Err(invalid("stack.xml is not UTF-8"));
         }
-        let options = craft_xml::Options {
-            doctype: craft_xml::Doctype::Reject,
-            limits: craft_xml::Limits { max_input: MAX_STACK_XML, max_depth: MAX_XML_DEPTH, ..craft_xml::Limits::DEFAULT },
-            ..craft_xml::Options::local().strict()
+        let options = bharat_xml::Options {
+            doctype: bharat_xml::Doctype::Reject,
+            limits: bharat_xml::Limits { max_input: MAX_STACK_XML, max_depth: MAX_XML_DEPTH, ..bharat_xml::Limits::DEFAULT },
+            ..bharat_xml::Options::local().strict()
         };
         let image = options.parse(xml).map_err(|e| invalid(format!("stack.xml: {e}")))?;
         if image.name != "image" {
@@ -309,7 +309,7 @@ impl Image {
     pub fn to_xml(&self) -> String {
         let mut xml = format!(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<image version=\"{}\" w=\"{}\" h=\"{}\" xres=\"{}\" yres=\"{}\"><stack>",
-            craft_xml::esc_attr(self.version.as_deref().unwrap_or(VERSION)),
+            bharat_xml::esc_attr(self.version.as_deref().unwrap_or(VERSION)),
             self.width,
             self.height,
             self.xres,
@@ -323,14 +323,14 @@ impl Image {
                     xml.push_str("<layer");
                     push_props(&mut xml, &l.props);
                     if let Some(src) = &l.src {
-                        xml.push_str(&format!(" src=\"{}\"", craft_xml::esc_attr(src)));
+                        xml.push_str(&format!(" src=\"{}\"", bharat_xml::esc_attr(src)));
                     }
                     xml.push_str(&format!(" x=\"{}\" y=\"{}\"/>", l.x, l.y));
                 }
                 Some(Node::Stack(s)) => {
                     xml.push_str("<stack");
                     push_props(&mut xml, &s.props);
-                    xml.push_str(&format!(" isolation=\"{}\">", craft_xml::esc_attr(s.isolation.as_deref().unwrap_or("isolate"))));
+                    xml.push_str(&format!(" isolation=\"{}\">", bharat_xml::esc_attr(s.isolation.as_deref().unwrap_or("isolate"))));
                     open.push(s.children.iter());
                 }
                 Some(Node::Other { .. }) => {}
@@ -346,10 +346,10 @@ impl Image {
 
 fn push_props(xml: &mut String, p: &Props) {
     if let Some(name) = &p.name {
-        xml.push_str(&format!(" name=\"{}\"", craft_xml::esc_attr(name)));
+        xml.push_str(&format!(" name=\"{}\"", bharat_xml::esc_attr(name)));
     }
     xml.push_str(&format!(" visibility=\"{}\" opacity=\"{}\"", if p.visible { "visible" } else { "hidden" }, p.opacity));
-    xml.push_str(&format!(" composite-op=\"{}\"", craft_xml::esc_attr(p.composite_op.as_deref().unwrap_or("svg:src-over"))));
+    xml.push_str(&format!(" composite-op=\"{}\"", bharat_xml::esc_attr(p.composite_op.as_deref().unwrap_or("svg:src-over"))));
     if p.edit_locked {
         xml.push_str(" edit-locked=\"true\"");
     }
@@ -360,7 +360,7 @@ fn push_props(xml: &mut String, p: &Props) {
 
 /// An open OpenRaster archive: the parsed `stack.xml` and access to the archive's entries.
 pub struct Archive<'a> {
-    zip: craft_zip::Archive<'a>,
+    zip: bharat_zip::Archive<'a>,
     image: Image,
 }
 
@@ -373,7 +373,7 @@ impl<'a> Archive<'a> {
     /// [`Archive::open`], allowing the entries read from the archive to expand to
     /// `max_total_bytes` together ([`MAX_TOTAL`] is the default).
     pub(crate) fn open_with_total(bytes: &'a [u8], max_total_bytes: u64) -> Result<Archive<'a>> {
-        let mut zip = craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes }).map_err(zip_error)?;
+        let mut zip = bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes }).map_err(zip_error)?;
         // `zip` keeps one entry of a repeated name; which one the writer meant is not known.
         if zip.has_duplicate_names() {
             return Err(invalid("two entries of the archive share a name"));
@@ -399,21 +399,21 @@ impl<'a> Archive<'a> {
     }
 }
 
-fn read(zip: &mut craft_zip::Archive<'_>, name: &str, max: usize) -> Result<Option<Vec<u8>>> {
+fn read(zip: &mut bharat_zip::Archive<'_>, name: &str, max: usize) -> Result<Option<Vec<u8>>> {
     zip.read(name, max as u64).map_err(zip_error)
 }
 
-fn write_error(e: craft_zip::Error) -> Error {
+fn write_error(e: bharat_zip::Error) -> Error {
     match e {
-        craft_zip::Error::Write(m) => Error::Write(m),
+        bharat_zip::Error::Write(m) => Error::Write(m),
         e => Error::Write(e.to_string()),
     }
 }
 
-fn zip_error(e: craft_zip::Error) -> Error {
+fn zip_error(e: bharat_zip::Error) -> Error {
     match e {
-        craft_zip::Error::NotZip(m) => invalid(m),
-        craft_zip::Error::EntryTooLarge { name, limit } => invalid(format!("{name}: larger than {limit} bytes")),
+        bharat_zip::Error::NotZip(m) => invalid(m),
+        bharat_zip::Error::EntryTooLarge { name, limit } => invalid(format!("{name}: larger than {limit} bytes")),
         e => invalid(e.to_string()),
     }
 }
@@ -421,7 +421,7 @@ fn zip_error(e: craft_zip::Error) -> Error {
 /// Writes an OpenRaster archive. Entries are stored (PNG is already compressed), in the order
 /// they are added, after the `mimetype`.
 pub struct Writer {
-    zip: craft_zip::Writer,
+    zip: bharat_zip::Writer,
     failed: Option<Error>,
 }
 
@@ -435,7 +435,7 @@ impl Writer {
     /// An archive holding the `mimetype`: it must be the first entry, stored, so the type is
     /// readable at a fixed offset.
     pub fn new() -> Writer {
-        let mut w = Writer { zip: craft_zip::Writer::new(), failed: None };
+        let mut w = Writer { zip: bharat_zip::Writer::new(), failed: None };
         w.failed = w.add("mimetype", MIMETYPE).err();
         w
     }
@@ -444,7 +444,7 @@ impl Writer {
     /// (the whole image, which the specification requires) or `Thumbnails/thumbnail.png` (at
     /// most 256 pixels a side, also required).
     pub fn add(&mut self, name: &str, data: &[u8]) -> Result<()> {
-        self.zip.add(name, data, craft_zip::Compression::Stored).map_err(write_error)
+        self.zip.add(name, data, bharat_zip::Compression::Stored).map_err(write_error)
     }
 
     /// Adds `stack.xml` for `image`.

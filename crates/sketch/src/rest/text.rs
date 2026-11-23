@@ -212,7 +212,7 @@ fn installed(cx: &mut Cx, ps: &str) -> Option<(String, String)> {
 /// fonts ignoring spaces. Apple's system fonts take the SF Pro names, PingFang its own.
 pub(crate) fn font_name(ps: &str) -> (String, String) {
     let (family, style) = ps.split_once('-').unwrap_or((ps, ""));
-    let style = if style.is_empty() { "Regular".to_string() } else { craft_figma_rest::style_name(style) };
+    let style = if style.is_empty() { "Regular".to_string() } else { bharat_figma_rest::style_name(style) };
     let family = match family {
         "" => "Helvetica".to_string(),
         ".SFNSText" | ".SFUIText" | "SanFranciscoText" | ".SFProText" => "SF Pro Text".into(),

@@ -1,8 +1,8 @@
 //! TTML / DFXP export must not overflow for cue times near `i64::MAX` (e.g. from an MCC with a
 //! huge timecode).
 
-use craft_captions::Tick;
-use craft_captions::{Cue, Document, Format, WriteOptions, write};
+use bharat_captions::Tick;
+use bharat_captions::{Cue, Document, Format, WriteOptions, write};
 
 fn doc(end: Tick) -> Document {
     Document { cues: vec![Cue { start: Tick(0), end, text: "x".into(), ..Cue::default() }], ..Document::default() }

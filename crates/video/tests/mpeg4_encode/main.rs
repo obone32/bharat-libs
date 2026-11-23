@@ -4,7 +4,7 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use craft_video::mpeg4::{ColorConfig, Encoder, EncoderConfig, Error, Packet, RateControl, YuvFrame};
+use bharat_video::mpeg4::{ColorConfig, Encoder, EncoderConfig, Error, Packet, RateControl, YuvFrame};
 
 struct Yuv {
     w: usize,
@@ -60,11 +60,11 @@ fn synth(w: usize, h: usize, t: usize) -> Yuv {
 }
 
 fn ffmpeg() -> Option<PathBuf> {
-    craft_media_testkit::ffmpeg_or_skip("mpeg4 encoder oracle")
+    bharat_media_testkit::ffmpeg_or_skip("mpeg4 encoder oracle")
 }
 
 fn out_dir(name: &str) -> PathBuf {
-    craft_media_testkit::fixtures_dir(&format!("mpeg4enc/{name}"))
+    bharat_media_testkit::fixtures_dir(&format!("mpeg4enc/{name}"))
 }
 
 fn write_stream(path: &Path, packets: &[Packet]) {
@@ -186,7 +186,7 @@ fn bitrate_mode_lands_near_the_target() {
 
 #[test]
 fn ffprobe_reads_the_configuration() {
-    let Some(ff) = craft_media_testkit::ffprobe() else { return };
+    let Some(ff) = bharat_media_testkit::ffprobe() else { return };
     let mut cfg = EncoderConfig::new(352, 288, 30000, 1001);
     cfg.sar = (12, 11);
     cfg.color = Some(ColorConfig { primaries: 6, transfer: 6, matrix: 6, full_range: false });
@@ -328,7 +328,7 @@ fn extreme_content_at_the_finest_quantiser() {
 /// decodes with Xvid's IDCT.
 #[test]
 fn packets_play_from_an_avi_file() {
-    use craft_media::avi::{AviWriter, MuxOptions, StreamSpec, VideoSpec};
+    use bharat_media::avi::{AviWriter, MuxOptions, StreamSpec, VideoSpec};
     let Some(ff) = ffmpeg() else { return };
     let mut cfg = EncoderConfig::new(160, 96, 25, 1);
     cfg.keyint = 10;

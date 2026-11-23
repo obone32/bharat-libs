@@ -1,5 +1,5 @@
 [package]
-name = "craft-media-source"
+name = "bharat-media-source"
 description = "Compositor MediaSource trait and a pluggable open_bytes / open_reader registry"
 version.workspace = true
 edition.workspace = true
@@ -11,11 +11,11 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-audio = { workspace = true }
-craft-color = { workspace = true }
-craft-frame = { workspace = true }
-craft-media = { workspace = true }
-craft-time = { workspace = true }
+bharat-audio = { workspace = true }
+bharat-color = { workspace = true }
+bharat-frame = { workspace = true }
+bharat-media = { workspace = true }
+bharat-time = { workspace = true }
 serde = { workspace = true }
 thiserror = { workspace = true }
 

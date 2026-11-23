@@ -1,8 +1,8 @@
 //! The memory budget of `DecodeOptions`: a frame whose samples (decoded tiles plus the assembled
 //! frame, and the same for an auxiliary alpha frame) do not fit is refused before any allocation.
 
-use craft_video::apv::header::{PBU_ALPHA_FRAME, PBU_PRIMARY_FRAME, write_frame_header};
-use craft_video::apv::*;
+use bharat_video::apv::header::{PBU_ALPHA_FRAME, PBU_PRIMARY_FRAME, write_frame_header};
+use bharat_video::apv::*;
 
 const W: u32 = 64;
 const H: u32 = 32;

@@ -46,7 +46,7 @@ mod tests {
         assert!(s.iter().any(|x| x == want), "{word} → {s:?}, want {want}");
     }
 
-    /// Craft-proof bug (French `jadore` → `j’adore`): an Italian elision the dictionary knows
+    /// Bharat-proof bug (French `jadore` → `j’adore`): an Italian elision the dictionary knows
     /// (`l'acqua`, `dell'anno`) is offered before the missing space, in the writer's case.
     #[test]
     fn a_missing_elision_apostrophe_is_offered_first() {

@@ -8,43 +8,43 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
-repository = "https://github.com/storytold/craft-libs"
+repository = "https://github.com/obone32/bharat-libs"
 
 [workspace.dependencies]
-craft-xfa = { path = "crates/xfa" }
-craft-evm = { path = "crates/evm" }
-craft-java-class = { path = "crates/java-class" }
-craft-sourcemap = { path = "crates/sourcemap" }
-craft-pcap = { path = "crates/pcap" }
-craft-har = { path = "crates/har" }
-craft-xfdf = { path = "crates/xfdf" }
-craft-jsonc = { path = "crates/jsonc" }
-craft-palette = { path = "crates/palette" }
-craft-score = { path = "crates/score" }
-craft-shx = { path = "crates/shx" }
-craft-http-url = { path = "crates/http-url" }
-craft-usd = { path = "crates/usd" }
-craft-smime = { path = "crates/smime" }
-craft-ssip = { path = "crates/ssip" }
-craft-ber = { path = "crates/ber" }
-craft-proto = { path = "crates/proto" }
-craft-render-parity = { path = "crates/render-parity" }
+bharat-xfa = { path = "crates/xfa" }
+bharat-evm = { path = "crates/evm" }
+bharat-java-class = { path = "crates/java-class" }
+bharat-sourcemap = { path = "crates/sourcemap" }
+bharat-pcap = { path = "crates/pcap" }
+bharat-har = { path = "crates/har" }
+bharat-xfdf = { path = "crates/xfdf" }
+bharat-jsonc = { path = "crates/jsonc" }
+bharat-palette = { path = "crates/palette" }
+bharat-score = { path = "crates/score" }
+bharat-shx = { path = "crates/shx" }
+bharat-http-url = { path = "crates/http-url" }
+bharat-usd = { path = "crates/usd" }
+bharat-smime = { path = "crates/smime" }
+bharat-ssip = { path = "crates/ssip" }
+bharat-ber = { path = "crates/ber" }
+bharat-proto = { path = "crates/proto" }
+bharat-render-parity = { path = "crates/render-parity" }
 acadrust = "=0.6.6"
 log = "0.4"
-# internal: add each crate here as `craft-<name> = { path = "crates/<name>" }`
-craft-plist = { path = "crates/plist" }
-craft-wasm = { path = "crates/wasm" }
-craft-platform = { path = "crates/platform" }
-craft-aep = { path = "crates/aep" }
-craft-affinity = { path = "crates/affinity" }
-craft-ai = { path = "crates/ai" }
-craft-ai-core = { path = "crates/ai-core" }
-craft-anicraft-format = { path = "crates/anicraft-format" }
-craft-pdf = { path = "crates/pdf", version = "=0.1.0" }
-craft-pe = { path = "crates/pe" }
-craft-ps = { path = "crates/ps", version = "=0.1.0" }
-craft-pdn = { path = "crates/pdn" }
-craft-plate-test = { path = "crates/plate-test" }
+# internal: add each crate here as `bharat-<name> = { path = "crates/<name>" }`
+bharat-plist = { path = "crates/plist" }
+bharat-wasm = { path = "crates/wasm" }
+bharat-platform = { path = "crates/platform" }
+bharat-aep = { path = "crates/aep" }
+bharat-affinity = { path = "crates/affinity" }
+bharat-ai = { path = "crates/ai" }
+bharat-ai-core = { path = "crates/ai-core" }
+bharat-anicraft-format = { path = "crates/anicraft-format" }
+bharat-pdf = { path = "crates/pdf", version = "=0.1.0" }
+bharat-pe = { path = "crates/pe" }
+bharat-ps = { path = "crates/ps", version = "=0.1.0" }
+bharat-pdn = { path = "crates/pdn" }
+bharat-plate-test = { path = "crates/plate-test" }
 pdf-writer = "0.15"
 miniz_oxide = "0.8"
 weezl = "0.1"
@@ -56,165 +56,165 @@ hayro-syntax = { version = "=0.7.2", default-features = false, features = ["std"
 bytemuck = "1"
 kurbo = "0.13"
 thiserror = "2"
-craft-gzip = { path = "crates/gzip" }
-craft-gridcraft-format = { path = "crates/gridcraft-format" }
-craft-aaf = { path = "crates/aaf" }
-craft-atomic = { path = "crates/atomic" }
-# The ArtCraft Launcher's app list for AI agents (storytold/craft-ai-integrations, crates/ai-agents).
-craft-ai-agents = { git = "https://github.com/storytold/craft-ai-integrations", rev = "35e0352666a117407d62230a6c6c2366f3e21a3b" }
-craft-dex = { path = "crates/dex" }
-craft-xtask = { path = "crates/xtask" }
-craft-captions = { path = "crates/captions" }
-craft-cfb = { path = "crates/cfb" }
-craft-codepage = { path = "crates/codepage" }
-craft-cms = { path = "crates/cms" }
-craft-cloud = { path = "crates/cloud" }
-craft-cloud-local = { path = "crates/cloud-local" }
-craft-color = { path = "crates/color" }
-craft-frame = { path = "crates/frame" }
-craft-crs = { path = "crates/crs" }
-craft-crw = { path = "crates/crw" }
-craft-csv = { path = "crates/csv" }
-craft-dav = { path = "crates/dav" }
-craft-dialogs = { path = "crates/dialogs" }
-craft-doc-binary = { path = "crates/doc-binary" }
-craft-docx = { path = "crates/docx" }
-craft-document-bundle = { path = "crates/document-bundle" }
-craft-mcmat = { path = "crates/mcmat" }
-craft-deckcraft-format = { path = "crates/deckcraft-format" }
-craft-designcraft-format = { path = "crates/designcraft-format" }
-craft-dxf = { path = "crates/dxf" }
-craft-drawingml = { path = "crates/drawingml" }
-craft-eps = { path = "crates/eps" }
-craft-elf = { path = "crates/elf" }
-craft-file-formats = { path = "crates/file-formats" }
-craft-file-import = { path = "crates/file-import" }
+bharat-gzip = { path = "crates/gzip" }
+bharat-gridcraft-format = { path = "crates/gridcraft-format" }
+bharat-aaf = { path = "crates/aaf" }
+bharat-atomic = { path = "crates/atomic" }
+# The ArtCraft Launcher's app list for AI agents (storytold/bharat-ai-integrations, crates/ai-agents).
+bharat-ai-agents = { git = "https://github.com/storytold/bharat-ai-integrations", rev = "35e0352666a117407d62230a6c6c2366f3e21a3b" }
+bharat-dex = { path = "crates/dex" }
+bharat-xtask = { path = "crates/xtask" }
+bharat-captions = { path = "crates/captions" }
+bharat-cfb = { path = "crates/cfb" }
+bharat-codepage = { path = "crates/codepage" }
+bharat-cms = { path = "crates/cms" }
+bharat-cloud = { path = "crates/cloud" }
+bharat-cloud-local = { path = "crates/cloud-local" }
+bharat-color = { path = "crates/color" }
+bharat-frame = { path = "crates/frame" }
+bharat-crs = { path = "crates/crs" }
+bharat-crw = { path = "crates/crw" }
+bharat-csv = { path = "crates/csv" }
+bharat-dav = { path = "crates/dav" }
+bharat-dialogs = { path = "crates/dialogs" }
+bharat-doc-binary = { path = "crates/doc-binary" }
+bharat-docx = { path = "crates/docx" }
+bharat-document-bundle = { path = "crates/document-bundle" }
+bharat-mcmat = { path = "crates/mcmat" }
+bharat-deckcraft-format = { path = "crates/deckcraft-format" }
+bharat-designcraft-format = { path = "crates/designcraft-format" }
+bharat-dxf = { path = "crates/dxf" }
+bharat-drawingml = { path = "crates/drawingml" }
+bharat-eps = { path = "crates/eps" }
+bharat-elf = { path = "crates/elf" }
+bharat-file-formats = { path = "crates/file-formats" }
+bharat-file-import = { path = "crates/file-import" }
 vectorcraft-doc = { git = "https://github.com/storytold/vectorcraft.git", rev = "6b3a6b8788ebcb420d69449199cbdf323888d27e" }
 vectorcraft-eps = { git = "https://github.com/storytold/vectorcraft.git", rev = "6b3a6b8788ebcb420d69449199cbdf323888d27e" }
 vectorcraft-geom = { git = "https://github.com/storytold/vectorcraft.git", rev = "6b3a6b8788ebcb420d69449199cbdf323888d27e" }
 vectorcraft-pathops = { git = "https://github.com/storytold/vectorcraft.git", rev = "6b3a6b8788ebcb420d69449199cbdf323888d27e" }
-craft-doc = { path = "crates/doc" }
-craft-docpath = { path = "crates/docpath" }
-craft-dpx = { path = "crates/dpx" }
-craft-dwg = { path = "crates/dwg" }
-craft-fcproj-format = { path = "crates/fcproj-format" }
-craft-ecproj-format = { path = "crates/ecproj-format" }
-craft-esign = { path = "crates/esign" }
-craft-figma-rest = { path = "crates/figma-rest" }
-craft-exr = { path = "crates/exr" }
-craft-flags = { path = "crates/flags" }
-craft-font-catalog = { path = "crates/font-catalog" }
-craft-font-manager = { path = "crates/font-manager" }
-craft-font-store = { path = "crates/font-store" }
-craft-gainmap = { path = "crates/gainmap" }
-craft-flow = { path = "crates/flow" }
-craft-gcode = { path = "crates/gcode" }
-craft-gif = { path = "crates/gif" }
-craft-hdr = { path = "crates/hdr" }
-craft-mesh = { path = "crates/mesh" }
-craft-html = { path = "crates/html" }
-craft-heif = { path = "crates/heif" }
-craft-fig = { path = "crates/fig" }
-craft-fonts-build = { path = "crates/fonts-build" }
-craft-i18n = { path = "crates/i18n" }
-craft-ipc = { path = "crates/ipc" }
-craft-idml = { path = "crates/idml" }
-craft-indd = { path = "crates/indd" }
-craft-jmap = { path = "crates/jmap" }
-craft-ical = { path = "crates/ical" }
-craft-jpeg = { path = "crates/jpeg" }
-craft-control-protocol = { path = "crates/control-protocol" }
-craft-jsonrpc = { path = "crates/jsonrpc" }
-craft-mcp = { path = "crates/mcp" }
-craft-jxl = { path = "crates/jxl" }
-craft-kiwi = { path = "crates/kiwi" }
-craft-keymap = { path = "crates/keymap" }
-craft-assuan = { path = "crates/assuan" }
-craft-kra = { path = "crates/kra" }
-craft-audio = { path = "crates/audio" }
-craft-latex = { path = "crates/latex" }
-craft-markdown = { path = "crates/markdown" }
-craft-macho = { path = "crates/macho" }
-craft-math = { path = "crates/math" }
-# No default features: craft-audio turns on the craft-media modules each of its features needs.
-craft-media = { path = "crates/media", default-features = false }
-craft-media-source = { path = "crates/media-source" }
-craft-materialx = { path = "crates/materialx" }
-craft-media-testkit = { path = "crates/media-testkit" }
-craft-midi = { path = "crates/midi" }
-craft-sf2 = { path = "crates/sf2" }
-craft-mime = { path = "crates/mime" }
-craft-odf = { path = "crates/odf" }
-craft-ods = { path = "crates/ods" }
-craft-prc = { path = "crates/prc" }
-craft-lottie = { path = "crates/lottie" }
-craft-menu = { path = "crates/menu" }
-craft-metafile = { path = "crates/metafile" }
-craft-offcrypto = { path = "crates/offcrypto" }
-craft-opc = { path = "crates/opc" }
-craft-openpgp = { path = "crates/openpgp" }
-craft-ora = { path = "crates/ora" }
-craft-pptx = { path = "crates/pptx" }
-craft-penpot = { path = "crates/penpot" }
-craft-pcraft-format = { path = "crates/pcraft-format" }
-craft-pcraft-bundle = { path = "crates/pcraft-bundle" }
-craft-pkcs7 = { path = "crates/pkcs7" }
-craft-plotter = { path = "crates/plotter" }
-craft-prepress = { path = "crates/prepress" }
-craft-press-print = { path = "crates/press-print" }
-craft-print = { path = "crates/print" }
-craft-proof = { path = "crates/proof" }
-craft-raster-codecs = { path = "crates/raster-codecs" }
-craft-image-codecs = { path = "crates/image-codecs" }
-craft-dds = { path = "crates/dds" }
-craft-psd = { path = "crates/psd" }
-craft-pst = { path = "crates/pst" }
-craft-quit = { path = "crates/quit" }
-craft-rtf = { path = "crates/rtf" }
-craft-raw = { path = "crates/raw" }
-craft-sheet = { path = "crates/sheet" }
-craft-sketch = { path = "crates/sketch" }
-craft-settings = { path = "crates/settings" }
-craft-scraft-format = { path = "crates/scraft-format" }
-craft-time = { path = "crates/time" }
-craft-silhouette-studio = { path = "crates/silhouette-studio" }
-craft-suite-account = { path = "crates/suite-account" }
-craft-svg = { path = "crates/svg" }
-craft-stencilcraft-format = { path = "crates/stencilcraft-format" }
-craft-stencilcraft-document = { path = "crates/stencilcraft-document" }
-craft-svg-paths = { path = "crates/svg-paths" }
-craft-stream-codecs = { path = "crates/stream-codecs" }
-craft-testkit = { path = "crates/testkit" }
-craft-text = { path = "crates/text" }
-craft-tcraft = { path = "crates/tcraft" }
-craft-texture = { path = "crates/texture" }
-craft-tga = { path = "crates/tga" }
-craft-timeline = { path = "crates/timeline" }
-craft-tiff = { path = "crates/tiff" }
-craft-metadata = { path = "crates/metadata" }
-craft-ui = { path = "crates/ui" }
-craft-update = { path = "crates/update" }
-craft-vcard = { path = "crates/vcard" }
-craft-vectorcraft-format = { path = "crates/vectorcraft-format" }
-craft-vectordrawable = { path = "crates/vectordrawable" }
-craft-xls = { path = "crates/xls" }
-craft-xfl = { path = "crates/xfl" }
-craft-wordmodel = { path = "crates/wordmodel" }
-craft-xlsx = { path = "crates/xlsx" }
+bharat-doc = { path = "crates/doc" }
+bharat-docpath = { path = "crates/docpath" }
+bharat-dpx = { path = "crates/dpx" }
+bharat-dwg = { path = "crates/dwg" }
+bharat-fcproj-format = { path = "crates/fcproj-format" }
+bharat-ecproj-format = { path = "crates/ecproj-format" }
+bharat-esign = { path = "crates/esign" }
+bharat-figma-rest = { path = "crates/figma-rest" }
+bharat-exr = { path = "crates/exr" }
+bharat-flags = { path = "crates/flags" }
+bharat-font-catalog = { path = "crates/font-catalog" }
+bharat-font-manager = { path = "crates/font-manager" }
+bharat-font-store = { path = "crates/font-store" }
+bharat-gainmap = { path = "crates/gainmap" }
+bharat-flow = { path = "crates/flow" }
+bharat-gcode = { path = "crates/gcode" }
+bharat-gif = { path = "crates/gif" }
+bharat-hdr = { path = "crates/hdr" }
+bharat-mesh = { path = "crates/mesh" }
+bharat-html = { path = "crates/html" }
+bharat-heif = { path = "crates/heif" }
+bharat-fig = { path = "crates/fig" }
+bharat-fonts-build = { path = "crates/fonts-build" }
+bharat-i18n = { path = "crates/i18n" }
+bharat-ipc = { path = "crates/ipc" }
+bharat-idml = { path = "crates/idml" }
+bharat-indd = { path = "crates/indd" }
+bharat-jmap = { path = "crates/jmap" }
+bharat-ical = { path = "crates/ical" }
+bharat-jpeg = { path = "crates/jpeg" }
+bharat-control-protocol = { path = "crates/control-protocol" }
+bharat-jsonrpc = { path = "crates/jsonrpc" }
+bharat-mcp = { path = "crates/mcp" }
+bharat-jxl = { path = "crates/jxl" }
+bharat-kiwi = { path = "crates/kiwi" }
+bharat-keymap = { path = "crates/keymap" }
+bharat-assuan = { path = "crates/assuan" }
+bharat-kra = { path = "crates/kra" }
+bharat-audio = { path = "crates/audio" }
+bharat-latex = { path = "crates/latex" }
+bharat-markdown = { path = "crates/markdown" }
+bharat-macho = { path = "crates/macho" }
+bharat-math = { path = "crates/math" }
+# No default features: bharat-audio turns on the bharat-media modules each of its features needs.
+bharat-media = { path = "crates/media", default-features = false }
+bharat-media-source = { path = "crates/media-source" }
+bharat-materialx = { path = "crates/materialx" }
+bharat-media-testkit = { path = "crates/media-testkit" }
+bharat-midi = { path = "crates/midi" }
+bharat-sf2 = { path = "crates/sf2" }
+bharat-mime = { path = "crates/mime" }
+bharat-odf = { path = "crates/odf" }
+bharat-ods = { path = "crates/ods" }
+bharat-prc = { path = "crates/prc" }
+bharat-lottie = { path = "crates/lottie" }
+bharat-menu = { path = "crates/menu" }
+bharat-metafile = { path = "crates/metafile" }
+bharat-offcrypto = { path = "crates/offcrypto" }
+bharat-opc = { path = "crates/opc" }
+bharat-openpgp = { path = "crates/openpgp" }
+bharat-ora = { path = "crates/ora" }
+bharat-pptx = { path = "crates/pptx" }
+bharat-penpot = { path = "crates/penpot" }
+bharat-pcraft-format = { path = "crates/pcraft-format" }
+bharat-pcraft-bundle = { path = "crates/pcraft-bundle" }
+bharat-pkcs7 = { path = "crates/pkcs7" }
+bharat-plotter = { path = "crates/plotter" }
+bharat-prepress = { path = "crates/prepress" }
+bharat-press-print = { path = "crates/press-print" }
+bharat-print = { path = "crates/print" }
+bharat-proof = { path = "crates/proof" }
+bharat-raster-codecs = { path = "crates/raster-codecs" }
+bharat-image-codecs = { path = "crates/image-codecs" }
+bharat-dds = { path = "crates/dds" }
+bharat-psd = { path = "crates/psd" }
+bharat-pst = { path = "crates/pst" }
+bharat-quit = { path = "crates/quit" }
+bharat-rtf = { path = "crates/rtf" }
+bharat-raw = { path = "crates/raw" }
+bharat-sheet = { path = "crates/sheet" }
+bharat-sketch = { path = "crates/sketch" }
+bharat-settings = { path = "crates/settings" }
+bharat-scraft-format = { path = "crates/scraft-format" }
+bharat-time = { path = "crates/time" }
+bharat-silhouette-studio = { path = "crates/silhouette-studio" }
+bharat-suite-account = { path = "crates/suite-account" }
+bharat-svg = { path = "crates/svg" }
+bharat-stencilcraft-format = { path = "crates/stencilcraft-format" }
+bharat-stencilcraft-document = { path = "crates/stencilcraft-document" }
+bharat-svg-paths = { path = "crates/svg-paths" }
+bharat-stream-codecs = { path = "crates/stream-codecs" }
+bharat-testkit = { path = "crates/testkit" }
+bharat-text = { path = "crates/text" }
+bharat-tcraft = { path = "crates/tcraft" }
+bharat-texture = { path = "crates/texture" }
+bharat-tga = { path = "crates/tga" }
+bharat-timeline = { path = "crates/timeline" }
+bharat-tiff = { path = "crates/tiff" }
+bharat-metadata = { path = "crates/metadata" }
+bharat-ui = { path = "crates/ui" }
+bharat-update = { path = "crates/update" }
+bharat-vcard = { path = "crates/vcard" }
+bharat-vectorcraft-format = { path = "crates/vectorcraft-format" }
+bharat-vectordrawable = { path = "crates/vectordrawable" }
+bharat-xls = { path = "crates/xls" }
+bharat-xfl = { path = "crates/xfl" }
+bharat-wordmodel = { path = "crates/wordmodel" }
+bharat-xlsx = { path = "crates/xlsx" }
 indd = { git = "https://github.com/storytold/indd-utils", rev = "7f3060e5bce78d21ea70e0d5eacb96edce15dfbe" }
-craft-xcf = { path = "crates/xcf" }
-craft-xml = { path = "crates/xml" }
-craft-zip = { path = "crates/zip" }
-craft-y4m = { path = "crates/y4m" }
-craft-sniff = { path = "crates/sniff" }
-craft-tar = { path = "crates/tar" }
-craft-epub = { path = "crates/epub" }
-craft-ews = { path = "crates/ews" }
-craft-video = { path = "crates/video" }
-craft-web-api = { path = "crates/web-api" }
-craft-window = { path = "crates/window" }
-craft-web-host = { path = "crates/web-host" }
-craft-webp = { path = "crates/webp" }
+bharat-xcf = { path = "crates/xcf" }
+bharat-xml = { path = "crates/xml" }
+bharat-zip = { path = "crates/zip" }
+bharat-y4m = { path = "crates/y4m" }
+bharat-sniff = { path = "crates/sniff" }
+bharat-tar = { path = "crates/tar" }
+bharat-epub = { path = "crates/epub" }
+bharat-ews = { path = "crates/ews" }
+bharat-video = { path = "crates/video" }
+bharat-web-api = { path = "crates/web-api" }
+bharat-window = { path = "crates/window" }
+bharat-web-host = { path = "crates/web-host" }
+bharat-webp = { path = "crates/webp" }
 egui = { version = "0.37", default-features = false }
 md5 = { package = "md-5", version = "0.10", default-features = false }
 jxl-oxide = { version = "0.12", default-features = false }
@@ -223,14 +223,14 @@ rayon = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 proptest = "1"
-# Character sets of the WHATWG Encoding Standard (craft-mime). (Apache-2.0 OR MIT) AND BSD-3-Clause.
+# Character sets of the WHATWG Encoding Standard (bharat-mime). (Apache-2.0 OR MIT) AND BSD-3-Clause.
 encoding_rs = "0.8"
 # All date/time conversion goes through chrono (no hand-rolled calendar code beyond the 400-year range extension; AGENTS.md).
 chrono = { version = "0.4.45", default-features = false, features = ["std"] }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
-unexpected_cfgs = { level = "warn", check-cfg = ["cfg(craft_pdf_unicode_fixtures)"] }
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(bharat_pdf_unicode_fixtures)"] }
 
 [workspace.lints.cargo]
 unused_workspace_dependencies = "allow"
@@ -252,34 +252,34 @@ hayro-jbig2 = { path = "vendor/hayro-jbig2" }
 hayro-cmap = { path = "vendor/hayro-cmap" }
 hayro-postscript = { path = "vendor/hayro-postscript" }
 linesweeper = { path = "vendor/linesweeper" }
-ecolor = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-emath = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-epaint = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-epaint_default_fonts = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-egui = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-egui-winit = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-egui-wgpu = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-egui_glow = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-egui_extras = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-egui_kittest = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-egui_system_font_provider = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-eframe = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-egui_demo_lib = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-egui_inspection = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
-winit = { git = "https://github.com/storytold/winit.git", rev = "a517b3846ee8457d84ee4975110bfda6797c44dc" }
+ecolor = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+emath = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+epaint = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+epaint_default_fonts = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui-winit = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui-wgpu = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui_glow = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui_extras = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui_kittest = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui_system_font_provider = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+eframe = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui_demo_lib = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui_inspection = { git = "https://github.com/obone32/bharat-egui", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+winit = { git = "https://github.com/obone32/bharat-winit", rev = "a517b3846ee8457d84ee4975110bfda6797c44dc" }
 
 # symphonia's FLAC decoder restores LPC samples as `residual + (prediction as i32)`. In a valid
 # 32-bit stream the prediction can leave the i32 range while the sum does not, so a debug build
 # panics where a release build wraps to the right sample. Apps that decode 32-bit FLAC through
-# craft-audio's `decode` need the same override in their own workspace.
+# bharat-audio's `decode` need the same override in their own workspace.
 [profile.dev.package.symphonia-bundle-flac]
 overflow-checks = false
 
 # Codec hot loops: the oracle and conformance tests of a debug build take minutes below opt-level 3.
-[profile.dev.package.craft-video]
+[profile.dev.package.bharat-video]
 opt-level = 3
 
 # The object-stream parser follows nesting 384 levels deep: unoptimised, its frames overflow the
 # 2 MiB stack of a test thread. The apps this reader came from build their crates at this level.
-[profile.dev.package.craft-affinity]
+[profile.dev.package.bharat-affinity]
 opt-level = 1

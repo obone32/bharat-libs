@@ -2,7 +2,7 @@
 #![forbid(unsafe_code)]
 //! The clean-room MCMAT v3 source archive. Applications interpret the SBS entry graph.
 
-use craft_zip::{Archive, Compression, Writer};
+use bharat_zip::{Archive, Compression, Writer};
 use serde::Deserializer;
 use serde::de::{IgnoredAny, MapAccess, Visitor};
 use std::collections::{BTreeMap, BTreeSet};
@@ -33,12 +33,12 @@ pub enum Error {
     #[error("unsupported .mcmat version {0} (expected 3). Republish from the original authoring project")]
     Version(u32),
     #[error("portable material archive: {0}")]
-    Archive(#[from] craft_zip::Error),
+    Archive(#[from] bharat_zip::Error),
 }
 
 /// File sniffing also recognizes old manifests so the reader can give republishing guidance.
 pub fn is_material(bytes: &[u8], max_entries: u64) -> bool {
-    Archive::open(bytes, craft_zip::Limits { max_entries, max_total_bytes: 0 }).is_ok_and(|archive| archive.contains(MANIFEST_ENTRY))
+    Archive::open(bytes, bharat_zip::Limits { max_entries, max_total_bytes: 0 }).is_ok_and(|archive| archive.contains(MANIFEST_ENTRY))
 }
 
 fn valid_resource(name: &str) -> bool {
@@ -58,7 +58,7 @@ pub struct Material {
 
 impl Material {
     pub fn open(bytes: &[u8], limits: Limits) -> Result<Self, Error> {
-        let mut archive = Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })?;
+        let mut archive = Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })?;
         if archive.has_duplicate_names() || archive.has_overlapping_files()? {
             return Err(Error::Invalid("duplicate or overlapping archive entries".into()));
         }
@@ -158,7 +158,7 @@ mod tests {
         let pkg = Material::open(&bytes, Limits::default()).unwrap();
         assert_eq!(pkg.source, b"<package/>");
         assert_eq!(pkg.resources["resources/oak.png"], b"image");
-        let mut archive = Archive::open(&bytes, craft_zip::Limits { max_entries: 3, max_total_bytes: 128 }).unwrap();
+        let mut archive = Archive::open(&bytes, bharat_zip::Limits { max_entries: 3, max_total_bytes: 128 }).unwrap();
         assert_eq!(archive.read(MANIFEST_ENTRY, 32).unwrap().unwrap(), MARKER);
         assert_eq!(archive.is_stored(SOURCE_ENTRY), Some(false));
         assert_eq!(archive.is_stored("resources/oak.png"), Some(true));
@@ -216,7 +216,7 @@ mod tests {
     #[test]
     fn compresses_unencoded_source_assets() {
         let bytes = write(b"<package/>", [("resources/shape.svg", b"<svg/>".as_slice()), ("resources/font.ttf", b"font".as_slice())]).unwrap();
-        let mut archive = Archive::open(&bytes, craft_zip::Limits { max_entries: 4, max_total_bytes: 128 }).unwrap();
+        let mut archive = Archive::open(&bytes, bharat_zip::Limits { max_entries: 4, max_total_bytes: 128 }).unwrap();
         assert_eq!(archive.is_stored("resources/shape.svg"), Some(false));
         assert_eq!(archive.is_stored("resources/font.ttf"), Some(false));
     }
@@ -225,7 +225,7 @@ mod tests {
     fn rejects_previous_versions_before_requiring_the_v3_layout() {
         for version in [0, 1, 2, 4] {
             let mut zip = Writer::new();
-            zip.add(MANIFEST_ENTRY, format!(r#"{{"format":"craft-material","version":{version}}}"#).as_bytes(), Compression::Deflated).unwrap();
+            zip.add(MANIFEST_ENTRY, format!(r#"{{"format":"bharat-material","version":{version}}}"#).as_bytes(), Compression::Deflated).unwrap();
             let bytes = zip.finish().unwrap();
             assert!(is_material(&bytes, 2));
             assert!(matches!(Material::open(&bytes, Limits::default()), Err(Error::Version(v)) if v == version));

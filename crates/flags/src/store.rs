@@ -47,7 +47,7 @@ fn read_text(path: &Path) -> Result<Option<String>, FlagError> {
     String::from_utf8(bytes).map(Some).map_err(|_| FlagError::Unreadable(format!("{} is not UTF-8 text", path.display())))
 }
 
-/// The flags of this run: [`default_path`] and `CRAFT_FLAGS`. Never fails; what could not be
+/// The flags of this run: [`default_path`] and `BHARAT_FLAGS`. Never fails; what could not be
 /// read is in [`Flags::problems`].
 pub fn load() -> Flags {
     let env = std::env::var(ENV).ok();
@@ -82,5 +82,5 @@ pub fn set(path: &Path, id: &str, on: bool) -> Result<(), FlagError> {
     if let Some(dir) = path.parent() {
         std::fs::create_dir_all(dir).map_err(FlagError::Io)?;
     }
-    craft_atomic::atomic_write(path, doc.to_string().as_bytes()).map_err(FlagError::Io)
+    bharat_atomic::atomic_write(path, doc.to_string().as_bytes()).map_err(FlagError::Io)
 }

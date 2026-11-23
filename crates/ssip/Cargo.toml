@@ -1,5 +1,5 @@
 [package]
-name = "craft-ssip"
+name = "bharat-ssip"
 description = "Bounded Speech Dispatcher SSIP wire framing and message-data encoding"
 version.workspace = true
 edition.workspace = true

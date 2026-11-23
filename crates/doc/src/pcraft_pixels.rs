@@ -3,7 +3,7 @@
 //!
 //! A surface is a pixel format, a default pixel and a list of 256 × 256 tiles on a grid in
 //! document pixels, so tiles may sit at negative columns and rows. Each tile is stored at
-//! [`craft_pcraft_format::tile_path`] of its hash as one zstd frame of interleaved little-endian
+//! [`bharat_pcraft_format::tile_path`] of its hash as one zstd frame of interleaved little-endian
 //! samples, row by row, the color channels first and then the alpha channel when the format has
 //! one; the hash is the BLAKE3 hash of those samples. Pixels without a tile hold the default
 //! pixel.
@@ -13,7 +13,7 @@
 use std::collections::{BTreeSet, HashMap};
 use std::io::Read;
 
-use craft_pcraft_format::TileRef;
+use bharat_pcraft_format::TileRef;
 use serde::de::{self, IgnoredAny, MapAccess, Visitor};
 use serde::{Deserialize, Deserializer};
 
@@ -160,7 +160,7 @@ pub fn pcraft_layer_rgba(bytes: &[u8], layer: &[usize], limits: &Limits) -> Resu
 /// most 8 MiB. One frame is accepted, with no trailing bytes. Unlike the layer reader's counted
 /// lists, this call checks `max_items` against structural JSON items throughout the manifest,
 /// including skipped values: objects/arrays opened and commas outside strings, at most
-/// [`craft_pcraft_format::MAX_MANIFEST_ITEMS`]. The check precedes metadata deserialization.
+/// [`bharat_pcraft_format::MAX_MANIFEST_ITEMS`]. The check precedes metadata deserialization.
 pub fn pcraft_icc_profile(bytes: &[u8], limits: &Limits) -> Result<Option<Vec<u8>>, Error> {
     match sniff(bytes).ok_or(Error::Unrecognized)? {
         Kind::PhotoCraft => {}
@@ -169,7 +169,7 @@ pub fn pcraft_icc_profile(bytes: &[u8], limits: &Limits) -> Result<Option<Vec<u8
     let mut budget = Budget::new(limits);
     let (zip, head) = pcraft::document_with_items::<ProfileHead>(bytes, &mut budget)?;
     let Some(ProfileHash(hash)) = head.profile else { return Ok(None) };
-    let path = craft_pcraft_format::blob_path(&hash).ok_or_else(|| malformed("invalid ICC blob hash"))?;
+    let path = bharat_pcraft_format::blob_path(&hash).ok_or_else(|| malformed("invalid ICC blob hash"))?;
     let entry = zip.find(&path, budget.control)?.ok_or_else(|| malformed(format!("the manifest names `{path}`, which the bundle does not have")))?;
     let frame = zip.read(entry, limits.max_entry, &mut budget, &path)?;
     let cap = limits.max_entry.min(budget.left());
@@ -242,7 +242,7 @@ impl<'de> Deserialize<'de> for ProfileHash {
             }
             /// Check the decoded string before copying the 64 hash digits into owned metadata.
             fn visit_str<E: de::Error>(self, value: &str) -> Result<ProfileHash, E> {
-                if !craft_pcraft_format::is_valid_hash(value) {
+                if !bharat_pcraft_format::is_valid_hash(value) {
                     return Err(E::custom("invalid ICC blob hash"));
                 }
                 Ok(ProfileHash(value.to_owned()))

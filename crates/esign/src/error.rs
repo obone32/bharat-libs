@@ -10,7 +10,7 @@ use thiserror::Error;
 pub enum Error {
     /// Something the cloud contracts already classify.
     #[error(transparent)]
-    Cloud(#[from] craft_cloud::Error),
+    Cloud(#[from] bharat_cloud::Error),
 
     /// A recipient refused to sign.
     #[error("declined: {0}")]

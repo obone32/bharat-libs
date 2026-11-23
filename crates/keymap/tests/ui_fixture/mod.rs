@@ -5,8 +5,8 @@ use std::cell::RefCell;
 use std::collections::BTreeSet;
 use std::rc::Rc;
 
-use craft_keymap::ui::{PLURALS, STRINGS, Text};
-use craft_keymap::{Bindable, Binding, Key, Keymap, Kind, Platform, Scope, Scopes};
+use bharat_keymap::ui::{PLURALS, STRINGS, Text};
+use bharat_keymap::{Bindable, Binding, Key, Keymap, Kind, Platform, Scope, Scopes};
 
 fn binding(text: &str) -> Binding {
     Binding::parse(text).unwrap_or_else(|e| panic!("{text}: {e}"))

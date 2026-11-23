@@ -1,4 +1,4 @@
-//! Conformance tests for `craft-suite-account` (PR #665), adapted from the maintainer's review
+//! Conformance tests for `bharat-suite-account` (PR #665), adapted from the maintainer's review
 //! reproduction gist for this crate (skylartaylor, rev `2e9c84f`). Each test asserts the behaviour
 //! the crate's docs and RFC-0025 promise.
 //!
@@ -21,7 +21,7 @@
 
 use std::sync::{Arc, Barrier};
 
-use craft_suite_account::{Error, Memory, NewAccount, Secret, Store, TokenStore};
+use bharat_suite_account::{Error, Memory, NewAccount, Secret, Store, TokenStore};
 
 const SERVICE: &str = "https://craft.example.com";
 const NOW: i64 = 1_760_000_000;
@@ -288,7 +288,7 @@ fn torn_state_between_the_keychain_write_and_the_generation_commit_recovers() {
     // never told, so it still shows the old generation.
     keychain.put(&account.id, &tok("session-1-refreshed")).unwrap();
     match store.shared() {
-        craft_suite_account::Shared::Session { token, .. } => {
+        bharat_suite_account::Shared::Session { token, .. } => {
             assert_eq!(token, tok("session-1-refreshed"), "the torn state is detectable: the keychain is already ahead of the list");
         }
         other => panic!("expected a session, got {other:?}"),
@@ -299,7 +299,7 @@ fn torn_state_between_the_keychain_write_and_the_generation_commit_recovers() {
     let recovered = store.update_token(&account.id, account.generation, &tok("session-2"), NOW + 30).unwrap();
     assert_eq!(recovered.generation, account.generation + 1);
     match store.shared() {
-        craft_suite_account::Shared::Session { token, .. } => assert_eq!(token, tok("session-2")),
+        bharat_suite_account::Shared::Session { token, .. } => assert_eq!(token, tok("session-2")),
         other => panic!("expected a session, got {other:?}"),
     }
 }

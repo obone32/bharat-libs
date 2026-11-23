@@ -293,7 +293,7 @@ impl PrcFile {
     ///
     /// # Examples
     /// ```
-    /// use craft_prc::{PrcError, PrcFile};
+    /// use bharat_prc::{PrcError, PrcFile};
     /// assert_eq!(PrcFile::parse(b"%PDF"), Err(PrcError::NotPrc));
     /// ```
     pub fn parse(data: &[u8]) -> Result<Self, PrcError> {

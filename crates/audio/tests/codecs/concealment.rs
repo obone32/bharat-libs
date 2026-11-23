@@ -1,9 +1,9 @@
 //! A packet that fails to decode is replaced by silence of its length, so the audio after it keeps
 //! its timing; a stream where nothing decodes is still an error. The streams are made with
-//! craft-audio's own AAC encoder (no ffmpeg needed).
+//! bharat-audio's own AAC encoder (no ffmpeg needed).
 
-use craft_audio::aac::{AdtsHeader, Encoder, EncoderConfig};
-use craft_audio::{AudioError, decode};
+use bharat_audio::aac::{AdtsHeader, Encoder, EncoderConfig};
+use bharat_audio::{AudioError, decode};
 
 /// One second of a 440 Hz stereo tone as ADTS AAC, and the offset and length of each frame.
 fn adts_stream() -> (Vec<u8>, Vec<(usize, usize)>) {

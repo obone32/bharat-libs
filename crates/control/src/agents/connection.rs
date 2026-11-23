@@ -56,7 +56,7 @@ pub fn write_connection(dir: &Path, c: &Connection) -> std::io::Result<()> {
     std::fs::create_dir_all(dir).map_err(|e| io_error(dir, e))?;
     let path = dir.join(CONNECTION_FILE);
     let text = serde_json::to_string_pretty(c).map_err(|e| io_error(&path, e))?;
-    craft_atomic::atomic_write(&path, text.as_bytes()).map_err(|e| io_error(&path, e))
+    bharat_atomic::atomic_write(&path, text.as_bytes()).map_err(|e| io_error(&path, e))
 }
 
 /// The connection published in `dir`, if any. A file of another version, with port 0, or one

@@ -2,7 +2,7 @@
 
 use crate::common;
 use common::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 use proptest::prelude::*;
 
 fn tight() -> DecodeOptions {
@@ -76,8 +76,8 @@ fn truncated_files_mostly_error() {
 
 #[test]
 fn bit_flips_never_panic() {
-    // CRAFT_HOSTILE_DIVISOR=N (pull requests) runs 1/N of the flips.
-    let rounds = 150usize.div_ceil(craft_media_testkit::hostile::divisor());
+    // BHARAT_HOSTILE_DIVISOR=N (pull requests) runs 1/N of the flips.
+    let rounds = 150usize.div_ceil(bharat_media_testkit::hostile::divisor());
     let mut rng = common::Rng::new(42);
     for (f, bytes) in samples() {
         for _ in 0..rounds {
@@ -94,9 +94,9 @@ fn bit_flips_never_panic() {
 
 #[test]
 fn byte_overwrites_in_header_never_panic() {
-    // CRAFT_HOSTILE_DIVISOR=N (pull requests) overwrites every N-th byte, from a different offset
+    // BHARAT_HOSTILE_DIVISOR=N (pull requests) overwrites every N-th byte, from a different offset
     // for each sample, so the samples together still reach every header position.
-    let step = craft_media_testkit::hostile::divisor();
+    let step = bharat_media_testkit::hostile::divisor();
     for (k, (f, bytes)) in samples().into_iter().enumerate() {
         for i in (0..bytes.len().min(64)).filter(|i| (i + k) % step == 0) {
             for v in [0x00, 0x7F, 0xFF] {

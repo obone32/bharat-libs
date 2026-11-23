@@ -1,8 +1,8 @@
 //! Ogg Vorbis files (Vorbis I §A, RFC 5334) from the pure-Rust [`crate::vorbis::encoder`] and
-//! craft-media's Ogg page writer: 1 to 8 channels in Vorbis channel order, a quality from -1 to
+//! bharat-media's Ogg page writer: 1 to 8 channels in Vorbis channel order, a quality from -1 to
 //! 10 (variable bit rate), and the tags in the comment header. Builds for every target.
 
-use craft_media::ogg::{PageWriter, vorbis_comment};
+use bharat_media::ogg::{PageWriter, vorbis_comment};
 
 use crate::vorbis::encoder::{DEFAULT_QUALITY, Encoder, EncoderConfig, Error as VorbisError};
 use crate::{AudioBuffer, AudioError, ChannelLayout, Result};
@@ -39,7 +39,7 @@ pub struct OggVorbisOptions {
 
 impl Default for OggVorbisOptions {
     fn default() -> Self {
-        OggVorbisOptions { quality: DEFAULT_QUALITY, vendor: "craft-audio".into(), tags: Vec::new(), serial: SERIAL }
+        OggVorbisOptions { quality: DEFAULT_QUALITY, vendor: "bharat-audio".into(), tags: Vec::new(), serial: SERIAL }
     }
 }
 
@@ -83,7 +83,7 @@ fn encode_error(e: VorbisError) -> AudioError {
 /// The last granule position is the buffer's length, so a decoder returns exactly its frames.
 ///
 /// ```
-/// use craft_audio::{AudioBuffer, OggVorbisOptions, encode_ogg_vorbis};
+/// use bharat_audio::{AudioBuffer, OggVorbisOptions, encode_ogg_vorbis};
 ///
 /// let buf = AudioBuffer::new(48_000, 6, 4_800); // 0.1 s of 5.1 silence
 /// let opts = OggVorbisOptions::new(4.0).with_tag("TITLE", "Silence");
@@ -258,10 +258,10 @@ mod tests {
         let opts = OggVorbisOptions::default().with_quality(2.0).with_vendor("v").with_tag("TITLE", "t").with_tag("bad=name", "x").with_serial(9);
         assert_eq!((opts.quality, opts.vendor.as_str(), opts.serial, opts.tags.len()), (2.0, "v", 9, 2));
         let ogg = encode_ogg_vorbis(&AudioBuffer::new(44_100, 1, 100), &opts).unwrap();
-        let file = craft_media::ogg::open(&ogg).unwrap();
+        let file = bharat_media::ogg::open(&ogg).unwrap();
         let s = &file.streams[0];
         assert_eq!((s.serial, s.saw_eos, s.headers.len()), (9, true, 3));
-        assert_eq!(s.headers[1], craft_media::ogg::vorbis_comment("v", &[("TITLE", "t")]));
+        assert_eq!(s.headers[1], bharat_media::ogg::vorbis_comment("v", &[("TITLE", "t")]));
         assert_eq!(s.last_granule, Some(100));
     }
 }

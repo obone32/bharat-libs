@@ -1,6 +1,6 @@
-# craft-jpeg
+# bharat-jpeg
 
-A clean-room JPEG decoder and 8-bit baseline encoder for the Craft apps, written from ITU-T T.81
+A clean-room JPEG decoder and 8-bit baseline encoder for the Bharat apps, written from ITU-T T.81
 (ISO/IEC 10918-1). The decoder covers processes that common Rust JPEG decoders skip: 12-bit
 samples and arithmetic coding. It also decodes the common sequential 8-bit files a band of rows
 at a time ([`Bands`](#decoding-in-bands)), for images too large to decode into one buffer. The
@@ -11,7 +11,7 @@ No `unsafe`, no panics on malformed input, and it builds for `wasm32-unknown-unk
 dependency is `thiserror`; the optional `parallel` feature adds Rayon for multi-core encoding.
 
 ```toml
-craft-jpeg = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-jpeg = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ## What it decodes
@@ -30,7 +30,7 @@ and restart intervals.
 ## Use
 
 ```rust
-use craft_jpeg::{decode, Limits, Samples};
+use bharat_jpeg::{decode, Limits, Samples};
 
 let img = decode(&bytes, &Limits::default(), adobe_transform)?;
 match img.samples {
@@ -76,7 +76,7 @@ and 8 GiB on 64-bit targets, 1 GiB on 32-bit ones (wasm32). The struct is `#[non
 start from the defaults and set the fields you change:
 
 ```rust
-let mut limits = craft_jpeg::Limits::default();
+let mut limits = bharat_jpeg::Limits::default();
 limits.max_alloc = 512 << 20;
 ```
 
@@ -92,7 +92,7 @@ files whose precision is not 8 bits:
 
 ```rust
 fn use_craft_jpeg(bytes: &[u8]) -> bool {
-    match craft_jpeg::frame(bytes) {
+    match bharat_jpeg::frame(bytes) {
         Some(f) if (0xC9..=0xCB).contains(&f.marker) => true,
         Some(f) if matches!(f.marker, 0xC0 | 0xC1) => f.precision != 8,
         _ => false,
@@ -112,7 +112,7 @@ no larger than 65533 bytes. Invalid input returns `EncodeError::InvalidInput` in
 or malformed JPEG.
 
 ```rust
-use craft_jpeg::{ChromaSubsampling, encode_baseline};
+use bharat_jpeg::{ChromaSubsampling, encode_baseline};
 
 let jpeg = encode_baseline(&rgb, width, height, 3, 90, ChromaSubsampling::S420, &[])?;
 ```
@@ -130,7 +130,7 @@ and colour conversion); only a few MCU lines are held at once. Other files retur
 `Error::Unsupported`: decode them whole.
 
 ```rust
-use craft_jpeg::{Bands, Limits};
+use bharat_jpeg::{Bands, Limits};
 
 let mut limits = Limits::default();
 limits.max_pixels = 65_535 * 65_535; // the image is never held whole
@@ -170,7 +170,7 @@ if reader.damaged() { /* warn: part of the image is missing */ }
 
 ## Testing
 
-`cargo test -p craft-jpeg` runs:
+`cargo test -p bharat-jpeg` runs:
 
 - unit tests in `src/tests.rs`: arithmetic-coded streams from a test-only encoder must decode to
   the coefficients that went in, and Huffman streams are compared against `zune-jpeg`.

@@ -1,13 +1,13 @@
 //! Original synthetic PCM encoded here and decoded by an external FFmpeg executable only.
 //! Covers every public acmod/LFE combination at all three rates, plus genuine dependent-stream
 //! 7.1. These are framing/routing/level regressions, not a perceptual quality certification.
-//! Uses the shared oracle discovery rules; set CRAFT_MEDIA_REQUIRE_ORACLES=1 to require FFmpeg.
+//! Uses the shared oracle discovery rules; set BHARAT_MEDIA_REQUIRE_ORACLES=1 to require FFmpeg.
 
 use std::f64::consts::TAU;
 use std::path::Path;
 use std::process::Command;
 
-use craft_audio::ac3::encoder::{Codec, CodingMode, Config, Encoder, Packet};
+use bharat_audio::ac3::encoder::{Codec, CodingMode, Config, Encoder, Packet};
 
 const INPUT_SAMPLES: usize = 4097;
 const ANALYSIS_START: usize = 1024;
@@ -69,7 +69,7 @@ fn check_packets(packets: &[Packet], config: Config, label: &str) -> Vec<u8> {
         let mut remaining = packet.data.as_slice();
         let mut frames = 0;
         while !remaining.is_empty() {
-            let header = craft_audio::ac3::parse_header(remaining).unwrap_or_else(|e| panic!("{label}: packet {index} header: {e}"));
+            let header = bharat_audio::ac3::parse_header(remaining).unwrap_or_else(|e| panic!("{label}: packet {index} header: {e}"));
             assert_eq!(header.sample_rate, config.sample_rate, "{label}: sample rate");
             assert_eq!(header.samples(), 1536, "{label}: block count");
             assert_eq!(header.is_eac3(), config.codec == Codec::Eac3, "{label}: family");

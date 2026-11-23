@@ -3,7 +3,7 @@
 //! estimator with the same context-state evolution, used for rate-distortion decisions.
 
 use crate::hevc::encode::tables::{CABAC_INIT, NEXT_STATE, NUM_CTX, RANGE_TAB_LPS};
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 use std::sync::OnceLock;
 
 /// Context states, each `pStateIdx << 1 | valMps`.

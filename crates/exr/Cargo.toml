@@ -1,6 +1,6 @@
 [package]
-name = "craft-exr"
-description = "OpenEXR for the Craft apps: channel and layer naming, colour channel selection, Cryptomatte, and (feature `decode`) bounded part listing, flat decoding and writing on top of the exr crate."
+name = "bharat-exr"
+description = "OpenEXR for the Bharat apps: channel and layer naming, colour channel selection, Cryptomatte, and (feature `decode`) bounded part listing, flat decoding and writing on top of the exr crate."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

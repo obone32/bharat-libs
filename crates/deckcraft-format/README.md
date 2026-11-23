@@ -1,4 +1,4 @@
-# craft-deckcraft-format
+# bharat-deckcraft-format
 
 The DeckCraft `.deckcraft` package. A file is a ZIP that holds, in this order:
 
@@ -12,7 +12,7 @@ The DeckCraft `.deckcraft` package. A file is a ZIP that holds, in this order:
 The presentation is a type parameter: DeckCraft owns the model, decides which media and chart
 parts become members, and repairs a loaded deck. This crate owns the bytes:
 
-- `write(presentation, generator, members)` writes the package with `craft-zip`'s deterministic writer.
+- `write(presentation, generator, members)` writes the package with `bharat-zip`'s deterministic writer.
 - `Package::open_manifest(bytes, max)` reads and checks the manifest. A file with no
   `presentation.json` or a different `format` is `NotOurs`. `parse_manifest` reads files written
   before `Finite`, where serde_json saved NaN as `null`, as 0 within fixed patch and re-parse budgets.

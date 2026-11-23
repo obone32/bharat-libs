@@ -4,9 +4,9 @@
 
 use std::io::Write;
 
-use craft_wordmodel::para::ShapeKind;
-use craft_wordmodel::props::{Rgb, TextColor};
-use craft_wordmodel::{Document, InlineObject, StoryRef};
+use bharat_wordmodel::para::ShapeKind;
+use bharat_wordmodel::props::{Rgb, TextColor};
+use bharat_wordmodel::{Document, InlineObject, StoryRef};
 
 const NS: &str = r#"xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main""#;
 
@@ -51,7 +51,7 @@ const PICTURE: &str = r#"<a:pic><a:nvPicPr><a:cNvPr id="5" name="Picture 5" desc
 /// A line glued to the oval by the canvas's own id, which isn't a document shape's.
 const LINE: &str = r#"<a:cxnSp><a:nvCxnSpPr><a:cNvPr id="6" name="Line 6"/><a:cNvCxnSpPr><a:stCxn id="2" idx="0"/></a:cNvCxnSpPr></a:nvCxnSpPr><a:spPr><a:xfrm><a:off x="127000" y="1143000"/><a:ext cx="2540000" cy="0"/></a:xfrm><a:prstGeom prst="line"><a:avLst/></a:prstGeom><a:ln w="12700"><a:solidFill><a:srgbClr val="0000FF"/></a:solidFill></a:ln></a:spPr></a:cxnSp>"#;
 
-fn group(d: &Document) -> (f32, f32, Vec<craft_wordmodel::para::GroupChild>) {
+fn group(d: &Document) -> (f32, f32, Vec<bharat_wordmodel::para::GroupChild>) {
     let p = d.body.iter().find_map(|b| b.as_para()).unwrap();
     match p.objects.first() {
         Some(InlineObject::Group { w, h, children, canvas: None, .. }) => (*w, *h, children.clone()),
@@ -63,8 +63,8 @@ fn group(d: &Document) -> (f32, f32, Vec<craft_wordmodel::para::GroupChild>) {
 /// canvas (and the group inside it) puts it, and nothing is lost on save.
 #[test]
 fn a_locked_canvas_reads_as_a_group_of_its_members() {
-    let d = craft_docx::read(&docx(&drawing(&[OVAL, WORD_ART, PICTURE, LINE].concat()))).unwrap();
-    for d in [&d, &craft_docx::read(&craft_docx::write(&d).unwrap()).unwrap()] {
+    let d = bharat_docx::read(&docx(&drawing(&[OVAL, WORD_ART, PICTURE, LINE].concat()))).unwrap();
+    for d in [&d, &bharat_docx::read(&bharat_docx::write(&d).unwrap()).unwrap()] {
         let (w, h, children) = group(d);
         assert_eq!((w, h), (200.0, 100.0));
         let at: Vec<(f32, f32)> = children.iter().map(|c| (c.x, c.y)).collect();
@@ -81,7 +81,7 @@ fn a_locked_canvas_reads_as_a_group_of_its_members() {
         assert_eq!(d.plain_text(StoryRef::Part(*id)).trim_end(), "Young\nkeepers");
         let blocks = &d.parts.get(id).unwrap().blocks;
         let first = blocks[0].as_para().unwrap();
-        assert_eq!(first.props.align, Some(craft_wordmodel::props::Align::Center));
+        assert_eq!(first.props.align, Some(bharat_wordmodel::props::Align::Center));
         assert_eq!((first.props.space_before, first.props.space_after), (Some(0.0), Some(0.0)), "DrawingML text has no paragraph spacing");
         let run = &first.runs[0].props;
         assert_eq!((run.size, run.bold, run.caps, run.color), (Some(32.0), Some(true), Some(true), Some(TextColor::Rgb(Rgb(0xFF, 0, 0)))));
@@ -105,8 +105,8 @@ fn a_locked_canvas_reads_as_a_group_of_its_members() {
 #[test]
 fn a_locked_canvas_text_shape_and_paragraph_defaults() {
     let text = r#"<a:txSp><a:txBody><a:bodyPr/><a:lstStyle><a:lvl1pPr><a:defRPr sz="1400" i="1"/></a:lvl1pPr><a:lvl2pPr><a:defRPr sz="2000"/></a:lvl2pPr></a:lstStyle><a:p><a:pPr><a:defRPr sz="3200"/></a:pPr><a:r><a:rPr lang="en-US"/><a:t>Own</a:t></a:r></a:p><a:p><a:pPr lvl="1"/><a:r><a:rPr lang="en-US"/><a:t>Level</a:t></a:r></a:p><a:p><a:r><a:rPr lang="en-US"/><a:t>First</a:t></a:r></a:p></a:txBody><a:useSpRect/><a:xfrm><a:off x="635000" y="381000"/><a:ext cx="1270000" cy="508000"/></a:xfrm></a:txSp>"#;
-    let d = craft_docx::read(&docx(&drawing(text))).unwrap();
-    for d in [&d, &craft_docx::read(&craft_docx::write(&d).unwrap()).unwrap()] {
+    let d = bharat_docx::read(&docx(&drawing(text))).unwrap();
+    for d in [&d, &bharat_docx::read(&bharat_docx::write(&d).unwrap()).unwrap()] {
         let (_, _, children) = group(d);
         let [shape] = &children[..] else { panic!("{children:?}") };
         assert_eq!((shape.x, shape.y), (40.0, 20.0));
@@ -126,10 +126,10 @@ fn a_locked_canvas_text_shape_and_paragraph_defaults() {
 /// list style's defaults (`a:defPPr`); a run's bold set off stays off.
 #[test]
 fn a_locked_canvas_paragraph_takes_its_level_and_the_list_defaults() {
-    use craft_wordmodel::props::Align;
+    use bharat_wordmodel::props::Align;
     let text = r#"<a:txSp><a:txBody><a:bodyPr/><a:lstStyle><a:defPPr algn="r"><a:defRPr sz="1600" b="1"/></a:defPPr><a:lvl2pPr algn="ctr"/></a:lstStyle><a:p><a:r><a:rPr lang="en-US" b="0"/><a:t>Plain</a:t></a:r></a:p><a:p><a:pPr lvl="1"/><a:r><a:rPr lang="en-US"/><a:t>Centred</a:t></a:r></a:p><a:p><a:pPr lvl="1" algn="l"/><a:r><a:rPr lang="en-US"/><a:t>Own</a:t></a:r></a:p></a:txBody><a:useSpRect/><a:xfrm><a:off x="635000" y="381000"/><a:ext cx="1270000" cy="508000"/></a:xfrm></a:txSp>"#;
-    let d = craft_docx::read(&docx(&drawing(text))).unwrap();
-    for d in [&d, &craft_docx::read(&craft_docx::write(&d).unwrap()).unwrap()] {
+    let d = bharat_docx::read(&docx(&drawing(text))).unwrap();
+    for d in [&d, &bharat_docx::read(&bharat_docx::write(&d).unwrap()).unwrap()] {
         let (_, _, children) = group(d);
         let [shape] = &children[..] else { panic!("{children:?}") };
         let InlineObject::Shape { story: Some(id), .. } = &shape.obj else { panic!("{:?}", shape.obj) };
@@ -145,7 +145,7 @@ fn a_locked_canvas_paragraph_takes_its_level_and_the_list_defaults() {
 /// Before wordcraft#5060 only the canvas's first picture showed: the shapes and their text were dropped.
 #[test]
 fn a_locked_canvas_is_not_read_as_its_picture_alone() {
-    let d = craft_docx::read(&docx(&drawing(&[OVAL, PICTURE].concat()))).unwrap();
+    let d = bharat_docx::read(&docx(&drawing(&[OVAL, PICTURE].concat()))).unwrap();
     let (_, _, children) = group(&d);
     assert_eq!(children.len(), 2);
 }
@@ -157,7 +157,7 @@ fn hostile_locked_canvases_never_panic() {
     let deep = format!("{}{}{}", r#"<a:grpSp><a:grpSpPr/>"#.repeat(40), OVAL, "</a:grpSp>".repeat(40));
     let odd = r#"<a:sp><a:spPr/><a:txSp><a:txBody><a:p/><a:p><a:r><a:rPr sz="99999999999" baseline="x"/></a:r><a:br/><a:fld><a:t>f</a:t></a:fld></a:p></a:txBody></a:txSp></a:sp><a:pic/><a:cxnSp/><a:graphicFrame/>"#;
     for canvas in ["", deep.as_str(), odd] {
-        let d = craft_docx::read(&docx(&drawing(canvas))).unwrap();
-        let _ = craft_docx::write(&d).unwrap();
+        let d = bharat_docx::read(&docx(&drawing(canvas))).unwrap();
+        let _ = bharat_docx::write(&d).unwrap();
     }
 }

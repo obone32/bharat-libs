@@ -16,7 +16,7 @@
 mod psy;
 mod quant;
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use crate::aac::config::{AdtsHeader, AudioSpecificConfig, ElementType, ProgramConfig, config_layout};
 use crate::aac::ics::{IcsInfo, WindowSequence};

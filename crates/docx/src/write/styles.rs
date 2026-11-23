@@ -1,6 +1,6 @@
 use super::{Level, LevelSuffix, ParaProps, Style, StyleKind, TablePart, VAlign, W, Writer, props, xml};
 use crate::write::props::open_change;
-use craft_wordmodel::Document;
+use bharat_wordmodel::Document;
 
 /// Built-in names Word keeps in lower case in styles.xml.
 fn file_style_name(name: &str) -> String {
@@ -32,14 +32,14 @@ pub(super) fn styles_xml(wr: &mut Writer<'_>) -> Vec<u8> {
         // The reader reads an omitted `w:sz` as 10 pt, but the resolver falls back to
         // DEFAULT_FONT_SIZE, so writing nothing would change the size on reopening.
         let mut chr = s.default_chr.clone();
-        chr.size = Some(craft_wordmodel::props::DEFAULT_FONT_SIZE);
+        chr.size = Some(bharat_wordmodel::props::DEFAULT_FONT_SIZE);
         props::rpr_inner(&mut w, &chr);
     } else {
         props::rpr_inner(&mut w, &s.default_chr);
     }
     w.close("w:rPr");
     w.close("w:rPrDefault");
-    if s.default_para_present || s.default_para != craft_wordmodel::props::ParaProps::default() {
+    if s.default_para_present || s.default_para != bharat_wordmodel::props::ParaProps::default() {
         w.open("w:pPrDefault", &[]);
         w.open("w:pPr", &[]);
         props::ppr_inner(&mut w, &s.default_para, false, None);
@@ -185,7 +185,7 @@ fn style_property_xml(wr: &mut Writer<'_>, w: &mut W, st: &Style) {
     if (!st.para.is_empty() || para_change.is_some()) && st.kind != StyleKind::Character {
         w.open("w:pPr", &[]);
         let mut ppr = st.para.clone();
-        if ppr.align == Some(craft_wordmodel::props::Align::Justify) && ppr.kashida.is_none() {
+        if ppr.align == Some(bharat_wordmodel::props::Align::Justify) && ppr.kashida.is_none() {
             let mut probe = ppr.clone();
             probe.style = Some(st.id.clone());
             ppr.kashida = Some(wr.styles().resolve_para(&probe).kashida);

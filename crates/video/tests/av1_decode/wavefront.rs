@@ -4,7 +4,7 @@
 
 use crate::common;
 use common::*;
-use craft_video::av1::decode::{Decoder, Picture};
+use bharat_video::av1::decode::{Decoder, Picture};
 
 /// A GOP with many superblock rows (the wavefront has rows to overlap), hierarchical
 /// references and motion reaching across rows.
@@ -29,7 +29,7 @@ fn decode(tus: &[Vec<u8>], threads: usize) -> Vec<Picture> {
 fn every_thread_count_gives_the_single_thread_pictures_repeatedly() {
     let Some(ff) = ffmpeg() else { return };
     let tus = ivf_frames(&make(&ff, &spec()));
-    craft_media_testkit::with_deadline(DEADLINE_SECS, move || {
+    bharat_media_testkit::with_deadline(DEADLINE_SECS, move || {
         let want = decode(&tus, 1);
         assert_eq!(want.len(), 24);
         for threads in [2, 3, 4, 5, 8, 16] {
@@ -51,7 +51,7 @@ fn spec_sb128_tiles() -> Spec {
 fn superblocks_of_128_in_tile_columns_give_the_single_thread_pictures() {
     let Some(ff) = ffmpeg_libaom() else { return };
     let tus = ivf_frames(&make(&ff, &spec_sb128_tiles()));
-    craft_media_testkit::with_deadline(DEADLINE_SECS, move || {
+    bharat_media_testkit::with_deadline(DEADLINE_SECS, move || {
         let want = decode(&tus, 1);
         assert_eq!(want.len(), 16);
         for threads in [2, 3, 4, 8, 16] {
@@ -66,7 +66,7 @@ fn superblocks_of_128_in_tile_columns_give_the_single_thread_pictures() {
 fn dropping_or_flushing_a_busy_decoder_never_hangs() {
     let Some(ff) = ffmpeg() else { return };
     let tus = ivf_frames(&make(&ff, &spec()));
-    craft_media_testkit::with_deadline(DEADLINE_SECS, move || {
+    bharat_media_testkit::with_deadline(DEADLINE_SECS, move || {
         let want = decode(&tus, 1);
         for threads in [2, 3, 8, 16] {
             for cut in [1, 2, 7, 12, 23] {

@@ -1,7 +1,7 @@
 //! The full SVG parser: usvg, behind one bounded entry point.
 //!
 //! usvg (re-exported as [`usvg`]) turns an SVG into a tree with styles resolved, `use` expanded,
-//! text laid out and units converted. It is the parser every Craft app that reads SVG in full
+//! text laid out and units converted. It is the parser every Bharat app that reads SVG in full
 //! shares, at the one version this crate pins; apps take it from here and not as a dependency of
 //! their own, so they also share the checks it needs. usvg trusts its input more than a file
 //! from anywhere deserves: it unpacks SVGZ with no limit, expands entities with no total limit,
@@ -570,12 +570,12 @@ enum SvgRaster {
 }
 
 impl SvgRaster {
-    fn codec(self) -> craft_image_codecs::Format {
+    fn codec(self) -> bharat_image_codecs::Format {
         match self {
-            Self::Png => craft_image_codecs::Format::Png,
-            Self::Jpeg => craft_image_codecs::Format::Jpeg,
-            Self::Gif => craft_image_codecs::Format::Gif,
-            Self::WebP => craft_image_codecs::Format::WebP,
+            Self::Png => bharat_image_codecs::Format::Png,
+            Self::Jpeg => bharat_image_codecs::Format::Jpeg,
+            Self::Gif => bharat_image_codecs::Format::Gif,
+            Self::WebP => bharat_image_codecs::Format::WebP,
         }
     }
 
@@ -591,8 +591,8 @@ impl SvgRaster {
 
 /// Match supported raster signatures to the MIME types both image resolvers accept.
 fn declared_raster(mime: &str, data: &[u8]) -> Option<SvgRaster> {
-    use craft_image_codecs::Format;
-    match (mime, craft_image_codecs::detect(data)?) {
+    use bharat_image_codecs::Format;
+    match (mime, bharat_image_codecs::detect(data)?) {
         ("image/png" | "text/plain", Format::Png) => Some(SvgRaster::Png),
         ("image/jpg" | "image/jpeg" | "text/plain", Format::Jpeg) => Some(SvgRaster::Jpeg),
         ("image/gif" | "text/plain", Format::Gif) => Some(SvgRaster::Gif),
@@ -602,7 +602,7 @@ fn declared_raster(mime: &str, data: &[u8]) -> Option<SvgRaster> {
 }
 
 fn raster_image(used: &Used, limits: &Limits, data: Arc<Vec<u8>>, format: SvgRaster) -> Option<usvg::ImageKind> {
-    let Ok((width, height)) = craft_image_codecs::probe_allocation_size(&data) else {
+    let Ok((width, height)) = bharat_image_codecs::probe_allocation_size(&data) else {
         used.invalid_raster.fetch_add(1, Ordering::Relaxed);
         return None;
     };
@@ -633,14 +633,14 @@ fn raster_image(used: &Used, limits: &Limits, data: Arc<Vec<u8>>, format: SvgRas
     drop(seen);
     // A valid header is not proof of valid pixels. resvg can silently omit a damaged
     // image later; decode now under explicit limits so omission accounting is honest.
-    let decode_limits = craft_image_codecs::Limits::new(width, height, pixels, limits.embedded_raster_pixels.saturating_mul(8));
-    let options = craft_image_codecs::DecodeOptions { limits: decode_limits, keep_orientation: true };
-    if let Err(error) = craft_image_codecs::decode_as_with(format.codec(), &data, &options) {
+    let decode_limits = bharat_image_codecs::Limits::new(width, height, pixels, limits.embedded_raster_pixels.saturating_mul(8));
+    let options = bharat_image_codecs::DecodeOptions { limits: decode_limits, keep_orientation: true };
+    if let Err(error) = bharat_image_codecs::decode_as_with(format.codec(), &data, &options) {
         // No tree retains this allocation on failure. Forget its address before it
         // can be reused, but keep the pixel charge for the decode work already spent.
         used.raster_data.lock().unwrap_or_else(PoisonError::into_inner).remove(&pointer);
         match error {
-            craft_image_codecs::CodecError::LimitExceeded(_) => {
+            bharat_image_codecs::CodecError::LimitExceeded(_) => {
                 used.raster_limit.fetch_add(1, Ordering::Relaxed);
             }
             _ => {

@@ -40,7 +40,7 @@
 //!   paragraph style's first UPX is its style index and paragraph sprms, the second its character
 //!   sprms; a character style has one, its character sprms.
 
-use craft_codepage::charset_code_page;
+use bharat_codepage::charset_code_page;
 
 use crate::DocbinError;
 use crate::fkp::{Bins, TranslatedRun};
@@ -262,7 +262,7 @@ pub(crate) fn content(word: &[u8], fib: &Fib6) -> Result<Content, DocbinError> {
     // shortcut: East Asian (lead and trail byte) text is refused, as all Word 6.0/95 files were
     // before; read it a character at a time when the piece walk can decode byte pairs.
     let east_asian = || DocbinError::NotWord("Word 6.0/95 text in an East Asian code page is not read yet".into());
-    if craft_codepage::is_multibyte_code_page(default_code_page) || code_pages.iter().any(|r| craft_codepage::is_multibyte_code_page(r.code_page)) {
+    if bharat_codepage::is_multibyte_code_page(default_code_page) || code_pages.iter().any(|r| bharat_codepage::is_multibyte_code_page(r.code_page)) {
         return Err(east_asian());
     }
     let multibyte_piece = std::cell::Cell::new(false);
@@ -276,7 +276,7 @@ pub(crate) fn content(word: &[u8], fib: &Fib6) -> Result<Content, DocbinError> {
                 return None;
             }
             let cp = last_font(prcs.get(usize::from(prm >> 1))?).and_then(|f| font_code_page(&fonts, f));
-            if cp.is_some_and(craft_codepage::is_multibyte_code_page) {
+            if cp.is_some_and(bharat_codepage::is_multibyte_code_page) {
                 multibyte_piece.set(true);
             }
             cp
@@ -303,7 +303,7 @@ pub(crate) fn content(word: &[u8], fib: &Fib6) -> Result<Content, DocbinError> {
 }
 
 /// Mac OS Roman, the 8-bit text of a Macintosh Word document.
-const MAC_ROMAN: u16 = craft_codepage::MAC_ROMAN_CODE_PAGE;
+const MAC_ROMAN: u16 = bharat_codepage::MAC_ROMAN_CODE_PAGE;
 
 /// The code page of font `font`'s charset, if it has one (not for ANSI, default or symbol
 /// charsets, whose text Word decodes by its language).
@@ -517,7 +517,7 @@ fn style(std: &[u8], cb_base: usize) -> Option<(RawStyle, StyleFacts)> {
     let stored = std.get(cb_base + 1..cb_base + 1 + len)?;
     let name: String = match BUILT_IN_NAMES.get(usize::from(sti)) {
         Some(built_in) => (*built_in).to_owned(),
-        None => stored.iter().map(|&b| craft_codepage::cp1252(b)).collect(),
+        None => stored.iter().map(|&b| bharat_codepage::cp1252(b)).collect(),
     };
     let mut upxs: Vec<&[u8]> = Vec::new();
     let mut j = cb_base + 1 + len + 1;

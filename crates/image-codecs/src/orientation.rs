@@ -21,7 +21,7 @@ use crate::error::CodecError;
 use crate::image::Image;
 
 // Keep byte-level EXIF/XMP handling in one implementation so fixes apply to all callers.
-pub use craft_metadata::edit::{exif_orientation, upright_exif, upright_xmp};
+pub use bharat_metadata::edit::{exif_orientation, upright_exif, upright_xmp};
 
 /// TIFF payload of an EXIF block (a JPEG-style `Exif\0\0` prefix is skipped).
 pub(crate) fn tiff_body(bytes: &[u8]) -> &[u8] {

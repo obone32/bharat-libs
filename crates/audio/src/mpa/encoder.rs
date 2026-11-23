@@ -3,7 +3,7 @@
 // Index loops follow the specification's pseudo-code (FilmCraft allows this lint workspace-wide).
 #![allow(clippy::needless_range_loop)]
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use super::tables::{self, AllocTable, SUBBANDS};
 use crate::mp3::filterbank::Polyphase;
@@ -171,7 +171,7 @@ struct ChannelPlan {
 /// returns the rest.
 ///
 /// ```
-/// use craft_audio::mpa::encoder::{Config, DELAY, Encoder};
+/// use bharat_audio::mpa::encoder::{Config, DELAY, Encoder};
 ///
 /// let left: Vec<f32> = (0..48_000).map(|i| (i as f32 * 0.05).sin() * 0.5).collect();
 /// let right = left.clone();
@@ -180,7 +180,7 @@ struct ChannelPlan {
 /// mp2.extend(enc.flush()); // pads with silence to the last input sample
 /// assert_eq!(mp2.len() % 576, 0); // 192 kbit/s at 48 kHz: 576 bytes per frame
 /// assert_eq!(DELAY, 481); // a decoder's output lags the input by this many samples
-/// # Ok::<(), craft_audio::mpa::encoder::EncodeError>(())
+/// # Ok::<(), bharat_audio::mpa::encoder::EncodeError>(())
 /// ```
 pub struct Encoder {
     cfg: Config,

@@ -6,7 +6,7 @@
 //! DCT / DST transforms and CABAC. The deblocking filter is on; SAO is not used.
 //!
 //! ```
-//! use craft_video::hevc::{Encoder, EncoderConfig, Frame};
+//! use bharat_video::hevc::{Encoder, EncoderConfig, Frame};
 //! let mut enc = Encoder::new(EncoderConfig::new(64, 48, 30, 1)).unwrap();
 //! let (y, c) = (vec![128u16; 64 * 48], vec![128u16; 32 * 24]);
 //! let packet = enc.encode(&Frame { y: &y, u: &c, v: &c, y_stride: 64, uv_stride: 32 }).unwrap();
@@ -27,8 +27,8 @@ mod params;
 mod tables;
 mod transform;
 
-use craft_media::bitstream::BitWriter;
-use craft_media::{CodecId, CodecParams};
+use bharat_media::bitstream::BitWriter;
+use bharat_media::{CodecId, CodecParams};
 use frame::{FrameCoder, SliceKind};
 use params::{LOG2_MAX_POC_LSB, LOG2_MIN_CB, MAX_MERGE_CAND, SeqParams};
 use params::{NAL_IDR_N_LP, NAL_TRAIL_R, nal_unit};

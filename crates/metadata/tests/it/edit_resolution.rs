@@ -3,7 +3,7 @@
 
 use std::borrow::Cow;
 
-use craft_metadata::edit::*;
+use bharat_metadata::edit::*;
 use proptest::prelude::{any, proptest};
 
 const X: u16 = 282;

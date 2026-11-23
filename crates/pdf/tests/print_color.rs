@@ -19,8 +19,8 @@ use backend::page::PageSettings;
 use backend::paint::{Fill, LinearGradient, MeshGradient, MeshPatch, SpreadMethod, Stop, SweepGradient};
 use backend::surface::Surface;
 use backend::{GroupColorSpace, SerializeSettings, Trapped};
-use craft_pdf::write::print::{self, PrintColor};
-use craft_pdf::write::{Metadata, WriteError, Writer, backend};
+use bharat_pdf::write::print::{self, PrintColor};
+use bharat_pdf::write::{Metadata, WriteError, Writer, backend};
 use hayro_syntax::object::{Array, Dict, Name, Object, Stream};
 
 const CMYK_PROFILE: &[u8] = include_bytes!("../../cms/profiles/photocraft-coated-cmyk.icc");
@@ -292,7 +292,7 @@ fn overprint_writes_op_and_opm_and_combines_with_inner_state() {
 fn overprint_mode_one_is_a_pdf_a_error() {
     let has_opm_error = |nonzero: bool| {
         let settings = SerializeSettings {
-            configuration: craft_pdf::write::configuration(PdfVersion::Pdf17, Some(Archival::A2_B)).unwrap(),
+            configuration: bharat_pdf::write::configuration(PdfVersion::Pdf17, Some(Archival::A2_B)).unwrap(),
             cmyk_profile: Some(backend::icc::ICCProfile::<4>::new(CMYK_PROFILE).unwrap()),
             ..Default::default()
         };
@@ -461,8 +461,8 @@ fn soft_masks_write_backdrop_in_the_group_space_and_transfer() {
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test::wasm_bindgen_test)]
 #[cfg_attr(not(target_arch = "wasm32"), test)]
 fn icc_cmyk_luminosity_masks_hide_the_object_outside_their_content() {
-    use craft_pdf::interpret::InterpreterSettings;
-    use craft_pdf::raster::{self, Options, RenderCache};
+    use bharat_pdf::interpret::InterpreterSettings;
+    use bharat_pdf::raster::{self, Options, RenderCache};
 
     let settings =
         SerializeSettings { no_device_cs: true, cmyk_profile: Some(backend::icc::ICCProfile::<4>::new(CMYK_PROFILE).unwrap()), ..cmyk_settings() };
@@ -491,7 +491,7 @@ fn icc_cmyk_luminosity_masks_hide_the_object_outside_their_content() {
     page.finish();
     let bytes = writer.finish().unwrap();
 
-    let doc = craft_pdf::open_slice(&bytes, None).unwrap();
+    let doc = bharat_pdf::open_slice(&bytes, None).unwrap();
     let options = Options { background: [255; 4], ..Default::default() };
     let raster = raster::render(&doc.pages()[0], &RenderCache::new(), &InterpreterSettings::default(), &options).unwrap();
     assert_eq!((raster.width, raster.height), (200, 60));
@@ -637,7 +637,7 @@ fn device_n_mixing_spots_and_process_writes_nchannel_attributes() {
 fn device_n_attributes_follow_the_pdf_version() {
     for version in [PdfVersion::Pdf14, PdfVersion::Pdf17] {
         let settings = SerializeSettings {
-            configuration: craft_pdf::write::configuration(version, None).unwrap(),
+            configuration: bharat_pdf::write::configuration(version, None).unwrap(),
             compress_content_streams: false,
             ..cmyk_settings()
         };
@@ -1124,7 +1124,7 @@ fn gray_stops_keep_their_exact_black_in_cmyk_shadings() {
     assert_eq!(shading_ends(&bytes).0, vec![0.0, 0.0, 0.0, 127.0 / 255.0]);
 }
 
-const FOGRA39: &[u8] = include_bytes!("../../cms/profiles/craft-coated-fogra39.icc");
+const FOGRA39: &[u8] = include_bytes!("../../cms/profiles/bharat-coated-fogra39.icc");
 
 fn text(dict: &Dict<'_>, key: &[u8]) -> Option<String> {
     dict.get::<hayro_syntax::object::String<'_>>(key).map(|s| String::from_utf8_lossy(s.as_bytes()).into_owned())
@@ -1239,7 +1239,7 @@ fn trapped_and_pdfx_version_are_written_to_info_and_xmp() {
 fn pdfa_print(version: PdfVersion, archival: Archival, pdfx_version: Option<&str>) -> Result<Vec<u8>, WriteError> {
     let settings = SerializeSettings {
         no_device_cs: true,
-        configuration: craft_pdf::write::configuration(version, Some(archival)).unwrap(),
+        configuration: bharat_pdf::write::configuration(version, Some(archival)).unwrap(),
         pdfx_version: pdfx_version.map(str::to_owned),
         ..print::settings(PrintColor::fogra39(FOGRA39)).unwrap()
     };

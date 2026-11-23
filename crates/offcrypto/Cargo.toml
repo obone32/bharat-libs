@@ -1,5 +1,5 @@
 [package]
-name = "craft-offcrypto"
+name = "bharat-offcrypto"
 description = "Clean-room Office document cryptography ([MS-OFFCRYPTO]): password-encrypted OOXML packages (agile and standard encryption) and the password hashes of document and sheet protection."
 version.workspace = true
 edition.workspace = true
@@ -11,8 +11,8 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-cfb = { workspace = true }
-craft-xml = { workspace = true }
+bharat-cfb = { workspace = true }
+bharat-xml = { workspace = true }
 thiserror = { workspace = true }
 base64 = "0.23"
 aes = "0.9"

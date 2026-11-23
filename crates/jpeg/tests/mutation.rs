@@ -1,7 +1,7 @@
 //! Deterministic mutation run over the test images and fuzz seeds: decoding corrupted input never panics and
 //! stays within the caller's limits.
 
-use craft_jpeg::{Bands, Limits, Samples, decode, frame};
+use bharat_jpeg::{Bands, Limits, Samples, decode, frame};
 
 /// Inputs and mutation counts. The 227×149 test images take tens of milliseconds each to decode
 /// in a debug build; the small fuzz seeds (SOF9 with restarts, 12-bit SOF9, SOF10, 12-bit SOF1)

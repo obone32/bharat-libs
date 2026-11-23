@@ -52,13 +52,13 @@ fn hostile_font_faces_do_not_panic() {
 fn each_font_is_declared_with_its_kind() {
     // §16.21 `style:font-face`: a reader without the font picks a like one by its generic family
     // and pitch; each use names its declaration (`style:font-name`).
-    let mut d = craft_wordmodel::Document::new();
-    let mono = craft_wordmodel::props::CharProps { font: Some("Courier New".into()), ..Default::default() };
-    let serif = craft_wordmodel::props::CharProps { font: Some("Georgia".into()), ..Default::default() };
-    let mut p = craft_wordmodel::Paragraph::with_text("code", mono);
+    let mut d = bharat_wordmodel::Document::new();
+    let mono = bharat_wordmodel::props::CharProps { font: Some("Courier New".into()), ..Default::default() };
+    let serif = bharat_wordmodel::props::CharProps { font: Some("Georgia".into()), ..Default::default() };
+    let mut p = bharat_wordmodel::Paragraph::with_text("code", mono);
     let end = p.text.len();
     p.insert_text(end, " prose", &serif).unwrap();
-    d.body = vec![craft_wordmodel::para_block(p)];
+    d.body = vec![bharat_wordmodel::para_block(p)];
     let saved = crate::text::export(&d).unwrap();
     let content = crate::text::tests::content_of(&saved);
     let styles = crate::text::tests::entry(&saved, "styles.xml");

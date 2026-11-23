@@ -8,8 +8,8 @@ use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
 use std::path::Path;
 
-use craft_tiff::makernote::{MakerNoteKind, parse_makernote};
-use craft_tiff::{Ifd, Tiff};
+use bharat_tiff::makernote::{MakerNoteKind, parse_makernote};
+use bharat_tiff::{Ifd, Tiff};
 use serde::{Deserialize, Serialize};
 
 use crate::strip_exif_header;
@@ -252,7 +252,7 @@ fn tiff_prefix<R: Read>(file: &mut R, head: &[u8], shown: &str) -> Result<Vec<u8
 fn tiff_make(bytes: &[u8]) -> TiffMake {
     let tiff = match Tiff::parse(bytes) {
         Ok(tiff) => tiff,
-        Err(craft_tiff::TiffError::Truncated(offset)) if offset < TIFF_META_MAX as u64 => return TiffMake::Unknown,
+        Err(bharat_tiff::TiffError::Truncated(offset)) if offset < TIFF_META_MAX as u64 => return TiffMake::Unknown,
         Err(_) => return TiffMake::Unreadable,
     };
     match tiff.ifds.first().and_then(|ifd| ifd.string(0x010f)) {
@@ -573,8 +573,8 @@ fn signed(v: i64) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use craft_tiff::tags;
-    use craft_tiff::{ByteOrder, IfdBuilder, TiffWriter, Value};
+    use bharat_tiff::tags;
+    use bharat_tiff::{ByteOrder, IfdBuilder, TiffWriter, Value};
 
     fn inline(tag: u16, ty: u16, count: u32, val: [u8; 4]) -> [u8; 12] {
         let mut e = [0u8; 12];

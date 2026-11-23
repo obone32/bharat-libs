@@ -76,7 +76,7 @@ pub(crate) fn assert_renderer_edges(graph: &LockGraph, svg: &PackageId) {
     for codec in ["gif", "image-webp"] {
         assert_eq!(graph.dependency(svg, codec), graph.dependency(&renderer, codec), "validator and selected renderer differ for {codec}");
     }
-    let codecs = graph.dependency(svg, "craft-image-codecs");
+    let codecs = graph.dependency(svg, "bharat-image-codecs");
     assert_eq!(
         graph.dependency(&codecs, "zune-jpeg"),
         graph.dependency(&renderer, "zune-jpeg"),
@@ -88,7 +88,7 @@ pub(crate) fn assert_renderer_edges(graph: &LockGraph, svg: &PackageId) {
 fn validated_renderer_dependency_edges_are_the_same_resolved_packages() {
     let file = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../Cargo.lock");
     let graph = LockGraph::parse(&std::fs::read_to_string(file).unwrap());
-    assert_renderer_edges(&graph, &graph.workspace_package("craft-svg"));
+    assert_renderer_edges(&graph, &graph.workspace_package("bharat-svg"));
 }
 
 #[test]
@@ -123,8 +123,8 @@ fn selected_renderer_graph_rejects_a_split_validator_backend() {
     use std::fmt::Write;
     let make = |split: bool| {
         let mut text = String::from(
-            "[[package]]\nname='craft-svg'\nversion='1'\ndependencies=['resvg', 'usvg', 'gif', 'image-webp', 'craft-image-codecs']\n\
-             [[package]]\nname='craft-image-codecs'\nversion='1'\ndependencies=['",
+            "[[package]]\nname='bharat-svg'\nversion='1'\ndependencies=['resvg', 'usvg', 'gif', 'image-webp', 'bharat-image-codecs']\n\
+             [[package]]\nname='bharat-image-codecs'\nversion='1'\ndependencies=['",
         );
         text.push_str(if split { "zune-jpeg 2" } else { "zune-jpeg 1" });
         text.push_str(
@@ -138,9 +138,9 @@ fn selected_renderer_graph_rejects_a_split_validator_backend() {
         LockGraph::parse(&text)
     };
     let matching = make(false);
-    assert_renderer_edges(&matching, &matching.workspace_package("craft-svg"));
+    assert_renderer_edges(&matching, &matching.workspace_package("bharat-svg"));
     let split = make(true);
-    assert!(std::panic::catch_unwind(|| assert_renderer_edges(&split, &split.workspace_package("craft-svg"))).is_err());
+    assert!(std::panic::catch_unwind(|| assert_renderer_edges(&split, &split.workspace_package("bharat-svg"))).is_err());
 }
 
 #[test]

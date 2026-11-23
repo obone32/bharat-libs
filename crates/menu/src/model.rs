@@ -4,7 +4,7 @@
 use std::hash::{DefaultHasher, Hash, Hasher};
 use std::ops::BitOr;
 
-use craft_keymap::{Chord, CommandRef};
+use bharat_keymap::{Chord, CommandRef};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MenuBar {
@@ -213,7 +213,7 @@ pub enum Builtin {
     /// [`crate::NativeMenu::take_clicks`] runs it.
     Minimize,
     /// Quit for an app without its own quit item: asks the window to close, through
-    /// [`craft_quit::on_menu_event`], so the app's unsaved-changes check runs.
+    /// [`bharat_quit::on_menu_event`], so the app's unsaved-changes check runs.
     Quit,
 }
 
@@ -221,10 +221,10 @@ impl Builtin {
     /// The command id.
     pub const fn id(self) -> &'static str {
         match self {
-            Builtin::Hide => "craft-menu.hide",
-            Builtin::HideOthers => "craft-menu.hide-others",
-            Builtin::Minimize => "craft-menu.minimize",
-            Builtin::Quit => craft_quit::QUIT_MENU_ID,
+            Builtin::Hide => "bharat-menu.hide",
+            Builtin::HideOthers => "bharat-menu.hide-others",
+            Builtin::Minimize => "bharat-menu.minimize",
+            Builtin::Quit => bharat_quit::QUIT_MENU_ID,
         }
     }
 

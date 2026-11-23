@@ -1,4 +1,4 @@
-use craft_keymap::{Chord, Key, KeyInput, Layout, Mods, Platform};
+use bharat_keymap::{Chord, Key, KeyInput, Layout, Mods, Platform};
 
 fn chord(text: &str) -> Chord {
     Chord::parse(text).unwrap_or_else(|e| panic!("{text}: {e}"))
@@ -221,7 +221,7 @@ fn labels_show_the_layouts_own_punctuation() {
     let russian = Layout::new().with_latin(false).with_char(Key::OpenBracket, 'х');
     assert_eq!(label(&russian, "Cmd+[", Platform::Linux), "Ctrl+Х");
     assert_eq!(label(&russian, "Cmd+C", Platform::Linux), "Ctrl+C");
-    assert_eq!(craft_keymap::Trigger::double(chord("[")).display_for(Platform::Linux, &russian), "Х Х");
+    assert_eq!(bharat_keymap::Trigger::double(chord("[")).display_for(Platform::Linux, &russian), "Х Х");
     assert_eq!(label(&Layout::new(), "Cmd+[", Platform::Linux), "Ctrl+[");
 }
 

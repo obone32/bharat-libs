@@ -289,7 +289,7 @@ fn embedded_fonts_are_listed_by_family() {
 /// before the archive is indexed, and such a file is not taken for a `.sketch`.
 #[test]
 fn an_archive_declaring_too_many_entries_is_refused_before_it_is_indexed() {
-    let bomb = craft_zip::zip64_entry_count_sample(MAX_ENTRIES + 1);
+    let bomb = bharat_zip::zip64_entry_count_sample(MAX_ENTRIES + 1);
     let e = Archive::open(&bomb).err().map(|e| e.to_string()).unwrap_or_default();
     assert!(e.contains(&format!("declares {} entries", MAX_ENTRIES + 1)), "{e}");
     assert!(!is_sketch(&bomb));

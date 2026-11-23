@@ -9,7 +9,7 @@ set -euo pipefail
 
 CLDR=48.2.1
 HERE=$(cd "$(dirname "$0")" && pwd)
-CACHE=${CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/craft-i18n-data}
+CACHE=${CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/bharat-i18n-data}
 mkdir -p "$CACHE"
 
 TMPDIR=$CACHE icu4x-datagen --format blob --overwrite \

@@ -1614,7 +1614,7 @@ fn tab_labels_that_do_not_fit_are_truncated_inside_their_tab_and_named_in_a_tool
     );
 }
 
-// Ported from storytold/craft-libs#110 by @Zenodeon.
+// Ported from obone32/bharat-libs#110 by @Zenodeon.
 
 #[test]
 /// A floating resize keeps drag ownership when another host control rewrites the owned-interaction

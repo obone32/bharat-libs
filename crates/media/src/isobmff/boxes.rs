@@ -6,7 +6,7 @@
 //! `uuid` boxes or HEIF `meta` items.
 //!
 //! ```
-//! use craft_media::isobmff::boxes::{BoxIter, Reader};
+//! use bharat_media::isobmff::boxes::{BoxIter, Reader};
 //!
 //! // `ftyp` with major brand `crx `, then a `uuid` box with one child.
 //! let mut file = vec![0, 0, 0, 16, b'f', b't', b'y', b'p', b'c', b'r', b'x', b' ', 0, 0, 0, 1];
@@ -27,7 +27,7 @@
 //!         }
 //!     }
 //! }
-//! # Ok::<(), craft_media::isobmff::Error>(())
+//! # Ok::<(), bharat_media::isobmff::Error>(())
 //! ```
 //!
 //! Nothing here recurses. A caller that walks nested boxes bounds its own depth and box count.

@@ -5,8 +5,8 @@
 //! ColorSpace = sRGB as sRGB, unless Preferences › File Handling › Ignore EXIF Profile Tag is on.
 //! Anything malformed, truncated or missing reads as no tag.
 
-// Share parsing and malformed-input policy with every craft-metadata caller.
-pub use craft_metadata::edit::{EXIF_COLOR_SPACE_SRGB, exif_color_space};
+// Share parsing and malformed-input policy with every bharat-metadata caller.
+pub use bharat_metadata::edit::{EXIF_COLOR_SPACE_SRGB, exif_color_space};
 
 #[cfg(test)]
 mod tests {

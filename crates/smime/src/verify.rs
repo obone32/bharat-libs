@@ -14,7 +14,7 @@ use der::{Decode, Encode};
 use crate::algorithms::{self, Fault, Hash};
 use crate::cert::Cert;
 use crate::chain::{self, Anchors};
-use craft_ber::{self as ber, Tlv};
+use bharat_ber::{self as ber, Tlv};
 
 /// The most certificates read from one message.
 pub const MAX_CERTS: usize = 32;

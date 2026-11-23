@@ -2,13 +2,13 @@
 
 use std::collections::BTreeMap;
 
-use craft_keymap::chord::foreign::ReadNote;
-use craft_keymap::chord::foreign::{Flavor, ForeignError};
-use craft_keymap::import::{
+use bharat_keymap::chord::foreign::ReadNote;
+use bharat_keymap::chord::foreign::{Flavor, ForeignError};
+use bharat_keymap::import::{
     Failed, FailedChange, MAX_IMPORT_ENTRIES, MAX_IMPORT_TEXT, MAX_KEYS_PER_ENTRY, MAX_SUGGESTIONS, NoChangeReason, SkipReason, Skipped,
     UnmatchedReason, normalize_label,
 };
-use craft_keymap::{
+use bharat_keymap::{
     Bindable, Binding, CommandRef, ContextRule, ForeignEntry, ForeignKey, ForeignSet, ImportOptions, ImportReport, Keymap, Kind, MAX_COMMANDS,
     NoneDefined, Overrides, Platform, Scope, Scopes, Start, plan, reserved,
 };

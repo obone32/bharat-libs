@@ -183,7 +183,7 @@ validated_string!(
     validate_id
 );
 validated_string!(
-    /// One Craft app, such as `photocraft`.
+    /// One Bharat app, such as `photocraft`.
     AppId,
     validate_id
 );

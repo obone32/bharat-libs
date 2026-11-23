@@ -211,7 +211,7 @@ mod tests {
     #[test]
     fn file_sources_read_like_a_buffer() {
         let v: Vec<u8> = (0..=255).collect();
-        let dir = craft_media_testkit::private_dir("source");
+        let dir = bharat_media_testkit::private_dir("source");
         let path = dir.join("source.bin");
         std::fs::write(&path, &v).unwrap();
         let f = std::fs::File::open(&path).unwrap();

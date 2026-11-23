@@ -2,7 +2,7 @@
 
 mod common;
 
-use craft_media::isobmff::*;
+use bharat_media::isobmff::*;
 use std::io::Cursor;
 
 struct Rng(u64);
@@ -178,7 +178,7 @@ fn mutated_ffmpeg_fixtures_never_panic() {
 #[test]
 fn hostile_hammer_never_panics() {
     for (i, f) in synthetic_files().iter().enumerate() {
-        craft_media_testkit::hostile::hammer(&format!("isobmff seed {i}"), f, 20_000, |d| {
+        bharat_media_testkit::hostile::hammer(&format!("isobmff seed {i}"), f, 20_000, |d| {
             exercise(d);
         });
     }

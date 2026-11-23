@@ -1,8 +1,8 @@
 //! Decode/encode throughput. Run with
-//! `cargo test --release -p craft-video --features prores --test prores perf:: -- --ignored --nocapture`.
+//! `cargo test --release -p bharat-video --features prores --test prores perf:: -- --ignored --nocapture`.
 
 use crate::common;
-use craft_video::prores::*;
+use bharat_video::prores::*;
 use std::time::Instant;
 
 /// A 1080p frame whose HQ encoding uses the full nominal rate (detailed, noisy content).

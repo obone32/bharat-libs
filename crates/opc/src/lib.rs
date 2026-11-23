@@ -13,7 +13,7 @@
 //! The limits have no defaults: each format keeps its own numbers.
 //!
 //! ```
-//! use craft_opc::{Limits, Package, PackageOut, RelsOut};
+//! use bharat_opc::{Limits, Package, PackageOut, RelsOut};
 //!
 //! let mut out = PackageOut::default();
 //! out.xml_part("word/document.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml", b"<w:document/>".to_vec());
@@ -26,7 +26,7 @@
 //! let main = pkg.rels("").first("officeDocument").map(|r| r.target.clone());
 //! assert_eq!(main.as_deref(), Some("word/document.xml"));
 //! assert!(pkg.content_types().of("word/document.xml").is_some_and(|t| t.ends_with("main+xml")));
-//! # Ok::<(), craft_opc::Error>(())
+//! # Ok::<(), bharat_opc::Error>(())
 //! ```
 
 #[cfg(doctest)]
@@ -39,20 +39,20 @@ mod rels;
 mod write;
 
 #[cfg(any(test, feature = "test-support"))]
-pub use craft_zip::zip64_entry_count_sample;
+pub use bharat_zip::zip64_entry_count_sample;
 
 /// Refuse `bytes` when the end record the `zip` crate would use declares more than
-/// `max_entries` entries, before anything is indexed ([`craft_zip::check_entry_count`]).
+/// `max_entries` entries, before anything is indexed ([`bharat_zip::check_entry_count`]).
 pub fn check_entry_count(bytes: &[u8], max_entries: u64) -> Result<(), Error> {
-    craft_zip::check_entry_count(bytes, max_entries).map_err(zip_error)
+    bharat_zip::check_entry_count(bytes, max_entries).map_err(zip_error)
 }
 
-fn zip_error(e: craft_zip::Error) -> Error {
+fn zip_error(e: bharat_zip::Error) -> Error {
     match e {
-        craft_zip::Error::TooManyEntries { declared, limit } => Error::TooManyEntries { declared, limit },
-        craft_zip::Error::TooManyEndRecords(n) => Error::TooManyEndRecords(n),
-        craft_zip::Error::Write(m) => Error::Write(m),
-        craft_zip::Error::NotZip(m) => Error::Zip(m),
+        bharat_zip::Error::TooManyEntries { declared, limit } => Error::TooManyEntries { declared, limit },
+        bharat_zip::Error::TooManyEndRecords(n) => Error::TooManyEndRecords(n),
+        bharat_zip::Error::Write(m) => Error::Write(m),
+        bharat_zip::Error::NotZip(m) => Error::Zip(m),
         e => Error::Zip(e.to_string()),
     }
 }
@@ -124,7 +124,7 @@ pub enum Error {
     PackageTooLarge { limit: u64 },
     /// An XML part could not be read.
     #[error("{part}: {error}")]
-    Xml { part: String, error: craft_xml::Error },
+    Xml { part: String, error: bharat_xml::Error },
     /// The archive could not be written.
     #[error("could not write the package: {0}")]
     Write(String),

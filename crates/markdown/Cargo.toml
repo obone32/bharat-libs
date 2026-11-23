@@ -1,6 +1,6 @@
 [package]
-name = "craft-markdown"
-description = "Markdown read and written: a CommonMark subset with GitHub tables and strikethrough, to and from the craft-flow model and a craft-wordmodel Document."
+name = "bharat-markdown"
+description = "Markdown read and written: a CommonMark subset with GitHub tables and strikethrough, to and from the bharat-flow model and a bharat-wordmodel Document."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,6 +11,6 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-flow = { workspace = true }
-craft-html = { workspace = true }
-craft-wordmodel = { workspace = true }
+bharat-flow = { workspace = true }
+bharat-html = { workspace = true }
+bharat-wordmodel = { workspace = true }

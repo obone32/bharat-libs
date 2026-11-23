@@ -1,4 +1,4 @@
-//! Format detection, probing and decoding. The native path (craft-media's demuxers, the WAV and
+//! Format detection, probing and decoding. The native path (bharat-media's demuxers, the WAV and
 //! AIFF readers, and [`TrackDecoder`]) comes first; symphonia decodes the rest.
 //!
 //! `native.rs` opens a file natively or returns `None`, and `symph.rs` is the fallback, so a new
@@ -133,7 +133,7 @@ fn detect_by_ext(ext: &str) -> Option<Container> {
 /// `".flac"`); `None` when neither says.
 ///
 /// ```
-/// use craft_audio::{Container, detect_container};
+/// use bharat_audio::{Container, detect_container};
 ///
 /// assert_eq!(detect_container(b"fLaC\0\0\0\x22", None), Some(Container::Flac));
 /// assert_eq!(detect_container(&[0; 16], Some("wav")), Some(Container::Wav));
@@ -218,8 +218,8 @@ enum Inner<'a> {
 /// first; their decoded audio still streams.
 ///
 /// ```no_run
-/// # fn demo() -> craft_audio::Result<()> {
-/// use craft_audio::{DecodeOptions, Decoder};
+/// # fn demo() -> bharat_audio::Result<()> {
+/// use bharat_audio::{DecodeOptions, Decoder};
 ///
 /// let file = std::fs::File::open("long-recording.m4a")?;
 /// let mut dec = Decoder::open(file, Some("m4a"), &DecodeOptions::default())?;
@@ -308,8 +308,8 @@ impl<'a> Decoder<'a> {
     /// when they give no length, the info after decoding the rest of the track to count it.
     ///
     /// ```no_run
-    /// # fn demo() -> craft_audio::Result<()> {
-    /// use craft_audio::{DecodeOptions, Decoder};
+    /// # fn demo() -> bharat_audio::Result<()> {
+    /// use bharat_audio::{DecodeOptions, Decoder};
     ///
     /// let info = Decoder::open(std::fs::File::open("take.mp3")?, Some("mp3"), &DecodeOptions::default())?.probe()?;
     /// println!("{:.1} s", info.duration_secs());
@@ -359,7 +359,7 @@ impl<'a> Decoder<'a> {
 ///
 /// ```
 /// # #[cfg(feature = "pcm-encode")] {
-/// use craft_audio::{AudioBuffer, ChannelLayout, CodecId, Container, EncodeOptions, encode, probe};
+/// use bharat_audio::{AudioBuffer, ChannelLayout, CodecId, Container, EncodeOptions, encode, probe};
 ///
 /// let wav = encode(&AudioBuffer::new(48_000, 2, 4800), &EncodeOptions::default()).unwrap();
 /// let info = probe(&wav, Some("wav")).unwrap();
@@ -375,9 +375,9 @@ pub fn probe(bytes: &[u8], ext_hint: Option<&str>) -> Result<AudioInfo> {
 ///
 /// ```
 /// # #[cfg(feature = "pcm-encode")] {
-/// use craft_audio::{AudioBuffer, EncodeOptions, encode};
+/// use bharat_audio::{AudioBuffer, EncodeOptions, encode};
 /// let wav = encode(&AudioBuffer::new(48_000, 2, 4800), &EncodeOptions::default()).unwrap();
-/// use craft_audio::{DecodeOptions, probe_with};
+/// use bharat_audio::{DecodeOptions, probe_with};
 ///
 /// let info = probe_with(&wav, Some("wav"), &DecodeOptions::default().with_track(0)).unwrap();
 /// assert_eq!((info.channels, info.frames), (2, 4800));
@@ -394,7 +394,7 @@ pub fn probe_with(bytes: &[u8], ext_hint: Option<&str>, opts: &DecodeOptions) ->
 ///
 /// ```
 /// # #[cfg(all(feature = "flac-encode", feature = "symphonia"))] {
-/// use craft_audio::{AudioBuffer, EncodeFormat, EncodeOptions, decode, encode};
+/// use bharat_audio::{AudioBuffer, EncodeFormat, EncodeOptions, decode, encode};
 ///
 /// let tone: Vec<f32> = (0..4800).map(|i| (i as f32 * 0.05).sin() * 0.5).collect();
 /// let flac = encode(&AudioBuffer { sample_rate: 48_000, channels: vec![tone] }, &EncodeOptions::new(EncodeFormat::Flac)).unwrap();
@@ -412,9 +412,9 @@ pub fn decode(bytes: &[u8], ext_hint: Option<&str>) -> Result<(AudioInfo, AudioB
 ///
 /// ```
 /// # #[cfg(feature = "pcm-encode")] {
-/// use craft_audio::{AudioBuffer, EncodeOptions, encode};
+/// use bharat_audio::{AudioBuffer, EncodeOptions, encode};
 /// let wav = encode(&AudioBuffer::new(48_000, 2, 4800), &EncodeOptions::default()).unwrap();
-/// use craft_audio::{AudioError, DecodeOptions, decode_with};
+/// use bharat_audio::{AudioError, DecodeOptions, decode_with};
 ///
 /// let (_, buf) = decode_with(&wav, None, &DecodeOptions::default()).unwrap();
 /// assert_eq!(buf.frames(), 4800);
@@ -478,9 +478,9 @@ fn fit_channels(info: &mut AudioInfo, decoded: Option<usize>) {
 ///
 /// ```
 /// # #[cfg(feature = "pcm-encode")] {
-/// use craft_audio::{AudioBuffer, EncodeOptions, encode};
+/// use bharat_audio::{AudioBuffer, EncodeOptions, encode};
 /// let wav = encode(&AudioBuffer::new(48_000, 2, 4800), &EncodeOptions::default()).unwrap();
-/// use craft_audio::{CodecId, tracks};
+/// use bharat_audio::{CodecId, tracks};
 ///
 /// let list = tracks(&wav, None).unwrap();
 /// assert_eq!((list.len(), list[0].codec, list[0].channels), (1, CodecId::Pcm, Some(2)));
@@ -493,8 +493,8 @@ pub fn tracks(bytes: &[u8], ext_hint: Option<&str>) -> Result<Vec<TrackInfo>> {
 /// [`tracks`] for a file read from a source.
 ///
 /// ```no_run
-/// # fn demo() -> craft_audio::Result<()> {
-/// for t in craft_audio::tracks_of(std::fs::File::open("interview.mkv")?, Some("mkv"))? {
+/// # fn demo() -> bharat_audio::Result<()> {
+/// for t in bharat_audio::tracks_of(std::fs::File::open("interview.mkv")?, Some("mkv"))? {
 ///     println!("track {}: {}", t.index, t.codec.name());
 /// }
 /// # Ok(()) }
@@ -579,7 +579,7 @@ mod native_only_tests {
     #[test]
     fn a_failed_header_read_is_an_io_error() {
         struct Failing;
-        impl craft_media::ByteSource for Failing {
+        impl bharat_media::ByteSource for Failing {
             fn len(&self) -> u64 {
                 1000
             }
@@ -604,9 +604,9 @@ mod native_only_tests {
     /// A source that fails past its first 64 KiB fails inside the demuxer: still an I/O error.
     #[test]
     fn a_failed_read_inside_the_demuxer_is_an_io_error() {
-        use craft_media::matroska::{LacingMode, MkvWriter, MuxOptions, TrackKind, TrackSpec};
+        use bharat_media::matroska::{LacingMode, MkvWriter, MuxOptions, TrackKind, TrackSpec};
         struct FailsLate(Vec<u8>);
-        impl craft_media::ByteSource for FailsLate {
+        impl bharat_media::ByteSource for FailsLate {
             fn len(&self) -> u64 {
                 self.0.len() as u64
             }

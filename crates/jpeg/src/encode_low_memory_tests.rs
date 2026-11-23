@@ -88,7 +88,7 @@ fn checked_admission_matches_original_without_panics() {
     }
 }
 
-// Generated with the immutable pre-change encoder at craft-libs
+// Generated with the immutable pre-change encoder at bharat-libs
 // 937ac93c5cf3cd4b6a81e195b078fe161eb081b9, not the refactored token-retaining path.
 // Odd chroma edges and 1025/2049-row inputs exercise multi-row restart bands.
 #[test]

@@ -1,5 +1,5 @@
 [package]
-name = "craft-stencilcraft-document"
+name = "bharat-stencilcraft-document"
 description = "StencilCraft document model, validation, geometry, and native file codec"
 version.workspace = true
 edition.workspace = true
@@ -11,9 +11,9 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-atomic = { workspace = true }
-craft-stencilcraft-format = { workspace = true }
-craft-svg = { workspace = true }
+bharat-atomic = { workspace = true }
+bharat-stencilcraft-format = { workspace = true }
+bharat-svg = { workspace = true }
 kurbo = { workspace = true, features = ["serde"] }
 serde = { workspace = true, features = ["rc"] }
 serde_json = { workspace = true }

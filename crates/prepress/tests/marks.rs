@@ -1,12 +1,12 @@
 //! Printer's marks: layout from `Marks::new`, and `Marks::draw` rendered back through `plates`.
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_pdf::write::backend::SerializeSettings;
-use craft_pdf::write::backend::geom::Size;
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::{Metadata, Writer};
-use craft_prepress::marks::{BAR_PATCHES, Rect};
-use craft_prepress::{InkId, MarkOptions, Marks, MarksError, Options, Process, plates};
+use bharat_pdf::write::backend::SerializeSettings;
+use bharat_pdf::write::backend::geom::Size;
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::{Metadata, Writer};
+use bharat_prepress::marks::{BAR_PATCHES, Rect};
+use bharat_prepress::{InkId, MarkOptions, Marks, MarksError, Options, Process, plates};
 
 /// A 200 × 100 pt trim at (100, 100).
 const TRIM: Rect = Rect { x0: 100.0, y0: 100.0, x1: 300.0, y1: 200.0 };
@@ -126,7 +126,7 @@ fn bad_options_and_boxes_are_errors() {
 }
 
 /// `m` drawn on a sheet-sized page, rendered to plates at 72 dpi (one pixel per point).
-fn render(m: &Marks) -> craft_prepress::Plates {
+fn render(m: &Marks) -> bharat_prepress::Plates {
     let mut writer = Writer::new(SerializeSettings::default(), Metadata::default());
     let mut page = writer.document_mut().start_page_with(PageSettings::new(Size::from_wh(m.sheet.width() as f32, m.sheet.height() as f32).unwrap()));
     let mut surface = page.surface();

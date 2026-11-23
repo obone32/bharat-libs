@@ -1,7 +1,7 @@
 //! `content.xml`: the document body's tables, read as a stream of events.
 
-use craft_sheet::{CellRef, MAX_COLS, MAX_ROWS, Range};
-use craft_xml::{Canonical, Doctype, Event, Options as XmlOptions};
+use bharat_sheet::{CellRef, MAX_COLS, MAX_ROWS, Range};
+use bharat_xml::{Canonical, Doctype, Event, Options as XmlOptions};
 
 use crate::model::{Cell, Sheet, ValueType, Workbook};
 use crate::{Error, Options};
@@ -106,7 +106,7 @@ struct Import<'o> {
 pub fn read_content(bytes: &[u8], options: &Options) -> Result<Workbook, Error> {
     let canonical = Canonical::new(NAMESPACES);
     let xml = XmlOptions { doctype: Doctype::Reject, ..XmlOptions::canonical(&canonical).strict() };
-    let text = craft_xml::to_utf8(bytes);
+    let text = bharat_xml::to_utf8(bytes);
     let mut events = xml.events(&text);
     let mut import = Import {
         options,

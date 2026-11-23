@@ -4,8 +4,8 @@
 use crate::unpack::inflate;
 use crate::unpack::{f16_to_f32, f24_to_f32, read_u16s, undo_diff_u16, undo_float_predictor, unpack_lsb, unpack_msb, unpack_words32_msb_with};
 use crate::{Limits, RawData, RawError, Result, ljpeg};
-use craft_tiff::image::{Chunk, ImageInfo, chunk_bytes};
-use craft_tiff::{ByteOrder, tags::compression as comp};
+use bharat_tiff::image::{Chunk, ImageInfo, chunk_bytes};
+use bharat_tiff::{ByteOrder, tags::compression as comp};
 use rayon::prelude::*;
 
 /// Bit packing for uncompressed integer data with bit depths other than 8/16.
@@ -42,8 +42,8 @@ pub(crate) fn check_image(data: &[u8], info: &ImageInfo, limits: &Limits) -> Res
         return Err(RawError::Corrupt("no image data chunks".into()));
     }
     // every visible sample needs a chunk: a short offsets table would leave zero-filled (black) regions.
-    // Count the table, not `chunks`: craft-tiff builds at most one descriptor per byte of file
-    // (storytold/craft-libs#827), so a grid of tiles sharing one payload lists fewer chunks than the
+    // Count the table, not `chunks`: bharat-tiff builds at most one descriptor per byte of file
+    // (obone32/bharat-libs#827), so a grid of tiles sharing one payload lists fewer chunks than the
     // table declares and would be refused here for a short file rather than for the data it holds.
     let (across, down) = info.grid();
     let planes = if info.planar == 2 { cpp } else { 1 };
@@ -705,13 +705,13 @@ mod place_tests {
 #[cfg(feature = "dng")]
 mod lossy_tests {
     use super::*;
-    use craft_tiff::image::Layout;
+    use bharat_tiff::image::Layout;
 
     /// 65 536 tiles all pointing at the same 256 bytes: the image's samples can't come from them,
     /// and nothing of its size is allocated to find that out.
     #[test]
     fn tiles_sharing_one_payload_count_its_bytes_once() {
-        // (longer than its tile count: craft-tiff builds at most one chunk per byte of file, and a shorter
+        // (longer than its tile count: bharat-tiff builds at most one chunk per byte of file, and a shorter
         // file is refused for its missing chunks before the bytes are counted)
         let file = vec![0u8; 65_536 + 8];
         let info = ImageInfo {
@@ -1077,8 +1077,8 @@ mod lossy_tests {
 mod budget_tests {
     use super::*;
     use crate::ljpeg;
-    use craft_tiff::image::Layout;
-    use craft_tiff::tags::photometric;
+    use bharat_tiff::image::Layout;
+    use bharat_tiff::tags::photometric;
 
     /// `w`×`h` CFA image in `tile`×`tile` lossless-JPEG tiles that all point at the same `payload` bytes at offset 0.
     fn aliased(w: u32, h: u32, tile: u32, payload: u64) -> ImageInfo {

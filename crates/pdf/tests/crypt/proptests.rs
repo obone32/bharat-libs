@@ -17,7 +17,7 @@
 //! - the AES-CBC and RC4 primitives invert each other for any key length, since `/Length` and
 //!   crypt filters from a damaged file reach them with shapes `create` would never build.
 
-use craft_pdf::crypt::{
+use bharat_pdf::crypt::{
     Algorithm, Auth, CryptError, Method, NewEncryption, PADDING, SecurityHandler, StreamKind, aes_cbc_decrypt, aes_cbc_encrypt, create,
     create_legacy, effective_password, pdfdoc_byte, rc4,
 };

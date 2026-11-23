@@ -3,13 +3,13 @@
 //!
 //! ```sh
 //! # One word per line in, `word<TAB>1` (right) or `word<TAB>0` out, and the time taken on stderr.
-//! cargo run --release -p craft-proof --example affix_check -- check de_DE.aff de_DE.dic < words.txt
+//! cargo run --release -p bharat-proof --example affix_check -- check de_DE.aff de_DE.dic < words.txt
 //! # 2000 candidates (forms of random stems glued together, some with a letter changed), seed 7.
-//! cargo run --release -p craft-proof --example affix_check -- gen de_DE.aff de_DE.dic 2000 7 > words.txt
+//! cargo run --release -p bharat-proof --example affix_check -- gen de_DE.aff de_DE.dic 2000 7 > words.txt
 //! # Single words instead: forms of random stems, and stems with another stem's ending.
-//! cargo run --release -p craft-proof --example affix_check -- single de_DE.aff de_DE.dic 2000 7 > words.txt
+//! cargo run --release -p bharat-proof --example affix_check -- single de_DE.aff de_DE.dic 2000 7 > words.txt
 //! # Suggestions: `word<TAB>microseconds<TAB>suggestion,suggestion…` per line.
-//! cargo run --release -p craft-proof --example affix_check -- suggest de_DE.aff de_DE.dic < typos.txt
+//! cargo run --release -p bharat-proof --example affix_check -- suggest de_DE.aff de_DE.dic < typos.txt
 //! ```
 //!
 //! The answers are compared with `hunspell -d <path without extension> -l` on the same words
@@ -17,12 +17,12 @@
 
 use std::io::{BufRead, Write};
 
-use craft_proof::affix::AffixDict;
+use bharat_proof::affix::AffixDict;
 
 fn load(aff: &str, dic: &str) -> Result<AffixDict, String> {
     let aff = std::fs::read(aff).map_err(|e| format!("{aff}: {e}"))?;
     let dic = std::fs::read(dic).map_err(|e| format!("{dic}: {e}"))?;
-    let (aff, dic) = craft_proof::hunspell::decode(&aff, &dic)?;
+    let (aff, dic) = bharat_proof::hunspell::decode(&aff, &dic)?;
     AffixDict::from_hunspell(&aff, &dic, &[])
 }
 

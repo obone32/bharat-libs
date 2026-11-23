@@ -4,7 +4,7 @@
 use crate::common;
 
 use common::synth;
-use craft_video::h264::*;
+use bharat_video::h264::*;
 
 fn crf(w: u32, h: u32, fps: u32, f: f32) -> Encoder {
     let mut c = EncoderConfig::new(w, h, fps, 1);
@@ -39,11 +39,11 @@ fn first_access_unit_carries_the_settings() {
     packets.extend(enc.flush());
     let text = |p: &Packet| String::from_utf8_lossy(&p.data).into_owned();
     let first = text(&packets[0]);
-    for want in ["craft-h264enc", "rc=crf crf=18.0", "profile=high", "level=", "bframes=2", "cabac=1"] {
+    for want in ["bharat-h264enc", "rc=crf crf=18.0", "profile=high", "level=", "bframes=2", "cabac=1"] {
         assert!(first.contains(want), "{want} missing from {first:?}");
     }
     // once per stream
-    assert!(packets.iter().skip(1).all(|p| !text(p).contains("craft-h264enc")));
+    assert!(packets.iter().skip(1).all(|p| !text(p).contains("bharat-h264enc")));
 }
 
 #[test]
@@ -56,5 +56,5 @@ fn the_writer_named_in_the_stream_is_the_configured_one() {
     packets.extend(enc.flush());
     let first = String::from_utf8_lossy(&packets[0].data).into_owned();
     assert!(first.contains("SomeApp 1.2.3 - clean-room H.264 encoder - options: "), "{first:?}");
-    assert!(!first.contains("craft-h264enc"), "{first:?}");
+    assert!(!first.contains("bharat-h264enc"), "{first:?}");
 }

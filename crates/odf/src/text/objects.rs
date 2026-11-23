@@ -6,8 +6,8 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use craft_flow::OdfObject;
-use craft_flow::odf_object::MAX_FILES;
+use bharat_flow::OdfObject;
+use bharat_flow::odf_object::MAX_FILES;
 
 /// The media type of an OLE object (§10.4.7; LibreOffice's manifest names it so).
 pub(in crate::text) const OLE_MIME: &str = "application/vnd.sun.star.oleobject";

@@ -3,7 +3,7 @@
 //! (a few KB of colour data); the importer reads only the profile's name, the `desc` tag, so the stub
 //! (a 128-byte header, one `desc` tag, no colour data, made here) imports identically.
 //!
-//! `cargo run -p craft-aep --example stubicc -- in.aep out.aep`
+//! `cargo run -p bharat-aep --example stubicc -- in.aep out.aep`
 //!
 //! It handles:
 //! - the JSON value `"colorProfileData": "<base64>"` in any chunk of an .aep and anywhere in the text
@@ -15,7 +15,7 @@
 //! before anything is written. Check the result independently (the corpus has
 //! `tools/aep/inspect-embedded.py`), not by this tool's own count.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
-use craft_aep::{Body, Chunk};
+use bharat_aep::{Body, Chunk};
 
 const B64: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
@@ -284,9 +284,9 @@ fn main() {
     let out = if input.ends_with(".aepx") {
         stub_text(&bytes, &mut tally)
     } else {
-        let mut file = craft_aep::parse(&bytes).or_exit("parse the input");
+        let mut file = bharat_aep::parse(&bytes).or_exit("parse the input");
         walk(&mut file.chunks, &mut tally);
-        craft_aep::write(&file).or_exit("write the output")
+        bharat_aep::write(&file).or_exit("write the output")
     };
     if !tally.failed.is_empty() {
         exit(&format!("nothing written: {} profile(s) could not be replaced:\n{}", tally.failed.len(), tally.failed.join("\n")));

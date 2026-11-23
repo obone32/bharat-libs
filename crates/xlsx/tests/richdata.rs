@@ -1,7 +1,7 @@
 //! Pictures in cells and dynamic-array metadata: written, read back, and hostile metadata.
 
-use craft_xlsx::testing::workbook;
-use craft_xlsx::{CellPicture, Document, Error, Limits, Package};
+use bharat_xlsx::testing::workbook;
+use bharat_xlsx::{CellPicture, Document, Error, Limits, Package};
 
 fn png(w: u32, h: u32, tag: u8) -> Vec<u8> {
     let mut b = b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR".to_vec();
@@ -95,7 +95,7 @@ fn hostile_metadata_reads_what_it_can() {
     let b = with_part(&good, "xl/media/cellImage1.png", |_| "GIF89a".into());
     assert_eq!(pictures(&b).0, [false]);
     // More records than the limit is refused.
-    let many = "<bk><rc t=\"1\" v=\"0\"/></bk>".repeat(craft_xlsx::MAX_RECORDS + 1);
+    let many = "<bk><rc t=\"1\" v=\"0\"/></bk>".repeat(bharat_xlsx::MAX_RECORDS + 1);
     let b = with_part(&good, "xl/metadata.xml", |m| m.replace(r#"<bk><rc t="1" v="0"/></bk>"#, &many));
     let mut p = Package::open(&b, &Limits::default()).unwrap();
     assert!(matches!(p.cell_pictures(), Err(Error::TooLarge(_))));
