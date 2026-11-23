@@ -52,14 +52,14 @@ fn read_text(path: &Path) -> Result<Option<String>, FlagError> {
     String::from_utf8(bytes).map(Some).map_err(|_| FlagError::Unreadable(format!("{} is not UTF-8 text", path.display())))
 }
 
-/// The flags of this run: [`default_path`] and `CRAFT_FLAGS`. Never fails; what could not be
+/// The flags of this run: [`default_path`] and `BHARAT_FLAGS`. Never fails; what could not be
 /// read is in [`Flags::problems`].
 pub fn load() -> Flags {
     let named = std::env::var_os(FILE_ENV).is_some_and(|p| !p.is_empty());
     load_from(default_path(), named, std::env::var(ENV).ok().as_deref())
 }
 
-/// [`load`] from `path`; `named` when `CRAFT_FLAGS_FILE` chose it, so a missing file is worth a
+/// [`load`] from `path`; `named` when `BHARAT_FLAGS_FILE` chose it, so a missing file is worth a
 /// word (the usual file not existing yet is not).
 pub(crate) fn load_from(path: Option<PathBuf>, named: bool, env: Option<&str>) -> Flags {
     let Some(path) = path else {
@@ -115,5 +115,5 @@ pub fn set(path: &Path, id: &str, on: bool) -> Result<(), FlagError> {
     if text.len() as u64 > MAX_FILE_BYTES {
         return Err(FlagError::Unreadable(format!("the flags file would grow past {MAX_FILE_BYTES} bytes")));
     }
-    craft_atomic::atomic_write(path, text.as_bytes()).map_err(FlagError::Io)
+    bharat_atomic::atomic_write(path, text.as_bytes()).map_err(FlagError::Io)
 }

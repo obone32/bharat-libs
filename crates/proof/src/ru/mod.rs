@@ -364,8 +364,8 @@ mod tests {
     }
 
     #[cfg_attr(
-        not(craft_proof_embed = "ru"),
-        ignore = "needs the ru Language data (CRAFT_I18N_DIR; ru-extra.txt is embedded in every build that has it)"
+        not(bharat_proof_embed = "ru"),
+        ignore = "needs the ru Language data (BHARAT_I18N_DIR; ru-extra.txt is embedded in every build that has it)"
     )]
     #[test]
     fn russian_words_are_correct() {
@@ -485,7 +485,7 @@ mod tests {
         assert!(!crate::is_correct_in_with("м²", lang, &check_digits), "a superscript is a number too");
         assert!(crate::is_correct_in_with("2026", lang, &check_digits), "numbers alone stay correct");
         assert!(is_correct("ПРЕВЕТ"), "direct checks keep the defaults");
-        // The cased-letter rule (craft-libs#485): capitals and letterless parts are abbreviations.
+        // The cased-letter rule (bharat-libs#485): capitals and letterless parts are abbreviations.
         assert!(crate::is_correct_in_with("ИИ-2", lang, &check_digits) && crate::is_correct_in_with("ТУ-154М", lang, &check_digits));
     }
 }

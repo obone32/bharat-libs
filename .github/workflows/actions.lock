@@ -111,7 +111,7 @@ workflows:
     '.github/workflows/workspace.yml':
         - 'actions/checkout@v7.0.1'
         - 'step-security/harden-runner@v2.22.4'
-        - 'storytold/craft-common-actions@d65d611f0ef67eaa94039351be5afce61102dbb0'
+        - 'storytold/bharat-common-actions@d65d611f0ef67eaa94039351be5afce61102dbb0'
 dependencies:
     'actions/cache@v6.1.0':
         ref: 'v6.1.0'
@@ -153,7 +153,7 @@ dependencies:
         commit: 'sha1-76747d22a7567cc4438546a84f11bdf18e670ab8'
         owner_id: 88700172
         repo_id: 1382753260
-    'storytold/craft-common-actions@d65d611f0ef67eaa94039351be5afce61102dbb0':
+    'storytold/bharat-common-actions@d65d611f0ef67eaa94039351be5afce61102dbb0':
         ref: 'main'
         commit: 'sha1-d65d611f0ef67eaa94039351be5afce61102dbb0'
         owner_id: 76897702

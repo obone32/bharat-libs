@@ -4,7 +4,7 @@
 //! something to one product belongs in that provider's crate. Nothing here
 //! knows about PDF structure; a document is opaque bytes plus a content hash.
 
-use craft_cloud::Identity;
+use bharat_cloud::Identity;
 use serde::{Deserialize, Serialize};
 
 /// What a signing service can do.
@@ -56,8 +56,8 @@ pub enum RecipientStatus {
 
 /// Who must sign, as the dialog and the service agree.
 ///
-/// Built from a [`craft_cloud::Contact`] by an explicit conversion at the host
-/// boundary. Never a [`craft_cloud::ShareTarget`]: signing is not access.
+/// Built from a [`bharat_cloud::Contact`] by an explicit conversion at the host
+/// boundary. Never a [`bharat_cloud::ShareTarget`]: signing is not access.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Recipient {
     /// Opaque handle the service wants back.

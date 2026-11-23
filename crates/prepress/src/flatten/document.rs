@@ -23,20 +23,20 @@ use std::ops::Range;
 use std::rc::Rc;
 use std::sync::{Arc, OnceLock};
 
-use craft_pdf::interpret::TransformExt as _;
-use craft_pdf::syntax::Pdf;
-use craft_pdf::syntax::object::dict::keys::{ART_BOX, BLEED_BOX, OUTPUT_INTENTS, TRIM_BOX};
-use craft_pdf::syntax::object::{Array, DateTime as PdfDate, Dict, Rect as PdfRect};
-use craft_pdf::syntax::page::Page;
-use craft_pdf::write::backend::SerializeSettings;
-use craft_pdf::write::backend::configure::PdfVersion;
-use craft_pdf::write::backend::geom::{Rect as KRect, Size, Transform};
-use craft_pdf::write::backend::metadata::DateTime;
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::backend::pdf::PdfDocument;
-use craft_pdf::write::print::{self as print_settings, PrintColor};
-use craft_pdf::write::{self as pdf_write, Metadata, Writer};
-use craft_pdf::{OpenError, open_slice};
+use bharat_pdf::interpret::TransformExt as _;
+use bharat_pdf::syntax::Pdf;
+use bharat_pdf::syntax::object::dict::keys::{ART_BOX, BLEED_BOX, OUTPUT_INTENTS, TRIM_BOX};
+use bharat_pdf::syntax::object::{Array, DateTime as PdfDate, Dict, Rect as PdfRect};
+use bharat_pdf::syntax::page::Page;
+use bharat_pdf::write::backend::SerializeSettings;
+use bharat_pdf::write::backend::configure::PdfVersion;
+use bharat_pdf::write::backend::geom::{Rect as KRect, Size, Transform};
+use bharat_pdf::write::backend::metadata::DateTime;
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::backend::pdf::PdfDocument;
+use bharat_pdf::write::print::{self as print_settings, PrintColor};
+use bharat_pdf::write::{self as pdf_write, Metadata, Writer};
+use bharat_pdf::{OpenError, open_slice};
 use kurbo::Rect;
 
 use super::pdf::{ReadColor, ReadError, ReadOptions, read_color, read_page_in};
@@ -220,7 +220,7 @@ fn write_page(
     writer: &mut Writer,
     settings: PageSettings,
     list: &DisplayList,
-    draw: impl FnOnce(&mut craft_pdf::write::backend::surface::Surface<'_>) -> Result<(), WriteError>,
+    draw: impl FnOnce(&mut bharat_pdf::write::backend::surface::Surface<'_>) -> Result<(), WriteError>,
 ) -> Result<(), WriteError> {
     let box_ = list.page;
     let mut page_builder = writer.document_mut().start_page_with(settings);
@@ -346,12 +346,12 @@ fn printing(doc: &Pdf, page: usize, fallback: &Fallback) -> Result<(SerializeSet
     let fogra39 = || -> Result<_, WriteError> {
         // Reading the profile is the slow part of writing a small page; it is the usual one.
         static SETTINGS: OnceLock<Option<SerializeSettings>> = OnceLock::new();
-        let settings = SETTINGS.get_or_init(|| print_settings::settings(PrintColor::fogra39(craft_cms::builtin::COATED_FOGRA39_ICC)).ok());
+        let settings = SETTINGS.get_or_init(|| print_settings::settings(PrintColor::fogra39(bharat_cms::builtin::COATED_FOGRA39_ICC)).ok());
         let settings = settings.clone().ok_or(WriteError::Pdf(pdf_write::WriteError::InvalidProfile))?;
         Ok((settings, CmsConversion::fogra39(), Fallback::Fogra39))
     };
     let custom = |icc: &[u8], color: PrintColor<'_>| {
-        if icc == craft_cms::builtin::COATED_FOGRA39_ICC {
+        if icc == bharat_cms::builtin::COATED_FOGRA39_ICC {
             return fogra39().ok();
         }
         let cms = CmsConversion::new(icc).ok()?;

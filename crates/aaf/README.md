@@ -1,17 +1,17 @@
-# craft-aaf
+# bharat-aaf
 
 AAF and OMF, the two mob-based editorial interchange formats, read and written through one
 composition model.
 
 | Module | What |
 |---|---|
-| `model` | `Document`: compositions (tracks of fillers, source clips and overlapping transitions; clip gain, constant or keyframed; markers; start timecode), nested compositions, and the media `Source`s they reference (file path or embedded PCM, picture size and rate, sound channels / rate / bits, start timecode, markers). Times are exact `craft_timeline::time::Tick`s. |
-| `aaf` | `read`, `write`, `sniff`: AAF Edit Protocol in structured storage (`craft-cfb`). |
+| `model` | `Document`: compositions (tracks of fillers, source clips and overlapping transitions; clip gain, constant or keyframed; markers; start timecode), nested compositions, and the media `Source`s they reference (file path or embedded PCM, picture size and rate, sound channels / rate / bits, start timecode, markers). Times are exact `bharat_timeline::time::Tick`s. |
+| `aaf` | `read`, `write`, `sniff`: AAF Edit Protocol in structured storage (`bharat-cfb`). |
 | `omf` | `read`, `write`, `sniff`: OMF Interchange 2.0 in a Bento container. Sound only. |
 
 No file I/O: documents are bytes and media references are strings. An application maps its own
 timeline onto `model` once and gets both formats. Embedded audio is PCM in the model; the WAVE and
-AIFF wrappers the formats use come from `craft-audio`.
+AIFF wrappers the formats use come from `bharat-audio`.
 
 ## Specifications
 
@@ -26,7 +26,7 @@ read off files it exports.
 | AAF | AMWA *AAF Low-Level Container Specification* | v1.0.1 | objects as structured storages, `properties` streams, stored forms, strong / weak reference collections and their index streams, `referenced properties` |
 | AAF | AMWA *AAF Edit Protocol* | v1.0 (AMWA AS-01) | top-level composition, mob chains (composition → master → file → physical source), operation definitions, usage codes |
 | AAF | SMPTE RP 224 / RP 210 registers | — | data definition, class and type labels |
-| AAF | Microsoft [MS-CFB] | rev. 10.0 | the container, see `craft-cfb` |
+| AAF | Microsoft [MS-CFB] | rev. 10.0 | the container, see `bharat-cfb` |
 | OMF | Avid *OMF Interchange Specification* | Version 2.0 (1997) | classes (`HEAD`, `CMOB`, `MMOB`, `SMOB`, `MSLT`, `TRKD`, `SEQU`, `SCLP`, `FILL`, `TRAN`, `EFFE`, `ESLT`, `CVAL`, `VVAL`, `TCCP`, `WAVD`, `AIFD`, `WAVE`, `AIFC`, locators), property and type names |
 | OMF | Apple *Bento Specification* | revision 1.0d5 | container label, TOC encoding, objects / properties / types, references |
 

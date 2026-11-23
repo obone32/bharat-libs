@@ -33,8 +33,8 @@ raster validation. Existing `ImageResolver::new`/`resolver` and legacy parse ent
 points retain their behavior. Opt in explicitly:
 
 ```rust
-fn example() -> Result<(), craft_svg::tree::Error> {
-    use craft_svg::tree::{self, Limits, ValidatedImageResolver, usvg};
+fn example() -> Result<(), bharat_svg::tree::Error> {
+    use bharat_svg::tree::{self, Limits, ValidatedImageResolver, usvg};
     let images = ValidatedImageResolver::new(Limits::default());
     let checked = tree::preflight(
         "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'/>",
@@ -76,6 +76,6 @@ context, rather than an unchecked DOM or a precharged-budget override. `usage()`
 reports omissions and work after conversion. The context is for one drawing, not a
 global rendering cache.
 
-The validator uses the existing JPEG backend in craft-image-codecs. The lockfile
+The validator uses the existing JPEG backend in bharat-image-codecs. The lockfile
 test checks that it and the other validation backends match the selected resvg
 dependency edges. resvg decodes the image again when it paints.

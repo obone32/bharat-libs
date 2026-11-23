@@ -1976,13 +1976,13 @@ mod tests {
     ];
 
     fn inter_stream((name, src, args): (&str, &str, &str)) -> Option<Vec<Vec<u8>>> {
-        let ff = craft_media_testkit::ffmpeg_or_skip("av1 wavefront")?;
-        if !craft_media_testkit::ffmpeg_has_encoder(&ff, "libsvtav1") {
-            craft_media_testkit::skip_test("av1 wavefront", "this ffmpeg has no libsvtav1 encoder");
+        let ff = bharat_media_testkit::ffmpeg_or_skip("av1 wavefront")?;
+        if !bharat_media_testkit::ffmpeg_has_encoder(&ff, "libsvtav1") {
+            bharat_media_testkit::skip_test("av1 wavefront", "this ffmpeg has no libsvtav1 encoder");
             return None;
         }
-        let out = craft_media_testkit::fixtures_dir("av1").join(format!("{name}.ivf"));
-        let path = craft_media_testkit::fixtures::generate(&out, |tmp| {
+        let out = bharat_media_testkit::fixtures_dir("av1").join(format!("{name}.ivf"));
+        let path = bharat_media_testkit::fixtures::generate(&out, |tmp| {
             std::process::Command::new(&ff)
                 .args([
                     "-hide_banner",

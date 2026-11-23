@@ -1,4 +1,4 @@
-//! GPU traits, job envelope, and provider registry for Craft apps and the web runtime.
+//! GPU traits, job envelope, and provider registry for Bharat apps and the web runtime.
 //!
 //! Application crates register [`GpuProvider`] implementations; generic hosts dispatch
 //! [`GpuJob`] values by [`ProviderId`] without importing app project types.

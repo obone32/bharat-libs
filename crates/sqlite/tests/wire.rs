@@ -1,4 +1,4 @@
-use craft_sqlite::{Error, read_varint, serial_type_len};
+use bharat_sqlite::{Error, read_varint, serial_type_len};
 
 #[test]
 fn varints_decode_at_each_width() {

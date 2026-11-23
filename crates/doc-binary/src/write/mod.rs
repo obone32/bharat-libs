@@ -23,9 +23,9 @@ mod tables;
 
 use std::collections::HashMap;
 
-use craft_wordmodel::Document;
-use craft_wordmodel::para::{NoteKind, Paragraph};
-use craft_wordmodel::section::SectionProps;
+use bharat_wordmodel::Document;
+use bharat_wordmodel::para::{NoteKind, Paragraph};
+use bharat_wordmodel::section::SectionProps;
 
 use crate::DocbinError;
 use crate::fib::pair;
@@ -456,7 +456,7 @@ pub(crate) fn parse_time(iso: &str) -> Option<chrono::NaiveDateTime> {
 /// Word 97-2003 writes; readers of that era expect it.
 fn compound(streams: &[(&str, Vec<u8>)]) -> Result<Vec<u8>, DocbinError> {
     let refs: Vec<(&str, &[u8])> = streams.iter().map(|(name, data)| (*name, data.as_slice())).collect();
-    craft_cfb::write_streams(craft_cfb::Version::V3, &refs).map_err(|e| DocbinError::Container(e.to_string()))
+    bharat_cfb::write_streams(bharat_cfb::Version::V3, &refs).map_err(|e| DocbinError::Container(e.to_string()))
 }
 
 #[cfg(test)]

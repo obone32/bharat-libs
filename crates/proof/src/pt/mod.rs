@@ -97,7 +97,7 @@ mod tests {
         assert!(!d.rep().is_empty() && !d.map().is_empty() && !d.try_chars().is_empty());
     }
 
-    /// craft-libs#487 review: a hyphenated dictionary entry is a word even when its parts aren't.
+    /// bharat-libs#487 review: a hyphenated dictionary entry is a word even when its parts aren't.
     #[test]
     fn a_hyphenated_entry_is_looked_up_whole() {
         let d = AffixDict::from_hunspell("SET UTF-8\n", "1\ntic-tac\n", &[]).unwrap();

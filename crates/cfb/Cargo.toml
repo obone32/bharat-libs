@@ -1,5 +1,5 @@
 [package]
-name = "craft-cfb"
+name = "bharat-cfb"
 description = "Clean-room Compound File Binary ([MS-CFB], OLE structured storage) reader and writer: the container of legacy Office files, Outlook messages and AAF."
 version.workspace = true
 edition.workspace = true
@@ -13,4 +13,4 @@ workspace = true
 [dependencies]
 
 [dev-dependencies]
-craft-media-testkit = { workspace = true }
+bharat-media-testkit = { workspace = true }

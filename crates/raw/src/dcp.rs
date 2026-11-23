@@ -4,7 +4,7 @@
 //! `UniqueCameraModel`, `ProfileName`, the colour/forward matrices and calibration illuminants, the
 //! hue/saturation map, look table and tone curve. Nothing here ships a profile.
 
-use craft_tiff::{Ifd, ParseOptions, Tiff, tags as t};
+use bharat_tiff::{Ifd, ParseOptions, Tiff, tags as t};
 
 use crate::ColorData;
 
@@ -93,8 +93,8 @@ pub fn parse_dcp(bytes: &[u8]) -> Result<DcpProfile, DcpError> {
 /// Write `p` as a `.dcp` file (little-endian): its name, camera, illuminants, matrices, hue/saturation
 /// map, look table, tone curve and baseline exposure offset.
 pub fn write_dcp(p: &DcpProfile) -> Result<Vec<u8>, DcpError> {
-    use craft_tiff::writer::srational;
-    use craft_tiff::{ByteOrder, IfdBuilder, TiffWriter, Value};
+    use bharat_tiff::writer::srational;
+    use bharat_tiff::{ByteOrder, IfdBuilder, TiffWriter, Value};
     let c = &p.color;
     // ColorMatrix1 must remain usable after TIFF rational rounding, or our reader rejects it.
     let first = c.color_matrix[0].as_ref().ok_or(DcpError::NoMatrix)?;
@@ -343,7 +343,7 @@ mod tests {
 #[allow(clippy::unwrap_used)]
 mod boundary_tests {
     use super::*;
-    use craft_tiff::{ByteOrder, IfdBuilder, TiffWriter, Value};
+    use bharat_tiff::{ByteOrder, IfdBuilder, TiffWriter, Value};
 
     fn profile_bytes(offset: f64, matrix: bool) -> Vec<u8> {
         let mut ifd = IfdBuilder::new();

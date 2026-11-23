@@ -160,8 +160,8 @@ pub(crate) fn decode(_bytes: &[u8], _limits: &crate::options::Limits) -> Result<
 }
 
 #[cfg(feature = "jxl")]
-fn decode_err(e: craft_jxl::Error) -> CodecError {
-    use craft_jxl::Error as E;
+fn decode_err(e: bharat_jxl::Error) -> CodecError {
+    use bharat_jxl::Error as E;
     match e {
         E::Malformed(what) | E::Encode(what) => CodecError::malformed(F, what),
         E::LimitExceeded(what) => CodecError::LimitExceeded(what),
@@ -177,13 +177,13 @@ fn decode_err(e: craft_jxl::Error) -> CodecError {
 /// Exif and XMP orientation are rewritten to 1 (the same promise as HEIF without `keep_orientation`).
 #[cfg(feature = "jxl")]
 pub(crate) fn decode(bytes: &[u8], limits: &crate::options::Limits) -> Result<Image, CodecError> {
-    let options = craft_jxl::DecodeLimits { max_pixels: limits.max_pixels, max_tracked_bytes: Some(limits.max_alloc), max_input_bytes: usize::MAX };
-    let decoded = craft_jxl::decode(bytes, options).map_err(decode_err)?;
+    let options = bharat_jxl::DecodeLimits { max_pixels: limits.max_pixels, max_tracked_bytes: Some(limits.max_alloc), max_input_bytes: usize::MAX };
+    let decoded = bharat_jxl::decode(bytes, options).map_err(decode_err)?;
     let layout = match decoded.layout {
-        craft_jxl::Layout::Gray => ChannelLayout::Gray,
-        craft_jxl::Layout::GrayAlpha => ChannelLayout::GrayA,
-        craft_jxl::Layout::Rgb => ChannelLayout::Rgb,
-        craft_jxl::Layout::Rgba => ChannelLayout::Rgba,
+        bharat_jxl::Layout::Gray => ChannelLayout::Gray,
+        bharat_jxl::Layout::GrayAlpha => ChannelLayout::GrayA,
+        bharat_jxl::Layout::Rgb => ChannelLayout::Rgb,
+        bharat_jxl::Layout::Rgba => ChannelLayout::Rgba,
     };
     let sample = match (decoded.float_samples, decoded.bit_depth) {
         (true, _) => SampleType::F32,

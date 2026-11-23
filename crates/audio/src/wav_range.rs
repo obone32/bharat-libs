@@ -3,7 +3,7 @@
 //! Reads chunk headers and only the requested sample range; it never loads a whole file.
 
 use crate::{AudioError, Result};
-use craft_media::ByteSource;
+use bharat_media::ByteSource;
 
 /// Whether a prefix identifies a RIFF or RF64 WAVE file.
 pub fn sniff(b: &[u8]) -> bool {

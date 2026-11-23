@@ -181,7 +181,7 @@ mod av1c {
     #[test]
     fn hostile_records_do_not_panic() {
         let seed = with_obus(&[0x0a, 2, 0xaa, 0xbb, 0x2a, 1, 0xcc]);
-        craft_media_testkit::hostile::hammer("av1C config OBUs", &seed, 2000, |data| {
+        bharat_media_testkit::hostile::hammer("av1C config OBUs", &seed, 2000, |data| {
             let _ = av1c_config_obus(data);
         });
     }
@@ -203,7 +203,7 @@ fn hostile_configuration_does_not_panic() {
         (CodecId::Mpeg2Video, &[0, 0, 1, 0xb3, 0x02, 0x00, 0x20, 0x13, 0xff, 0xff, 0xe0, 0x18, 0, 0, 1, 0xb5, 0x14, 0x8a, 0x00, 0x01, 0x00, 0x00]),
     ];
     for &(codec, seed) in seeds {
-        craft_media_testkit::hostile::hammer(codec.name(), seed, 300, move |data| {
+        bharat_media_testkit::hostile::hammer(codec.name(), seed, 300, move |data| {
             if let Ok(mut dec) = TrackDecoder::new(&params(codec, data)) {
                 let _ = dec.reset();
             }

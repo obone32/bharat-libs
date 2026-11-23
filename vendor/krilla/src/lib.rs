@@ -179,14 +179,14 @@ pub use interchange::*;
 pub use serialize::{GroupColorSpace, OutputIntent, SerializeSettings, Trapped};
 
 /// Identifies the local patch that discards unfinished page/surface state during unwind.
-pub const CRAFT_UNWIND_SAFE_DROP: bool = true;
+pub const BHARAT_UNWIND_SAFE_DROP: bool = true;
 
 /// Identifies the patch that rejects serialization after failed page/surface cleanup.
-pub const CRAFT_UNWIND_POISONING: bool = true;
+pub const BHARAT_UNWIND_POISONING: bool = true;
 
 /// Identifies the print color patches: CMYK blending groups, print output intent and
 /// PDF/X markers.
-pub const CRAFT_PRINT_COLOR: bool = true;
+pub const BHARAT_PRINT_COLOR: bool = true;
 
 /// Identifies the optional content patch: layers written as optional content groups.
-pub const CRAFT_OPTIONAL_CONTENT: bool = true;
+pub const BHARAT_OPTIONAL_CONTENT: bool = true;

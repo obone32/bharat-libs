@@ -1,7 +1,7 @@
 //! Malformed CRW files must decode to an error, never panic: a CIFF with the records the decoder
 //! reads and a pseudo-random payload, mutated by bit flips and truncation.
 
-use craft_crw::{Limits, decode, header, probe};
+use bharat_crw::{Limits, decode, header, probe};
 use proptest::prelude::*;
 
 const W: usize = 48;

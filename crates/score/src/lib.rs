@@ -60,7 +60,7 @@ fn xml_escape(s: &str) -> String {
     // Keep the score export's existing literal whitespace and quote spelling. The
     // shared attribute writer owns XML legality/escaping; only its generated
     // whitespace references are restored (input ampersands were escaped first).
-    craft_xml::esc_attr(s).replace("&#9;", "\t").replace("&#10;", "\n").replace("&#13;", "\r")
+    bharat_xml::esc_attr(s).replace("&#9;", "\t").replace("&#10;", "\n").replace("&#13;", "\r")
 }
 
 fn note_type(units: u32) -> (&'static str, bool) {

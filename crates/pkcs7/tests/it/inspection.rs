@@ -1,6 +1,6 @@
 //! Benign wire parity and boundary tests; no signature/trust decisions are made by these views.
-use craft_pkcs7::der::{self, tag};
-use craft_pkcs7::inspection::{CertificateView, Cursor, InspectionError, MAX_CHILDREN, MAX_DEPTH};
+use bharat_pkcs7::der::{self, tag};
+use bharat_pkcs7::inspection::{CertificateView, Cursor, InspectionError, MAX_CHILDREN, MAX_DEPTH};
 
 #[test]
 fn cursor_keeps_exact_bytes_and_length_notes() {
@@ -100,12 +100,12 @@ fn required_fields_do_not_hide_optional_tail_diagnostics() {
     assert_eq!(view.remaining_tbs_fields.remaining(), &[0xa3]);
     assert_eq!(view.remaining_tbs_fields.next_element(), Err(InspectionError::Malformed));
     // This partial wire view is deliberately not accepted as a validated certificate.
-    assert!(craft_pkcs7::Certificate::parse(&bytes).is_err());
+    assert!(bharat_pkcs7::Certificate::parse(&bytes).is_err());
 }
 
 #[test]
 fn existing_certificate_fixture_retains_signed_components() {
-    let cert = craft_pkcs7::x509::load_certificates(include_bytes!("../data/ca.crt.pem")).unwrap().remove(0);
+    let cert = bharat_pkcs7::x509::load_certificates(include_bytes!("../data/ca.crt.pem")).unwrap().remove(0);
     let (view, rest) = CertificateView::parse(&cert.raw).unwrap();
     assert!(rest.is_empty());
     let parts = cert.clone().into_parts();

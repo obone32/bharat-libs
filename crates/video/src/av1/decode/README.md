@@ -1,4 +1,4 @@
-# AV1 decoder (`craft_video::av1::decode`, feature `av1-decode`)
+# AV1 decoder (`bharat_video::av1::decode`, feature `av1-decode`)
 
 Clean-room, pure-Rust (no `unsafe`) AV1 decoder, implemented from the public **AV1 Bitstream &
 Decoding Process Specification, version 1.0.0 with Errata 1** (AOMediaCodec/av1-spec, git
@@ -110,7 +110,7 @@ noisy; single-threaded figures use thread CPU time and are comparable.
 
 CPU cycles per frame counted by the kernel (`/usr/bin/time -l`, all threads summed; mean of two
 interleaved base / after rounds at load average 190-320) with
-`AV1_THREADS=n cargo run --release -p craft-video --features av1-decode,threads --example av1_av1dec -- in.ivf` on the
+`AV1_THREADS=n cargo run --release -p bharat-video --features av1-decode,threads --example av1_av1dec -- in.ivf` on the
 FilmCraft's `cargo xtask bench` decode clips (SVT-AV1 preset 10, CRF 35, keyint 48, testsrc2 + grain),
 bit-exact with libdav1d:
 
@@ -183,14 +183,14 @@ no real stream comes close to level 6.3, the highest defined level.
 
 A frame is also refused when the pictures the decoder would hold at its size (the eight reference
 slots, the new frame and those in flight, padded as the frame buffers are, two bytes a sample) do
-not fit `Decoder::set_memory_budget` (`craft_video::budget::DECODE_MEMORY_BUDGET` by default:
+not fit `Decoder::set_memory_budget` (`bharat_video::budget::DECODE_MEMORY_BUDGET` by default:
 4 GiB, 1 GiB on 32-bit targets). Non-uniform tile spacing may not code more than 64 tile columns
 or rows.
 
 ## API
 
 ```rust
-let mut dec = craft_video::av1::decode::Decoder::new();
+let mut dec = bharat_video::av1::decode::Decoder::new();
 for sample in samples {                  // one temporal unit (MP4 / Matroska sample) each
     for pic in dec.decode_pts(&sample, pts)? {   // shown frames ready so far, planar u16
         // pic.width, pic.height, pic.bit_depth, pic.planes[0..3], pic.pts

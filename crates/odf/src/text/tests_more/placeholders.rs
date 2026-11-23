@@ -4,7 +4,7 @@
 
 use crate::text::tests::{NS_T, content_of, package, paras};
 use crate::text::{export, import, parse};
-use craft_flow::Inline;
+use bharat_flow::Inline;
 
 fn doc(body: &str) -> Vec<u8> {
     package(
@@ -33,7 +33,7 @@ fn placeholders_open_as_controls_showing_them() {
     assert_eq!(controls(&bytes), [("<Honorific>".into(), true, "<Honorific>".into()), ("<Name>".into(), true, "<Name>".into())]);
     // The paragraph's own text around them.
     let d = import(&bytes).unwrap();
-    let text = d.body[0].as_para().unwrap().text.replace(craft_wordmodel::para::OBJ, "");
+    let text = d.body[0].as_para().unwrap().text.replace(bharat_wordmodel::para::OBJ, "");
     assert_eq!(text, "Dear <Honorific><Name>,");
 }
 
@@ -78,7 +78,7 @@ fn a_placeholders_type_is_kept_and_typed_text_is_text() {
     // Something typed in its place is text.
     let mut flow = parse(&bytes).unwrap();
     for b in &mut flow.blocks {
-        if let craft_flow::FBlock::Para(p) = b {
+        if let bharat_flow::FBlock::Para(p) = b {
             for i in &mut p.inlines {
                 if let Inline::Control { control, text, .. } = i {
                     control.showing_placeholder = false;
@@ -87,6 +87,6 @@ fn a_placeholders_type_is_kept_and_typed_text_is_text() {
             }
         }
     }
-    let c = content_of(&crate::text::tests::export_model(&craft_flow::to_doc(&flow)).unwrap());
+    let c = content_of(&crate::text::tests::export_model(&bharat_flow::to_doc(&flow)).unwrap());
     assert!(!c.contains("<text:placeholder") && c.contains(r#"Acme <text:s text:c="1"/>Ltd"#), "{c}");
 }

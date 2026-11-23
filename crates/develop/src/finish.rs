@@ -1,7 +1,7 @@
 //! Pure-Rust finishing-stage helpers: sharpening masks/limits, vignette parameters, value film
 //! grain, gamut mapping, and curve saturation refinement.
 
-use craft_develop_model::{DevelopSettings, VignetteStyle};
+use bharat_develop_model::{DevelopSettings, VignetteStyle};
 
 #[inline]
 fn smooth(e0: f32, e1: f32, x: f32) -> f32 {

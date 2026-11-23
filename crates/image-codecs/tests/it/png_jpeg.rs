@@ -3,7 +3,7 @@
 
 use crate::common;
 use common::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 // ---------------------------------------------------------------------------
 // PNG Adam7
@@ -560,7 +560,7 @@ fn pngsuite_manifest_refuses_bad_rows() {
 #[test]
 fn pngsuite_reader_takes_only_listed_files_that_match() {
     use common::pngsuite::{pinned_pngs, sha256_hex};
-    let dir = std::env::temp_dir().join(format!("craft-image-codecs-pngsuite-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("bharat-image-codecs-pngsuite-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     let a = encode(&synth(5, 4, ChannelLayout::Rgb, SampleType::U8, 1, 0.5), Format::Png, &EncodeOptions::default()).unwrap();
@@ -808,7 +808,7 @@ fn bounded_png_stream_preserves_late_exif_across_metadata_yields() {
 }
 
 /// zune-jpeg 0.5 asserts on some subsampled CMYK frames whose first component isn't the largest
-/// (jpeg-encoder writes C, M and Y at 1×1 and K larger); craft-jpeg reads those instead, and they
+/// (jpeg-encoder writes C, M and Y at 1×1 and K larger); bharat-jpeg reads those instead, and they
 /// decode to the inks they were written with. The others of these files read as before.
 #[test]
 fn cmyk_frames_zune_jpeg_panics_on_decode() {

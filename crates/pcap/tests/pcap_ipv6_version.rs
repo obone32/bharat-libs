@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::decode;
+use bharat_pcap::decode;
 use support::{eth, ipv4_pkt};
 
 fn raw_packets() -> (Vec<u8>, Vec<u8>) {

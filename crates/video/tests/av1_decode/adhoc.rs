@@ -1,5 +1,5 @@
 //! Compare an arbitrary IVF file with libdav1d:
-//! `AV1_IVF=/path/x.ivf AV1_PIX=yuv420p cargo test -p craft-video --features av1-decode,threads --test av1_decode adhoc:: -- --ignored --nocapture`
+//! `AV1_IVF=/path/x.ivf AV1_PIX=yuv420p cargo test -p bharat-video --features av1-decode,threads --test av1_decode adhoc:: -- --ignored --nocapture`
 
 use crate::common;
 use common::*;

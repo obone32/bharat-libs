@@ -1,5 +1,5 @@
 [package]
-name = "craft-gzip"
+name = "bharat-gzip"
 description = "Streaming gzip writer with stored and compressed segments"
 version.workspace = true
 edition.workspace = true

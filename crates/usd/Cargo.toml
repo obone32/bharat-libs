@@ -1,5 +1,5 @@
 [package]
-name = "craft-usd"
+name = "bharat-usd"
 description = "Bounded USD Crate wire primitives, independent of scene and material policy"
 version.workspace = true
 edition.workspace = true

@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Keyboard bindings for the Craft suite.
+//! Keyboard bindings for the Bharat suite.
 //!
 //! [`chord`] holds the key and modifier types, the canonical text form that settings and control
 //! protocols store, display text per platform, and a reader for other applications' key text.
@@ -17,7 +17,7 @@
 //! key events.
 //!
 //! ```
-//! use craft_keymap::{Chord, Platform};
+//! use bharat_keymap::{Chord, Platform};
 //!
 //! let chord = Chord::parse("⇧⌘Z").unwrap();
 //! assert_eq!(chord.to_string(), "Cmd+Shift+Z");
@@ -32,7 +32,7 @@
 //! cycle. A binding can name a scope other than the command's home scope.
 //!
 //! ```
-//! use craft_keymap::{Active, Bindable, Binding, Chord, CommandRef, Keymap, Kind, Lookup, Platform, Scope, Scopes};
+//! use bharat_keymap::{Active, Bindable, Binding, Chord, CommandRef, Keymap, Kind, Lookup, Platform, Scope, Scopes};
 //! use serde_json::json;
 //!
 //! let key = |text: &str| Binding::parse(text).unwrap();
@@ -67,21 +67,21 @@
 //!
 //! # Storing overrides
 //!
-//! [`Overrides`] is a field of the app's craft-settings type, marked
-//! `#[serde(with = "craft_keymap::keymap::overrides_list")]` so that it is stored as an array of
-//! `{ command, keys }` tables. craft-settings merges tables key by key with what the file holds,
+//! [`Overrides`] is a field of the app's bharat-settings type, marked
+//! `#[serde(with = "bharat_keymap::keymap::overrides_list")]` so that it is stored as an array of
+//! `{ command, keys }` tables. bharat-settings merges tables key by key with what the file holds,
 //! but replaces an array whole, so a reset command (an entry removed) stays removed after saving.
 //! Without the attribute, overrides with at most one text per command are written as a table.
 //!
 //! ```no_run
-//! use craft_keymap::{Binding, Keymap, Overrides, Platform, Policy, Scopes};
-//! use craft_settings::{Location, Settings, SettingsStore};
+//! use bharat_keymap::{Binding, Keymap, Overrides, Platform, Policy, Scopes};
+//! use bharat_settings::{Location, Settings, SettingsStore};
 //! use serde::{Deserialize, Serialize};
 //!
 //! #[derive(Serialize, Deserialize, Default, Clone, PartialEq)]
 //! #[serde(default)]
 //! struct Prefs {
-//!     #[serde(with = "craft_keymap::keymap::overrides_list")]
+//!     #[serde(with = "bharat_keymap::keymap::overrides_list")]
 //!     shortcuts: Overrides,
 //! }
 //!
@@ -111,8 +111,8 @@
 //! review UI can show [`ImportPlan::commands`] and the report first.
 //!
 //! ```
-//! use craft_keymap::{Bindable, Binding, ContextRule, Flavor, ForeignEntry, ForeignKey, ForeignSet, ImportOptions, Keymap, Platform};
-//! use craft_keymap::{Scope, Scopes, plan};
+//! use bharat_keymap::{Bindable, Binding, ContextRule, Flavor, ForeignEntry, ForeignKey, ForeignSet, ImportOptions, Keymap, Platform};
+//! use bharat_keymap::{Scope, Scopes, plan};
 //!
 //! let save = Bindable::new("file.save", "Save", Scope::app())
 //!     .with_path(vec!["File".into(), "Save".into()])

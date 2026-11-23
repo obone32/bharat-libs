@@ -2,12 +2,12 @@
 //! `\shpinst`, is read, and its `\shprslt` copy (for readers without shapes) is not.
 
 use super::*;
-use craft_wordmodel::fill::Fill;
-use craft_wordmodel::para::{Anchor, FloatAlign, ShapeKind, Wrap};
+use bharat_wordmodel::fill::Fill;
+use bharat_wordmodel::para::{Anchor, FloatAlign, ShapeKind, Wrap};
 
 /// The document's shapes, in order: kind, size, fill, outline, placement and text.
 /// (kind, width, height, fill, line colour, float, text) of each shape.
-type ShapeRow = (ShapeKind, f32, f32, Option<Fill>, Option<Rgb>, craft_wordmodel::para::Float, String);
+type ShapeRow = (ShapeKind, f32, f32, Option<Fill>, Option<Rgb>, bharat_wordmodel::para::Float, String);
 
 fn shapes(d: &Document) -> Vec<ShapeRow> {
     d.body
@@ -58,7 +58,7 @@ fn a_text_box_is_read_with_its_text_fill_and_wrapping() {
     assert_eq!((float.x, float.y), (0.0, 0.0));
     assert_eq!(text, "Boxed note");
     // Its text is in the box, once: not also in the body.
-    assert!(!d.plain_text(craft_wordmodel::StoryRef::Body).contains("Boxed"), "{}", d.plain_text(craft_wordmodel::StoryRef::Body));
+    assert!(!d.plain_text(bharat_wordmodel::StoryRef::Body).contains("Boxed"), "{}", d.plain_text(bharat_wordmodel::StoryRef::Body));
 }
 
 #[test]
@@ -80,7 +80,7 @@ caption\par}";
     assert_eq!(*fill, Some(Fill::solid(Rgb(255, 165, 0))));
     assert_eq!(*stroke, None);
     assert_eq!(float.wrap, Wrap::Inline);
-    assert!(d.plain_text(craft_wordmodel::StoryRef::Body).contains("caption"));
+    assert!(d.plain_text(bharat_wordmodel::StoryRef::Body).contains("caption"));
 }
 
 /// A placeable WMF: the 9-word header (type 1, version 0x300, 12 words, max record 3), then EOF.
@@ -165,7 +165,7 @@ fn shapes_inside_a_group_are_left_to_the_groups_copy() {
 {\shprslt kept}}Text\par}";
     let d = import(rtf.as_bytes()).unwrap();
     assert!(shapes(&d).is_empty());
-    assert!(d.plain_text(craft_wordmodel::StoryRef::Body).contains("kept"));
+    assert!(d.plain_text(bharat_wordmodel::StoryRef::Body).contains("kept"));
 }
 
 #[test]
@@ -178,7 +178,7 @@ fn truncated_and_hostile_shapes_do_not_crash() {
         r"{\rtf1 Before\par{\footnote{\shp{\*\shpinst{\sp{\sn shapeType}{\sv 202}}{\shptxt in a note\par}}}}}",
     ] {
         let d = import(rtf.as_bytes()).unwrap();
-        assert!(d.plain_text(craft_wordmodel::StoryRef::Body).contains("Before"), "{rtf}");
+        assert!(d.plain_text(bharat_wordmodel::StoryRef::Body).contains("Before"), "{rtf}");
     }
     // A shape too large for a page is held to Word's largest.
     let d = import(r"{\rtf1 {\shp{\*\shpinst\shpleft-2147483648\shpright2147483647\shpbottom100{\sp{\sn shapeType}{\sv 1}}}}}".as_bytes()).unwrap();

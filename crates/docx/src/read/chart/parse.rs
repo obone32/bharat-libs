@@ -200,7 +200,7 @@ fn label_format(d: Option<&El>) -> Option<Option<String>> {
     if f.attr("sourceLinked").is_some_and(truthy) {
         return Some(None);
     }
-    f.attr("formatCode").filter(|f| f.chars().count() <= craft_wordmodel::chart::MAX_FMT).map(|f| Some(f.to_string()))
+    f.attr("formatCode").filter(|f| f.chars().count() <= bharat_wordmodel::chart::MAX_FMT).map(|f| Some(f.to_string()))
 }
 
 fn legend_pos(chart: &El) -> Option<Pos> {
@@ -366,7 +366,7 @@ pub(super) fn axis(a: Option<&El>) -> Axis {
             .child("c:numFmt")
             .filter(|f| f.attr("sourceLinked") != Some("1"))
             .and_then(|f| f.attr("formatCode"))
-            .filter(|f| f.chars().count() <= craft_wordmodel::chart::MAX_FMT)
+            .filter(|f| f.chars().count() <= bharat_wordmodel::chart::MAX_FMT)
             .map(str::to_string),
         title: a.child("c:title").and_then(title_text),
         title_rot: a

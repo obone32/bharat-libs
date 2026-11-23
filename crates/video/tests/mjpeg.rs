@@ -1,8 +1,8 @@
 //! Motion JPEG: the encoder and decoder against each other, against ffmpeg as the reference
-//! (oracle; skipped when ffmpeg is absent, a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`), and on
+//! (oracle; skipped when ffmpeg is absent, a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`), and on
 //! hostile packets.
 
-use craft_video::mjpeg::{ChromaSubsampling, Decoder, Encoder, EncoderConfig, Frame, Samples, is_packet};
+use bharat_video::mjpeg::{ChromaSubsampling, Decoder, Encoder, EncoderConfig, Frame, Samples, is_packet};
 use std::path::Path;
 use std::process::Command;
 
@@ -73,7 +73,7 @@ fn the_pixel_limit_is_applied_before_allocating() {
     let enc = Encoder::default();
     let packet = enc.encode(64, 64, 1, &[7; 64 * 64]).expect("encode");
     assert!(Decoder::new().max_pixels(64 * 64).decode(&packet).is_ok());
-    assert!(matches!(Decoder::new().max_pixels(64 * 64 - 1).decode(&packet), Err(craft_video::mjpeg::Error::Limit(_))));
+    assert!(matches!(Decoder::new().max_pixels(64 * 64 - 1).decode(&packet), Err(bharat_video::mjpeg::Error::Limit(_))));
     // a header that claims 65535 x 65535 pixels of a tiny file
     let mut huge = packet.clone();
     let sof = huge.windows(2).position(|w| w == [0xFF, 0xC0]).expect("SOF0");
@@ -118,7 +118,7 @@ fn hostile_packets_are_errors_never_panics() {
 fn packets_that_are_not_baseline_or_progressive_huffman_are_unsupported() {
     // SOF3 (lossless): a frame header, no more
     let sof3 = [0xFF, 0xD8, 0xFF, 0xC3, 0, 11, 8, 0, 8, 0, 8, 1, 1, 0x11, 0, 0xFF, 0xD9];
-    assert!(matches!(Decoder::new().decode(&sof3), Err(craft_video::mjpeg::Error::Unsupported(_))), "{:?}", Decoder::new().decode(&sof3));
+    assert!(matches!(Decoder::new().decode(&sof3), Err(bharat_video::mjpeg::Error::Unsupported(_))), "{:?}", Decoder::new().decode(&sof3));
 }
 
 fn ffmpeg(ff: &Path, args: &[&str]) {
@@ -147,8 +147,8 @@ fn without_huffman_tables(jpeg: &[u8]) -> Vec<u8> {
 
 #[test]
 fn we_decode_what_ffmpeg_encodes_to_what_ffmpeg_decodes() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("mjpeg");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("mjpeg");
     let s = |p: &Path| p.to_str().expect("path").to_string();
     // the same input every run: ffmpeg's own test sources draw random colors
     let input = dir.join("input.rgb");
@@ -183,8 +183,8 @@ fn we_decode_what_ffmpeg_encodes_to_what_ffmpeg_decodes() {
 
 #[test]
 fn ffmpeg_decodes_what_we_encode() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("mjpeg");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("mjpeg");
     let s = |p: &Path| p.to_str().expect("path").to_string();
     for (name, w, h, ch, sub, pix_fmt) in [
         ("o420", 67usize, 41usize, 3usize, ChromaSubsampling::S420, "rgb24"),

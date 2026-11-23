@@ -1,4 +1,4 @@
-//! One share dialog, the same one in every Craft app.
+//! One share dialog, the same one in every Bharat app.
 //!
 //! What it offers is what a person asks for when they say "share this": pick
 //! several people by typing a few letters of a name, choose whether they may
@@ -26,7 +26,7 @@ use std::collections::HashMap;
 use std::sync::mpsc::{Receiver, Sender};
 use std::time::Duration;
 
-use craft_cloud::{Capability, Contact, Permission, Share, ShareTarget};
+use bharat_cloud::{Capability, Contact, Permission, Share, ShareTarget};
 use egui::{Align, Align2, Color32, Context, CornerRadius, FontId, Id, Layout, Response, RichText, Sense, Ui, UiBuilder, Vec2};
 
 mod backend;
@@ -60,13 +60,13 @@ const AVATAR: f32 = 20.0;
 const AVATAR_RADIUS: u8 = 10;
 
 /// The id of the recipient field, for an app that wants to focus it.
-const QUERY: &str = "craft-ui/share/query";
+const QUERY: &str = "bharat-ui/share/query";
 
 type Inbox = (u64, Result<Answer, String>);
 
 /// Every string the dialog shows, so an application can translate it.
 ///
-/// The defaults are English. Nothing else in `craft-ui` localizes, and this
+/// The defaults are English. Nothing else in `bharat-ui` localizes, and this
 /// does not change that: the dialog holds the strings an app gives it and
 /// translates nothing itself.
 #[derive(Clone, Debug)]
@@ -576,7 +576,7 @@ impl ShareDialog {
         if self.open.is_none() {
             return;
         }
-        let modal = egui::Modal::new(Id::unique("craft-ui/share")).show(ctx, |ui| {
+        let modal = egui::Modal::new(Id::unique("bharat-ui/share")).show(ctx, |ui| {
             ui.set_min_width(440.0);
             ui.set_max_width(560.0);
             self.contents(ui);
@@ -975,7 +975,7 @@ fn draw(ui: &mut Ui, sheet: &mut Sheet, avatars: &HashMap<String, Avatar>, label
     // a person needs before adding anybody else. It still folds on request.
     ui.add_space(4.0);
     egui::CollapsingHeader::new(RichText::new(labels.manage_access.as_str()).color(weak))
-        .id_salt("craft-ui/share/manage-access")
+        .id_salt("bharat-ui/share/manage-access")
         .default_open(true)
         .show(ui, |ui| {
             access(ui, sheet, labels, weak, acts);
@@ -1213,7 +1213,7 @@ fn matches(ui: &mut Ui, sheet: &mut Sheet, avatars: &HashMap<String, Avatar>, la
         return;
     }
     let mut pick = None;
-    egui::ScrollArea::vertical().max_height(150.0).id_salt("craft-ui/share/matches").show(ui, |ui| {
+    egui::ScrollArea::vertical().max_height(150.0).id_salt("bharat-ui/share/matches").show(ui, |ui| {
         for (i, contact) in sheet.matches.iter().enumerate() {
             if row(ui, avatars, contact, labels, acts).clicked() {
                 pick = Some(i);
@@ -1256,7 +1256,7 @@ fn access(ui: &mut Ui, sheet: &Sheet, labels: &ShareLabels, weak: Color32, acts:
         ui.label(RichText::new(labels.access_empty.as_str()).color(weak));
         return;
     }
-    egui::ScrollArea::vertical().max_height(160.0).id_salt("craft-ui/share/access").show(ui, |ui| {
+    egui::ScrollArea::vertical().max_height(160.0).id_salt("bharat-ui/share/access").show(ui, |ui| {
         for share in list {
             ui.horizontal(|ui| {
                 ui.label(share_label(share, labels));
@@ -1401,7 +1401,7 @@ fn avatar_uri(url: &str) -> String {
     use std::hash::{Hash as _, Hasher as _};
     let mut hasher = std::hash::DefaultHasher::new();
     url.hash(&mut hasher);
-    format!("bytes://craft-ui/share/avatar/{:016x}", hasher.finish())
+    format!("bytes://bharat-ui/share/avatar/{:016x}", hasher.finish())
 }
 
 fn choose(sheet: &mut Sheet, contact: &Contact) {

@@ -406,7 +406,7 @@ impl Type0Font {
         }
     }
 
-    /// Craft patch (flatten): the face index of `font_data`.
+    /// Bharat patch (flatten): the face index of `font_data`.
     pub(crate) fn font_index(&self) -> u32 {
         match &self.font_type {
             FontType::OpenType(t) => t.index(),
@@ -414,7 +414,7 @@ impl Type0Font {
         }
     }
 
-    /// Craft patch (flatten): whether `font_data` comes from the file rather than the font
+    /// Bharat patch (flatten): whether `font_data` comes from the file rather than the font
     /// resolver.
     pub(crate) fn is_embedded(&self) -> bool {
         !self.fallback
@@ -841,7 +841,7 @@ fn read_encoding(object: &Object<'_>, cmap_resolver: &CMapResolverFn) -> Option<
     }
 }
 
-/// PdfCraft patch test (ported from craft-libs): a /W2 run whose first CID is past `MAX_CID`
+/// PdfCraft patch test (ported from bharat-libs): a /W2 run whose first CID is past `MAX_CID`
 /// is skipped and the rest of the table kept.
 #[cfg(test)]
 mod tests {

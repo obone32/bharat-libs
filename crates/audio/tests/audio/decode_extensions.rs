@@ -1,7 +1,7 @@
 //! Every extension `DECODE_EXTENSIONS` names is a hint `detect_container` knows, and a file of
 //! that kind probes and decodes.
 
-use craft_audio::{AudioBuffer, BitDepth, DECODE_EXTENSIONS, EncodeFormat, EncodeOptions, decode, detect_container, encode, probe};
+use bharat_audio::{AudioBuffer, BitDepth, DECODE_EXTENSIONS, EncodeFormat, EncodeOptions, decode, detect_container, encode, probe};
 
 fn fixture(name: &str) -> Vec<u8> {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures").join(name);
@@ -64,12 +64,12 @@ fn every_encode_format_has_an_extension_it_is_written_and_read_under() {
         let ext = format.extension();
         // The extension names the format, or for `m4a`, which two formats share, AAC before ALAC.
         // A format whose feature is off has no name.
-        match craft_audio::encode_format_for(ext) {
+        match bharat_audio::encode_format_for(ext) {
             Some(named) => {
                 let shares_m4a = |f| matches!(f, EncodeFormat::Aac | EncodeFormat::Alac);
                 assert!(named == format || (shares_m4a(named) && shares_m4a(format)), "{ext}");
                 assert!(named.is_built(), "{ext}");
-                assert!(craft_audio::ENCODE_EXTENSIONS.contains(&ext), "{ext}");
+                assert!(bharat_audio::ENCODE_EXTENSIONS.contains(&ext), "{ext}");
             }
             None => assert!(!matches!(format, EncodeFormat::Wav | EncodeFormat::Aiff | EncodeFormat::Flac), "{ext}"),
         }

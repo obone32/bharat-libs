@@ -3,7 +3,7 @@
 
 use std::process::Command;
 
-use craft_audio::aac::{Decoder, split_adts};
+use bharat_audio::aac::{Decoder, split_adts};
 
 use super::common::*;
 
@@ -122,7 +122,7 @@ fn matches_ffmpeg_he_aac_decoder() {
         let refr = ffmpeg_decode_as(&ff, &path, case.channels);
         let (ours, rate) = decode_sbr(&data);
         // ffmpeg puts surround in WAV order, the decoder in AAC element order
-        let ours: Vec<Vec<f32>> = match (case.channels == 6).then(|| craft_audio::aac::wav_order(6)).flatten() {
+        let ours: Vec<Vec<f32>> = match (case.channels == 6).then(|| bharat_audio::aac::wav_order(6)).flatten() {
             Some(order) => order.iter().map(|&c| ours[c].clone()).collect(),
             None => ours,
         };

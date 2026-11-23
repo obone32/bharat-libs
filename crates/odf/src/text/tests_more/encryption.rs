@@ -4,7 +4,7 @@
 
 use crate::text::tests::{NS_T, package, zip_of};
 use crate::text::{CryptError, decrypt, encrypt, export, import, is_encrypted};
-use craft_wordmodel::Document;
+use bharat_wordmodel::Document;
 
 fn secret_doc() -> Vec<u8> {
     let content = format!(

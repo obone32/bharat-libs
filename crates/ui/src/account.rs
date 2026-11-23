@@ -347,7 +347,7 @@ impl AccountMenu {
 
     /// Draw the badge in a context that has no `Ui` to hand.
     pub fn show_in_ctx(&mut self, ctx: &Context) {
-        egui::Area::new(egui::Id::unique("craft-ui/account")).anchor(egui::Align2::RIGHT_TOP, egui::vec2(-8.0, 8.0)).show(ctx, |ui| {
+        egui::Area::new(egui::Id::unique("bharat-ui/account")).anchor(egui::Align2::RIGHT_TOP, egui::vec2(-8.0, 8.0)).show(ctx, |ui| {
             self.show(ui);
         });
     }

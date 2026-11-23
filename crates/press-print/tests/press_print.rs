@@ -1,7 +1,7 @@
-use craft_cms::{Builtin, Intent, Profile, builtin};
-use craft_prepress::{MAX_PLATE_PIXELS, Options, Output, plates};
-use craft_press_print::{Error, PressPage, Settings, print, render};
-use craft_print::rgb;
+use bharat_cms::{Builtin, Intent, Profile, builtin};
+use bharat_prepress::{MAX_PLATE_PIXELS, Options, Output, plates};
+use bharat_press_print::{Error, PressPage, Settings, print, render};
+use bharat_print::rgb;
 
 /// A one-page PDF of `w` × `h` pt with `content`, `resources` and `catalog` entries, and
 /// `objects` numbered from 5 (each a whole object body).
@@ -101,7 +101,7 @@ fn bad_input_is_refused_before_anything_prints() {
 
     // No such printer: refused while asking for its page, before a job starts.
     let job = rgb::Job {
-        printer: "Craft press print: no such printer",
+        printer: "Bharat press print: no such printer",
         settings: None,
         title: "press",
         output_file: None,

@@ -310,7 +310,7 @@ impl<'a> Lexer<'a> {
         };
         let text = String::from_utf8_lossy(self.rest().get(..end + 2).unwrap_or_default()).into_owned();
         self.advance(end + 2);
-        let Some(out) = craft_eps::ascii85::decode(text.as_bytes(), MAX_ASCII85) else {
+        let Some(out) = bharat_eps::ascii85::decode(text.as_bytes(), MAX_ASCII85) else {
             return syntax("<~");
         };
         Ok(out)

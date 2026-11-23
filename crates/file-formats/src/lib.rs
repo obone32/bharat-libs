@@ -1,4 +1,4 @@
-//! Bounded file kind detection and extension resolution shared by Craft applications.
+//! Bounded file kind detection and extension resolution shared by Bharat applications.
 //!
 //! This crate identifies a format; it does not parse, validate, or decode the file.
 //! Callers remain responsible for choosing which identified formats their product supports.
@@ -304,10 +304,10 @@ impl Format {
         })
     }
 
-    /// The corresponding flat-raster codec, when this format is handled by `craft-image-codecs`.
+    /// The corresponding flat-raster codec, when this format is handled by `bharat-image-codecs`.
     #[cfg(feature = "raster-codecs")]
-    pub fn raster_codec(self) -> Option<craft_image_codecs::Format> {
-        use craft_image_codecs::Format as Codec;
+    pub fn raster_codec(self) -> Option<bharat_image_codecs::Format> {
+        use bharat_image_codecs::Format as Codec;
         Some(match self {
             Self::Png => Codec::Png,
             Self::Jpeg => Codec::Jpeg,
@@ -426,21 +426,21 @@ pub fn detect(name: &str, bytes: &[u8]) -> Option<Format> {
     // Container identifiers are stronger than generic ZIP signatures and filenames. The shared
     // readers own their bounded, format-specific directory/mimetype probes.
     #[cfg(feature = "pcraft")]
-    if craft_pcraft_bundle::is_pcraft_zip(bytes) {
+    if bharat_pcraft_bundle::is_pcraft_zip(bytes) {
         return Some(Format::Pcraft);
     }
     #[cfg(feature = "ora")]
-    if craft_ora::is_ora(bytes) {
+    if bharat_ora::is_ora(bytes) {
         return Some(Format::Ora);
     }
     #[cfg(feature = "kra")]
-    if craft_kra::is_kra(bytes) {
+    if bharat_kra::is_kra(bytes) {
         return Some(Format::Kra);
     }
-    if craft_idml::is_idml(bytes) {
+    if bharat_idml::is_idml(bytes) {
         return Some(Format::Idml);
     }
-    if craft_zip::stored_mimetype(bytes) == Some(b"application/vnd.designcraft+zip") || designcraft_zip_has_document(bytes) {
+    if bharat_zip::stored_mimetype(bytes) == Some(b"application/vnd.designcraft+zip") || designcraft_zip_has_document(bytes) {
         return Some(Format::DesignCraft);
     }
     if is_designcraft_json(bytes) {
@@ -449,12 +449,12 @@ pub fn detect(name: &str, bytes: &[u8]) -> Option<Format> {
     if bytes.starts_with(&INDD_SIGNATURE) {
         return Some(Format::Indd);
     }
-    if let Some(found) = craft_eps::sniff(bytes) {
+    if let Some(found) = bharat_eps::sniff(bytes) {
         return Some(match (found.kind, found.illustrator) {
             (_, true) => Format::Illustrator,
-            (craft_eps::Kind::Pdf, _) => Format::Pdf,
-            (craft_eps::Kind::Eps, _) => Format::Eps,
-            (craft_eps::Kind::PostScript, _) => Format::PostScript,
+            (bharat_eps::Kind::Pdf, _) => Format::Pdf,
+            (bharat_eps::Kind::Eps, _) => Format::Eps,
+            (bharat_eps::Kind::PostScript, _) => Format::PostScript,
         });
     }
     if bytes.starts_with(b"8BPS") {
@@ -478,7 +478,7 @@ pub fn detect(name: &str, bytes: &[u8]) -> Option<Format> {
     // raster signature so TIFF-based RAW files reach the RAW adapter, while ordinary TIFF files
     // retain the raster classification.
     #[cfg(feature = "raw")]
-    if craft_raw::probe(bytes).is_some() {
+    if bharat_raw::probe(bytes).is_some() {
         return Some(Format::Raw);
     }
     if bytes.starts_with(b"\0\xffKA") {
@@ -503,13 +503,13 @@ pub fn detect(name: &str, bytes: &[u8]) -> Option<Format> {
     if bytes.trim_ascii_start().starts_with(b"{\\rtf") {
         return Some(Format::Rtf);
     }
-    if craft_svg::sniff::is_svgz(bytes)
-        && let Ok(text) = craft_svg::svgz::text(bytes, 64 * 1024 * 1024)
-        && craft_svg::sniff::is_svg(text.as_bytes())
+    if bharat_svg::sniff::is_svgz(bytes)
+        && let Ok(text) = bharat_svg::svgz::text(bytes, 64 * 1024 * 1024)
+        && bharat_svg::sniff::is_svg(text.as_bytes())
     {
         return Some(Format::Svgz);
     }
-    if craft_svg::sniff::is_svg(bytes) {
+    if bharat_svg::sniff::is_svg(bytes) {
         return Some(Format::Svg);
     }
     if let Some(ext) = extension(name)
@@ -533,7 +533,7 @@ fn designcraft_zip_has_document(bytes: &[u8]) -> bool {
     if !bytes.starts_with(b"PK") {
         return false;
     }
-    craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: 100_000, max_total_bytes: 0 })
+    bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: 100_000, max_total_bytes: 0 })
         .is_ok_and(|archive| archive.contains("document.json"))
 }
 
@@ -647,7 +647,7 @@ enum JpegFrame {
 
 /// Walk the marker segments from the start-of-image marker to the first frame or scan header.
 /// Only the first 1 MiB is read, and each step moves forward at least one byte. The walk follows
-/// `jpeg_frame_from` in craft-image-codecs, which a build without the `raster-codecs` feature does
+/// `jpeg_frame_from` in bharat-image-codecs, which a build without the `raster-codecs` feature does
 /// not link.
 fn jpeg_frame(bytes: &[u8]) -> JpegFrame {
     const LIMIT: usize = 1 << 20;

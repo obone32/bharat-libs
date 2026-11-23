@@ -43,12 +43,12 @@ fn theme_font_slots_survive_a_save() {
     // As pandoc writes them: theme slots only, in the document defaults, and on a run.
     let styles = r#"<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:hAnsiTheme="minorHAnsi" w:cstheme="minorBidi"/><w:lang w:val="en-US" w:eastAsia="zh-CN"/></w:rPr></w:rPrDefault></w:docDefaults>"#;
     let body = r#"<w:p><w:r><w:rPr><w:rFonts w:eastAsiaTheme="majorEastAsia" w:cstheme="bogus"/></w:rPr><w:t>“Quoted” text</w:t></w:r></w:p>"#;
-    let d = craft_docx::read(&docx(body, styles)).unwrap();
+    let d = bharat_docx::read(&docx(body, styles)).unwrap();
     let run = &d.body[0].as_para().unwrap().runs[0];
-    assert_eq!(run.props.font_ea_theme, Some(craft_wordmodel::props::ThemeFont::MajorEastAsia));
+    assert_eq!(run.props.font_ea_theme, Some(bharat_wordmodel::props::ThemeFont::MajorEastAsia));
     assert_eq!(run.props.font_cs_theme, None, "a name outside ST_Theme is not kept");
 
-    let out = craft_docx::write(&d).unwrap();
+    let out = bharat_docx::write(&d).unwrap();
     let styles_out = rfonts(&part(&out, "word/styles.xml"));
     assert!(
         styles_out.iter().any(|f| f.contains(r#"w:eastAsiaTheme="minorEastAsia""#) && f.contains(r#"w:cstheme="minorBidi""#)),
@@ -60,8 +60,8 @@ fn theme_font_slots_survive_a_save() {
 
 #[test]
 fn a_named_east_asian_font_replaces_the_theme_slot() {
-    let mut base = craft_wordmodel::props::CharProps { font_ea_theme: Some(craft_wordmodel::props::ThemeFont::MinorEastAsia), ..Default::default() };
-    base.overlay(&craft_wordmodel::props::CharProps { font_ea: Some("SimSun".into()), ..Default::default() });
+    let mut base = bharat_wordmodel::props::CharProps { font_ea_theme: Some(bharat_wordmodel::props::ThemeFont::MinorEastAsia), ..Default::default() };
+    base.overlay(&bharat_wordmodel::props::CharProps { font_ea: Some("SimSun".into()), ..Default::default() });
     assert_eq!(base.font_ea.as_deref(), Some("SimSun"));
     assert_eq!(base.font_ea_theme, None, "the slot would otherwise win over the font just chosen");
 }

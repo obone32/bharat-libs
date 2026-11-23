@@ -14,22 +14,22 @@ use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
 
-use craft_pdf::interpret::color::CmykConversion;
-use craft_pdf::write::backend::blend::{self as kblend, GroupOptions};
-use craft_pdf::write::backend::color::device_n::{self, Colorant, DeviceNSpace};
-use craft_pdf::write::backend::color::{Color as PdfColor, RegularColor, cmyk};
-use craft_pdf::write::backend::configure::PdfVersion;
-use craft_pdf::write::backend::geom::{Path, PathBuilder, Point as KPoint, Size, Transform};
-use craft_pdf::write::backend::image::{BitsPerComponent, CustomImage, Image, ImageColorspace};
-use craft_pdf::write::backend::mask::{Mask as KMask, MaskType, TransferFunction};
-use craft_pdf::write::backend::num::NormalizedF32;
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::backend::paint::{Fill, FillRule as KFillRule, LinearGradient, Paint as KPaint, RadialGradient, SpreadMethod, Stop};
-use craft_pdf::write::backend::surface::Surface;
-use craft_pdf::write::backend::tagging::{ContentTag, SpanTag};
-use craft_pdf::write::backend::text::{Font, GlyphId, KrillaGlyph};
-use craft_pdf::write::backend::{Data, SerializeSettings};
-use craft_pdf::write::{self as pdf_write, Metadata, Writer};
+use bharat_pdf::interpret::color::CmykConversion;
+use bharat_pdf::write::backend::blend::{self as kblend, GroupOptions};
+use bharat_pdf::write::backend::color::device_n::{self, Colorant, DeviceNSpace};
+use bharat_pdf::write::backend::color::{Color as PdfColor, RegularColor, cmyk};
+use bharat_pdf::write::backend::configure::PdfVersion;
+use bharat_pdf::write::backend::geom::{Path, PathBuilder, Point as KPoint, Size, Transform};
+use bharat_pdf::write::backend::image::{BitsPerComponent, CustomImage, Image, ImageColorspace};
+use bharat_pdf::write::backend::mask::{Mask as KMask, MaskType, TransferFunction};
+use bharat_pdf::write::backend::num::NormalizedF32;
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::backend::paint::{Fill, FillRule as KFillRule, LinearGradient, Paint as KPaint, RadialGradient, SpreadMethod, Stop};
+use bharat_pdf::write::backend::surface::Surface;
+use bharat_pdf::write::backend::tagging::{ContentTag, SpanTag};
+use bharat_pdf::write::backend::text::{Font, GlyphId, KrillaGlyph};
+use bharat_pdf::write::backend::{Data, SerializeSettings};
+use bharat_pdf::write::{self as pdf_write, Metadata, Writer};
 use kurbo::{Affine, BezPath, PathEl};
 
 use super::{

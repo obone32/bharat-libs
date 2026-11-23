@@ -2,7 +2,7 @@
 //! off). This module only builds and updates the `NSMenu`s; the layout and how keys reach egui are
 //! in the platform-free part of the crate.
 //!
-//! - An item's muda id is its command's [`craft_keymap::CommandRef::key`]. muda ids must be
+//! - An item's muda id is its command's [`bharat_keymap::CommandRef::key`]. muda ids must be
 //!   unique: a command shown twice (Keyboard Shortcuts in Edit and Window) has `key` for its first
 //!   item and `key#2` for its second, and both report the command.
 //! - A radio item is a check item: AppKit menus have no radio look.
@@ -43,7 +43,7 @@ use muda::{CheckMenuItem, MenuEvent, MenuItem, PredefinedMenuItem, Submenu};
 use objc2::MainThreadMarker;
 use objc2_app_kit::{NSApplication, NSEventModifierFlags, NSEventType};
 
-use craft_keymap::{Chord, CommandRef, Key, Mods};
+use bharat_keymap::{Chord, CommandRef, Key, Mods};
 
 use crate::driver::{Backend, Dispatch, Event, NativeMenu, native_ok};
 use crate::model::{Builtin, Item, ItemKind, Menu, MenuBar, MenuRole, Node, Standard, native_id, structure_key, window_key};
@@ -69,8 +69,8 @@ thread_local! {
 /// the main thread, or when a menu bar is already installed. It replaces an app menu from
 /// [`install_app_menu`].
 ///
-/// craft-menu owns muda's menu event handler. muda keeps the first one set, so an app calls this
-/// or the deprecated `craft_quit::install_app_menu`, never both: called first, that one leaves
+/// bharat-menu owns muda's menu event handler. muda keeps the first one set, so an app calls this
+/// or the deprecated `bharat_quit::install_app_menu`, never both: called first, that one leaves
 /// this menu without events; called after, it replaces this menu bar with its app menu.
 pub fn install(ctx: &egui::Context, bar: &MenuBar) -> Option<NativeMenu> {
     install_with(ctx, bar, MacOptions::default())
@@ -120,21 +120,21 @@ pub fn install_with(ctx: &egui::Context, bar: &MenuBar, options: MacOptions) -> 
 /// Quit, labelled in English with `app_name` ("Quit WordCraft").
 ///
 /// winit's Quit ends the process without asking, so unsaved work is lost. This Quit has the id
-/// [`craft_quit::QUIT_MENU_ID`] and runs [`craft_quit::on_menu_event`]: it asks the root window to
+/// [`bharat_quit::QUIT_MENU_ID`] and runs [`bharat_quit::on_menu_event`]: it asks the root window to
 /// close, the app's unsaved-changes check runs as for the close button, and
-/// [`craft_quit::on_close_request`] then quits. Call it once, from the eframe app creator: winit
+/// [`bharat_quit::on_close_request`] then quits. Call it once, from the eframe app creator: winit
 /// builds its default menu before that and would replace one installed earlier.
 ///
 /// Does nothing when this menu or a full menu bar ([`install`]) is already installed. On error
 /// winit's menu stays: the app still runs, but ⌘Q quits without asking.
 pub fn install_app_menu(ctx: &egui::Context, app_name: &str) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if MainThreadMarker::new().is_none() {
-        return Err("craft_menu::mac::install_app_menu runs on the main thread".into());
+        return Err("bharat_menu::mac::install_app_menu runs on the main thread".into());
     }
     if INSTALLED.load(Ordering::SeqCst) || APP_MENU.with_borrow(Option::is_some) {
         return Ok(());
     }
-    let quit = MenuItem::with_id(craft_quit::QUIT_MENU_ID, format!("Quit {app_name}"), true, Some(Accelerator::new(Modifiers::META, Code::KeyQ)));
+    let quit = MenuItem::with_id(bharat_quit::QUIT_MENU_ID, format!("Quit {app_name}"), true, Some(Accelerator::new(Modifiers::META, Code::KeyQ)));
     let app_menu = Submenu::new(app_name, true);
     app_menu.append_items(&[
         &PredefinedMenuItem::about(Some(&format!("About {app_name}")), None),
@@ -158,7 +158,7 @@ pub fn install_app_menu(ctx: &egui::Context, app_name: &str) -> Result<(), Box<d
 /// The installed menu the handler reports to.
 #[derive(Clone)]
 enum Route {
-    /// [`install_app_menu`]'s: only Quit reports, to craft-quit.
+    /// [`install_app_menu`]'s: only Quit reports, to bharat-quit.
     AppMenu(egui::Context),
     /// A full menu bar's.
     Menu(MenuRoute),
@@ -201,7 +201,7 @@ fn handle_event(e: MenuEvent) {
     let ctx = match route {
         None => return,
         Some(Route::AppMenu(ctx)) => {
-            craft_quit::on_menu_event(&ctx, e.id.as_ref());
+            bharat_quit::on_menu_event(&ctx, e.id.as_ref());
             ctx
         }
         Some(Route::Menu(r)) => {

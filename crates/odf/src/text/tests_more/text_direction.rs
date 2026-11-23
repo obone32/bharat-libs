@@ -5,9 +5,9 @@
 
 use crate::text::tests::{NS_T, content_of, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::para::{InlineObject, ShapeKind};
-use craft_wordmodel::props::{TextDirection, TextVert};
+use bharat_wordmodel::Document;
+use bharat_wordmodel::para::{InlineObject, ShapeKind};
+use bharat_wordmodel::props::{TextDirection, TextVert};
 
 const NS_D: &str = r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0""#;
 

@@ -1,5 +1,5 @@
 [package]
-name = "craft-sqlite"
+name = "bharat-sqlite"
 description = "Bounded wire-format helpers for SQLite database readers."
 version.workspace = true
 edition.workspace = true

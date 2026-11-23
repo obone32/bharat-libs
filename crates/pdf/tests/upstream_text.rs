@@ -4,7 +4,7 @@
 #![cfg(feature = "interpret")]
 #![allow(clippy::unwrap_used, clippy::panic)]
 
-use craft_pdf::interpret::{
+use bharat_pdf::interpret::{
     BlendMode, ClipPath, Context, Device, GlyphDrawMode, Image, InterpreterCache, InterpreterSettings, Paint, PathDrawMode, SoftMask, TransformExt,
     font::Glyph,
 };
@@ -53,13 +53,13 @@ fn drawn_glyphs(font: &str, extra: &str, content: &[u8]) -> TextDevice {
     .into_bytes();
     pdf.extend_from_slice(content);
     pdf.extend_from_slice(format!("\nendstream endobj\n5 0 obj {font} endobj\n{extra}trailer << /Root 1 0 R >>\n%%EOF\n").as_bytes());
-    let pdf = craft_pdf::open_slice(&pdf, None).unwrap();
+    let pdf = bharat_pdf::open_slice(&pdf, None).unwrap();
     let page = &pdf.pages()[0];
     let cache = InterpreterCache::new();
     let mut context =
         Context::new(page.initial_transform(true).to_kurbo(), Rect::new(0.0, 0.0, 300.0, 300.0), &cache, page.xref(), InterpreterSettings::default());
     let mut device = TextDevice::default();
-    craft_pdf::interpret_page(page, &mut context, &mut device).unwrap();
+    bharat_pdf::interpret_page(page, &mut context, &mut device).unwrap();
     device
 }
 

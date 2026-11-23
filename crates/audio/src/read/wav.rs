@@ -121,15 +121,15 @@ const IXML_MAX: usize = 1 << 20;
 /// iXML's BEXT mirror is a fallback only: a real `bext` always wins, including timestamp zero.
 /// Read the two unsigned 32-bit words, not arbitrary text that merely contains their tag names.
 fn ixml_time_reference(bytes: &[u8]) -> Option<u64> {
-    let options = craft_xml::Options {
-        doctype: craft_xml::Doctype::Reject,
-        ..craft_xml::Options::default().strict().with_limits(craft_xml::Limits {
+    let options = bharat_xml::Options {
+        doctype: bharat_xml::Doctype::Reject,
+        ..bharat_xml::Options::default().strict().with_limits(bharat_xml::Limits {
             max_input: IXML_MAX,
             max_depth: 32,
             max_nodes: 8192,
             max_attrs: 64,
             max_attrs_total: 8192,
-            ..craft_xml::Limits::default()
+            ..bharat_xml::Limits::default()
         })
     };
     let root = options.parse(bytes).ok()?;
@@ -144,7 +144,7 @@ fn ixml_time_reference(bytes: &[u8]) -> Option<u64> {
     let word = |name: &str| -> Option<Option<u32>> {
         let mut fields = bext.children(name);
         let Some(field) = fields.next() else { return Some(None) };
-        if fields.next().is_some() || field.children.iter().any(|n| matches!(n, craft_xml::Node::El(_))) {
+        if fields.next().is_some() || field.children.iter().any(|n| matches!(n, bharat_xml::Node::El(_))) {
             return None;
         }
         let text = field.text();

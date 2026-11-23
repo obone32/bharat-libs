@@ -1,5 +1,5 @@
 //! The compatibility facade must retain its policy while sharing the codec implementation.
-use craft_raster_codecs::{ChannelLayout, CodecError, Image, Limits, SampleType, dds, fits, iff, pnm, xpm};
+use bharat_raster_codecs::{ChannelLayout, CodecError, Image, Limits, SampleType, dds, fits, iff, pnm, xpm};
 
 #[test]
 fn facade_refuses_conversions_the_generic_encoder_can_plan() {

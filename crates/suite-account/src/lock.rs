@@ -8,7 +8,7 @@
 //! already writes through a temporary file and a rename, so a reader never sees a torn file; it
 //! can only see a list that is one write older than the latest.
 //!
-//! This matches the mechanism `craft-ai-integrations`'s own secret store already uses for the same
+//! This matches the mechanism `bharat-ai-integrations`'s own secret store already uses for the same
 //! problem: a sibling `.lock` file, taken with `std::fs::File::try_lock` and a bounded retry,
 //! never a new dependency. RFC-0025's convergence note names that store's "locked read-change-
 //! write" as a requirement the shared crate adopts; this is that adoption, ahead of the

@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use craft_timeline::time::{FrameRate, Tick};
+use bharat_timeline::time::{FrameRate, Tick};
 
 use super::ids::{META_DICTIONARY, ROOT, cls, ddef, def, path, pid};
 use super::store::{self, Auid, Obj, Value, rational, utf16z};
@@ -338,7 +338,7 @@ fn add_file_mobs(doc: &Document, files: Vec<FileMob>, w: &mut W<'_>, output: &mu
 
 fn add_tape_mob(first: &Source, tape_id: [u8; 32], timecode: Option<(i64, FrameRate)>, tape_slots: Vec<Obj>, output: &mut MediaOutput) {
     let Some(_) = timecode else { return };
-    let reel = first.path.as_deref().map(craft_timeline::path::file_stem).unwrap_or(&first.name).to_string();
+    let reel = first.path.as_deref().map(bharat_timeline::path::file_stem).unwrap_or(&first.name).to_string();
     output.mobs.push(
         Obj::new(cls::SOURCE_MOB)
             .data_prop(pid::MOB_ID, tape_id.to_vec())
@@ -353,7 +353,7 @@ fn add_tape_mob(first: &Source, tape_id: [u8; 32], timecode: Option<(i64, FrameR
 /// Serialise a composition document.
 pub(crate) fn write(
     doc: &Document,
-    version: craft_cfb::Version,
+    version: bharat_cfb::Version,
     identity: &Identity<'_>,
     references: &super::ReferenceOptions,
     report: &mut Report,
@@ -801,10 +801,10 @@ fn descriptor(w: &mut W, s: &Source) -> Obj {
     d.set(pid::FILE_LENGTH, Value::Data(len.to_le_bytes().to_vec()));
     d.set(pid::CONTAINER_FORMAT, weak(path::CONTAINER_DEFS, container));
     if let Some(p) = &s.path {
-        let url = if craft_timeline::path::is_absolute(p) {
-            craft_timeline::path::path_to_file_url(p, false)
+        let url = if bharat_timeline::path::is_absolute(p) {
+            bharat_timeline::path::path_to_file_url(p, false)
         } else if w.references.encode_relative_locator {
-            craft_timeline::path::encode_uri_path(p)
+            bharat_timeline::path::encode_uri_path(p)
         } else {
             p.clone()
         };

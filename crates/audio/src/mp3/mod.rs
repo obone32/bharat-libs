@@ -8,7 +8,7 @@
 //! frequencies and MPEG-2.5 (8-48 kHz), every bit rate (CBR or VBR), mono, stereo, dual channel
 //! and joint stereo (mid/side and intensity), long, short and mixed blocks, across the bit
 //! reservoir. [`InfoTag`] reads the Xing / Info or VBRI frame at the start of a file and the
-//! LAME tag's encoder delay and padding. `craft_audio::decode` (feature `decode-native`) reads
+//! LAME tag's encoder delay and padding. `bharat_audio::decode` (feature `decode-native`) reads
 //! `.mp3` files and MP3 in MP4 and Matroska through them, gapless.
 //!
 //! # Encoder (feature `mp3-encode`)

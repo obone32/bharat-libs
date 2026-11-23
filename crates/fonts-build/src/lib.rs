@@ -1,15 +1,15 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Embed the optional [craft-fonts](https://github.com/storytold/craft-fonts) faces from an app's
+//! Embed the optional [bharat-fonts](https://github.com/obone32/bharat-fonts) faces from an app's
 //! `build.rs`.
 //!
-//! Apps never depend on craft-fonts in `Cargo.toml` (Cargo would fetch the font repository for
-//! every build). The build reads a local checkout named by `CRAFT_FONTS_DIR` instead:
+//! Apps never depend on bharat-fonts in `Cargo.toml` (Cargo would fetch the font repository for
+//! every build). The build reads a local checkout named by `BHARAT_FONTS_DIR` instead:
 //!
 //! - **Unset or empty:** the table is empty and the app uses its own and system fonts.
 //! - **Set:** every selected face in `fonts/manifest.txt` is embedded with `include_bytes!`.
 //! - **Set, but not readable as a checkout:** a `cargo::warning` and an empty table.
-//! - **`CRAFT_FONTS_REQUIRED=1`** (release builds; any other value is ignored): a missing or
+//! - **`BHARAT_FONTS_REQUIRED=1`** (release builds; any other value is ignored): a missing or
 //!   unreadable checkout, no selected face, or a requested script without a face is an [`Error`].
 //!
 //! Add this crate both as a build-dependency (for [`Embed`]) and as a dependency (for
@@ -19,14 +19,14 @@
 //!
 //! ```ignore
 //! println!("cargo::rerun-if-changed=build.rs");
-//! let wasm = craft_fonts_build::target_is_wasm();
+//! let wasm = bharat_fonts_build::target_is_wasm();
 //! let catalogs: Vec<std::path::PathBuf> = /* the app's translation catalogs */;
-//! let embedded = craft_fonts_build::Embed::new()
+//! let embedded = bharat_fonts_build::Embed::new()
 //!     // CJK faces only as the interface faces, cut to the characters the catalogs use.
 //!     .subset_to(catalogs)
 //!     // Web builds have a size budget: embed only the Japanese interface face there.
 //!     .filter(move |face| !wasm || face.has_script("Jpan"))
-//!     .write("craft_fonts.rs");
+//!     .write("bharat_fonts.rs");
 //! if let Err(e) = embedded {
 //!     println!("cargo::error={e}");
 //! }
@@ -35,9 +35,9 @@
 //! and in the crate:
 //!
 //! ```ignore
-//! use craft_fonts_build::EmbeddedFace;
+//! use bharat_fonts_build::EmbeddedFace;
 //!
-//! pub static CRAFT_FONTS: &[EmbeddedFace] = include!(concat!(env!("OUT_DIR"), "/craft_fonts.rs"));
+//! pub static BHARAT_FONTS: &[EmbeddedFace] = include!(concat!(env!("OUT_DIR"), "/bharat_fonts.rs"));
 //! ```
 //!
 //! The generated file is a slice expression of `EmbeddedFace { .. }` literals, so any struct with
@@ -65,7 +65,7 @@ mod tests;
 pub use embed::{Embed, Error, target_is_wasm};
 pub use manifest::{CJK_SCRIPTS, ManifestEntry, ParseError, UI_ROLE, parse_manifest};
 
-/// A craft-fonts face embedded by [`Embed`]: one line of `fonts/manifest.txt`.
+/// A bharat-fonts face embedded by [`Embed`]: one line of `fonts/manifest.txt`.
 ///
 /// [`Embed::serve`] writes [`ServedFace`]s instead.
 #[derive(Clone, Copy)]
@@ -121,7 +121,7 @@ impl EmbeddedFace {
     }
 }
 
-/// A craft-fonts face that [`Embed::serve`] copied beside the app, to fetch at run time: one line
+/// A bharat-fonts face that [`Embed::serve`] copied beside the app, to fetch at run time: one line
 /// of `fonts/manifest.txt`.
 #[derive(Clone, Copy, Debug)]
 pub struct ServedFace {

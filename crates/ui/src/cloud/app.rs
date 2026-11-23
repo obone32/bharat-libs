@@ -12,7 +12,7 @@
 
 use egui::{Color32, FontFamily, Painter, Rect, Ui};
 
-use craft_cloud::EntryKind;
+use bharat_cloud::EntryKind;
 
 /// What one of the application's documents is, as a file list needs to know.
 ///

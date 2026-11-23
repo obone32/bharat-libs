@@ -5,7 +5,7 @@
 //! ([`fat_slices`]), CPU and load command names, the fixed size each known load command needs
 //! before its fields can be read, and the program counter in a thread command.
 //!
-//! From Craft Anything (`crates/formats/src/macho.rs`), where the load command walker, symbol,
+//! From Bharat Anything (`crates/formats/src/macho.rs`), where the load command walker, symbol,
 //! stub and Objective-C code built on these stays. With the `serde` feature, [`FatSlice`] is
 //! `Serialize`.
 

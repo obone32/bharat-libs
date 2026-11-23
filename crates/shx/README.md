@@ -1,4 +1,4 @@
-# craft-shx
+# bharat-shx
 
 Compiles SHP shape source into SHX shapes, big-font and Unicode containers.
 Extracted from CADCraft by Francesco BV (cadcraft52c1e6de); no font assets are bundled.

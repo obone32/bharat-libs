@@ -226,7 +226,7 @@ fn decoded(line: &ContentLine) -> String {
         "BASE64" | "B" => base64_bytes(&line.value),
         _ => return line.value.clone(),
     };
-    craft_mime::charset::decode(&bytes, line.param("CHARSET").unwrap_or(""))
+    bharat_mime::charset::decode(&bytes, line.param("CHARSET").unwrap_or(""))
 }
 
 /// `tel:+1-555-0100` and `mailto:a@example.org` (vCard 4.0 URIs) without the scheme.

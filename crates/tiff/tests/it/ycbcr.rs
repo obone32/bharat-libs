@@ -1,7 +1,7 @@
 //! YCbCr: PhotoCraft's conversion tests and FilmCraft's decoding cases, on files this crate writes.
 
-use craft_tiff::ycbcr::{self, BT601, REFERENCE_BLACK_WHITE, YCBCR_COEFFICIENTS, YCbCr};
-use craft_tiff::{ByteOrder, IfdBuilder, ImageData, Tiff, TiffError, TiffWriter, Value, tags};
+use bharat_tiff::ycbcr::{self, BT601, REFERENCE_BLACK_WHITE, YCBCR_COEFFICIENTS, YCbCr};
+use bharat_tiff::{ByteOrder, IfdBuilder, ImageData, Tiff, TiffError, TiffWriter, Value, tags};
 
 fn convert(c: &YCbCr, px: [u8; 3]) -> [u8; 3] {
     let mut d = px.to_vec();
@@ -57,7 +57,7 @@ fn odd_buffers_do_not_panic() {
     assert_eq!((d, w), (vec![1, 2], vec![1]));
 }
 
-fn ifd_with(entries: &[(u16, Value)]) -> craft_tiff::Ifd {
+fn ifd_with(entries: &[(u16, Value)]) -> bharat_tiff::Ifd {
     // A TIFF directory cannot be empty: give it a size.
     let mut b = IfdBuilder::new().with(tags::IMAGE_WIDTH, Value::Long(vec![1]));
     for (t, v) in entries {
@@ -111,7 +111,7 @@ fn file(w: u32, h: u32, sub: (u16, u16), units: &[u8], packbits: bool, extra: &[
     TiffWriter::new(ByteOrder::Big, false).write(&[b]).unwrap()
 }
 
-fn decode(bytes: &[u8]) -> craft_tiff::Result<Vec<u8>> {
+fn decode(bytes: &[u8]) -> bharat_tiff::Result<Vec<u8>> {
     ycbcr::decode_rgb8(bytes, &Tiff::parse(bytes).unwrap().ifds[0], 1 << 28)
 }
 

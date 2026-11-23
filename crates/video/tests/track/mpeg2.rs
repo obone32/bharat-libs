@@ -2,7 +2,7 @@
 //! packets into `extradata`.
 
 use crate::common;
-use craft_media::CodecId;
+use bharat_media::CodecId;
 
 /// Closed GOPs every 12 frames with B-frames (ffmpeg's encoder needs scene change detection off
 /// for closed GOPs).
@@ -48,7 +48,7 @@ fn sequence_header_from_extradata() {
     }
     let mut bare = track.clone();
     bare.params.extradata.clear();
-    let mut dec = craft_video::TrackDecoder::new(&bare.params).unwrap();
+    let mut dec = bharat_video::TrackDecoder::new(&bare.params).unwrap();
     let decoded = bare.packets.iter().filter_map(|p| dec.decode(&p.data, p.pts).ok()).flatten().count();
     assert_eq!(decoded, 0, "the packets decode without a sequence header");
     common::check_track(&track, &f);

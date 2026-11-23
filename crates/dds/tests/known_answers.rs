@@ -1,8 +1,8 @@
 //! Independent known-answer test vectors (raw bitstreams and hand-verified spec outputs)
 //! for BC6H (unsigned/signed), BC7, ETC1, and EAC R/RG (unsigned/signed).
 
-use craft_dds::DdsError;
-use craft_dds::pixels::{self, PixelLayout};
+use bharat_dds::DdsError;
+use bharat_dds::pixels::{self, PixelLayout};
 
 #[test]
 fn bc7_mode6_known_bitstream() {

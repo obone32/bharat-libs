@@ -1,6 +1,6 @@
 use super::*;
 use crate::CodecId;
-use craft_media_testkit::vmd::{Audio, Frame as F, Spec, build};
+use bharat_media_testkit::vmd::{Audio, Frame as F, Spec, build};
 
 fn sample(audio: bool) -> Vec<u8> {
     let mut spec = Spec::new(16, 8);
@@ -189,7 +189,7 @@ fn a_buffer_that_cannot_be_had_is_not_a_panic() {
 #[test]
 fn hostile_input_never_panics() {
     for (i, seed) in [sample(true), sample(false)].iter().enumerate() {
-        craft_media_testkit::hostile::hammer(&format!("vmd seed {i}"), seed, 30_000, |d| {
+        bharat_media_testkit::hostile::hammer(&format!("vmd seed {i}"), seed, 30_000, |d| {
             if let Ok(f) = open(d) {
                 let n = f.frames.len();
                 for k in [0, n / 2, n.saturating_sub(1), n, usize::MAX] {

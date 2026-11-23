@@ -5,11 +5,11 @@
 
 use crate::text::tests::{NS_T, package, styles_of};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::fill::{Fill, GradientKind, PathShape};
-use craft_wordmodel::line_dash::LineDash;
-use craft_wordmodel::para::InlineObject;
-use craft_wordmodel::props::Rgb;
+use bharat_wordmodel::Document;
+use bharat_wordmodel::fill::{Fill, GradientKind, PathShape};
+use bharat_wordmodel::line_dash::LineDash;
+use bharat_wordmodel::para::InlineObject;
+use bharat_wordmodel::props::Rgb;
 
 const NS_D: &str =
     r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0""#;
@@ -34,7 +34,7 @@ fn line_flips(d: &Document) -> Vec<(bool, bool)> {
         .filter_map(|b| b.as_para())
         .flat_map(|p| p.objects.iter())
         .filter_map(|o| match o {
-            InlineObject::Shape { kind: craft_wordmodel::para::ShapeKind::Line, float, .. } => Some((float.flip_h, float.flip_v)),
+            InlineObject::Shape { kind: bharat_wordmodel::para::ShapeKind::Line, float, .. } => Some((float.flip_h, float.flip_v)),
             _ => None,
         })
         .collect()
@@ -72,8 +72,8 @@ fn open() -> Document {
 }
 
 fn gradient(kind: GradientKind, stops: &[(f32, Rgb)]) -> Option<Fill> {
-    Some(Fill::Gradient(std::sync::Arc::new(craft_wordmodel::fill::Gradient {
-        stops: stops.iter().map(|&(pos, color)| craft_wordmodel::wordart::GradStop { pos, color, transparency: 0.0 }).collect(),
+    Some(Fill::Gradient(std::sync::Arc::new(bharat_wordmodel::fill::Gradient {
+        stops: stops.iter().map(|&(pos, color)| bharat_wordmodel::wordart::GradStop { pos, color, transparency: 0.0 }).collect(),
         kind,
         tile: None,
         rot_with_shape: true,
@@ -132,12 +132,12 @@ fn every_dash_round_trips() {
         SystemDashDotDot,
         Custom(vec![(250_000, 150_000)]),
     ];
-    let mut p = craft_wordmodel::Paragraph::new();
+    let mut p = bharat_wordmodel::Paragraph::new();
     for dash in &dashes {
-        p.text.push(craft_wordmodel::para::OBJ);
-        let extra = craft_wordmodel::connector::ShapeExtra { dash: dash.clone(), ..Default::default() };
+        p.text.push(bharat_wordmodel::para::OBJ);
+        let extra = bharat_wordmodel::connector::ShapeExtra { dash: dash.clone(), ..Default::default() };
         p.objects.push(InlineObject::Shape {
-            kind: craft_wordmodel::para::ShapeKind::Rectangle,
+            kind: bharat_wordmodel::para::ShapeKind::Rectangle,
             w: 50.0,
             h: 40.0,
             fill: None,
@@ -150,9 +150,9 @@ fn every_dash_round_trips() {
             extra,
         });
     }
-    p.runs = vec![craft_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
     let mut d = Document::new();
-    d.body = vec![craft_wordmodel::para_block(p)];
+    d.body = vec![bharat_wordmodel::para_block(p)];
     let back = import(&export(&d).unwrap()).unwrap();
     assert_eq!(looks(&back).into_iter().map(|l| l.1).collect::<Vec<_>>(), dashes);
 }

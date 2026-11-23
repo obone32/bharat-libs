@@ -3,14 +3,14 @@
 //! The kittest harness panics on any character no installed face can draw, so these tests fail
 //! on a replacement box ("tofu") rather than passing a snapshot nobody looks at.
 
-use craft_ui::fonts::{CraftFace, I18nScripts, SystemFonts, UiFonts};
+use bharat_ui::fonts::{BharatFace, I18nScripts, SystemFonts, UiFonts};
 use egui::{FontDefinitions, FontFamily};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable as _;
 
-const ARABIC: CraftFace =
-    CraftFace { family: "Noto Sans Arabic", style: "Regular", scripts: &["Arab"], bytes: include_bytes!("fonts/NotoSansArabic-test.ttf"), index: 0 };
-const CJK: CraftFace = CraftFace {
+const ARABIC: BharatFace =
+    BharatFace { family: "Noto Sans Arabic", style: "Regular", scripts: &["Arab"], bytes: include_bytes!("fonts/NotoSansArabic-test.ttf"), index: 0 };
+const CJK: BharatFace = BharatFace {
     family: "Noto Sans CJK SC",
     style: "Regular",
     scripts: &["Hans", "Latn"],
@@ -20,13 +20,13 @@ const CJK: CraftFace = CraftFace {
 
 const LABELS: [&str; 3] = ["Files", "日本語のファイル", "ملف عربي"];
 
-fn harness(ui_language: &'static str, faces: &'static [CraftFace]) -> Harness<'static> {
+fn harness(ui_language: &'static str, faces: &'static [BharatFace]) -> Harness<'static> {
     Harness::builder()
         .with_size([240.0, 120.0])
         .with_context_setup(move |ctx| {
             let defaults = FontDefinitions::default();
             let mut fonts =
-                UiFonts::new(&I18nScripts).craft_faces(faces).languages(&["en", "ar", "ja"]).ui_language(ui_language).system_fonts(SystemFonts::Off);
+                UiFonts::new(&I18nScripts).bharat_faces(faces).languages(&["en", "ar", "ja"]).ui_language(ui_language).system_fonts(SystemFonts::Off);
             if let Some(ubuntu) = defaults.font_data.get("Ubuntu-Light") {
                 fonts = fonts.app_face("ui", (**ubuntu).clone(), &[FontFamily::Proportional]);
             }

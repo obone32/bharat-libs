@@ -1,4 +1,4 @@
-# egui 0.37 migration plan for craft-libs
+# egui 0.37 migration plan for bharat-libs
 
 Status update (2026-10-25): local candidate includes main `865c9af7fdf455cd3892402d18e526a9f019c6bc`, preserving current native docking, blocked-window focus and print-copy handling. Native input-callback cancellation no longer re-enters the plugin mutex. Both cancellation regressions reproduced the deadlock before the fix. Current gates passed: 1,774 test executions, zero failures, 21 ignored, plus strict workspace/UI/print lint, UI all-feature tests, native example build and UI WASM check. Independent merge/implementation and compiler-correction reviews passed. App-pinned ancestors 25da1314 and 650b1c0 remain reachable. Current-source native platforms/GUI/printer hardware and paired performance remain open; the attempted paired run stopped before measurement due to a collector metadata-projection bug. Publication needs separate explicit approval; human review and human merge are required.
 
@@ -14,8 +14,8 @@ Managed job `egui037-craft-libs-native-fix-gates-20261025-0328` passed formattin
 
 Every push or new PR requires approval of its exact commit range and validation. Human review and merge are required. The baseline tables below preserve the original planning record.
 
-This plan covers only `storytold/craft-libs`. It records the shared-library work needed before the
-Craft applications move to the egui 0.37 family. Application-specific UI migrations, their document
+This plan covers only `obone32/bharat-libs`. It records the shared-library work needed before the
+Bharat applications move to the egui 0.37 family. Application-specific UI migrations, their document
 models, command routing, persistence policy and native window ownership remain in those applications.
 
 The [suite rollout plan](egui-037-suite-rollout.md) supplies the shared publication order,
@@ -27,7 +27,7 @@ measurement protocol and cross-application acceptance contract. Stricter reposit
 
 | Item | Revision / value |
 | --- | --- |
-| craft-libs checkout | `49190884278f16c9a9f5823d7698a8ffb5deb062` (`Merge pull request #238 ...`, 2026-10-22) |
+| bharat-libs checkout | `49190884278f16c9a9f5823d7698a8ffb5deb062` (`Merge pull request #238 ...`, 2026-10-22) |
 | older local comparison point | `b1401e3` (stale local `origin/main`; not the current remote baseline) |
 | lockfile | `Cargo.lock`, format version 4 |
 | current egui family | `egui`, `epaint`, `ecolor`, `emath`, `eframe`, `egui-wgpu`, `egui-winit`, `egui_extras`, `egui_kittest` all `0.36.2` |
@@ -37,12 +37,12 @@ measurement protocol and cross-application acceptance contract. Stricter reposit
 | egui source candidate | `aiongg/egui` `craft/0.37` at `a4f9a17f64a6bae61350fb85804c9df0d9865916`; integrate/review into storytold before production pinning |
 | winit source candidate | `aiongg/winit` `craft/0.30.13-lang` at `8b35388bd719e8cc86a95971ba0bc026c9a8f058`; integrate/review into storytold before production pinning |
 | storytold winit base | `craft/0.30.13` at `ffae5198770d7730e718043f035a772b7dbc3b1b`, itself based on winit tag `v0.30.13` (`e9809ef5`) |
-| craft-libs PR under review | `storytold/craft-libs` PR 199, OPEN / CONFLICTING at head `b68de8c5f4f1c060904d211a7b1320aa0f7bce78`; its merge into local audit branch is `ec8840af8c5fda695cf195cdd05e5ae078415c07` |
+| bharat-libs PR under review | `obone32/bharat-libs` PR 199, OPEN / CONFLICTING at head `b68de8c5f4f1c060904d211a7b1320aa0f7bce78`; its merge into local audit branch is `ec8840af8c5fda695cf195cdd05e5ae078415c07` |
 
 The audit merge `ec8840a` is **not** a usable target: its conflicted `Cargo.lock` still resolves egui
 0.36.2 even though the manifest and source use the 0.37 API. The PR branch itself has a 0.37.0
 registry lock. The historical audit log at
-`/home/codex/work/ssd2/task-evidence/egui037-audit-20261022/fork/craft-libs.log` shows a successful
+`/home/codex/work/ssd2/task-evidence/egui037-audit-20261022/fork/bharat-libs.log` shows a successful
 `cargo check` after the audit harness patched 11 crates to the fork path; it is a useful lead, not
 fresh evidence and not a test run. Fresh validation uses `maintenance/task.py run/status/finish`: retain the owning resource, source
 and evidence paths across sequential commands and use a fresh job ID for each intentional command.
@@ -55,10 +55,10 @@ libraries and their tests:
 
 | Crate | egui use | Features / targets |
 | --- | --- | --- |
-| `craft-ui` (`crates/ui`) | public components and tests | production `egui` with `default-features = false`; optional `serde`; dev `egui` with `default_fonts`, `egui_extras/svg`, `egui_kittest/wgpu`, `image/png` |
-| `craft-window` (`crates/window`) | optional `decorate(egui::ViewportBuilder)` | `egui` feature; Wayland probe only on Linux/BSD; pure logic without egui |
-| `craft-quit` (`crates/quit`) | optional close handling and app menu | `egui`; `menu` implies `egui`; menu/terminate code only on macOS |
-| `craft-platform` (`crates/platform`) | optional deferred close and native theme hook | `egui` with `dialogs` and/or `appearance`; `appearance` only on unix non-macOS non-wasm; `browser` only on wasm |
+| `bharat-ui` (`crates/ui`) | public components and tests | production `egui` with `default-features = false`; optional `serde`; dev `egui` with `default_fonts`, `egui_extras/svg`, `egui_kittest/wgpu`, `image/png` |
+| `bharat-window` (`crates/window`) | optional `decorate(egui::ViewportBuilder)` | `egui` feature; Wayland probe only on Linux/BSD; pure logic without egui |
+| `bharat-quit` (`crates/quit`) | optional close handling and app menu | `egui`; `menu` implies `egui`; menu/terminate code only on macOS |
+| `bharat-platform` (`crates/platform`) | optional deferred close and native theme hook | `egui` with `dialogs` and/or `appearance`; `appearance` only on unix non-macOS non-wasm; `browser` only on wasm |
 | other crates | none, except references in documentation | no egui dependency |
 
 `Cargo.toml:34` is the workspace pin; `crates/ui/Cargo.toml:20-24` is the only egui test toolchain.
@@ -69,7 +69,7 @@ validation, but historical source citations in the audit must not be silently re
 
 Source-declared `#[test]` occurrences at the baseline: 728 workspace-wide, 91 in `crates/ui`
 (85 in `src`, 6 integration). These counts are not proof of execution. The UI CI matrix is Ubuntu,
-Windows and macOS for `cargo fmt`, clippy, `cargo test -p craft-ui` (default and all features), plus a
+Windows and macOS for `cargo fmt`, clippy, `cargo test -p bharat-ui` (default and all features), plus a
 wasm32 `cargo check` (`.github/workflows/ui.yml:20-58`). The visual suite declares 372 control pairs,
 36 deliberate negative pairs, 18 toolbar pairs, 12 palette pairs and 12 SVG pairs; every positive
 pair requires exact RGBA and mesh equality (`crates/ui/tests/visual_regression.rs:185-394`).
@@ -81,18 +81,18 @@ contract below add coverage rather than replacing them.
 
 ## 2. What actually changes in egui 0.37
 
-The following are released 0.37 behavior, not fork behavior. They are the only reasons `craft-ui`
+The following are released 0.37 behavior, not fork behavior. They are the only reasons `bharat-ui`
 needs production edits for the upstream release.
 
-| Change | Effect in craft-libs | Source anchor |
+| Change | Effect in bharat-libs | Source anchor |
 | --- | --- | --- |
 | `WidgetType` is replaced by `accesskit::Role` (`egui::Role`); compatibility alias is deprecated | Every `WidgetInfo` constructor must use `Role`; `SelectableLabel` becomes `Button`, `Other` becomes `Unknown`, `Checkbox` becomes `CheckBox` | `egui/src/lib.rs` 0.37.0 lines ~640-655; PR #8555 |
 | `Id::new` and `AsId` are deprecated; `Id::unique`, `IdSalt`, `IdSaltSet/Map` are the explicit APIs | Test IDs and any caller-provided IDs should use `Id::unique`; use `IdSalt` for scope-local salts | `egui/src/id.rs`; PRs #8534, #8586, #8590 |
 | `Ui::id` is renamed `Ui::scope_id`; `UiBuilder::id` is renamed `scope_id` | Child body/header UIs must pass a globally unique scope id; tests and README examples must use `scope_id` | `egui/src/ui.rs` 0.37.0 lines ~359-383; `ui_builder.rs` lines ~63-82; PR #8542 |
-| `Panel` constructors accept `impl AsIdSalt`; `CentralPanel` stays last; root `Ui` is the normal app surface | Application panel code must keep panel order and use a stable salt; craft-ui's `DockArea` is a child of that root/panel UI, not a `Context` replacement | `egui/src/containers/panel.rs` 0.37.0; PR #8592; `Context::run_ui` / `root_ui` / `run_pass` |
-| `default_fonts` is no longer a default feature; eframe still enables it by default, but integrations must choose | `craft-ui` production already disables defaults; test dev-dependency must keep `default_fonts`; applications with custom fonts must verify coverage | `egui/Cargo.toml` 0.37.0; PR #8583 |
+| `Panel` constructors accept `impl AsIdSalt`; `CentralPanel` stays last; root `Ui` is the normal app surface | Application panel code must keep panel order and use a stable salt; bharat-ui's `DockArea` is a child of that root/panel UI, not a `Context` replacement | `egui/src/containers/panel.rs` 0.37.0; PR #8592; `Context::run_ui` / `root_ui` / `run_pass` |
+| `default_fonts` is no longer a default feature; eframe still enables it by default, but integrations must choose | `bharat-ui` production already disables defaults; test dev-dependency must keep `default_fonts`; applications with custom fonts must verify coverage | `egui/Cargo.toml` 0.37.0; PR #8583 |
 | egui 0.37 adds missing-glyph policy and system font providers; kittest panics on missing glyph by default | Tests that deliberately draw arbitrary script text must opt into `MissingGlyphPolicy::Tofu`; production should keep tofu rather than panic; custom app fonts need explicit coverage checks | `epaint/src/text/fonts.rs`; `egui_kittest/src/builder.rs` (`missing_glyph_policy`); PRs #8601, #8512 |
-| `ViewportCommand::Screenshot` takes a one-shot `ScreenshotCallback`; `Context::request_screenshot` is the convenience API | Any app screenshot path, not craft-ui itself, must move from `UserData`/`Event::Screenshot` correlation to callbacks | `egui/src/data/screenshot_callback.rs`; `viewport.rs:1202-1205`; PR #8489 |
+| `ViewportCommand::Screenshot` takes a one-shot `ScreenshotCallback`; `Context::request_screenshot` is the convenience API | Any app screenshot path, not bharat-ui itself, must move from `UserData`/`Event::Screenshot` correlation to callbacks | `egui/src/data/screenshot_callback.rs`; `viewport.rs:1202-1205`; PR #8489 |
 | `Response::accessible_name`, `Ui::label_inputs_by` / `name_inputs`, `Area::role`, better popup/menu trees | Accessibility labels/roles must be explicit for input widgets and icon-only controls; kittest now fails unnamed inputs | PRs #8604, #8608, #8612, #8581, #8589 |
 | Style defaults changed (roomier buttons, larger corner radius); `Style` theme plugin is experimental | `DockStyle::from_ui` inherits changed defaults; visual fixtures must keep explicit geometry/colors instead of accepting a new golden | PRs #8617, #8445, #8153 |
 | `Context::run_ui`, `run_pass`, `root_ui` and `Context::run_logic` define root-UI and hidden-window semantics | Tests must use the correct entry point; logic-only work must not require a painted `Ui`; `request_discard` may call a UI closure more than once | `egui/src/context.rs` 0.37.0; PR #8535; eframe `App::logic`/`App::ui` |
@@ -105,7 +105,7 @@ behavior, while a suite build gets E1-E21 and the winit patches.
 
 ## 3. Fork and winit provenance
 
-craft-libs #198 is a broader language-support issue/proposal, not a PR or merged
+bharat-libs #198 is a broader language-support issue/proposal, not a PR or merged
 dependency. It does not authorize a wholesale locale/font roadmap in this port.
 PR 199 is open/conflicting at the recorded head; its stale merge tree must not
 replace current main. Current upstream report status is dated research, not proof
@@ -130,12 +130,12 @@ winit = { git = "https://github.com/aiongg/winit", branch = "craft/0.30.13-lang"
 
 That patch belongs to the egui workspace. Cargo does **not** propagate a dependency's patch section
 into a consumer root. A consumer that only depends on `aiongg/egui` will resolve registry winit, and
-E4/E19/E21 will fail to compile or silently use the wrong API. `craft-libs` and every app must add its
+E4/E19/E21 will fail to compile or silently use the wrong API. `bharat-libs` and every app must add its
 own `winit` patch with the immutable commit.
 
 ### 3.2 Winit patch ledger
 
-Base: winit `v0.30.13` (`e9809ef5`), then storytold/winit `craft/0.30.13` (`ffae5198`) with W1-W15,
+Base: winit `v0.30.13` (`e9809ef5`), then obone32/bharat-winit `craft/0.30.13` (`ffae5198`) with W1-W15,
 then `aiongg/winit` `craft/0.30.13-lang` (`8b35388b`) with W17-W27. W16 (Wayland pinch/rotation) is
 not in this cut.
 
@@ -171,7 +171,7 @@ not in this cut.
 
 Provenance concerns:
 
-- Integrate and review W17-W27 plus W15P and the W27 lifecycle revision in `storytold/winit` before pinning production consumers. Retain
+- Integrate and review W17-W27 plus W15P and the W27 lifecycle revision in `obone32/bharat-winit` before pinning production consumers. Retain
   aiongg provenance; use the resulting full storytold commit, never a moving branch.
 - W15's Wayland clipboard API and E4 are a pair. Do not take one without the other.
 - W26/W27 use a fork-only delete-surrounding API shape. When winit gains core
@@ -180,7 +180,7 @@ Provenance concerns:
 - W11 changes `pixels_per_point`/DPR input. It affects tab fit, visual fixtures, screenshot pixel
   sizes and any performance comparison. Record the exact winit commit in those runs.
 
-## 4. Audit of craft-libs PR 199
+## 4. Audit of bharat-libs PR 199
 
 PR 199 is the useful starting point, not a branch to merge blindly.
 
@@ -225,7 +225,7 @@ PR 199 is the useful starting point, not a branch to merge blindly.
    it does not prove that `Role::Tab` (manually set after `WidgetInfo::selected(Role::Button)`),
    `Role::CheckBox` for stack collapse, `Role::Splitter`, labels, enabled state and selection still
    reach the tree. The 0.37 tree changes from #8581/#8589 make this a real regression surface.
-6. **The PR does not test a hidden/minimized `App::logic`.** `craft-ui` has one UI-driven poll path
+6. **The PR does not test a hidden/minimized `App::logic`.** `bharat-ui` has one UI-driven poll path
    (`printing::State::show` calls `poll`) and no logic-only test. Eframe 0.37 calls `App::logic` but no
    `App::ui` while hidden. The API is already public, but the contract is untested.
 7. **The PR does not add a publication-compatible check.** Root `[patch.crates-io]` entries will not
@@ -249,17 +249,17 @@ secure font fetches and all intervening hardening. Run
 `moving_a_floating_group_needs_every_member_movable`,
 `protected_group_member_blocks_floating_group_resize`,
 `collisions_resolve_like_the_pass_by_pass_rule` and `a_long_collision_cascade_stays_fast`.
-Root workspace/lock membership must still contain craft-platform.
+Root workspace/lock membership must still contain bharat-platform.
 
 ## 5. Dependency and publication topology
 
 ### 5.1 Intended suite graph
 
-For suite validation, `craft-libs` should resolve one and only one copy of each egui-family crate and
+For suite validation, `bharat-libs` should resolve one and only one copy of each egui-family crate and
 one winit:
 
 ```text
-craft-ui / craft-quit / craft-platform / craft-window
+bharat-ui / bharat-quit / bharat-platform / bharat-window
         -> egui 0.37.0 (reviewed published storytold SHA, derived from a4f9a17f input)
         -> egui-winit 0.37.0, eframe 0.37.0, egui-wgpu 0.37.0,
            egui_extras 0.37.0, egui_kittest 0.37.0 (test/consumer)
@@ -287,8 +287,8 @@ Acceptance is exactly one egui-family source and exactly one winit source, with 
 
 ### 5.2 Publication reachability
 
-`craft-ui`'s production manifest must remain compatible with **stock** egui 0.37.0. The fork-only
-behaviors are in dependencies, not in craft-libs source. This is deliberate:
+`bharat-ui`'s production manifest must remain compatible with **stock** egui 0.37.0. The fork-only
+behaviors are in dependencies, not in bharat-libs source. This is deliberate:
 
 - it keeps `cargo package` usable;
 - it lets a consumer choose stock egui 0.37 or the suite fork;
@@ -297,7 +297,7 @@ behaviors are in dependencies, not in craft-libs source. This is deliberate:
 
 Add an isolated `ci/registry-egui` workspace (its own `[workspace]`, not a member of the root
 workspace) that depends on `crates/ui` by path without any patch. Run its clippy/tests against
-registry egui 0.37.0. Then run `cargo package -p craft-ui` and inspect the generated manifest and
+registry egui 0.37.0. Then run `cargo package -p bharat-ui` and inspect the generated manifest and
 `.crate` contents. A machine-local path patch, an aiongg branch name, or a hidden winit dependency in
 the packaged manifest blocks release.
 
@@ -307,7 +307,7 @@ The suite's `Cargo.lock` is a lock, not a publication promise.
 
 ### 5.3 Versioning
 
-`craft-libs` currently versions every crate `0.1.0` from the workspace. This migration ships as a
+`bharat-libs` currently versions every crate `0.1.0` from the workspace. This migration ships as a
 new immutable git revision with explicit compatibility notes: egui-facing public types change
 identity, so every consumer must move coherently. Do not bump every unrelated workspace crate.
 Publishing a crates.io release is a separate release operation requiring a semver/version plan;
@@ -320,7 +320,7 @@ The only vendored packages are PDF readers/writer, not egui:
 - `vendor/krilla` (0.8.2), `vendor/hayro` (0.7.1), `vendor/hayro-interpret` (0.7.0),
   `vendor/hayro-syntax` (0.7.2), `vendor/hayro-jbig2` (0.3.0), `vendor/hayro-cmap` (0.1.0)
   and `vendor/hayro-postscript` (0.1.0).
-- Reader provenance and patch ledger: `vendor/README.craft-reader.md`. The first reader transfer
+- Reader provenance and patch ledger: `vendor/README.bharat-reader.md`. The first reader transfer
   was from PdfCraft `7437bde378f43856eada40af25b983812e615e8a`; the ledger records subsequent
   transfers and fixes. Writer provenance and patches are recorded separately in
   `vendor/krilla/README.craft.md`. Each source manifest records the relevant source hashes.
@@ -328,10 +328,10 @@ The only vendored packages are PDF readers/writer, not egui:
   replaced by the egui migration. When reconciling current main, preserve its reader/writer fixes
   and provenance byte-for-byte; do not independently re-vendor or remove them.
 - Removal/test condition: only a separate PDF backend migration may change them; their existing
-  `cargo test -p craft-pdf --all-features` and `scripts/test-pdf-backends.sh` evidence remain the
+  `cargo test -p bharat-pdf --all-features` and `scripts/test-pdf-backends.sh` evidence remain the
   gate. Run these checks again after a main reconciliation changes the vendors; default-feature
   workspace tests alone do not qualify the PDF backend. The root `[patch.crates-io]` must keep
-  these entries while `craft-pdf` uses them.
+  these entries while `bharat-pdf` uses them.
 
 `crates/pdf/read-only-contract` is a nested workspace with its own `Cargo.lock` and a single
 `hayro-syntax` patch. It does not depend on egui and is unaffected by the workspace egui lock; do not
@@ -342,13 +342,13 @@ sources in this repository.
 
 ### 6.1 Boundaries
 
-craft-libs must not grow a blanket `Context` compatibility layer. The correct boundaries are:
+bharat-libs must not grow a blanket `Context` compatibility layer. The correct boundaries are:
 
 - **Application lifecycle:** eframe owns `App::logic` and `App::ui`. `logic` runs before each
   UI pass, possibly repeatedly in one frame, and in hidden mode when a repaint
   is requested; `ui` may not run at all while hidden. Code that must
   drain queues, service print jobs, autosave, or decide a close must live in `logic`.
-- **Root UI:** `App::ui` receives the root `Ui`. `craft_ui::docking::DockArea` and every other component
+- **Root UI:** `App::ui` receives the root `Ui`. `bharat_ui::docking::DockArea` and every other component
   take `&mut Ui`. They must never call `Context::root_ui` from inside their own rendering; that would
   panic when the root UI is already borrowed (`Context::root_ui` docs at 0.37.0).
 - **Painted output:** `DockArea::show` returns `DockOutput` actions and does not mutate the layout.
@@ -399,7 +399,7 @@ Contract tests:
 
 ### 6.3 Autosave, undo and side effects
 
-No autosave, playback or undo engine lives in craft-libs. The migration contract for consumers is
+No autosave, playback or undo engine lives in bharat-libs. The migration contract for consumers is
 therefore explicit:
 
 - queue drains, autosave, audio/playback polling and save-file completion callbacks go in
@@ -420,9 +420,9 @@ The 0.37 API renames are direct calls, not a reason to build a compatibility lay
 
 - **No wrappers** for `Id::unique`, `Role`, `Ui::scope_id`, `ScreenshotCallback`,
   `Context::set_language`, `Response::accessible_name` or `Context::run_logic`. Applications call the
-  egui API; craft-ui exposes only component-specific semantics.
+  egui API; bharat-ui exposes only component-specific semantics.
 - **Justified mechanism:** a bounded-lifetime capture completion slot, reviewed with two concrete
-  existing craft-ui consumers; section 7.8 keeps request IDs and application policy outside it.
+  existing bharat-ui consumers; section 7.8 keeps request IDs and application policy outside it.
 - **Existing print API:** retain lazy `refresh` and idempotent `poll`. No eager discovery helper.
 - **Docking direction:** retain the persisted first/second split and tab model. Use an explicit
   opt-in DockArea direction policy from section 7.7, with matching hit coordinates;
@@ -523,7 +523,7 @@ cross-monitor coordinates remain host-owned. `Action::Float` means an in-viewpor
 Anchors: `docking/surface.rs:425` (`−`/`+`), `:629` (`…`), `printing.rs` labels,
 `crates/ui/tests/visual_regression.rs` (font-free fixtures and SVG raster checks).
 
-- `craft-ui` production still disables egui default features. This is correct: the app chooses fonts.
+- `bharat-ui` production still disables egui default features. This is correct: the app chooses fonts.
 - The `crates/ui` dev-dependency keeps `default_fonts` so component tests can shape labels; keep it.
 - 0.37's `default_fonts` no longer includes monochrome emoji fonts, and the 0.37 kittest harness
   panics when nothing can draw a glyph. That is why the `⋮` fixture had to change even though 0.36
@@ -539,23 +539,23 @@ Anchors: `docking/surface.rs:425` (`−`/`+`), `:629` (`…`), `printing.rs` lab
 
 ### 7.6 Quit, platform and window helpers
 
-- `craft-quit::on_close_request` already expects `egui::Context`, `ViewportCommand::CancelClose` and
+- `bharat-quit::on_close_request` already expects `egui::Context`, `ViewportCommand::CancelClose` and
   the root viewport. It compiles against 0.37. Add a test with `App::logic`-style ordering: app
   cancels close first, then `on_close_request` sees the cancellation and does not quit.
-- `craft-platform::DeferredClose::update` scans `ViewportCommand::Close`/`CancelClose`; keep its test
+- `bharat-platform::DeferredClose::update` scans `ViewportCommand::Close`/`CancelClose`; keep its test
   that a pending picker holds close and releases exactly once. The 0.37 `ViewportCommand::Screenshot`
   callback does not change this, but apps must not treat a pending screenshot as a pending close.
-- `craft-platform::sync_native_window_theme` is an `egui::Plugin::output_hook`. In 0.37 the plugin
+- `bharat-platform::sync_native_window_theme` is an `egui::Plugin::output_hook`. In 0.37 the plugin
   API still calls `output_hook` after the pass; keep the test that a manual `SetTheme` is not
   overwritten and that child viewport outputs receive the hint.
-- `craft-window::decorate` only touches `ViewportBuilder`; no 0.37 API change. Keep the Linux/BSD
+- `bharat-window::decorate` only touches `ViewportBuilder`; no 0.37 API change. Keep the Linux/BSD
   Wayland probe and the `WAYLAND_SOCKET` protection. Do not call it more than once at startup.
-- `craft-quit` menu code uses `muda`; 0.37 does not change muda. Do not add a second native menu
+- `bharat-quit` menu code uses `muda`; 0.37 does not change muda. Do not add a second native menu
   abstraction.
 
 ### 7.7 Input, IME, RTL, clipboard and PRIMARY
 
-craft-libs itself does not implement text input, IME, clipboards or RTL shaping; it consumes egui
+bharat-libs itself does not implement text input, IME, clipboards or RTL shaping; it consumes egui
 widgets and labels. The fork changes that matter:
 
 - **E5/E12/E13/E15/E16/E20:** bidi shaping, visual order, grapheme editing and language-aware layout
@@ -564,7 +564,7 @@ widgets and labels. The fork changes that matter:
 - **E9 and docking direction:** built-in egui chrome follows the fork's direction,
   but custom docking uses explicit geometry. Add an opt-in `DockArea::direction`
   builder with a stock-compatible `DockDirection::{LeftToRight, RightToLeft}`;
-  default remains LTR. Applications pass their UI direction; craft-ui does not
+  default remains LTR. Applications pass their UI direction; bharat-ui does not
   read fork-only style fields or infer language from labels.
   - Preserve serialized split first/second, axes, ratios, floating rectangles and
     logical tab order. Changing UI direction must not rearrange a saved workspace.
@@ -592,9 +592,9 @@ widgets and labels. The fork changes that matter:
     hit coordinates to prove failure detection. This is a visual policy, not a
     schema migration or wholesale locale redesign.
 - **E17/E18:** `Context::set_language(Some("ar".to_owned()))` sets the AccessKit root language; `UiBuilder::language`
-  marks content language; eframe's `Frame::set_ui_language` is the convenient host hook. Craft-ui
+  marks content language; eframe's `Frame::set_ui_language` is the convenient host hook. Bharat-ui
   should not cache a language; pass localized text and let the app set language once per change.
-- **E19:** Latin layout characters affect app shortcuts, not craft-ui geometry. App tests must cover
+- **E19:** Latin layout characters affect app shortcuts, not bharat-ui geometry. App tests must cover
   Ctrl+Q on Russian/Arabic/Hebrew and Dvorak Command layouts; do not infer shortcut behavior from
   `Key` alone.
 - **E21:** TextEdit deletes the exact UTF-8 bytes an IME replaces and groups the deletion with the
@@ -603,7 +603,7 @@ widgets and labels. The fork changes that matter:
   The reviewed fork must add the bounded transient IME payload, built-in TextEdit producer and
   Wayland adapter before CL-1's fork contract can pass. Check deletion-only and delete/commit
   batches, selection/focus changes, password clearing, two windows, UTF-8 boundaries, preedit
-  exclusion and the 4,000-byte window. Stock-compatible craft-ui production code uses ordinary
+  exclusion and the 4,000-byte window. Stock-compatible bharat-ui production code uses ordinary
   TextEdit and needs no fork-only payload API; the fork contract fixture exercises it explicitly.
   The eight custom-editor consumers need their own adapters as specified in the suite rollout.
   CL-1 requires the final reviewed E21b/W27 revisions with an explicit input-owner/context
@@ -635,7 +635,7 @@ widgets and labels. The fork changes that matter:
 
 ### 7.8 Screenshot callback correlation (downstream contract)
 
-craft-libs has no screenshot code; multiple suite applications do. The migration must replace
+bharat-libs has no screenshot code; multiple suite applications do. The migration must replace
 `ViewportCommand::Screenshot(UserData)` plus `Event::Screenshot` matching with one-shot callbacks:
 
 ```rust
@@ -665,12 +665,12 @@ Requirements:
   Verify expected aspect/rounding. A resize/DPI generation mismatch retries within
   the deadline or returns an error; never combine old image pixels with current geometry.
 
-Add a narrow completion-slot helper for existing craft-ui consumers after reviewing two concrete
+Add a narrow completion-slot helper for existing bharat-ui consumers after reviewing two concrete
 adapters together (DesignCraft and GridCraft are the selected first consumers). Their tokens, paths, settle
 delays, deadlines and replies remain app-owned. The callback holds only a weak slot reference;
 avoid a strong Context/callback cycle, release locks before wakeup, and drop late results after
 cancellation. The app enforces aggregate request/image limits. A bounded nonblocking channel is
-the measured fallback if slot stress tests expose a problem. Apps without craft-ui need not add
+the measured fallback if slot stress tests expose a problem. Apps without bharat-ui need not add
 it solely for capture. See the suite rollout plan for the selected ownership contract.
 
 Admission accounts for in-flight captures as well as completed slots: reserve a checked byte
@@ -692,9 +692,9 @@ tag `0.37.0` and open PRs, not a claim about `main` after 2026-10-15. Removal is
 a released egui version in use containing equivalent behavior and on the full suite tests passing
 without the patch.
 
-| Patch | Commit(s) | Behavior | Upstream status at 0.37.0 | craft-libs relevance and required test |
+| Patch | Commit(s) | Behavior | Upstream status at 0.37.0 | bharat-libs relevance and required test |
 | --- | --- | --- | --- | --- |
-| E1 | `8f3abf06` | eframe `NativeOptions::viewport_hooks`: every viewport's native window on create/destroy and every viewport's `RawInput` before egui, including immediate viewports | not proposed | No direct craft-ui use. Compile-only fork contract; native window identity is app/craft-tablet. Test hook installed/replaced and one call per viewport in egui repo. |
+| E1 | `8f3abf06` | eframe `NativeOptions::viewport_hooks`: every viewport's native window on create/destroy and every viewport's `RawInput` before egui, including immediate viewports | not proposed | No direct bharat-ui use. Compile-only fork contract; native window identity is app/bharat-tablet. Test hook installed/replaced and one call per viewport in egui repo. |
 | E2+E3 | `9dd799ab` | egui-wgpu fits a surface to `max_texture_dimension_2d` and returns `ConfigureSurface`/`CreateRenderer` errors instead of panicking | not proposed; addresses open #8361 | Required for large/multi-monitor windows. Test `surface_fit` edge cases and an oversized surface; report errors rather than abort. Screenshot pixel geometry must account for reduced surface. |
 | E4 | `66bacf23` | egui-winit uses winit's Wayland data device for regular clipboard, falling back to arboard; smithay not started | emilk/egui#8657 draft; winit#4729 open | Required on Hyprland/KWin; needs W15 plus new W15P for PRIMARY. Test regular/image/drop and PRIMARY separately, serial/seat/ownership/cancel cases, and no second regular data device. |
 | E5 | `0e27d87e`, `777977b7`, `f7e89e23`, `5b2b8e19` | Bidi shaping, visual row order, marks/end caret/selection, no-default-fonts tests | emilk/egui#8577 open, plus #8698 review fixes | Affects all app text and DockArea labels. Test Arabic/Hebrew mixed rows, selection across boundaries, marks, end caret, ASCII unchanged; run with default_fonts off and on. |
@@ -708,9 +708,9 @@ without the patch.
 | E13 | `5e4da7f4` | Cursor movement/hit-test/Delete/Backspace by grapheme cluster | not proposed | App text editing. Test combining marks, emoji ZWJ/flags/keycaps, Devanagari, Thai, Hangul, CRLF; hit test every x in LTR/RTL. |
 | E14 | `cbd77549`, `b3722ac0` | Fallback fonts share baseline and grow the row; `FontTweak::fallback_align` default unchanged | not proposed | CJK/Indic fallback. Test row height, DockArea `tab_height` clipping, and default center behavior unchanged. |
 | E15 | `f1cae609` | Pluggable `LineBreaker`, grapheme-safe emergency breaks, `LayoutJob::language` | not proposed | App line breaking. Test `SimpleLineBreaker` old rules, custom breaker receives language, hard breaks and emergency cluster breaks. |
-| E16 | `b3ef9771`, `bed6dfe3` | Visual cursor movement with affinity, Home/End reading order, per-cluster password mask, neutral paragraph inherits direction | not proposed | App text editing. Test bidi arrow behavior, Home/End, selection, password masking; no craft-ui API change. |
-| E17 | `520435df` | `Context::set_language`, `UiBuilder::language`, `Response::accessible_language`; AccessKit root language; one text run per bidi level | not proposed | Craft-ui labels/accessibility. Test root language, per-widget language, mixed bidi runs, screen-reader names. |
-| E18 | `89de8f3c` | eframe `Frame::set_ui_language`; web speech/input language fallback | fork-only | App host hook. Test native and web language propagation; no craft-ui cache. |
+| E16 | `b3ef9771`, `bed6dfe3` | Visual cursor movement with affinity, Home/End reading order, per-cluster password mask, neutral paragraph inherits direction | not proposed | App text editing. Test bidi arrow behavior, Home/End, selection, password masking; no bharat-ui API change. |
+| E17 | `520435df` | `Context::set_language`, `UiBuilder::language`, `Response::accessible_language`; AccessKit root language; one text run per bidi level | not proposed | Bharat-ui labels/accessibility. Test root language, per-widget language, mixed bidi runs, screen-reader names. |
+| E18 | `89de8f3c` | eframe `Frame::set_ui_language`; web speech/input language fallback | fork-only | App host hook. Test native and web language propagation; no bharat-ui cache. |
 | E19 | `d64047bf`, `642b74f7`, `baeb4515` | One Latin-letter shortcut rule on Windows/macOS/Linux; `RawInput::keyboard_layout_is_latin`; per-key Latin layout chars | fork-only; needs W25 | App shortcuts. Test non-Latin layouts and Dvorak-Command; `Key` alone is insufficient. |
 | E20 | `23955535` | Widget text laid out in the language of its `Ui` | fork-only (with E15/E17) | Tab/menu/label shaping language. Test Arabic/Hebrew labels inside DockArea and menu; ASCII unchanged. |
 | E21 | `a70470b0` | `ImeEvent::DeleteSurroundingBytes`; TextEdit deletes exact bytes in the commit's undo step | not proposed; needs W26/W27 | App IME. Test exact-byte deletion, one undo step, combining accent/flag/ZWJ replacement, and no over-deletion. |
@@ -741,9 +741,9 @@ Minimum gates, in order:
 cargo fmt --check
 cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo test --workspace --locked
-cargo clippy -p craft-ui --all-targets --all-features --locked -- -D warnings
-cargo test -p craft-ui --all-features --locked
-cargo check -p craft-ui --all-features --locked --target wasm32-unknown-unknown
+cargo clippy -p bharat-ui --all-targets --all-features --locked -- -D warnings
+cargo test -p bharat-ui --all-features --locked
+cargo check -p bharat-ui --all-features --locked --target wasm32-unknown-unknown
 ```
 
 Then the fork/registry contract and package checks described in section 5. Record actual executed
@@ -782,7 +782,7 @@ Required assertions:
   tab widths and hit rects remain finite, built-in menus mirror, and an ASCII fixture is byte-identical
   to the stock 0.37 result (where the API is shared).
 - **Screenshot:** two tokens, callback once, hidden-window request, surface-fit scaling; app fixtures
-  live in app repositories, not craft-libs.
+  live in app repositories, not bharat-libs.
 - **Panic policy:** no new `unwrap`, `expect`, `panic`, `todo`, `unimplemented` or `unreachable` in
   production code; crate `lib.rs` deny headers stay.
 
@@ -842,28 +842,28 @@ GPU renderer, compositor, physical input or allocation-counting allocator runs h
 Named cross-repository acceptance owners: egui fork section 10 owns fresh-process
 DX12 renderer/pipeline construction (#8736), and SoundCraft/PdfCraft Windows rows
 exercise their real options. Its selection-then-toolbar test owns #8763/#8764;
-craft-ui adds select-text-then-dock/button-action integration coverage. Its hidden
+bharat-ui adds select-text-then-dock/button-action integration coverage. Its hidden
 parent/deferred-child fixture owns #8748; DesignCraft's native child-window scenario
 provides the consumer evidence. Link actual results to CL-4, rather than claiming
-craft-libs' library harness independently validates native DX12 or child windows.
+bharat-libs' library harness independently validates native DX12 or child windows.
 
 Build and run the implemented example through the owning `task.py` resource, keeping its allocated
 target/source/evidence paths. Build separately from measurement so Cargo startup/compilation is not
 mistaken for executable RSS or wall time. For example, inside the parent's managed jobs:
 
 ```sh
-cargo build --release -p craft-ui --example ui_hotpaths --locked
+cargo build --release -p bharat-ui --example ui_hotpaths --locked
 
 # Use a distinct durable output for each paired attempt; repeat in the candidate's own resource.
 # CARGO_TARGET_DIR is supplied by task.py, never overridden or shared across sources.
-CRAFT_UI_PERF_LABEL=baseline-attempt01 \
-CRAFT_UI_PERF_OUT=/absolute/task-evidence/baseline-attempt01-ui-hotpaths.json \
+BHARAT_UI_PERF_LABEL=baseline-attempt01 \
+BHARAT_UI_PERF_OUT=/absolute/task-evidence/baseline-attempt01-ui-hotpaths.json \
 "$CARGO_TARGET_DIR/release/examples/ui_hotpaths"
 ```
 
-`CRAFT_UI_PERF_OUT` writes the pretty JSON report; unset it to emit JSON to stdout.
-`CRAFT_UI_PERF_LABEL` is copied into the report. Default fonts are egui's bundled definitions;
-optional `CRAFT_UI_PERF_FONT` supplies a pinned fixture file instead. Record its exact path and
+`BHARAT_UI_PERF_OUT` writes the pretty JSON report; unset it to emit JSON to stdout.
+`BHARAT_UI_PERF_LABEL` is copied into the report. Default fonts are egui's bundled definitions;
+optional `BHARAT_UI_PERF_FONT` supplies a pinned fixture file instead. Record its exact path and
 SHA256 externally. The report's `fonts.font_file` is a readable string (null when unset); non-UTF-8
 OS paths are displayed with replacement characters, so that display is not a lossless file identity.
 Actual file loading retains the OS path. Keep raw reports, stderr, source/lock/executable hashes,
@@ -992,7 +992,7 @@ suite still exact; no deprecation warnings under clippy `-D warnings`.
 Files:
 
 - `crates/ui/src/lib.rs` declares public `capture`; the lightweight slot has no new feature
-  gate or renderer dependency. Public types are available under `craft_ui::capture`.
+  gate or renderer dependency. Public types are available under `bharat_ui::capture`.
 - `crates/ui/src/capture.rs` completion-slot prototype and tests. Publish only after
   approval as a provisional git API; DesignCraft and GridCraft then implement their
   adapters against that exact revision. CL-2F freezes the public API after joint review.
@@ -1030,7 +1030,7 @@ Any additional component fix is identified and reverted separately.
 Files:
 
 - Verify the root patches and lock introduced atomically in CL-1, with one git source per family.
-- `ci/registry-egui` isolated workspace plus `cargo package -p craft-ui` smoke check.
+- `ci/registry-egui` isolated workspace plus `cargo package -p bharat-ui` smoke check.
   This preserves library portability; it does not authorize a crates.io release.
 - `ci/egui-fork-contract` isolated workspace that depends on the four UI-facing craft crates and
   compiles against the fork with `eframe` wgpu/accesskit/x11/wayland and winit.
@@ -1043,8 +1043,8 @@ Acceptance:
 
 - `cargo tree -d` empty (or only pre-existing unrelated duplicates documented);
 - exactly one `egui`/`epaint`/`egui-winit` and one `winit` source;
-- fork contract compiles on Linux (x11+wayland), Windows GNU check, and wasm check for `craft-ui`;
-- packaged `craft-ui` still compiles/tests against registry 0.37.0;
+- fork contract compiles on Linux (x11+wayland), Windows GNU check, and wasm check for `bharat-ui`;
+- packaged `bharat-ui` still compiles/tests against registry 0.37.0;
 - E1/E4/E19/E21 symbol smoke checks compile only where the API exists;
 - no branch names in locks or manifests.
 
@@ -1080,7 +1080,7 @@ performance or platform result that was not measured. Rollback: documentation-on
    compile/test fixture is authoritative, not just a symbol-name grep.
 5. **Default fonts changed twice.** `default_fonts` became opt-in and monochrome emoji fonts became
    separate. The old `⋮` tofu case became a hard test failure under the new panic policy. Custom app
-   fonts, not craft-ui production defaults, must prove glyph coverage.
+   fonts, not bharat-ui production defaults, must prove glyph coverage.
 6. **Kittest panic policy.** `MissingGlyphPolicy::Panic` and `check_accessibility` are deliberate bug
    detectors. Scoped opt-outs, never global.
 7. **Screenshot callback ownership.** Callbacks are one-shot, `Send + 'static`, and execute outside
@@ -1126,7 +1126,7 @@ performance or platform result that was not measured. Rollback: documentation-on
    separately. Windows Basic Render Driver is software evidence. macOS needs native evidence,
    and wasm compilation does not replace a real browser interaction workflow.
 
-Blocking acceptance criteria for craft-libs:
+Blocking acceptance criteria for bharat-libs:
 
 - CL-1 through CL-4 gates pass with fresh task/evidence records; no direct cargo run.
 - One egui family and one winit source in the fork lock; packaged crate still resolves stock 0.37.
@@ -1160,20 +1160,20 @@ Primary upstream:
 
 Suite fork:
 
-- `/home/codex/work/CraftApps/egui037-migration-20261022/egui`:
+- `/home/codex/work/BharatApps/egui037-migration-20261022/egui`:
   `aiongg/craft/0.37` = `a4f9a17f64a6bae61350fb85804c9df0d9865916`;
   `PATCHES.md` E1-E21; `0.37.0` = `841a328b`.
-- `/home/codex/work/CraftApps/craft-fork-20261020/winit-ai-lang`:
+- `/home/codex/work/BharatApps/bharat-fork-20261020/winit-ai-lang`:
   `craft/0.30.13-lang` = `8b35388bd719e8cc86a95971ba0bc026c9a8f058`;
   `craft/0.30.13` = `ffae5198`; PATCHES.md W1-W27.
-- craft-libs PR 199 ref `refs/review/pr199` = `b68de8c`; audit merge `ec8840a` is not a target.
+- bharat-libs PR 199 ref `refs/review/pr199` = `b68de8c`; audit merge `ec8840a` is not a target.
 - Historical evidence, not fresh validation:
-  `/home/codex/work/ssd2/task-evidence/craft-fork-plan-20261020/PLAN.md`,
-  `/home/codex/work/ssd2/task-evidence/craft-fork-ai-lines-20261022/SURVEY.md`,
-  `/home/codex/work/ssd2/task-evidence/craft-fork-egui037-20261021/RESULTS.md`,
-  `/home/codex/work/ssd2/task-evidence/egui037-audit-20261022/fork/craft-libs.log`.
+  `/home/codex/work/ssd2/task-evidence/bharat-fork-plan-20261020/PLAN.md`,
+  `/home/codex/work/ssd2/task-evidence/bharat-fork-ai-lines-20261022/SURVEY.md`,
+  `/home/codex/work/ssd2/task-evidence/bharat-fork-egui037-20261021/RESULTS.md`,
+  `/home/codex/work/ssd2/task-evidence/egui037-audit-20261022/fork/bharat-libs.log`.
 
-craft-libs source anchors:
+bharat-libs source anchors:
 
 - `Cargo.toml:34`; `crates/ui/Cargo.toml:13-24`; `.github/workflows/ui.yml:20-58`.
 - `crates/ui/src/lib.rs`; `crates/ui/src/buttons/mod.rs:70-102`.
@@ -1194,7 +1194,7 @@ craft-libs source anchors:
 
 The user clarified that reviewed plans remain local and implementation proceeds before publication. The earlier requirement to publish/land this plan first is superseded; pushes and PR publication still require explicit approval.
 
-Canonical `storytold/craft-libs` `main` now resolves to `f180fc0d35d521c5d18e118c881d3efde1ec1eee`. The owned checkout was fast-forwarded to this revision. Earlier baseline SHAs and line anchors above are retained as historical review evidence; use this new revision and its exact lockfile for current-main integration and paired measurements. The original refs remain reachable.
+Canonical `obone32/bharat-libs` `main` now resolves to `f180fc0d35d521c5d18e118c881d3efde1ec1eee`. The owned checkout was fast-forwarded to this revision. Earlier baseline SHAs and line anchors above are retained as historical review evidence; use this new revision and its exact lockfile for current-main integration and paired measurements. The original refs remain reachable.
 
 Preserve new hayro/krilla hostile-input bounds, updated SOURCE manifests/nested lock, and chrono std-only workspace policy. PR199 advanced to1dcde7ed and now incorporates49190884 security fixes; its14-file delta can be reviewed against currentmain rather than treating newhead as the old stale tree. Regenerate lock against final dependencies.
 
@@ -1202,7 +1202,7 @@ The complete static delta review and exact old/new object identities are retaine
 
 ### Local row-alignment component, 2026-10-23
 
-`craft_ui::text::align_galley_rows` positions already-shaped rows within an explicitly allocated width. It accepts a row alignment callback and uses stock egui 0.37 types, so it does not make the shared UI crate depend on the fork's bidi extensions. It is useful for comment cards, captions and message panels. It retains shared row glyphs/meshes and logical text, updates row positions and logical/mesh bounds, and never mutates the cached source galley. Oversized left-aligned rows overflow right, right-aligned rows overflow left, and centered rows overflow on both sides; nonfinite or negative widths are refused without changing the input.
+`bharat_ui::text::align_galley_rows` positions already-shaped rows within an explicitly allocated width. It accepts a row alignment callback and uses stock egui 0.37 types, so it does not make the shared UI crate depend on the fork's bidi extensions. It is useful for comment cards, captions and message panels. It retains shared row glyphs/meshes and logical text, updates row positions and logical/mesh bounds, and never mutates the cached source galley. Oversized left-aligned rows overflow right, right-aligned rows overflow left, and centered rows overflow on both sides; nonfinite or negative widths are refused without changing the input.
 
 WordCraft supplies alignment from the fork's `rtl_paragraph` field. This preserves native shaping, mixed-direction runs, mirrored bracket glyphs and neutral-paragraph inheritance. The fork's `LayoutJob::halign_min_is_start` aligns RTL rows to the widest text row, which is insufficient for a short comment in a wider card. No new Unicode reordering implementation is introduced. Unicode's logical-order and mirroring rules are described in [UAX #9](https://www.unicode.org/reports/tr9/); the fork source documents its row placement in `epaint/src/text/text_layout_types.rs`.
 

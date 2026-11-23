@@ -108,7 +108,7 @@ pub struct DecodeOptions {
     pub limits: Limits,
     /// Keep the pixels as stored instead of applying the EXIF / TIFF
     /// orientation (by default they are turned upright and the metadata's
-    /// orientation is rewritten to 1). JPEG XL ignores this: `craft-jxl` applies the codestream's
+    /// orientation is rewritten to 1). JPEG XL ignores this: `bharat-jxl` applies the codestream's
     /// orientation while rendering, so a JPEG XL image is always upright with orientation 1.
     pub keep_orientation: bool,
 }
@@ -236,8 +236,8 @@ impl DpxBits {
     }
 }
 
-/// How a DDS texture stores its pixels and whether it carries a mip chain, from [`craft_dds`].
-pub use craft_dds::{DdsCompression, DdsOptions};
+/// How a DDS texture stores its pixels and whether it carries a mip chain, from [`bharat_dds`].
+pub use bharat_dds::{DdsCompression, DdsOptions};
 
 /// The longer side, in pixels, at which a TIFF image pyramid stops: the last level written is
 /// the first one no longer than this ([`EncodeOptions::tiff_pyramid`]).

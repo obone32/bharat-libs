@@ -32,8 +32,8 @@ pub struct DecodeInfo {
     pub orientation: Option<u16>,
 }
 
-fn first_directory(bytes: &[u8], max_pixels: u64) -> Result<(craft_tiff::Ifd, craft_tiff::image::ImageInfo), Error> {
-    let (tiff, complete) = craft_tiff::Tiff::parse_with_status(bytes, &Default::default()).map_err(|e| Error::Malformed(e.to_string()))?;
+fn first_directory(bytes: &[u8], max_pixels: u64) -> Result<(bharat_tiff::Ifd, bharat_tiff::image::ImageInfo), Error> {
+    let (tiff, complete) = bharat_tiff::Tiff::parse_with_status(bytes, &Default::default()).map_err(|e| Error::Malformed(e.to_string()))?;
     if !complete {
         return Err(Error::Malformed("truncated TIFF".into()));
     }
@@ -56,7 +56,7 @@ pub fn decode_info(bytes: &[u8], max_pixels: u64) -> Result<DecodeInfo, Error> {
         width: info.width,
         height: info.height,
         bit_depth: info.bits_per_sample.first().copied().unwrap_or(8) as u8,
-        orientation: ifd.u16(craft_tiff::tags::ORIENTATION),
+        orientation: ifd.u16(bharat_tiff::tags::ORIENTATION),
     })
 }
 
@@ -80,7 +80,7 @@ pub fn header(bytes: &[u8], max_pixels: u64) -> Result<(u32, u32, u16), Error> {
     {
         return Err(Error::Malformed("truncated: image data past the end of the file".into()));
     }
-    let orientation = ifd.u16(craft_tiff::tags::ORIENTATION).filter(|o| (1..=8).contains(o)).unwrap_or(1);
+    let orientation = ifd.u16(bharat_tiff::tags::ORIENTATION).filter(|o| (1..=8).contains(o)).unwrap_or(1);
     Ok((info.width, info.height, orientation))
 }
 

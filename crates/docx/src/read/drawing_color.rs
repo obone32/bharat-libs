@@ -3,10 +3,10 @@
 
 use std::sync::Arc;
 
-use craft_wordmodel::THEME_COLORS;
-use craft_wordmodel::fill::{Fill, Gradient, GradientFlip, GradientKind, PathShape};
-use craft_wordmodel::props::Rgb;
-use craft_wordmodel::wordart::{GradStop, MAX_STOPS};
+use bharat_wordmodel::THEME_COLORS;
+use bharat_wordmodel::fill::{Fill, Gradient, GradientFlip, GradientKind, PathShape};
+use bharat_wordmodel::props::Rgb;
+use bharat_wordmodel::wordart::{GradStop, MAX_STOPS};
 
 use crate::units::int;
 use crate::xml::El;
@@ -80,7 +80,7 @@ pub(crate) fn color_alpha(e: &El, theme: &[Rgb], ph: Option<(Rgb, f32)>) -> Opti
         _ => return None,
     };
     let val = |m: &El| m.attr("val").and_then(int).map_or(0.0, |v| (v as f64 / 100_000.0).clamp(-10.0, 10.0));
-    // The colour transforms in document order, applied by `craft-drawingml`. Opacity is kept
+    // The colour transforms in document order, applied by `bharat-drawingml`. Opacity is kept
     // here, in percent, so it is not rounded to 8 bits.
     let mut transforms = Vec::new();
     for m in c.els() {
@@ -91,11 +91,11 @@ pub(crate) fn color_alpha(e: &El, theme: &[Rgb], ph: Option<(Rgb, f32)>) -> Opti
             "alphaOff" => opacity += val(m) as f32 * 100.0,
             _ => {
                 let v = m.attr("val").and_then(int).map(|v| v.clamp(-1_000_000, 1_000_000) as i32);
-                transforms.extend(craft_drawingml::color::ColorTransform::from_xml(local, v));
+                transforms.extend(bharat_drawingml::color::ColorTransform::from_xml(local, v));
             }
         }
     }
-    let c = craft_drawingml::color::apply(craft_drawingml::color::Rgba::rgb(base.0, base.1, base.2), &transforms);
+    let c = bharat_drawingml::color::apply(bharat_drawingml::color::Rgba::rgb(base.0, base.1, base.2), &transforms);
     Some((Rgb(c.r, c.g, c.b), (100.0 - opacity).clamp(0.0, 100.0)))
 }
 
@@ -144,9 +144,9 @@ pub(crate) fn fill(e: &El, theme: &[Rgb], ph: Option<(Rgb, f32)>) -> Option<Fill
     }
 }
 
-/// A preset colour (`a:prstClr/@val`, ECMA-376 Part 1 §20.1.10.48): `craft-drawingml`'s.
+/// A preset colour (`a:prstClr/@val`, ECMA-376 Part 1 §20.1.10.48): `bharat-drawingml`'s.
 pub(crate) fn preset_color(name: &str) -> Option<Rgb> {
-    craft_drawingml::color::preset(name).map(|c| Rgb(c.r, c.g, c.b))
+    bharat_drawingml::color::preset(name).map(|c| Rgb(c.r, c.g, c.b))
 }
 
 /// A system colour without its `lastClr`: the usual light-theme values of the common ones.
@@ -197,7 +197,7 @@ pub(crate) fn adjust_lum(c: Rgb, f: impl Fn(f64) -> f64) -> Rgb {
 
 #[cfg(test)]
 mod tests {
-    use craft_wordmodel::THEME_COLORS;
+    use bharat_wordmodel::THEME_COLORS;
 
     use super::*;
 
@@ -221,7 +221,7 @@ mod tests {
         assert_eq!(fill_colour(&el("a:ln", "", "<a:noFill/>"), &theme), None);
     }
 
-    /// Tint and shade mix in linear light (as `craft-drawingml` does, and LibreOffice): half-way
+    /// Tint and shade mix in linear light (as `bharat-drawingml` does, and LibreOffice): half-way
     /// from black to white is linear 0.5, sRGB 188; WordCraft's own copy mixed sRGB bytes (128).
     #[test]
     fn tint_and_shade_move_towards_white_and_black() {

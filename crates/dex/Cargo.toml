@@ -1,5 +1,5 @@
 [package]
-name="craft-dex"
+name="bharat-dex"
 description="Dalvik DEX reader and bytecode decoder with retained input bounds and partial-report semantics"
 version.workspace=true
 edition.workspace=true
@@ -13,4 +13,4 @@ serde={workspace=true}
 thiserror={workspace=true}
 
 [dev-dependencies]
-craft-testkit = { workspace = true }
+bharat-testkit = { workspace = true }

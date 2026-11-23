@@ -52,51 +52,51 @@ const BODY: &str = r#"<w:p><w:r><w:rPr><w:rFonts w:asciiTheme="majorHAnsi" w:hAn
 
 #[test]
 fn latin_theme_slots_survive_a_save() {
-    let d = craft_docx::read(&docx(BODY, STYLES)).unwrap();
+    let d = bharat_docx::read(&docx(BODY, STYLES)).unwrap();
     assert_eq!(d.styles.default_chr.font.as_deref(), Some("Verdana"), "layout still reads the font the slot names");
-    assert_eq!(d.styles.default_chr.font_ascii_theme, Some(craft_wordmodel::props::ThemeFont::MinorHAnsi));
+    assert_eq!(d.styles.default_chr.font_ascii_theme, Some(bharat_wordmodel::props::ThemeFont::MinorHAnsi));
     let run = &d.body[0].as_para().unwrap().runs[0];
-    assert_eq!((run.props.font.as_deref(), run.props.font_hansi_theme), (Some("Georgia"), Some(craft_wordmodel::props::ThemeFont::MajorHAnsi)));
+    assert_eq!((run.props.font.as_deref(), run.props.font_hansi_theme), (Some("Georgia"), Some(bharat_wordmodel::props::ThemeFont::MajorHAnsi)));
 
-    let out = craft_docx::write(&d).unwrap();
+    let out = bharat_docx::write(&d).unwrap();
     let styles = rfonts(&part(&out, "word/styles.xml"));
     assert!(styles.iter().any(|f| f.contains(r#"w:asciiTheme="minorHAnsi""#) && f.contains(r#"w:hAnsiTheme="minorHAnsi""#)), "{styles:?}");
     let doc = rfonts(&part(&out, "word/document.xml"));
     assert!(doc.iter().any(|f| f.contains(r#"w:asciiTheme="majorHAnsi""#) && f.contains(r#"w:hAnsiTheme="majorHAnsi""#)), "{doc:?}");
     // And again after a second round trip.
-    let again = craft_docx::read(&out).unwrap();
-    assert_eq!(again.styles.default_chr.font_ascii_theme, Some(craft_wordmodel::props::ThemeFont::MinorHAnsi));
+    let again = bharat_docx::read(&out).unwrap();
+    assert_eq!(again.styles.default_chr.font_ascii_theme, Some(bharat_wordmodel::props::ThemeFont::MinorHAnsi));
 }
 
 #[test]
 fn a_font_chosen_later_is_not_hidden_by_the_slot() {
-    let mut d = craft_docx::read(&docx(BODY, STYLES)).unwrap();
+    let mut d = bharat_docx::read(&docx(BODY, STYLES)).unwrap();
     // Set directly, as the font commands do, without touching the slots.
-    if let Some(craft_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
         p.runs[0].props.font = Some("Courier New".into());
     }
-    let doc = rfonts(&part(&craft_docx::write(&d).unwrap(), "word/document.xml"));
+    let doc = rfonts(&part(&bharat_docx::write(&d).unwrap(), "word/document.xml"));
     assert!(doc.iter().any(|f| f.contains(r#"w:ascii="Courier New""#)), "{doc:?}");
     assert!(!doc.iter().any(|f| f.contains("w:asciiTheme") || f.contains("w:hAnsiTheme")), "the slot would show Georgia in Word: {doc:?}");
 }
 
 #[test]
 fn a_theme_font_change_without_the_text_drops_the_slot() {
-    let mut d = craft_docx::read(&docx(BODY, STYLES)).unwrap();
+    let mut d = bharat_docx::read(&docx(BODY, STYLES)).unwrap();
     // The theme's minor font changes but the defaults keep Verdana: the slot no longer names it.
     d.settings.minor_font = "Arial".into();
-    let styles = rfonts(&part(&craft_docx::write(&d).unwrap(), "word/styles.xml"));
+    let styles = rfonts(&part(&bharat_docx::write(&d).unwrap(), "word/styles.xml"));
     assert!(!styles.iter().any(|f| f.contains(r#"w:asciiTheme="minorHAnsi""#)), "{styles:?}");
     assert!(styles.iter().any(|f| f.contains(r#"w:ascii="Verdana""#)), "{styles:?}");
 }
 
 #[test]
 fn a_named_font_overlaid_replaces_the_latin_slots() {
-    use craft_wordmodel::props::CharProps;
+    use bharat_wordmodel::props::CharProps;
     let mut base = CharProps {
         font: Some("Verdana".into()),
-        font_ascii_theme: Some(craft_wordmodel::props::ThemeFont::MinorHAnsi),
-        font_hansi_theme: Some(craft_wordmodel::props::ThemeFont::MinorHAnsi),
+        font_ascii_theme: Some(bharat_wordmodel::props::ThemeFont::MinorHAnsi),
+        font_hansi_theme: Some(bharat_wordmodel::props::ThemeFont::MinorHAnsi),
         ..Default::default()
     };
     base.overlay(&CharProps { font: Some("Courier New".into()), ..Default::default() });
@@ -104,10 +104,10 @@ fn a_named_font_overlaid_replaces_the_latin_slots() {
     let mut themed = CharProps { font: Some("Verdana".into()), ..Default::default() };
     themed.overlay(&CharProps {
         font: Some("Georgia".into()),
-        font_ascii_theme: Some(craft_wordmodel::props::ThemeFont::MajorHAnsi),
+        font_ascii_theme: Some(bharat_wordmodel::props::ThemeFont::MajorHAnsi),
         ..Default::default()
     });
-    assert_eq!(themed.font_ascii_theme, Some(craft_wordmodel::props::ThemeFont::MajorHAnsi));
+    assert_eq!(themed.font_ascii_theme, Some(bharat_wordmodel::props::ThemeFont::MajorHAnsi));
 }
 
 /// The theme's East Asian, complex-script and per-script fonts are written back with it: the
@@ -115,7 +115,7 @@ fn a_named_font_overlaid_replaces_the_latin_slots() {
 /// empty `a:ea` would leave them naming no font.
 #[test]
 fn the_themes_east_asian_and_script_fonts_survive_a_save() {
-    let out = craft_docx::write(&craft_docx::read(&docx(BODY, STYLES)).unwrap()).unwrap();
+    let out = bharat_docx::write(&bharat_docx::read(&docx(BODY, STYLES)).unwrap()).unwrap();
     let theme = part(&out, "word/theme/theme1.xml");
     let minor = theme.split("<a:minorFont>").nth(1).and_then(|m| m.split("</a:minorFont>").next()).unwrap_or_default();
     for want in [
@@ -141,7 +141,7 @@ fn minor_font(out: &[u8]) -> String {
 #[test]
 fn a_script_named_cs_is_not_the_cs_face() {
     let theme = THEME.replace(r#"<a:font script="Jpan""#, r#"<a:font script="cs" typeface="Tahoma"/><a:font script="Jpan""#);
-    let minor = minor_font(&craft_docx::write(&craft_docx::read(&docx_with_theme(BODY, STYLES, &theme)).unwrap()).unwrap());
+    let minor = minor_font(&bharat_docx::write(&bharat_docx::read(&docx_with_theme(BODY, STYLES, &theme)).unwrap()).unwrap());
     assert!(minor.contains(r#"<a:cs typeface="Arial"/>"#), "{minor}");
     assert!(minor.contains(r#"<a:font script="cs" typeface="Tahoma"/>"#), "{minor}");
 }
@@ -154,7 +154,7 @@ fn empty_default_faces_dont_count_against_the_script_limit() {
         r#"<a:ea typeface="SimSun"/><a:cs typeface="Arial"/><a:font script="Jpan" typeface="MS Mincho"/><a:font script="Hans" typeface="DengXian"/>"#,
         &format!(r#"<a:ea typeface=""/><a:cs typeface=""/>{scripts}"#),
     );
-    let minor = minor_font(&craft_docx::write(&craft_docx::read(&docx_with_theme(BODY, STYLES, &theme)).unwrap()).unwrap());
+    let minor = minor_font(&bharat_docx::write(&bharat_docx::read(&docx_with_theme(BODY, STYLES, &theme)).unwrap()).unwrap());
     assert!(minor.contains(r#"<a:font script="S255" typeface="F255"/>"#), "{minor}");
 }
 
@@ -164,9 +164,9 @@ fn empty_default_faces_dont_count_against_the_script_limit() {
 #[test]
 fn a_latin_slot_naming_another_face_is_not_written() {
     let body = r#"<w:p><w:r><w:rPr><w:rFonts w:asciiTheme="minorHAnsi" w:hAnsiTheme="majorHAnsi"/></w:rPr><w:t>Mixed</w:t></w:r></w:p>"#;
-    let d = craft_docx::read(&docx(body, STYLES)).unwrap();
+    let d = bharat_docx::read(&docx(body, STYLES)).unwrap();
     assert_eq!(d.body[0].as_para().unwrap().runs[0].props.font.as_deref(), Some("Verdana"));
-    let doc = rfonts(&part(&craft_docx::write(&d).unwrap(), "word/document.xml"));
+    let doc = rfonts(&part(&bharat_docx::write(&d).unwrap(), "word/document.xml"));
     let run = doc.iter().find(|f| f.contains("Verdana")).unwrap_or_else(|| panic!("{doc:?}"));
     assert!(run.contains(r#"w:asciiTheme="minorHAnsi""#) && !run.contains("w:hAnsiTheme"), "{run}");
 }
@@ -180,7 +180,7 @@ fn a_language_tag_script_doesnt_push_out_a_short_one() {
         r#"<a:font script="Jpan" typeface="MS Mincho"/><a:font script="Hans" typeface="DengXian"/>"#,
         &format!(r#"<a:font script="zh-Hant-TW" typeface="PMingLiU"/>{short}<a:font script="Arab" typeface="Times New Roman"/>"#),
     );
-    let minor = minor_font(&craft_docx::write(&craft_docx::read(&docx_with_theme(BODY, STYLES, &theme)).unwrap()).unwrap());
+    let minor = minor_font(&bharat_docx::write(&bharat_docx::read(&docx_with_theme(BODY, STYLES, &theme)).unwrap()).unwrap());
     assert!(minor.contains(r#"<a:font script="Arab" typeface="Times New Roman"/>"#), "{minor}");
     assert!(minor.contains(r#"<a:font script="zh-Hant-TW" typeface="PMingLiU"/>"#), "{minor}");
 }

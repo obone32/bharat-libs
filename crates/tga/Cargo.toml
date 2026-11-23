@@ -1,5 +1,5 @@
 [package]
-name = "craft-tga"
+name = "bharat-tga"
 description = "Clean-room Truevision Targa (TGA) reader and run-length writer: true-colour, grayscale and colour-mapped pictures, any origin, packets that end with their scan line."
 version.workspace = true
 edition.workspace = true

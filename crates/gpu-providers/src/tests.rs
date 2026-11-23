@@ -1,7 +1,7 @@
 #![allow(clippy::expect_used)]
 
-use craft_gpu::{GpuContext, GpuJob, GpuJobParams, ProviderRegistry, WorkerKind, f16_to_f32, f16_to_f32_fast};
-use craft_gpu_null::NullContext;
+use bharat_gpu::{GpuContext, GpuJob, GpuJobParams, ProviderRegistry, WorkerKind, f16_to_f32, f16_to_f32_fast};
+use bharat_gpu_null::NullContext;
 
 use crate::{EchoProvider, MaskProvider, NoopProvider, PremulCompositeProvider, ReadbackProvider, register_all, register_all_into};
 
@@ -65,7 +65,7 @@ fn mask_provider_multiplies_rgba_by_mask_on_cpu() {
     let base = ctx.upload_buffer("base", &[255u8, 0, 0, 255, 100, 100, 100, 255]).expect("upload base");
     let mask = ctx.upload_buffer("mask", &[128u8, 255, 255, 255, 0, 255, 255, 255]).expect("upload mask");
     let job =
-        craft_gpu::GpuJob { provider_id: "craft.mask".into(), params: GpuJobParams(b"w:1,h:2".to_vec()), inputs: vec![base, mask], outputs: vec![] };
+        bharat_gpu::GpuJob { provider_id: "craft.mask".into(), params: GpuJobParams(b"w:1,h:2".to_vec()), inputs: vec![base, mask], outputs: vec![] };
     let out = registry.dispatch(&mut ctx, &job).expect("mask dispatch");
     let handle = out.outputs[0];
     let bytes = ctx.read_buffer(handle).expect("read mask out");

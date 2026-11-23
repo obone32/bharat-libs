@@ -33,7 +33,7 @@ const PACKET: &str = r#"<x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF xmlns:rdf="
 </rdf:Description></rdf:RDF></x:xmpmeta>"#;
 
 fn settings() -> (DevelopSettings, Vec<String>) {
-    let d = craft_metadata::parse_xmp(PACKET).unwrap();
+    let d = bharat_metadata::parse_xmp(PACKET).unwrap();
     let (partial, unmapped) = crate::crs::to_partial_report(&d.properties, Some(&d.values), crate::crs::Target::Any, 1.5);
     (DevelopSettings::default().merged(&partial).expect("valid settings"), unmapped)
 }
@@ -80,7 +80,7 @@ fn range_to_white_stays_open_and_unmapped_local_sliders_are_reported() {
   </rdf:Description></rdf:li>
  </rdf:Seq></crs:MaskGroupBasedCorrections>
 </rdf:Description></rdf:RDF></x:xmpmeta>"#;
-    let d = craft_metadata::parse_xmp(x).unwrap();
+    let d = bharat_metadata::parse_xmp(x).unwrap();
     let (partial, unmapped) = crate::crs::to_partial_report(&d.properties, Some(&d.values), crate::crs::Target::Any, 1.5);
     let s = DevelopSettings::default().merged(&partial).expect("valid settings");
     let MaskShape::LuminanceRange { hi, hi_feather, .. } = &s.masks[0].components[0].shape else { panic!() };
@@ -122,7 +122,7 @@ fn radial_packet(container: &str, attrs: &str) -> String {
 }
 
 fn radial_settings(container: &str, attrs: &str) -> DevelopSettings {
-    let d = craft_metadata::parse_xmp(&radial_packet(container, attrs)).unwrap();
+    let d = bharat_metadata::parse_xmp(&radial_packet(container, attrs)).unwrap();
     let (partial, unmapped) = crate::crs::to_partial_report(&d.properties, Some(&d.values), crate::crs::Target::Any, 1.5);
     assert!(unmapped.is_empty(), "{unmapped:?}");
     let s = DevelopSettings::default().merged(&partial).unwrap();
@@ -206,7 +206,7 @@ const SPOTS: &str = r#"<x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF xmlns:rdf="h
 #[test]
 fn retouch_areas_become_spots() {
     use crate::SpotMode;
-    let d = craft_metadata::parse_xmp(SPOTS).unwrap();
+    let d = bharat_metadata::parse_xmp(SPOTS).unwrap();
     let (partial, unmapped) = crate::crs::to_partial_report(&d.properties, Some(&d.values), crate::crs::Target::Any, 1.5);
     let s = DevelopSettings::default().merged(&partial).expect("valid settings");
     assert_eq!(s.light.exposure, 0.1, "global settings still map");
@@ -230,7 +230,7 @@ fn retouch_areas_become_spots() {
 
 #[test]
 fn portrait_target_scales_spot_sizes() {
-    let d = craft_metadata::parse_xmp(SPOTS).unwrap();
+    let d = bharat_metadata::parse_xmp(SPOTS).unwrap();
     let (partial, _) = crate::crs::to_partial_report(&d.properties, Some(&d.values), crate::crs::Target::Any, 2.0 / 3.0);
     let s = DevelopSettings::default().merged(&partial).unwrap();
     assert!((s.spots[0].size - 0.01 * 2.0 / 3.0).abs() < 1e-9, "a width fraction on a portrait target: {}", s.spots[0].size);
@@ -239,7 +239,7 @@ fn portrait_target_scales_spot_sizes() {
 #[test]
 fn legacy_retouch_info_is_read_on_its_own() {
     let packet = SPOTS.replace("crs:RetouchAreas", "crs:Ignored");
-    let d = craft_metadata::parse_xmp(&packet).unwrap();
+    let d = bharat_metadata::parse_xmp(&packet).unwrap();
     let (partial, unmapped) = crate::crs::to_partial_report(&d.properties, Some(&d.values), crate::crs::Target::Any, 1.5);
     let s = DevelopSettings::default().merged(&partial).unwrap();
     assert_eq!(s.spots.len(), 1, "{:?}", s.spots);
@@ -254,7 +254,7 @@ fn legacy_retouch_info_is_read_on_its_own() {
 #[test]
 fn a_dab_that_is_not_a_number_is_dropped() {
     let packet = PACKET.replace("d 0.15 0.22", "d nan 0.22").replace("d 0.5 0.5", "d 0.5 inf");
-    let d = craft_metadata::parse_xmp(&packet).unwrap();
+    let d = bharat_metadata::parse_xmp(&packet).unwrap();
     let (partial, _) = crate::crs::to_partial_report(&d.properties, Some(&d.values), crate::crs::Target::Any, 1.5);
     let s = DevelopSettings::default().merged(&partial).expect("the packet's other adjustments apply");
     assert_eq!(s.light.exposure, 0.2);
@@ -271,7 +271,7 @@ fn a_dab_that_is_not_a_number_is_dropped() {
 fn brush_runs_of_different_sense_stay_apart() {
     let packet = PACKET.replace(r#"crs:What="Mask/Paint" crs:Radius="0.02""#, r#"crs:What="Mask/Paint" crs:MaskInverted="true" crs:Radius="0.02""#);
     assert_ne!(packet, PACKET);
-    let d = craft_metadata::parse_xmp(&packet).unwrap();
+    let d = bharat_metadata::parse_xmp(&packet).unwrap();
     let (partial, _) = crate::crs::to_partial_report(&d.properties, Some(&d.values), crate::crs::Target::Any, 1.5);
     let s = DevelopSettings::default().merged(&partial).unwrap();
     let brushes: Vec<bool> =
@@ -287,7 +287,7 @@ fn legacy_retouch_info_is_not_read_beside_an_emptied_current_list() {
     let gradient_only = r#"<crs:RetouchAreas><rdf:Seq><rdf:li><rdf:Description crs:SpotType="heal">
    <crs:Masks><rdf:Seq><rdf:li crs:What="Mask/Gradient" crs:FullX="0" crs:FullY="0" crs:ZeroX="1" crs:ZeroY="1"/></rdf:Seq></crs:Masks>
   </rdf:Description></rdf:li></rdf:Seq></crs:RetouchAreas>"#;
-    let d = craft_metadata::parse_xmp(&format!("{head}{gradient_only}{tail}")).unwrap();
+    let d = bharat_metadata::parse_xmp(&format!("{head}{gradient_only}{tail}")).unwrap();
     let (spots, _) = super::spots(&d.values, 1.5);
     assert!(spots.is_empty(), "{spots:?}");
 }
@@ -309,7 +309,7 @@ fn a_range_that_is_not_four_numbers_is_skipped_not_fatal() {
     for bad in ["0.4 NaN 0.8 0.9", "0.4 inf 0.8 0.9", "0.4 0.5 0.8", "0.4 0.5 x 0.9", "0.4 0.5 0.8 0.9 1"] {
         let packet = PACKET.replace("0.4 0.5 0.8 0.9", bad);
         assert_ne!(packet, PACKET);
-        let d = craft_metadata::parse_xmp(&packet).unwrap();
+        let d = bharat_metadata::parse_xmp(&packet).unwrap();
         let (partial, unmapped) = crate::crs::to_partial_report(&d.properties, Some(&d.values), crate::crs::Target::Any, 1.5);
         let s = DevelopSettings::default().merged(&partial).unwrap_or_else(|e| panic!("{bad}: {e}"));
         assert_eq!(s.light.exposure, 0.2, "{bad}");
@@ -325,7 +325,7 @@ fn a_sidecar_with_only_inactive_masks_clears_the_photo_s() {
     let off = r#"<crs:MaskGroupBasedCorrections><rdf:Seq><rdf:li><rdf:Description crs:What="Correction" crs:CorrectionActive="false" crs:LocalExposure2012="1">
    <crs:CorrectionMasks><rdf:Seq><rdf:li crs:What="Mask/Image" crs:MaskSubType="2"/></rdf:Seq></crs:CorrectionMasks>
   </rdf:Description></rdf:li></rdf:Seq></crs:MaskGroupBasedCorrections>"#;
-    let d = craft_metadata::parse_xmp(&format!("{head}{off}{tail}")).unwrap();
+    let d = bharat_metadata::parse_xmp(&format!("{head}{off}{tail}")).unwrap();
     let report = |target| crate::crs::to_partial_report(&d.properties, Some(&d.values), target, 1.5).0;
     let (mut photo, _) = settings();
     assert!(!photo.masks.is_empty());
@@ -335,6 +335,6 @@ fn a_sidecar_with_only_inactive_masks_clears_the_photo_s() {
     photo = photo.merged(&partial).unwrap();
     assert!(photo.masks.is_empty());
     // no container at all: the photo's masks are not the packet's to say
-    let none = craft_metadata::parse_xmp(&format!("{head}{tail}")).unwrap();
+    let none = bharat_metadata::parse_xmp(&format!("{head}{tail}")).unwrap();
     assert!(crate::crs::to_partial_report(&none.properties, Some(&none.values), crate::crs::Target::RawAbsolute, 1.5).0.get("masks").is_none());
 }

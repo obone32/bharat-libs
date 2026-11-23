@@ -1,5 +1,5 @@
 [package]
-name = "craft-pdf-fuzz"
+name = "bharat-pdf-fuzz"
 version = "0.0.0"
 publish = false
 edition = "2024"
@@ -9,10 +9,10 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-craft-pdf = { path = "..", default-features = false, features = ["filters"] }
+bharat-pdf = { path = "..", default-features = false, features = ["filters"] }
 
 # Its own workspace: cargo-fuzz needs nightly and sanitizer flags, so this crate stays out of the
-# craft-libs workspace and its lockfile.
+# bharat-libs workspace and its lockfile.
 [workspace]
 
 [[bin]]

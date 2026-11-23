@@ -1,10 +1,10 @@
-//! XML for the xmeml and FCPXML modules: bounded reading and pretty writing through craft-xml,
+//! XML for the xmeml and FCPXML modules: bounded reading and pretty writing through bharat-xml,
 //! with the small node view their readers are written against.
 
-pub(crate) use craft_xml::esc_attr as escape_attr;
-use craft_xml::{Doctype, El, Limits, Options, UnknownEntity};
+pub(crate) use bharat_xml::esc_attr as escape_attr;
+use bharat_xml::{Doctype, El, Limits, Options, UnknownEntity};
 
-/// The reader's limits: craft-xml's defaults, which stop a document at 256 levels of nesting
+/// The reader's limits: bharat-xml's defaults, which stop a document at 256 levels of nesting
 /// (real timelines nest a few levels per nested sequence), 2 000 000 nodes and 256 MiB.
 pub const LIMITS: Limits = Limits::DEFAULT;
 
@@ -42,7 +42,7 @@ impl<'a> Node<'a> {
     /// The text this element starts with, if it starts with text.
     pub fn text(self) -> Option<&'a str> {
         match self.0.children.first() {
-            Some(craft_xml::Node::Text(t) | craft_xml::Node::CData(t)) => Some(t.as_str()),
+            Some(bharat_xml::Node::Text(t) | bharat_xml::Node::CData(t)) => Some(t.as_str()),
             _ => None,
         }
     }
@@ -111,11 +111,11 @@ pub(crate) fn num(v: f64) -> String {
 }
 
 /// Pretty-printing XML writer (two-space indent, one element per line).
-pub(crate) struct XmlWriter(craft_xml::Writer);
+pub(crate) struct XmlWriter(bharat_xml::Writer);
 
 impl XmlWriter {
     pub fn new(doctype: Option<&str>) -> Self {
-        let mut w = craft_xml::Writer::pretty("  ");
+        let mut w = bharat_xml::Writer::pretty("  ");
         w.raw("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         if let Some(d) = doctype {
             w.doctype(d);

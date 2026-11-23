@@ -3,8 +3,8 @@
 
 use std::fmt::Write as _;
 
-use craft_aep::index::TreeIndex;
-use craft_aep::{
+use bharat_aep::index::TreeIndex;
+use bharat_aep::{
     AepFile, Chunk, CryptomatteData, CurvesData, Effect, HueSaturationData, LevelsData, Limits, MeshData, Project, PropGroup, PropNode, is_aepx,
     parse, parse_with_limits, read_aepx, write,
 };
@@ -129,7 +129,7 @@ fn the_index_is_the_parsed_tree_and_the_view_reads_the_same_on_every_file() {
         assert_eq!(index.len(), file.walk().count(), "{name}");
         assert_eq!(index.file_version(), file.file_version(), "{name}");
         assert_eq!(index.saved_by_version(), file.saved_by_version(), "{name}");
-        assert_eq!(craft_aep::ProjectSettings::read_index(&index), craft_aep::ProjectSettings::read(&file), "{name}");
+        assert_eq!(bharat_aep::ProjectSettings::read_index(&index), bharat_aep::ProjectSettings::read(&file), "{name}");
         let (Some(a), Some(b)) = (Project::new(&file), Project::from_index(&index)) else {
             assert!(Project::new(&file).is_none() && Project::from_index(&index).is_none(), "{name}");
             continue;
@@ -173,7 +173,7 @@ fn tdmn(name: &str) -> Chunk<'static> {
 
 /// A nested chunk `id` holding one `Utf8` with `text`.
 fn utf8(id: [u8; 4], text: &str) -> Chunk<'static> {
-    Chunk { id, body: craft_aep::Body::Chunks(vec![Chunk::data(*b"Utf8", text.as_bytes().to_vec())]), pad: None }
+    Chunk { id, body: bharat_aep::Body::Chunks(vec![Chunk::data(*b"Utf8", text.as_bytes().to_vec())]), pad: None }
 }
 
 /// A project with one composition, one layer and one effect whose five parameters carry arbitrary

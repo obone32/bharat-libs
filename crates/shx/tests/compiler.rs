@@ -1,4 +1,4 @@
-use craft_shx::{ShxError, compile};
+use bharat_shx::{ShxError, compile};
 
 #[test]
 fn fixed_shape_bytes() {

@@ -1,4 +1,4 @@
-//! Installing, updating, removing and starting Craft Apps.
+//! Installing, updating, removing and starting Bharat Apps.
 //!
 //! Apps go where their platform keeps applications, installed the platform's own way:
 //!
@@ -220,7 +220,7 @@ pub(crate) fn bind_artifact_version(app: &App, release: &Release, asset: &Asset)
     Ok(())
 }
 
-/// The last check before any bytes are fetched (storytold/craft-launcher#764): the link must be
+/// The last check before any bytes are fetched (storytold/bharat-launcher#764): the link must be
 /// exactly the GitHub download for this release's tag and this asset's name in the release's
 /// repository ([`Release::repo`], else the app's own), whichever converter (API, feed or
 /// `SHA256SUMS.txt`) built the asset, and so must the link of the release's `SHA256SUMS.txt` that
@@ -229,7 +229,7 @@ pub(crate) fn bind_artifact_version(app: &App, release: &Release, asset: &Asset)
 ///
 /// With this crate's `local-mirror` feature, the developer's loopback mirror is accepted too. The
 /// consumer confines those links (the launcher's feed parser does) and must turn the feature on
-/// itself (`craft-update/local-mirror`): its own feature of that name doesn't. This crate's tests
+/// itself (`bharat-update/local-mirror`): its own feature of that name doesn't. This crate's tests
 /// accept loopback as well, as their downloads come from a server on 127.0.0.1.
 pub fn check_download_link(app: &App, release: &Release, asset: &Asset) -> Result<(), String> {
     let repo = if release.repo.is_empty() { app.repo } else { release.repo.as_str() };
@@ -643,7 +643,7 @@ pub fn launch(app: &App, installed: &Installed, paths: &Paths) -> Result<(), Str
     .map_err(|e| format!("Couldn't open {}: {e}", app.name))
 }
 
-/// The environment a Craft App unpacked by the launcher runs with: its own `HOME` and the XDG
+/// The environment a Bharat App unpacked by the launcher runs with: its own `HOME` and the XDG
 /// base directories inside it. Apps read their settings from these, so everything they keep
 /// (settings, projects, caches) stays in that one folder.
 #[cfg(target_os = "linux")]
@@ -1624,7 +1624,7 @@ pub mod macos {
         Ok(user)
     }
 
-    /// The Apple Developer team that signs every Craft App and ArtCraft Launcher (Learning
+    /// The Apple Developer team that signs every Bharat App and ArtCraft Launcher (Learning
     /// Machines LLC): the macOS side of the Windows publisher check.
     pub const TEAM_ID: &str = "DJ6XS33FX8";
 
@@ -1667,7 +1667,7 @@ pub mod macos {
             .create(true)
             .truncate(false)
             .write(true)
-            .open(std::env::temp_dir().join("craft-update-tests-disk-images.lock"))
+            .open(std::env::temp_dir().join("bharat-update-tests-disk-images.lock"))
             .unwrap();
         file.lock().unwrap();
         file
@@ -2699,7 +2699,7 @@ mod tests {
         assert_eq!(std::fs::read_dir(dir.path()).unwrap().count(), 0);
         #[cfg(unix)]
         {
-            let quoted = dir.path().join("Craft \"Apps\"");
+            let quoted = dir.path().join("Bharat \"Apps\"");
             std::fs::create_dir(&quoted).unwrap();
             assert_eq!(selected_folder(quoted.to_str().unwrap(), true).unwrap(), quoted);
         }
@@ -2768,9 +2768,9 @@ mod tests {
     fn msi_folder_assignment_preserves_spaces_unicode_and_root_separators() {
         for (value, argument) in [
             (r"D:\", r#"INSTALLFOLDER="D:\""#),
-            (r"D:\Craft Apps\PhotoCraft", r#"INSTALLFOLDER="D:\Craft Apps\PhotoCraft""#),
+            (r"D:\Bharat Apps\PhotoCraft", r#"INSTALLFOLDER="D:\Bharat Apps\PhotoCraft""#),
             (r"\\server\apps\绘画", r#"INSTALLFOLDER="\\server\apps\绘画""#),
-            (r"D:\Craft Apps\", r#"INSTALLFOLDER="D:\Craft Apps\""#),
+            (r"D:\Bharat Apps\", r#"INSTALLFOLDER="D:\Bharat Apps\""#),
         ] {
             assert_eq!(msi_folder_argument(Path::new(value)).unwrap(), argument);
         }
@@ -2782,7 +2782,7 @@ mod tests {
     #[test]
     fn appimage_updates_replace_only_the_recorded_file_in_the_same_folder() {
         let dir = tempfile::tempdir().unwrap();
-        let folder = dir.path().join("Craft Apps");
+        let folder = dir.path().join("Bharat Apps");
         std::fs::create_dir(&folder).unwrap();
         let download = dir.path().join("download");
         std::fs::write(&download, "first").unwrap();
@@ -3850,12 +3850,12 @@ esac
     #[cfg(target_os = "linux")]
     fn a_flatpak_from_a_repository_is_updated_through_its_own_installation() {
         const NAME: &str = "install::tests::a_flatpak_from_a_repository_is_updated_through_its_own_installation";
-        const DIR: &str = "CRAFT_UPDATE_FAKE_FLATPAK_DIR";
+        const DIR: &str = "BHARAT_UPDATE_FAKE_FLATPAK_DIR";
         if std::env::var_os(DIR).is_none() {
             use std::os::unix::fs::PermissionsExt;
             let dir = tempfile::tempdir().unwrap();
             let script = r#"#!/bin/sh
-echo "$(basename "$0") $*" >> "$CRAFT_UPDATE_FAKE_FLATPAK_CALLS"
+echo "$(basename "$0") $*" >> "$BHARAT_UPDATE_FAKE_FLATPAK_CALLS"
 case "$*" in
 *denied.app*) echo "error: Permission denied" >&2; exit 1 ;;
 *diskfull.app*) echo "Error: Disk full" >&2; exit 1 ;;
@@ -3874,7 +3874,7 @@ exit 0
                 let mut cmd = std::process::Command::new(std::env::current_exe().unwrap());
                 cmd.args(["--exact", NAME, "--nocapture"])
                     .env(DIR, dir.path())
-                    .env("CRAFT_UPDATE_FAKE_FLATPAK_CALLS", &calls)
+                    .env("BHARAT_UPDATE_FAKE_FLATPAK_CALLS", &calls)
                     .env("PATH", &path)
                     .env_remove("FLATPAK_ID");
                 if sandboxed {
@@ -3885,7 +3885,7 @@ exit 0
             }
             return;
         }
-        let calls = std::env::var_os("CRAFT_UPDATE_FAKE_FLATPAK_CALLS").map(PathBuf::from).unwrap();
+        let calls = std::env::var_os("BHARAT_UPDATE_FAKE_FLATPAK_CALLS").map(PathBuf::from).unwrap();
         let app = crate::App::by_id("photocraft").unwrap();
         let stop = Stop::default();
         let mut phase = |_| ();
@@ -4020,7 +4020,7 @@ exit 0
         };
         assert!(bind_artifact_version(app, &release, &bad_tag).is_err());
 
-        // storytold/craft-launcher#764: another app's release with the right tag and name passes
+        // storytold/bharat-launcher#764: another app's release with the right tag and name passes
         // the bind (it reads only the path after `/releases/download/`), but the check before the
         // download refuses it.
         let other_repo = Asset {
@@ -4086,7 +4086,7 @@ exit 0
         assert!(bind_artifact_version(app, &release, &other_escape).is_err());
     }
 
-    /// craft-launcher#764: `install_at` refuses, before downloading, an asset whose link is the
+    /// bharat-launcher#764: `install_at` refuses, before downloading, an asset whose link is the
     /// right path on another host, and a release whose `SHA256SUMS.txt` (what the download is
     /// checked against) is linked elsewhere. The stop is cancelled, so if the check stopped working
     /// the install would end at the download with `CANCELLED` instead of fetching anything.
@@ -4369,7 +4369,7 @@ exit 0
         #[test]
         fn custom_bundles_are_detected_and_updates_stay_in_their_actual_location() {
             let dir = tempfile::tempdir().unwrap();
-            let apps = dir.path().join("Craft Apps");
+            let apps = dir.path().join("Bharat Apps");
             std::fs::create_dir(&apps).unwrap();
             let paths = Paths::under(dir.path());
             let image = dmg(dir.path(), "0.6.0");
@@ -5004,12 +5004,12 @@ exit 0
             assert!(!path.exists());
         }
 
-        /// A real release passes. Run with `CRAFT_APP=/path/to/PhotoCraft.app cargo test -p
+        /// A real release passes. Run with `BHARAT_APP=/path/to/PhotoCraft.app cargo test -p
         /// artcraft-launcher-native -- --ignored a_real_craft_app`.
         #[test]
-        #[ignore = "needs a Craft App from a real release"]
+        #[ignore = "needs a Bharat App from a real release"]
         fn a_real_craft_app_carries_the_teams_signature() {
-            let app = std::env::var("CRAFT_APP").expect("set CRAFT_APP to a Craft App bundle");
+            let app = std::env::var("BHARAT_APP").expect("set BHARAT_APP to a Bharat App bundle");
             assert!(signed_by(Path::new(&app), TEAM_ID), "{app} isn't signed by {TEAM_ID}");
         }
     }

@@ -16,8 +16,8 @@
 //! | Web | `Native` (no frame code runs) | `Native` |
 //!
 //! ```ignore
-//! let d = craft_window::policy::decide_for(Prefix::default(), Backend::Wayland, TitleBarPref::Integrated);
-//! let viewport = craft_window::policy::apply(egui::ViewportBuilder::default(), &d.frame);
+//! let d = bharat_window::policy::decide_for(Prefix::default(), Backend::Wayland, TitleBarPref::Integrated);
+//! let viewport = bharat_window::policy::apply(egui::ViewportBuilder::default(), &d.frame);
 //! ```
 
 pub use crate::desktop::{Backend, Desktop, DesktopKind};
@@ -194,7 +194,7 @@ fn integrated_frame(
 }
 
 /// Read the platform once (500 ms at most, as for [`crate::Choice::probe`]) and decide.
-/// `prefix` names the override variable `<PREFIX>_TITLEBAR`; when it is unset, `CRAFT_TITLEBAR`
+/// `prefix` names the override variable `<PREFIX>_TITLEBAR`; when it is unset, `BHARAT_TITLEBAR`
 /// applies. `backend` is the one the app opens its window on, [`Backend::from_env`]
 /// unless the app forces X11.
 pub fn decide_for(prefix: Prefix, backend: Backend, pref: TitleBarPref) -> Decision {

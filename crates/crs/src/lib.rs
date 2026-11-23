@@ -5,7 +5,7 @@
 //! (`IMG_0001.xmp` beside `IMG_0001.CR2`).
 //!
 //! - [`Settings::parse`] reads a file or sidecar; [`Settings::from_xmp`] takes a packet that is
-//!   already parsed with `craft_metadata::parse_xmp`. Either gives the settings by name: a
+//!   already parsed with `bharat_metadata::parse_xmp`. Either gives the settings by name: a
 //!   [`Value`] (text, the plain items of an `rdf:Seq`, or a structure such as local corrections).
 //! - [`number`], [`points`] and [`Settings::crop`] read what the text means: Camera Raw's
 //!   numbers (`+0.50`), tone curve points (`"32, 22"`) and the crop rectangle.
@@ -13,17 +13,17 @@
 //!   [`toolkit`] says which application wrote one.
 //!
 //! Which setting drives which control is the application's to decide. The packet is read by
-//! `craft-metadata`'s XMP reader, so there is one XMP reader for every crate.
+//! `bharat-metadata`'s XMP reader, so there is one XMP reader for every crate.
 
 #[cfg(test)]
 mod tests;
 
 use std::collections::BTreeMap;
 
-use craft_metadata::{XmpData, XmpValue};
+use bharat_metadata::{XmpData, XmpValue};
 
 /// The Camera Raw settings namespace.
-pub use craft_metadata::CRS_NS;
+pub use bharat_metadata::CRS_NS;
 /// The RDF namespace.
 pub const RDF_NS: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 /// The namespace of `x:xmpmeta`.
@@ -75,7 +75,7 @@ impl Value {
 
 /// The `crs:` settings of a packet, by name without the prefix (`Exposure2012`). Where a name
 /// occurs more than once (in several `rdf:Description`s), the first text-bearing value is kept,
-/// as [`craft_metadata::parse_xmp`] reads every packet: a blank repeat must not hide it.
+/// as [`bharat_metadata::parse_xmp`] reads every packet: a blank repeat must not hide it.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Settings {
     pub entries: BTreeMap<String, Value>,
@@ -88,8 +88,8 @@ pub fn toolkit(bytes: &[u8]) -> Option<String> {
     if bytes.len() > MAX_XMP_BYTES {
         return None;
     }
-    let canonical = craft_xml::Canonical::new(&[("x", META_NS)]);
-    let el = craft_xml::Options::canonical(&canonical).first_start(bytes, "x:xmpmeta")?;
+    let canonical = bharat_xml::Canonical::new(&[("x", META_NS)]);
+    let el = bharat_xml::Options::canonical(&canonical).first_start(bytes, "x:xmpmeta")?;
     el.attr("x:xmptk").map(str::to_string)
 }
 
@@ -101,12 +101,12 @@ impl Settings {
             return Err(Error::TooLarge);
         }
         let text = std::str::from_utf8(bytes).map_err(|_| Error::NotText)?;
-        let xmp = craft_metadata::parse_xmp(text).map_err(|e| Error::Xml(e.to_string()))?;
+        let xmp = bharat_metadata::parse_xmp(text).map_err(|e| Error::Xml(e.to_string()))?;
         let settings = Settings::from_xmp(&xmp);
         if settings.entries.is_empty() { Err(Error::NoSettings) } else { Ok(settings) }
     }
 
-    /// The `crs:` settings of a packet `craft_metadata::parse_xmp` read.
+    /// The `crs:` settings of a packet `bharat_metadata::parse_xmp` read.
     pub fn from_xmp(xmp: &XmpData) -> Settings {
         let entries = xmp.values.iter().filter_map(|(k, v)| Some((k.strip_prefix("crs:")?.to_string(), Value::from_xmp(v)))).collect();
         Settings { entries }
@@ -182,11 +182,11 @@ impl Settings {
         let named = |(name, _): &(&String, &Value)| plain_name(name);
         let mut out = format!(
             "<x:xmpmeta xmlns:x=\"{META_NS}\" x:xmptk=\"{}\">\n <rdf:RDF xmlns:rdf=\"{RDF_NS}\">\n  <rdf:Description rdf:about=\"\"\n    xmlns:crs=\"{CRS_NS}\"",
-            craft_xml::esc_attr(toolkit)
+            bharat_xml::esc_attr(toolkit)
         );
         for (name, value) in self.entries.iter().filter(named) {
             if let Value::Text(text) = value {
-                out.push_str(&format!("\n   crs:{name}=\"{}\"", craft_xml::esc_attr(text)));
+                out.push_str(&format!("\n   crs:{name}=\"{}\"", bharat_xml::esc_attr(text)));
             }
         }
         out.push_str(">\n");
@@ -196,7 +196,7 @@ impl Settings {
                 Value::Seq(items) => {
                     out.push_str(&format!("   <crs:{name}>\n    <rdf:Seq>\n"));
                     for item in items {
-                        out.push_str(&format!("     <rdf:li>{}</rdf:li>\n", craft_xml::esc(item)));
+                        out.push_str(&format!("     <rdf:li>{}</rdf:li>\n", bharat_xml::esc(item)));
                     }
                     out.push_str(&format!("    </rdf:Seq>\n   </crs:{name}>\n"));
                 }
@@ -214,14 +214,14 @@ impl Settings {
 
 /// A local name this writer can put after `crs:`.
 fn plain_name(name: &str) -> bool {
-    craft_xml::is_name(name) && !name.contains(':')
+    bharat_xml::is_name(name) && !name.contains(':')
 }
 
 /// Writes `v` as the element `tag`: text as content, an array as an `rdf:Seq`, a structure as
 /// `rdf:parseType="Resource"` with its `crs:` fields.
 fn write_property(out: &mut String, tag: &str, v: &XmpValue, depth: usize) {
     match v {
-        XmpValue::Text(t) => out.push_str(&format!("<{tag}>{}</{tag}>", craft_xml::esc(t))),
+        XmpValue::Text(t) => out.push_str(&format!("<{tag}>{}</{tag}>", bharat_xml::esc(t))),
         XmpValue::Array(items) => {
             out.push_str(&format!("<{tag}><rdf:Seq>"));
             if depth < MAX_WRITE_DEPTH {

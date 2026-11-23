@@ -3,9 +3,9 @@
 
 use std::collections::HashMap;
 
-use craft_wordmodel::numbering::{Level, LevelSuffix, Numbering};
-use craft_wordmodel::props::{Align, ParaProps};
-use craft_wordmodel::section::NumFormat;
+use bharat_wordmodel::numbering::{Level, LevelSuffix, Numbering};
+use bharat_wordmodel::props::{Align, ParaProps};
+use bharat_wordmodel::section::NumFormat;
 
 use super::grpprl::{self, CharCtx, ParaCtx};
 

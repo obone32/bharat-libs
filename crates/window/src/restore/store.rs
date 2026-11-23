@@ -4,10 +4,10 @@
 //! { "schema_version": 1, "windows": { "main": { ... }, "<key>": { ... } } }
 //! ```
 //!
-//! The folder is chosen by `craft_settings::paths`, so portable installs keep the file in the
+//! The folder is chosen by `bharat_settings::paths`, so portable installs keep the file in the
 //! portable folder and `<APP>_CONFIG_DIR` moves it with `config.toml`. Writes are atomic and
 //! private. A file that does not parse is moved aside (`window.broken-<unix-ts>.json`, the
-//! `craft_settings::recovery` convention) and the store starts empty. A file with a newer
+//! `bharat_settings::recovery` convention) and the store starts empty. A file with a newer
 //! `schema_version` is read but never written. Keys this version does not know are written back
 //! unchanged. Two running instances of one app overwrite each other; the last writer wins.
 
@@ -15,9 +15,9 @@ use std::collections::BTreeMap;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use craft_atomic::{NewFilePermissions, WriteOptions};
-use craft_settings::paths::{self, Location, Portable, Probe};
-use craft_settings::recovery;
+use bharat_atomic::{NewFilePermissions, WriteOptions};
+use bharat_settings::paths::{self, Location, Portable, Probe};
+use bharat_settings::recovery;
 use serde_json::{Map, Value, json};
 
 use super::place::{Placement, sane};
@@ -71,7 +71,7 @@ pub struct Store {
 }
 
 impl Store {
-    /// The store for `app_id` in the folder `craft_settings` picks for its `config.toml`, with
+    /// The store for `app_id` in the folder `bharat_settings` picks for its `config.toml`, with
     /// the suite's default portable marker. In an isolated or in-memory configuration
     /// (`<APP>_CONFIG_DIR` empty) nothing is read or written.
     pub fn open(app_id: &str) -> Self {
@@ -79,7 +79,7 @@ impl Store {
     }
 
     /// [`open`](Self::open) with the app's own portable names, location override and probe: the
-    /// same arguments its `craft_settings` options use.
+    /// same arguments its `bharat_settings` options use.
     pub fn open_with(app_id: &str, portable: &Portable, location: &Location, probe: &Probe) -> Self {
         match paths::resolve(app_id, portable, location, probe).dir {
             Some(dir) => Self::at(&dir.join(FILE_NAME)),

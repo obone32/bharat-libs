@@ -1,20 +1,20 @@
-//! Password-protected Word documents and Restrict Editing passwords, through `craft-offcrypto`
+//! Password-protected Word documents and Restrict Editing passwords, through `bharat-offcrypto`
 //! ([MS-OFFCRYPTO]): this module maps its results onto [`DocxError`] and the
 //! `w:documentProtection` attributes.
 
-use craft_offcrypto::protection;
+use bharat_offcrypto::protection;
 
 use crate::DocxError;
 
 #[cfg(test)]
-use craft_offcrypto::protection::legacy_key;
-pub use craft_offcrypto::{DEFAULT_SPIN_COUNT, MAX_PASSWORD_CHARS, is_encrypted};
+use bharat_offcrypto::protection::legacy_key;
+pub use bharat_offcrypto::{DEFAULT_SPIN_COUNT, MAX_PASSWORD_CHARS, is_encrypted};
 
-fn map(e: craft_offcrypto::Error) -> DocxError {
+fn map(e: bharat_offcrypto::Error) -> DocxError {
     match e {
-        craft_offcrypto::Error::PasswordRequired => DocxError::PasswordRequired,
-        craft_offcrypto::Error::WrongPassword => DocxError::WrongPassword,
-        craft_offcrypto::Error::TooLarge(m) => DocxError::Limit(m),
+        bharat_offcrypto::Error::PasswordRequired => DocxError::PasswordRequired,
+        bharat_offcrypto::Error::WrongPassword => DocxError::WrongPassword,
+        bharat_offcrypto::Error::TooLarge(m) => DocxError::Limit(m),
         other => DocxError::Encryption(other.to_string()),
     }
 }
@@ -23,30 +23,30 @@ fn map(e: craft_offcrypto::Error) -> DocxError {
 /// [`DocxError::PasswordRequired`] once it knows the file is one it can decrypt; a password that
 /// doesn't fit gives [`DocxError::WrongPassword`].
 pub fn decrypt(bytes: &[u8], password: Option<&str>) -> Result<Vec<u8>, DocxError> {
-    craft_offcrypto::decrypt(bytes, password).map_err(map)
+    bharat_offcrypto::decrypt(bytes, password).map_err(map)
 }
 
 /// Encrypt a zip package with `password` (agile encryption: AES-256-CBC, SHA-512, Word's spin
 /// count), as Word's "Encrypt with Password" does.
 pub fn encrypt(package: &[u8], password: &str) -> Result<Vec<u8>, DocxError> {
-    craft_offcrypto::encrypt(package, password).map_err(map)
+    bharat_offcrypto::encrypt(package, password).map_err(map)
 }
 
 /// [`encrypt`] with a chosen spin count (tests use a small one; files should use the default).
 pub fn encrypt_with_spin_count(package: &[u8], password: &str, spin_count: u32) -> Result<Vec<u8>, DocxError> {
-    craft_offcrypto::encrypt_with_spin_count(package, password, spin_count).map_err(map)
+    bharat_offcrypto::encrypt_with_spin_count(package, password, spin_count).map_err(map)
 }
 
 /// A package encrypted with the *Standard* method (Word 2007), for tests: saves use the agile
 /// method ([`encrypt`]). `key_bits` is 128, 192 or 256.
 #[doc(hidden)]
 pub fn encrypt_standard_for_tests(package: &[u8], password: &str, key_bits: u32) -> Result<Vec<u8>, DocxError> {
-    craft_offcrypto::encrypt_standard(package, password, key_bits).map_err(map)
+    bharat_offcrypto::encrypt_standard(package, password, key_bits).map_err(map)
 }
 
 /// Refuse a password Word wouldn't accept: empty, or longer than [`MAX_PASSWORD_CHARS`].
 pub fn check_password(password: &str) -> Result<(), DocxError> {
-    craft_offcrypto::check_password(password).map_err(map)
+    bharat_offcrypto::check_password(password).map_err(map)
 }
 
 /// Restrict Editing's password (`w:documentProtection`, ECMA-376 Part 1 §17.15.1.29): the

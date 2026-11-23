@@ -7,7 +7,7 @@
 
 use std::collections::HashMap;
 
-use craft_wordmodel::control::{ContentControl, ControlKind, ListItem};
+use bharat_wordmodel::control::{ContentControl, ControlKind, ListItem};
 
 use super::writer::x;
 use super::xml::{Attrs, get};
@@ -173,7 +173,7 @@ impl FormsReader {
                     get(a, "form:current-state").or_else(|| get(a, "form:state")) == Some("checked")
                 };
                 let (checked_char, unchecked_char) =
-                    if radio { (RADIO_ON, RADIO_OFF) } else { (craft_wordmodel::control::CHECKED, craft_wordmodel::control::UNCHECKED) };
+                    if radio { (RADIO_ON, RADIO_OFF) } else { (bharat_wordmodel::control::CHECKED, bharat_wordmodel::control::UNCHECKED) };
                 let symbol = if on { checked_char } else { unchecked_char };
                 let kind =
                     ControlKind::CheckBox { checked: on, checked_char, checked_font: String::new(), unchecked_char, unchecked_font: String::new() };
@@ -243,7 +243,7 @@ impl FormsReader {
                 } else if k.xml.len() <= MAX_KEPT && !k.foreign {
                     let mut c = ContentControl::new(ControlKind::Text { multi_line: false });
                     c.tag = k.name;
-                    c.lock = craft_wordmodel::control::ControlLock::ContentLocked;
+                    c.lock = bharat_wordmodel::control::ControlLock::ContentLocked;
                     c.form_xml = k.xml;
                     self.controls.insert(k.id, (c, k.label));
                 }

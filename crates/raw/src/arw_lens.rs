@@ -25,7 +25,7 @@ use crate::lens_metadata::{
 };
 use crate::sr2::SubIfd;
 use crate::{Opcode, Rect};
-use craft_tiff::{ByteOrder, FieldType, Ifd, Value};
+use bharat_tiff::{ByteOrder, FieldType, Ifd, Value};
 
 /// Each component's setting and table tags, `(raw IFD, SR2SubIFD)`.
 const SHADING: Tags = Tags { setting: (0x7031, 0x797c), table: (0x7032, 0x797d) };
@@ -546,8 +546,8 @@ mod tests {
     use crate::lens_metadata::SonyCopy::{Absent, Rejected, Valid};
     use crate::lens_metadata::SonyFieldError::*;
     use crate::{LensMetadata, Limits, Mode, RawImage};
-    use craft_tiff::ByteOrder::{Big, Little};
-    use craft_tiff::{IfdBuilder, ImageData, Tiff, TiffWriter, Value, tags as t};
+    use bharat_tiff::ByteOrder::{Big, Little};
+    use bharat_tiff::{IfdBuilder, ImageData, Tiff, TiffWriter, Value, tags as t};
 
     const TELE: [i16; 16] = [-2, 1, 7, 17, 31, 48, 68, 93, 120, 152, 187, 225, 265, 309, 356, 403];
     const WIDE: [i16; 16] = [14, 0, -27, -59, -106, -158, -223, -291, -367, -440, -519, -593, -667, -731, -792, -839];

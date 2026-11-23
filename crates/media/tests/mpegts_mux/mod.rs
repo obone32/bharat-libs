@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 
-use craft_media::mpegts::mux::{Codec, Frame, Muxer, PACKET_SIZE};
+use bharat_media::mpegts::mux::{Codec, Frame, Muxer, PACKET_SIZE};
 
 /// A frame queued for the muxer, with the bytes the demuxer should give back for it.
 pub struct Item {

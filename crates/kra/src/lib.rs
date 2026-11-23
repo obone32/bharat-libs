@@ -20,7 +20,7 @@
 mod tests;
 pub mod tiles;
 
-use craft_xml::El;
+use bharat_xml::El;
 use tiles::Space;
 
 /// Why a Krita document was not read.
@@ -69,7 +69,7 @@ pub const MAX_XML_DEPTH: usize = 512;
 /// bytes, which is how Krita (and OpenRaster, OpenDocument, EPUB) mark their archives so the
 /// type is readable without unzipping.
 pub fn zip_mimetype(bytes: &[u8]) -> Option<&[u8]> {
-    craft_zip::stored_mimetype(bytes)
+    bharat_zip::stored_mimetype(bytes)
 }
 
 /// `true` for a Krita archive (by its `mimetype` entry).
@@ -246,13 +246,13 @@ impl Image {
         }
         // maindoc.xml declares Krita's DTD by public id; Krita writes no internal subset, and one
         // is refused (nothing in it would be processed).
-        let options = craft_xml::Options {
-            doctype: craft_xml::Doctype::RejectInternalSubset,
-            limits: craft_xml::Limits { max_input: MAX_MAINDOC, max_depth: MAX_XML_DEPTH, ..craft_xml::Limits::DEFAULT },
-            ..craft_xml::Options::local().strict()
+        let options = bharat_xml::Options {
+            doctype: bharat_xml::Doctype::RejectInternalSubset,
+            limits: bharat_xml::Limits { max_input: MAX_MAINDOC, max_depth: MAX_XML_DEPTH, ..bharat_xml::Limits::DEFAULT },
+            ..bharat_xml::Options::local().strict()
         };
         let root = options.parse(maindoc).map_err(|e| match e {
-            craft_xml::Error::Doctype => invalid("maindoc.xml: a document type with an internal DTD subset is not accepted"),
+            bharat_xml::Error::Doctype => invalid("maindoc.xml: a document type with an internal DTD subset is not accepted"),
             other => invalid(format!("maindoc.xml: {other}")),
         })?;
         let image = root.child("IMAGE").ok_or_else(|| invalid("maindoc.xml has no IMAGE"))?;
@@ -284,20 +284,20 @@ impl Image {
 
 /// An open Krita archive: the parsed `maindoc.xml` and access to the archive's other entries.
 pub struct Archive<'a> {
-    zip: craft_zip::Archive<'a>,
+    zip: bharat_zip::Archive<'a>,
     image: Image,
 }
 
 impl<'a> Archive<'a> {
     /// Opens the archive, checks its `mimetype` and reads `maindoc.xml`.
     pub fn open(bytes: &'a [u8]) -> Result<Archive<'a>> {
-        Self::open_with(bytes, craft_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes: MAX_TOTAL })
+        Self::open_with(bytes, bharat_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes: MAX_TOTAL })
     }
 
     /// [`Archive::open`] with explicit zip limits, so a test can set a small document-wide total
     /// ([`MAX_TOTAL`] is what [`Archive::open`] passes).
-    pub(crate) fn open_with(bytes: &'a [u8], limits: craft_zip::Limits) -> Result<Archive<'a>> {
-        let mut zip = craft_zip::Archive::open(bytes, limits).map_err(zip_error)?;
+    pub(crate) fn open_with(bytes: &'a [u8], limits: bharat_zip::Limits) -> Result<Archive<'a>> {
+        let mut zip = bharat_zip::Archive::open(bytes, limits).map_err(zip_error)?;
         // `zip` keeps one entry of a repeated name; which one the writer meant is not known.
         if zip.has_duplicate_names() {
             return Err(invalid("two entries of the archive share a name"));
@@ -352,14 +352,14 @@ impl<'a> Archive<'a> {
     }
 }
 
-fn read(zip: &mut craft_zip::Archive<'_>, name: &str, max: usize) -> Result<Option<Vec<u8>>> {
+fn read(zip: &mut bharat_zip::Archive<'_>, name: &str, max: usize) -> Result<Option<Vec<u8>>> {
     zip.read(name, max as u64).map_err(zip_error)
 }
 
-fn zip_error(e: craft_zip::Error) -> Error {
+fn zip_error(e: bharat_zip::Error) -> Error {
     match e {
-        craft_zip::Error::NotZip(m) => invalid(m),
-        craft_zip::Error::EntryTooLarge { name, limit } => invalid(format!("{name}: larger than {limit} bytes")),
+        bharat_zip::Error::NotZip(m) => invalid(m),
+        bharat_zip::Error::EntryTooLarge { name, limit } => invalid(format!("{name}: larger than {limit} bytes")),
         e => invalid(e.to_string()),
     }
 }

@@ -4,9 +4,9 @@
 //! SpreadsheetML's main namespace (transitional or strict) has no prefix: `sheetData`, `row`.
 //! The others have the prefixes in [`NAMESPACES`]: `r:id`, `mc:AlternateContent`,
 //! `x14:dataValidation`, `xm:sqref`, `a:solidFill`. A name in a namespace that is not listed
-//! reads as `?:local`; [`craft_xml::El::write_xml`] leaves such names out.
+//! reads as `?:local`; [`bharat_xml::El::write_xml`] leaves such names out.
 
-use craft_xml::{AttrValueHook, Canonical, El, Node, Scope};
+use bharat_xml::{AttrValueHook, Canonical, El, Node, Scope};
 
 /// SpreadsheetML, transitional (ECMA-376 Part 1, 18).
 pub const MAIN: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -159,7 +159,7 @@ mod tests {
     use super::*;
 
     fn read(xml: &str) -> El {
-        craft_xml::Options::canonical(&CANONICAL).parse(xml.as_bytes()).unwrap_or_default()
+        bharat_xml::Options::canonical(&CANONICAL).parse(xml.as_bytes()).unwrap_or_default()
     }
 
     #[test]

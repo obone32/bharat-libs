@@ -4,8 +4,8 @@
 //! wants, something behind this trait does the waiting, and answers arrive on
 //! a channel keyed by sequence number.
 
-use craft_cloud::Contact;
-use craft_esign::{CompletedDocument, Envelope, EnvelopeDraft, EsignCapability};
+use bharat_cloud::Contact;
+use bharat_esign::{CompletedDocument, Envelope, EnvelopeDraft, EsignCapability};
 
 /// One thing the dialog needs done.
 #[derive(Clone, Debug, PartialEq, Eq)]

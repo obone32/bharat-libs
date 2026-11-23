@@ -1,6 +1,6 @@
 #![allow(clippy::expect_used)]
 
-//! RFC-0022 acceptance requirement 2: real backends beside the null one. `craft-gpu-null` stays
+//! RFC-0022 acceptance requirement 2: real backends beside the null one. `bharat-gpu-null` stays
 //! mandatory for every consumer (it cannot validate shader compilation, resource rules, or
 //! numerical results), so these tests run representative jobs on a real wgpu device when one is
 //! available. Runs against a software Vulkan adapter in a local container are local testing, not
@@ -8,17 +8,17 @@
 //! remain their own, separate requirements. The suite skips loudly when the host has no adapter
 //! (`cargo test` without `--features adapter-probe,native-vulkan` already exercises the masked
 //! path: no adapter is ever requested, and every context here falls back to the staging path,
-//! same shape as `craft-gpu-null`).
+//! same shape as `bharat-gpu-null`).
 //!
 //! Tolerance: every job below is byte/structural equality, not a numeric comparison with slack.
 //! That is honest for what runs today: no provider dispatches a real WGSL compute job yet
-//! (`craft-gpu-providers` ships CPU stand-ins by design; see `docs/gpu-providers.md`), so the only
+//! (`bharat-gpu-providers` ships CPU stand-ins by design; see `docs/gpu-providers.md`), so the only
 //! thing a real device adds over the null one here is the upload → real `wgpu::Buffer` → copy →
 //! `map_async` → read round trip itself. A provider that dispatches actual WGSL will need a
 //! stated numeric tolerance of its own when it lands; this suite is not that provider.
 
-use craft_gpu::{GpuContext, GpuJob, GpuJobParams, GpuProvider, WorkerKind};
-use craft_gpu_providers::{EchoProvider, PremulCompositeProvider, ReadbackProvider};
+use bharat_gpu::{GpuContext, GpuJob, GpuJobParams, GpuProvider, WorkerKind};
+use bharat_gpu_providers::{EchoProvider, PremulCompositeProvider, ReadbackProvider};
 
 use crate::WgpuContext;
 
@@ -32,7 +32,7 @@ fn real_context_or_skip(test_name: &str) -> Option<WgpuContext> {
     eprintln!(
         "SKIP {test_name}: no real wgpu device in this environment (no backend feature compiled \
          in, or `request_adapter` found nothing). This is RFC-0022's defined no-adapter path, not \
-         a failure; craft-gpu-null already covers the portable contract. Run with \
+         a failure; bharat-gpu-null already covers the portable contract. Run with \
          `--features adapter-probe,native-vulkan` against a Vulkan adapter (a software one, such \
          as lavapipe/llvmpipe via mesa-vulkan-drivers, is enough) to exercise this suite for real."
     );
@@ -85,12 +85,12 @@ fn real_device_read_buffer_convenience_blocks_to_completion() {
     let Some(mut ctx) = real_context_or_skip("real_device_read_buffer_convenience_blocks_to_completion") else {
         return;
     };
-    let handle = ctx.upload_buffer("blocking-read", b"craft-gpu-wgpu").expect("upload_buffer");
-    assert_eq!(ctx.read_buffer(handle).expect("read_buffer"), b"craft-gpu-wgpu".to_vec());
+    let handle = ctx.upload_buffer("blocking-read", b"bharat-gpu-wgpu").expect("upload_buffer");
+    assert_eq!(ctx.read_buffer(handle).expect("read_buffer"), b"bharat-gpu-wgpu".to_vec());
 }
 
-/// RFC-0022 requirement 2's "representative jobs": the same `craft-gpu-providers` CPU stand-ins
-/// `craft-runtime` dispatches against the null context in CI also run, unmodified, against a
+/// RFC-0022 requirement 2's "representative jobs": the same `bharat-gpu-providers` CPU stand-ins
+/// `bharat-runtime` dispatches against the null context in CI also run, unmodified, against a
 /// real device, through the same `&mut dyn GpuContext` seam.
 #[test]
 fn shared_providers_run_against_a_real_device_through_the_same_seam_as_the_null_context() {
@@ -128,7 +128,7 @@ fn shared_providers_run_against_a_real_device_through_the_same_seam_as_the_null_
 #[cfg(all(not(target_arch = "wasm32"), feature = "adapter-probe"))]
 #[test]
 fn device_destroy_surfaces_as_device_lost_and_stops_further_buffer_calls() {
-    use craft_gpu::GpuFault;
+    use bharat_gpu::GpuFault;
 
     use crate::Backing;
 
@@ -153,11 +153,11 @@ fn device_destroy_surfaces_as_device_lost_and_stops_further_buffer_calls() {
     assert!(matches!(after, Err(GpuFault::DeviceLost(_))), "a call after device loss must return GpuFault::DeviceLost, got {after:?}");
 }
 
-/// The staging path promises "same shape as `craft-gpu-null`": an empty upload is accepted and
+/// The staging path promises "same shape as `bharat-gpu-null`": an empty upload is accepted and
 /// reads back empty rather than being refused.
 #[test]
 fn staging_path_accepts_an_empty_buffer_and_reads_it_back_empty() {
-    let mut ctx = WgpuContext::with_caps(WorkerKind::Main, craft_gpu::DeviceCaps::default());
+    let mut ctx = WgpuContext::with_caps(WorkerKind::Main, bharat_gpu::DeviceCaps::default());
     let handle = ctx.upload_buffer("empty", b"").expect("upload empty");
     assert_eq!(ctx.buffer_len(handle).expect("buffer_len"), 0);
     assert_eq!(ctx.read_buffer(handle).expect("read_buffer"), Vec::<u8>::new());
@@ -166,7 +166,7 @@ fn staging_path_accepts_an_empty_buffer_and_reads_it_back_empty() {
 /// `read_buffer` must not eat completions that belong to another outstanding `request_read`.
 #[test]
 fn staging_read_buffer_keeps_another_outstanding_requests_completion_queued() {
-    let mut ctx = WgpuContext::with_caps(WorkerKind::Main, craft_gpu::DeviceCaps::default());
+    let mut ctx = WgpuContext::with_caps(WorkerKind::Main, bharat_gpu::DeviceCaps::default());
     let a = ctx.upload_buffer("a", b"aa").expect("upload a");
     let b = ctx.upload_buffer("b", b"bb").expect("upload b");
     let request_a = ctx.request_read(a).expect("request_read a");
@@ -189,7 +189,7 @@ fn the_no_device_fallback_caps_are_the_plain_fixed_value_not_a_probe_result() {
     let caps = crate::probe_fallback("wgpu", "no-device");
     assert_eq!(caps.backend_name, "wgpu");
     assert_eq!(caps.device_name, "no-device");
-    assert_eq!(caps, craft_gpu::DeviceCaps { backend_name: "wgpu".into(), device_name: "no-device".into(), ..craft_gpu::DeviceCaps::default() });
+    assert_eq!(caps, bharat_gpu::DeviceCaps { backend_name: "wgpu".into(), device_name: "no-device".into(), ..bharat_gpu::DeviceCaps::default() });
 }
 
 /// CodeRabbit finding on lib.rs:299: an allocation failure used to be able to reach wgpu's
@@ -250,13 +250,13 @@ fn a_failed_allocation_scope_pop_is_ordered_strictly_before_the_call_that_would_
 /// make the handle behave as invalid afterward, and must not disturb any other handle's index.
 #[test]
 fn staging_free_buffer_invalidates_the_handle_without_shifting_others() {
-    let mut ctx = WgpuContext::with_caps(WorkerKind::Main, craft_gpu::DeviceCaps::default());
+    let mut ctx = WgpuContext::with_caps(WorkerKind::Main, bharat_gpu::DeviceCaps::default());
     let a = ctx.upload_buffer("a", b"aa").expect("upload a");
     let b = ctx.upload_buffer("b", b"bb").expect("upload b");
 
     ctx.free_buffer(a);
 
-    assert!(matches!(ctx.buffer_len(a), Err(craft_gpu::GpuFault::InvalidJob(_))), "a freed handle must behave as invalid");
+    assert!(matches!(ctx.buffer_len(a), Err(bharat_gpu::GpuFault::InvalidJob(_))), "a freed handle must behave as invalid");
     assert_eq!(ctx.read_buffer(b).expect("b must be unaffected by freeing a"), b"bb".to_vec());
 }
 
@@ -272,7 +272,7 @@ fn real_device_free_buffer_invalidates_the_handle_without_shifting_others() {
 
     ctx.free_buffer(a);
 
-    assert!(matches!(ctx.buffer_len(a), Err(craft_gpu::GpuFault::InvalidJob(_))), "a freed handle must behave as invalid on a real device too");
+    assert!(matches!(ctx.buffer_len(a), Err(bharat_gpu::GpuFault::InvalidJob(_))), "a freed handle must behave as invalid on a real device too");
     assert_eq!(ctx.read_buffer(b).expect("b must be unaffected by freeing a"), b"bb".to_vec());
 }
 
@@ -302,11 +302,11 @@ fn real_device_upload_and_free_many_cycles_in_a_row_does_not_panic_or_leak_a_gro
 /// to track whether they already freed one.
 #[test]
 fn free_buffer_is_a_harmless_no_op_when_repeated_or_given_an_unknown_handle() {
-    let mut ctx = WgpuContext::with_caps(WorkerKind::Main, craft_gpu::DeviceCaps::default());
+    let mut ctx = WgpuContext::with_caps(WorkerKind::Main, bharat_gpu::DeviceCaps::default());
     let a = ctx.upload_buffer("a", b"aa").expect("upload a");
     ctx.free_buffer(a);
     ctx.free_buffer(a);
-    ctx.free_buffer(craft_gpu::HandleId(999));
+    ctx.free_buffer(bharat_gpu::HandleId(999));
 }
 
 /// CodeRabbit finding on lib.rs:401: `poll_reads` can only attach a device-lost fault to a read
@@ -317,7 +317,7 @@ fn free_buffer_is_a_harmless_no_op_when_repeated_or_given_an_unknown_handle() {
 #[cfg(all(not(target_arch = "wasm32"), feature = "adapter-probe"))]
 #[test]
 fn device_status_surfaces_loss_even_with_nothing_pending() {
-    use craft_gpu::GpuFault;
+    use bharat_gpu::GpuFault;
 
     use crate::Backing;
 

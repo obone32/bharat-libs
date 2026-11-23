@@ -1,7 +1,7 @@
 //! Open a printer driver's own settings dialog for one job, then print a one-page Letter test
 //! sheet with the settings chosen there (Windows).
 //!
-//! `cargo run -p craft-print --example driver_settings_dialog -- "Printer name"`
+//! `cargo run -p bharat-print --example driver_settings_dialog -- "Printer name"`
 //!
 //! Change an option in the dialog and choose OK to print the sheet. Cancel, or OK with nothing
 //! changed, prints nothing: some drivers return OK from Cancel, so the two look the same. With
@@ -11,8 +11,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args().skip(1);
     let printer = args.next().ok_or("usage: driver_settings_dialog <printer> [--preview]")?;
     let preview = args.next().as_deref() == Some("--preview");
-    let mut job = craft_print::Job { printer: Some(printer), title: "Driver settings test".into(), ..craft_print::Job::default() };
-    if !craft_print::driver_settings_dialog(&mut job, None)? {
+    let mut job = bharat_print::Job { printer: Some(printer), title: "Driver settings test".into(), ..bharat_print::Job::default() };
+    if !bharat_print::driver_settings_dialog(&mut job, None)? {
         println!("canceled or unchanged: nothing was printed");
         return Ok(());
     }
@@ -20,10 +20,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("settings for {}: {} bytes", settings.printer(), settings.dev_mode().as_bytes().len());
     }
     if preview {
-        println!("{}", craft_print::command_preview(&job)?.join(" "));
+        println!("{}", bharat_print::command_preview(&job)?.join(" "));
         return Ok(());
     }
-    println!("{}", craft_print::submit(&test_sheet(), &job)?);
+    println!("{}", bharat_print::submit(&test_sheet(), &job)?);
     Ok(())
 }
 

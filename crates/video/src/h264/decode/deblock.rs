@@ -568,7 +568,7 @@ mod tests {
 mod speed {
     use super::*;
 
-    /// Rough timing of the edge filters (`cargo test --release -p craft-video --features h264-decode,threads --lib edge_filter_speed -- --ignored --nocapture`).
+    /// Rough timing of the edge filters (`cargo test --release -p bharat-video --features h264-decode,threads --lib edge_filter_speed -- --ignored --nocapture`).
     #[test]
     #[ignore]
     fn edge_filter_speed() {

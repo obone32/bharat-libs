@@ -2,11 +2,11 @@
 
 //! A reference [`CloudBackend`] that treats one folder on disk as the cloud.
 //!
-//! [`craft_ui::cloud::CloudBackend`] names a contract and nothing about who
+//! [`bharat_ui::cloud::CloudBackend`] names a contract and nothing about who
 //! answers it. This crate is the proof: a working implementation that reaches
 //! no service, a vendor, or a personal repo anybody else has to trust. An app
 //! wires [`LocalBackend`] the same way it would wire a provider's own client,
-//! by calling [`craft_ui::cloud::CloudFiles::connect`]. Swapping one for the
+//! by calling [`bharat_ui::cloud::CloudFiles::connect`]. Swapping one for the
 //! other is the whole point; nothing above the [`CloudBackend`] seam can tell
 //! the difference.
 //!
@@ -65,8 +65,8 @@ use std::path::{Component, Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use cap_std::fs::{Dir, OpenOptions};
-use craft_cloud::{Capability, Entry, EntryKind};
-use craft_ui::cloud::{Account, CloudBackend, Event, Fault, Job, Post};
+use bharat_cloud::{Capability, Entry, EntryKind};
+use bharat_ui::cloud::{Account, CloudBackend, Event, Fault, Job, Post};
 
 /// Where "the cloud" lives for this backend: one directory on disk.
 pub struct LocalBackend {

@@ -1,8 +1,8 @@
-# craft-image-codecs
+# bharat-image-codecs
 
 Codecs for flat raster image formats, written in pure Rust. This crate defines its own `Image`
-type and shares its baseline and extended JPEG decoders through `craft-jpeg`, its optional HEIF
-decoder through `craft-heif`, and its optional AVIF decoder through `craft-video`'s AV1 decoder.
+type and shares its baseline and extended JPEG decoders through `bharat-jpeg`, its optional HEIF
+decoder through `bharat-heif`, and its optional AVIF decoder through `bharat-video`'s AV1 decoder.
 It builds for `wasm32-unknown-unknown` and does no filesystem I/O: decoders take `&[u8]` and
 encoders return `Vec<u8>`.
 
@@ -21,7 +21,7 @@ It follows the "Avoiding GIMP's hole" rules in `docs/architecture.md` §1.1:
   pages left out, or data that ended early.
 
 ```rust
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 let img = decode(&bytes)?;                               // detect + decode (default Limits)
 for w in fidelity_warnings(&img, Format::Jpeg) {         // e.g. "16-bit will be reduced to 8-bit"
@@ -31,7 +31,7 @@ let out = encode(&img, Format::Tiff, &EncodeOptions::default())?;
 ```
 
 ```toml
-craft-image-codecs = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-image-codecs = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ## Capability matrix (default build)
@@ -46,7 +46,7 @@ craft-image-codecs = { git = "https://github.com/storytold/craft-libs", rev = "<
 | BMP | yes | yes | U8 | RGB, RGBA | yes | no | no | no | yes (header pixels per metre) | no | no | `image` |
 | TGA | yes | yes | U8 | Gray, GrayA, RGB, RGBA | yes | no | no | no | no | no | no | `image` (read) / built in (RLE write, one scanline per packet) |
 | ICO | yes | yes | U8 | RGBA (at most 256×256) | yes | no | no | no | no | no | no | `image` |
-| DDS | yes | yes | U8, U16 (U16 read only) | Gray, GrayA, RGB, RGBA | yes | no | no | no | no | no | yes (BC1–BC5, when `EncodeOptions::dds` asks for one) | [`craft-dds`](../dds/README.md) |
+| DDS | yes | yes | U8, U16 (U16 read only) | Gray, GrayA, RGB, RGBA | yes | no | no | no | no | no | yes (BC1–BC5, when `EncodeOptions::dds` asks for one) | [`bharat-dds`](../dds/README.md) |
 | Netpbm (PBM/PGM/PPM/PAM/PFM) | yes | yes | U8, U16, F32 (float: PFM gray/RGB only) | all six (PAM `CMYK`/`CMYK_ALPHA`) | yes (PAM) | no | no | no | no | no | no | built in |
 | QOI | yes | yes | U8 | RGB, RGBA | yes | no | no | no | no | no | no | `image` |
 | OpenEXR | yes | yes | F16, F32 | Y, YA, RGB, RGBA | yes | no | no | no | no | no | no | `exr` |
@@ -60,7 +60,7 @@ craft-image-codecs = { git = "https://github.com/storytold/craft-libs", rev = "<
 | Sun Raster (`.ras`) | with feature `sunraster` (incl. RLE and colour maps) | with feature `sunraster` (uncompressed) | U8 | Gray, RGB, RGBA | yes | no | no | no | no | no | no | `sunraster` (off by default) |
 | SGI (`.sgi`, `.rgb`, `.bw`) | with feature `sgi` | with feature `sgi` (RLE) | U8, U16 | Gray, Gray+A, RGB, RGBA | yes | no | no | no | no | no | no | `sgi` (off by default) |
 | JPEG-LS (`.jls`) | yes (any NEAR; one scan per component) | yes (lossless) | U8, U16 | Gray, RGB | no | no | no | no | no | no | no | built in |
-| AVIF | with feature `avif-decode` (native only) | only with feature `avif` | U8, U16 (10/12-bit decodes to U16; PQ/HLG to linear F32) | RGB, RGBA | yes (auxiliary alpha) | read (`colr` prof/rICC) | read | read | no | no | yes | `craft-video` AV1 decoder; `image` + `ravif` to write |
+| AVIF | with feature `avif-decode` (native only) | only with feature `avif` | U8, U16 (10/12-bit decodes to U16; PQ/HLG to linear F32) | RGB, RGBA | yes (auxiliary alpha) | read (`colr` prof/rICC) | read | read | no | no | yes | `bharat-video` AV1 decoder; `image` + `ravif` to write |
 | HEIF/HEIC | with feature `heif` | **no** | U8, U16 (10/12-bit decodes to U16) | RGB, RGBA | yes (auxiliary alpha) | yes (`colr` prof) | yes | yes | no | no | n/a | `heic-rs` |
 
 "Native" means the data is stored and read back without conversion. Anything else is converted by
@@ -95,7 +95,7 @@ embedded table (and a PNG's transparent entry) so `photocraft-io` can open them 
   Reading remains in the separate #2868 PR. The `ASYMMETRIC_EXCEPTIONS`
   entry stays until import is merged.
 
-* **DDS** (through [`craft-dds`](../dds/README.md), whose `DdsCompression` and `DdsOptions` are
+* **DDS** (through [`bharat-dds`](../dds/README.md), whose `DdsCompression` and `DdsOptions` are
   re-exported). The top mip level of a 2D texture: uncompressed pixels described by channel masks
   (8, 16, 24 or 32 bits, RGB or luminance, with or without alpha), 16 bits per channel
   (`R16_UNORM`, `R16G16_UNORM`, `R16G16B16A16_UNORM` and their typeless forms, legacy FourCC 36),
@@ -183,7 +183,7 @@ embedded table (and a PNG's transparent entry) so `photocraft-io` can open them 
   with `CodecError::Unsupported`: they are sensor data, not flat images. `photocraft-raw` decodes
   and develops them, and `photocraft-io` routes them there.
 
-* **HEIF/HEIC (read-only, feature `heif`).** Decoding lives in the optional `craft-heif` crate
+* **HEIF/HEIC (read-only, feature `heif`).** Decoding lives in the optional `bharat-heif` crate
   behind the non-default `heif` feature (official PhotoCraft builds enable it; distributors choose).
   Without it, HEIF is still detected and decoding returns `CodecError::Unsupported` ("HEIC/HEIF
   support isn't included in this build"). iPhone and Mac photos decode with `heic-rs` (pure Rust, no `unsafe`):
@@ -195,7 +195,7 @@ embedded table (and a PNG's transparent entry) so `photocraft-io` can open them 
   needs an HEVC encoder and every mature one is C, so HEIF is listed in `ASYMMETRIC_EXCEPTIONS`.
 * **AVIF.** Encoding uses `ravif`, which is pure Rust, behind the non-default `avif` feature.
   Decoding (`codecs::avif_decode`, behind the non-default `avif-decode` feature) reads the HEIF
-  boxes itself and decodes the AV1 pictures with `craft-video`'s clean-room pure-Rust AV1 decoder:
+  boxes itself and decodes the AV1 pictures with `bharat-video`'s clean-room pure-Rust AV1 decoder:
   one `av01` image or a `grid`, 8/10/12-bit, 4:2:0/4:2:2/4:4:4/monochrome, the `nclx` colour (or
   the sequence header's) and an ICC profile, an `auxl` alpha plane (`prem` too), the Exif and XMP
   items, and `clap`/`irot`/`imir`, which are applied unless `keep_orientation` is set, as for HEIF.
@@ -343,7 +343,7 @@ Rec. 2020 RGB as 16-bit BT.2100 PQ, with measured content-light levels and the r
 
 ## Tests
 
-`cargo test -p craft-image-codecs` covers:
+`cargo test -p bharat-image-codecs` covers:
 
 * the full round-trip matrix (every writable format × 4 sample types × 6 layouts), exact for
   lossless formats and above a PSNR threshold for lossy ones;
@@ -385,5 +385,5 @@ JPEG encoding uses `jpeg-encoder` 0.6.1, including work from the Independent JPE
 Retain this crate's [NOTICE](NOTICE) with binary distributions using that encoder. It includes
 its MIT license, the IJG acknowledgement and original IJG/SIMD notices. Both upstream license
 alternatives and source checksums are retained in
-[`licenses/jpeg-encoder-0.6.1`](https://github.com/storytold/craft-libs/tree/main/licenses/jpeg-encoder-0.6.1)
+[`licenses/jpeg-encoder-0.6.1`](https://github.com/obone32/bharat-libs/tree/main/licenses/jpeg-encoder-0.6.1)
 at the repository root.

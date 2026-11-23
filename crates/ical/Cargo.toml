@@ -1,5 +1,5 @@
 [package]
-name = "craft-ical"
+name = "bharat-ical"
 description = "iCalendar (RFC 5545) building blocks: content lines, values, recurrence rules and VTIMEZONE definitions, read and written."
 version.workspace = true
 edition.workspace = true

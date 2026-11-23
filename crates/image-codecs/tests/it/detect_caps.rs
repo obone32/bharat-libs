@@ -3,7 +3,7 @@
 
 use crate::common;
 use common::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 // ---------------------------------------------------------------------------
 // Symmetric guarantee
@@ -221,7 +221,7 @@ fn detect_magic_iff() {
     assert_eq!(from_extension("art.ilbm"), Some(Format::Iff));
     assert!(caps(Format::Iff).read && caps(Format::Iff).write, "IFF is read and written");
     assert!(caps(Format::Iff).alpha);
-    assert!(caps(Format::Iff).layouts.contains(&craft_image_codecs::ChannelLayout::Rgba));
+    assert!(caps(Format::Iff).layouts.contains(&bharat_image_codecs::ChannelLayout::Rgba));
     assert!(!ASYMMETRIC_EXCEPTIONS.iter().any(|(f, _)| *f == Format::Iff));
     assert_eq!(Format::Iff.max_dimensions(), Some((65535, 65535)));
     // A bare FORM without a bitmap type is not IFF.
@@ -231,7 +231,7 @@ fn detect_magic_iff() {
 #[cfg(feature = "sgi")]
 #[test]
 fn detect_magic_sgi() {
-    use craft_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
+    use bharat_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
     let img = Image::from_u8(5, 3, ChannelLayout::Rgba, (0..60).collect()).unwrap();
     let bytes = encode(&img, Format::Sgi, &EncodeOptions::default()).unwrap();
     assert_eq!(detect(&bytes), Some(Format::Sgi));
@@ -247,7 +247,7 @@ fn detect_magic_sgi() {
 
 #[test]
 fn detect_magic_jpeg_ls() {
-    use craft_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
+    use bharat_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
     let img = Image::from_u8(5, 3, ChannelLayout::Gray, (0..15).collect()).unwrap();
     let bytes = encode(&img, Format::JpegLs, &EncodeOptions::default()).unwrap();
     assert_eq!(detect(&bytes), Some(Format::JpegLs));
@@ -446,7 +446,7 @@ fn a_detector_keeps_its_place_between_calls() {
 #[cfg(feature = "sunraster")]
 #[test]
 fn detect_magic_sun_raster() {
-    use craft_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
+    use bharat_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
     let img = Image::from_u8(5, 3, ChannelLayout::Rgb, (0..45).collect()).unwrap();
     let bytes = encode(&img, Format::SunRaster, &EncodeOptions::default()).unwrap();
     assert_eq!(detect(&bytes), Some(Format::SunRaster));
@@ -550,7 +550,7 @@ fn extensions_unique_across_formats() {
 #[cfg(not(feature = "sgi"))]
 #[test]
 fn sgi_requires_explicit_feature() {
-    use craft_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
+    use bharat_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
     assert!(!caps(Format::Sgi).read && !caps(Format::Sgi).write);
     assert!(decode_as(Format::Sgi, &[]).is_err());
     let image = Image::from_u8(1, 1, ChannelLayout::Gray, vec![0]).unwrap();
@@ -563,7 +563,7 @@ fn sgi_requires_explicit_feature() {
 #[cfg(not(feature = "sunraster"))]
 #[test]
 fn sun_raster_disabled_by_default() {
-    use craft_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
+    use bharat_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
     let bytes = [0x59, 0xa6, 0x6a, 0x95, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 42, 0];
     assert_ne!(detect(&bytes), Some(Format::SunRaster));
     assert!(!caps(Format::SunRaster).read && !caps(Format::SunRaster).write);

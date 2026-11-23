@@ -6,13 +6,13 @@
 //! The other suites read the accessibility tree and never look at pixels. That
 //! catches wrong wording and missing names. It cannot show whether a dialog
 //! looks like it belongs in an office suite, and these two controls will sit in
-//! every Craft app, so somebody has to be able to see them.
+//! every Bharat app, so somebody has to be able to see them.
 //!
-//! Writes nothing unless `CRAFT_UI_RENDERS` names a directory. A suite that
+//! Writes nothing unless `BHARAT_UI_RENDERS` names a directory. A suite that
 //! wrote files on every run would turn a checkout dirty by testing it.
 //!
 //! ```sh
-//! CRAFT_UI_RENDERS=/tmp/renders cargo test -p craft-ui --all-features --test renders
+//! BHARAT_UI_RENDERS=/tmp/renders cargo test -p bharat-ui --all-features --test renders
 //! ```
 
 use std::cell::RefCell;
@@ -20,10 +20,10 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
-use craft_cloud::{Capability, Contact, Permission, Share, ShareTarget};
-use craft_ui::account::{Account, AccountMenu};
-use craft_ui::presence::{Peer, PresenceBar};
-use craft_ui::share::{Answer, Failure, Replier, Request, ShareBackend, ShareDialog};
+use bharat_cloud::{Capability, Contact, Permission, Share, ShareTarget};
+use bharat_ui::account::{Account, AccountMenu};
+use bharat_ui::presence::{Peer, PresenceBar};
+use bharat_ui::share::{Answer, Failure, Replier, Request, ShareBackend, ShareDialog};
 use egui::{Context, Event, FullOutput, PointerButton, Pos2, RawInput, Rect, Theme, Visuals, accesskit, pos2, vec2};
 use egui_kittest::{TestRenderer, wgpu::WgpuTestRenderer};
 
@@ -202,8 +202,8 @@ fn ordinary() -> Vec<Capability> {
 
 #[test]
 fn renders_of_every_state_in_both_themes() {
-    let Ok(directory) = std::env::var("CRAFT_UI_RENDERS") else {
-        println!("set CRAFT_UI_RENDERS to a directory to write renders");
+    let Ok(directory) = std::env::var("BHARAT_UI_RENDERS") else {
+        println!("set BHARAT_UI_RENDERS to a directory to write renders");
         return;
     };
     let into = PathBuf::from(directory);

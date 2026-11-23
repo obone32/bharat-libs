@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Craft Link transport.
+//! Bharat Link transport.
 //!
 //! Local sockets, discovery files, and the JSON-lines session. The server and
 //! the client are separate modules. There is no tokio runtime in this crate.

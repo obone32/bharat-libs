@@ -1,4 +1,4 @@
-# craft-vectorcraft-format
+# bharat-vectorcraft-format
 
 The envelope of VectorCraft's `.vectorcraft` file, for VectorCraft and for the apps that read its
 files. The document is a type parameter: VectorCraft supplies its own document type, and a reader
@@ -8,7 +8,7 @@ does not open files. No `unsafe`, no panics on malformed input, and it builds fo
 (its pure-Rust backend).
 
 ```toml
-craft-vectorcraft-format = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-vectorcraft-format = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ## The file
@@ -56,7 +56,7 @@ with `Image::inline`, `Tail::image` or `Image::default()`.
 ## Use
 
 ```rust
-use craft_vectorcraft_format::{Entries, File, split_tail};
+use bharat_vectorcraft_format::{Entries, File, split_tail};
 
 // Writing
 let mut file = File::new(document);
@@ -109,7 +109,7 @@ Size limits on the JSON and on decompression stay with each reader.
 
 ## Testing
 
-`cargo test -p craft-vectorcraft-format` runs `tests/envelope.rs`, which compares files written
+`cargo test -p bharat-vectorcraft-format` runs `tests/envelope.rs`, which compares files written
 through `File` and `Tail` with JSON written out by hand in VectorCraft's layout (compact and
 pretty, version 4 with data after the JSON, version 2 under the former name), reads them back,
 and checks `split_tail`, `marker_at`, `sniff` on plain, gzip and truncated gzip input, the limits

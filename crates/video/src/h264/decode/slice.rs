@@ -2,7 +2,7 @@
 
 use crate::h264::decode::error::{Result, ensure};
 use crate::h264::decode::params::{Pps, Sps};
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 /// NAL unit types used by the decoder.
 pub mod nal_type {
@@ -557,7 +557,7 @@ impl PocState {
 #[cfg(test)]
 mod poc_tests {
     use super::*;
-    use craft_media::bitstream::BitWriter;
+    use bharat_media::bitstream::BitWriter;
 
     fn sps(poc_type: u32) -> Sps {
         let mut w = BitWriter::new();

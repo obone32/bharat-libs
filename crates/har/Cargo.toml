@@ -1,5 +1,5 @@
 [package]
-name = "craft-har"
+name = "bharat-har"
 description = "Typed HTTP Archive capture reader with explicit input admission"
 version.workspace = true
 edition.workspace = true

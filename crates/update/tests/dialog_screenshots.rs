@@ -1,14 +1,14 @@
 #![cfg(feature = "snapshot")]
 //! Renders the update dialogs to PNG, light and dark at 1.5x:
-//! `CRAFT_UPDATE_SNAPSHOT_DIR=~/.cache/cl-update-shots cargo test -p craft-update --features snapshot --test dialog_screenshots`
+//! `BHARAT_UPDATE_SNAPSHOT_DIR=~/.cache/cl-update-shots cargo test -p bharat-update --features snapshot --test dialog_screenshots`
 //! Without the directory variable the test does nothing; these are not golden comparisons.
 
 use std::path::PathBuf;
 
-use craft_update::dialog::{CheckResultDialog, StartupPrompt};
-use craft_update::release::Release;
-use craft_update::suite::PHOTOCRAFT;
-use craft_update::updater::Status;
+use bharat_update::dialog::{CheckResultDialog, StartupPrompt};
+use bharat_update::release::Release;
+use bharat_update::suite::PHOTOCRAFT;
+use bharat_update::updater::Status;
 use egui::Theme;
 use egui_kittest::Harness;
 
@@ -32,11 +32,11 @@ fn fonts(ctx: &egui::Context) {
     ctx.set_fonts(defs);
 }
 
-static APP: craft_update::App = PHOTOCRAFT;
+static APP: bharat_update::App = PHOTOCRAFT;
 
 #[test]
 fn dialog_screenshots() {
-    let Some(dir) = std::env::var_os("CRAFT_UPDATE_SNAPSHOT_DIR").map(PathBuf::from) else { return };
+    let Some(dir) = std::env::var_os("BHARAT_UPDATE_SNAPSHOT_DIR").map(PathBuf::from) else { return };
     std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{}: {e}", dir.display()));
     let long_error = "couldn't reach https://api.github.com/repos/storytold/photocraft/releases/latest: \
         connection timed out after 30 seconds (os error 110); check the network or proxy settings";

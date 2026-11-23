@@ -4,7 +4,7 @@
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use craft_video::av1::decode::Decoder;
+use bharat_video::av1::decode::Decoder;
 
 struct Rng(u64);
 impl Rng {
@@ -44,8 +44,8 @@ fn ivf_frames(data: &[u8]) -> Vec<Vec<u8>> {
 }
 
 fn make(ff: &std::path::Path, name: &str, args: &str, pix: &str, size: &str) -> Option<Vec<Vec<u8>>> {
-    let out = craft_media_testkit::fixtures_dir("av1").join(format!("{name}.ivf"));
-    let p = craft_media_testkit::fixtures::generate(&out, |tmp| {
+    let out = bharat_media_testkit::fixtures_dir("av1").join(format!("{name}.ivf"));
+    let p = bharat_media_testkit::fixtures::generate(&out, |tmp| {
         let a: Vec<&str> = args.split_whitespace().collect();
         matches!(
             Command::new(ff)
@@ -75,7 +75,7 @@ fn count_panics() {
 }
 
 fn run_all(frames: &[Vec<u8>], threads: &[usize], label: &str) {
-    craft_media_testkit::set_progress(label);
+    bharat_media_testkit::set_progress(label);
     count_panics();
     let before = PANICS.load(Ordering::SeqCst);
     // Every thread count decodes the stream at the same time, each on a thread of its own.
@@ -109,27 +109,27 @@ const DEADLINE_SECS: u64 = 600;
 
 #[test]
 fn hostile_streams_never_panic() {
-    craft_media_testkit::with_deadline(DEADLINE_SECS, || sweep(&SEEDS[..2]));
+    bharat_media_testkit::with_deadline(DEADLINE_SECS, || sweep(&SEEDS[..2]));
 }
 
 /// The seed with several superblock rows, in a test of its own so it runs beside the others.
 #[test]
 fn hostile_streams_with_superblock_rows_never_panic() {
-    craft_media_testkit::with_deadline(DEADLINE_SECS, || sweep(&SEEDS[2..]));
+    bharat_media_testkit::with_deadline(DEADLINE_SECS, || sweep(&SEEDS[2..]));
 }
 
 fn sweep(seeds: &[(&str, &str, &str, &str, &[usize])]) {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("AV1 fuzz") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("AV1 fuzz") else { return };
     for &(name, args, pix, size, threads) in seeds {
-        if !craft_media_testkit::ffmpeg_has_encoder(&ff, "libsvtav1") {
-            craft_media_testkit::skip_test("AV1 fuzz", &format!("this ffmpeg has no libsvtav1 encoder (seed {name})"));
+        if !bharat_media_testkit::ffmpeg_has_encoder(&ff, "libsvtav1") {
+            bharat_media_testkit::skip_test("AV1 fuzz", &format!("this ffmpeg has no libsvtav1 encoder (seed {name})"));
             continue;
         }
         let Some(seed) = make(&ff, name, args, pix, size) else {
             panic!("ffmpeg has libsvtav1 but could not encode the {name} seed");
         };
         if seed.is_empty() {
-            craft_media_testkit::skip_test("AV1 fuzz", &format!("the {name} seed has no frames"));
+            bharat_media_testkit::skip_test("AV1 fuzz", &format!("the {name} seed has no frames"));
             continue;
         }
         // truncate each of the first frames at every length

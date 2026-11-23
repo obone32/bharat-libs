@@ -3,8 +3,8 @@
 
 use crate::text::tests::{NS_T, entry, package, paras};
 use crate::text::{export, import, parse};
-use craft_flow::Inline;
-use craft_wordmodel::control::{ControlKind, ListItem};
+use bharat_flow::Inline;
+use bharat_wordmodel::control::{ControlKind, ListItem};
 
 const NS_F: &str = r#"xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0""#;
 
@@ -22,7 +22,7 @@ fn doc_xml() -> String {
 }
 
 /// Each paragraph's controls: (kind, tag, title, text, showing placeholder).
-fn controls(flow: &craft_flow::Flow) -> Vec<(ControlKind, String, String, String, bool)> {
+fn controls(flow: &bharat_flow::Flow) -> Vec<(ControlKind, String, String, String, bool)> {
     paras(flow)
         .into_iter()
         .flat_map(|p| &p.inlines)
@@ -131,7 +131,7 @@ fn buttons_are_kept() {
     );
     assert!(c.contains(r#"svg:width="72pt" svg:height="21.6pt" draw:control="control1""#), "{c}");
     // Made a check box, it is saved as one.
-    let mut c = craft_wordmodel::control::ContentControl::new(ControlKind::Text { multi_line: false });
+    let mut c = bharat_wordmodel::control::ContentControl::new(ControlKind::Text { multi_line: false });
     c.form_xml = "<form:button form:name=\"Go\"></form:button>".into();
     let kept = crate::text::forms::form_xml(&c, "Go", "control1", 1).unwrap().0;
     assert!(kept.starts_with(r#"<form:button xml:id="control1" form:id="control1" form:name="Go">"#), "{kept}");
@@ -211,7 +211,7 @@ fn controls_keep_their_place_on_the_line_and_a_text_area_its_lines() {
         .iter()
         .filter_map(|b| b.as_para())
         .flat_map(|p| p.objects.iter())
-        .filter_map(|o| if let craft_wordmodel::para::InlineObject::ControlStart { control } = o { Some(control.form_raise) } else { None })
+        .filter_map(|o| if let bharat_wordmodel::para::InlineObject::ControlStart { control } = o { Some(control.form_raise) } else { None })
         .collect();
     assert!(!raises.is_empty() && raises.iter().all(|r| r.is_some_and(|v| (v + 14.4).abs() < 0.01)), "{raises:?}");
     let out = entry(&export(&doc).unwrap(), "content.xml");

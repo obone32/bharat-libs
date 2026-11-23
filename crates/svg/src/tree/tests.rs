@@ -512,7 +512,7 @@ mod invalid_image_accounting {
     }
 
     fn png() -> Vec<u8> {
-        use craft_image_codecs::{ChannelLayout, EncodeOptions, Format, Image, SampleType, encode};
+        use bharat_image_codecs::{ChannelLayout, EncodeOptions, Format, Image, SampleType, encode};
         let image = Image::new(1, 1, ChannelLayout::Rgba, SampleType::U8).unwrap();
         encode(&image, Format::Png, &EncodeOptions::default()).unwrap()
     }
@@ -583,7 +583,7 @@ mod invalid_image_accounting {
         assert_eq!(report.invalid_raster_images, 0);
         let idat = valid.windows(4).position(|b| b == b"IDAT").unwrap();
         let corrupt = &valid[..idat + 4];
-        assert_eq!(craft_image_codecs::probe_allocation_size(corrupt).unwrap(), (1, 1));
+        assert_eq!(bharat_image_codecs::probe_allocation_size(corrupt).unwrap(), (1, 1));
         let (found, report) = usage(&image(corrupt), shallow());
         assert!(found.is_empty());
         assert_eq!(report.invalid_raster_images, 1);

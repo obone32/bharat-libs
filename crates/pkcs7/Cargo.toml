@@ -1,5 +1,5 @@
 [package]
-name = "craft-pkcs7"
+name = "bharat-pkcs7"
 description = "The formats of digital signatures: ASN.1 DER, X.509 certificates and chains, CMS SignedData (PKCS #7), PKCS #12 identity files, RFC 3161 timestamps, and CRL / OCSP revocation evidence, read, verified and written."
 version.workspace = true
 edition.workspace = true

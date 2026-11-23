@@ -1,5 +1,5 @@
 //! The global layer block retains its insertion position and neighboring opaque blocks.
-use craft_psd::*;
+use bharat_psd::*;
 
 #[test]
 fn global_layer_block_roundtrips_with_opaque_neighbors() {

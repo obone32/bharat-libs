@@ -1,12 +1,12 @@
 [package]
-name = "craft-psd-fuzz"
+name = "bharat-psd-fuzz"
 version = "0.0.0"
 publish = false
 edition = "2024"
 license = "MIT OR Apache-2.0"
 
 # Its own workspace: cargo-fuzz needs nightly and sanitizer flags, so this crate stays out of the
-# craft-libs workspace and its lockfile.
+# bharat-libs workspace and its lockfile.
 [workspace]
 
 [package.metadata]
@@ -14,7 +14,7 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-craft-psd = { path = ".." }
+bharat-psd = { path = ".." }
 
 [[bin]]
 name = "parse"

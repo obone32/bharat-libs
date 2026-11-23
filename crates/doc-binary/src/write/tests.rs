@@ -3,11 +3,11 @@
 
 use std::sync::Arc;
 
-use craft_wordmodel::para::{InlineObject, NoteKind, Paragraph};
-use craft_wordmodel::props::*;
-use craft_wordmodel::section::{Columns, SectionProps, SectionStart};
-use craft_wordmodel::table::{Cell, Row, Table};
-use craft_wordmodel::{Block, Document, PartKind, para_block};
+use bharat_wordmodel::para::{InlineObject, NoteKind, Paragraph};
+use bharat_wordmodel::props::*;
+use bharat_wordmodel::section::{Columns, SectionProps, SectionStart};
+use bharat_wordmodel::table::{Cell, Row, Table};
+use bharat_wordmodel::{Block, Document, PartKind, para_block};
 
 use crate::{read, write};
 
@@ -55,7 +55,7 @@ fn character_formatting_round_trips() {
     fmt(&mut p, 0, 4, &|c| c.bold = Some(true));
     fmt(&mut p, 5, 11, &|c| c.italic = Some(true));
     fmt(&mut p, 12, 17, &|c| c.underline = Some(Underline::Double));
-    fmt(&mut p, 18, 21, &|c| c.color = Some(TextColor::Rgb(craft_wordmodel::Rgb(0xC0, 0x10, 0x20))));
+    fmt(&mut p, 18, 21, &|c| c.color = Some(TextColor::Rgb(bharat_wordmodel::Rgb(0xC0, 0x10, 0x20))));
     fmt(&mut p, 22, 25, &|c| c.size = Some(18.5));
     fmt(&mut p, 26, 30, &|c| c.font = Some("Georgia".into()));
     fmt(&mut p, 31, 35, &|c| c.highlight = Some(Highlight::Yellow));
@@ -70,7 +70,7 @@ fn character_formatting_round_trips() {
     assert_eq!(at(0).bold, Some(true));
     assert_eq!(at(5).italic, Some(true));
     assert_eq!(at(12).underline, Some(Underline::Double));
-    assert_eq!(at(18).color, Some(TextColor::Rgb(craft_wordmodel::Rgb(0xC0, 0x10, 0x20))));
+    assert_eq!(at(18).color, Some(TextColor::Rgb(bharat_wordmodel::Rgb(0xC0, 0x10, 0x20))));
     assert_eq!(at(22).size, Some(18.5));
     assert_eq!(at(26).font.as_deref(), Some("Georgia"));
     assert_eq!(at(36).strike, Some(true));
@@ -92,7 +92,7 @@ fn paragraph_formatting_round_trips() {
     p.props.page_break_before = Some(true);
     p.props.tabs = Some(vec![TabStop { pos: 72.0, align: TabAlign::Right, leader: TabLeader::Dot }]);
     p.props.borders = Some(Borders {
-        bottom: Some(Border { style: BorderStyle::Double, width: 1.5, color: Some(craft_wordmodel::Rgb(0, 0, 255)), space: 1.0 }),
+        bottom: Some(Border { style: BorderStyle::Double, width: 1.5, color: Some(bharat_wordmodel::Rgb(0, 0, 255)), space: 1.0 }),
         ..Default::default()
     });
     let mut exact = para("Exactly 14 pt");
@@ -117,10 +117,10 @@ fn paragraph_formatting_round_trips() {
 fn styles_round_trip() {
     let mut d = Document::new();
     let h1 = d.styles.styles.iter().find(|s| s.name == "Heading 1").map(|s| s.id.clone()).expect("a Heading 1 style");
-    Arc::make_mut(&mut d.styles).styles.push(craft_wordmodel::styles::Style {
+    Arc::make_mut(&mut d.styles).styles.push(bharat_wordmodel::styles::Style {
         id: "MyQuote".into(),
         name: "My Quote".into(),
-        kind: craft_wordmodel::styles::StyleKind::Paragraph,
+        kind: bharat_wordmodel::styles::StyleKind::Paragraph,
         based_on: Some("Normal".into()),
         chr: CharProps { italic: Some(true), ..Default::default() },
         para: ParaProps { indent_left: Some(24.0), ..Default::default() },
@@ -173,7 +173,7 @@ fn cell(text: &str) -> Cell {
 #[test]
 fn tables_round_trip() {
     let mut a = cell("A1");
-    a.props.shading = Some(craft_wordmodel::Rgb(0xEE, 0xDD, 0x00));
+    a.props.shading = Some(bharat_wordmodel::Rgb(0xEE, 0xDD, 0x00));
     a.props.vmerge = VMerge::Restart;
     let mut b = cell("");
     b.props.vmerge = VMerge::Continue;
@@ -206,7 +206,7 @@ fn tables_round_trip() {
     assert_eq!(cell_text(0, 0), vec!["A1"]);
     assert_eq!(cell_text(0, 1), vec!["B1 first", "B1 second"]);
     assert_eq!(cell_text(1, 2), vec!["C2"]);
-    assert_eq!(t.rows[0].cells[0].props.shading, Some(craft_wordmodel::Rgb(0xEE, 0xDD, 0x00)));
+    assert_eq!(t.rows[0].cells[0].props.shading, Some(bharat_wordmodel::Rgb(0xEE, 0xDD, 0x00)));
     assert_eq!(t.rows[0].cells[0].props.vmerge, VMerge::Restart);
     assert_eq!(t.rows[1].cells[0].props.vmerge, VMerge::Continue);
     assert!(t.rows[0].props.header);
@@ -347,8 +347,8 @@ fn document_properties_round_trip() {
 
 #[test]
 fn lists_round_trip() {
-    use craft_wordmodel::numbering::{AbstractNum, Level, Num};
-    use craft_wordmodel::section::NumFormat;
+    use bharat_wordmodel::numbering::{AbstractNum, Level, Num};
+    use bharat_wordmodel::section::NumFormat;
     let mut d = Document::new();
     let levels = vec![
         Level { start: 1, format: NumFormat::Decimal, text: "%1.".into(), indent: 36.0, hanging: 18.0, ..Level::default() },
@@ -380,7 +380,7 @@ fn lists_round_trip() {
 
 #[test]
 fn tracked_changes_round_trip() {
-    use craft_wordmodel::{Revision, RevisionKind};
+    use bharat_wordmodel::{Revision, RevisionKind};
     let mut d = Document::new();
     d.revisions = vec![
         Revision::new(RevisionKind::Insert, "Ada", "2025-03-04T05:06:00Z"),
@@ -404,7 +404,7 @@ fn tracked_changes_round_trip() {
 /// An inserted or deleted paragraph break (the paragraph mark's revision) round-trips too.
 #[test]
 fn tracked_paragraph_marks_round_trip() {
-    use craft_wordmodel::{Revision, RevisionKind};
+    use bharat_wordmodel::{Revision, RevisionKind};
     let mut d = Document::new();
     d.revisions = vec![
         Revision::new(RevisionKind::Insert, "Ada", "2025-03-04T05:06:00Z"),
@@ -428,7 +428,7 @@ fn tracked_paragraph_marks_round_trip() {
 /// reader takes each anchor's revision marks from its CHPX.
 #[test]
 fn tracked_object_anchors_round_trip() {
-    use craft_wordmodel::{Revision, RevisionKind};
+    use bharat_wordmodel::{Revision, RevisionKind};
     let mut d = Document::new();
     d.revisions = vec![
         Revision::new(RevisionKind::Insert, "Ada", "2025-03-04T05:06:00Z"),
@@ -488,7 +488,7 @@ fn tracked_object_anchors_round_trip() {
 }
 
 #[test]
-#[ignore = "the reader pairs bookmark ends through FBKF.ibkl once craft-libs#1817 is in"]
+#[ignore = "the reader pairs bookmark ends through FBKF.ibkl once bharat-libs#1817 is in"]
 fn overlapping_bookmarks_keep_their_ends() {
     // Outer starts first and ends last; inner ends before it: the ends sort apart from the starts.
     let mut p = para("abcdef");
@@ -514,9 +514,9 @@ fn overlapping_bookmarks_keep_their_ends() {
 
 /// What the writer writes for a character's vertical position: superscript and subscript as
 /// `sprmCIss`, a raised or lowered position as `sprmCHpsPos`, character spacing as
-/// `sprmCDxaSpace`. The reader reads them once craft-libs#1799 is in.
+/// `sprmCDxaSpace`. The reader reads them once bharat-libs#1799 is in.
 #[test]
-#[ignore = "the reader reads sprmCIss, sprmCHpsPos and sprmCDxaSpace once craft-libs#1799 is in"]
+#[ignore = "the reader reads sprmCIss, sprmCHpsPos and sprmCDxaSpace once bharat-libs#1799 is in"]
 fn position_and_spacing_round_trip() {
     let mut p = para("sup sub up sp");
     p.format(0, 3, &|c| c.vert_align = Some(VertAlign::Superscript)).unwrap();
@@ -533,9 +533,9 @@ fn position_and_spacing_round_trip() {
 }
 
 /// Double strikethrough, emboss and the double-wave underline. The reader reads them once
-/// craft-libs#1969 is fixed.
+/// bharat-libs#1969 is fixed.
 #[test]
-#[ignore = "the reader reads sprmCFDStrike, sprmCFEmboss and Kul 0x2B once craft-libs#1969 is fixed"]
+#[ignore = "the reader reads sprmCFDStrike, sprmCFEmboss and Kul 0x2B once bharat-libs#1969 is fixed"]
 fn character_effects_round_trip() {
     let mut p = para("dbl emb");
     p.format(0, 3, &|c| c.double_strike = Some(true)).unwrap();
@@ -552,7 +552,7 @@ fn character_effects_round_trip() {
 }
 
 #[test]
-#[ignore = "the reader reads sprmCHighlight as an Ico once craft-libs#1854 is in"]
+#[ignore = "the reader reads sprmCHighlight as an Ico once bharat-libs#1854 is in"]
 fn every_highlight_colour_round_trips() {
     for h in Highlight::ALL {
         let mut p = para("x");
@@ -574,26 +574,26 @@ fn section_columns_round_trip() {
 
 /// The page-number start and format, the column spacing, and the paragraph's shading, widow
 /// control and contextual spacing, as the writer writes them. Each needs a reader change that is
-/// still open: page numbers craft-libs#1354, column spacing and widow control craft-libs#1799,
-/// shading craft-libs#1808, contextual spacing craft-libs#1969.
+/// still open: page numbers bharat-libs#1354, column spacing and widow control bharat-libs#1799,
+/// shading bharat-libs#1808, contextual spacing bharat-libs#1969.
 #[test]
-#[ignore = "needs the reader changes in craft-libs#1354, #1799 and #1808, and craft-libs#1969"]
+#[ignore = "needs the reader changes in bharat-libs#1354, #1799 and #1808, and bharat-libs#1969"]
 fn page_numbering_and_paragraph_shading_round_trip() {
     let mut d = Document::new();
     d.last_section.page_num_start = Some(5);
-    d.last_section.page_num_format = craft_wordmodel::section::NumFormat::LowerRoman;
+    d.last_section.page_num_format = bharat_wordmodel::section::NumFormat::LowerRoman;
     d.last_section.columns = Columns { count: 3, space: 18.0, ..Default::default() };
     let mut p = para("Shaded");
-    p.props.shading = Some(craft_wordmodel::Rgb(0xDD, 0xEE, 0xFF));
+    p.props.shading = Some(bharat_wordmodel::Rgb(0xDD, 0xEE, 0xFF));
     p.props.widow_control = Some(false);
     p.props.contextual_spacing = Some(true);
     d.body = vec![para_block(p)];
     let r = round(&d);
     assert_eq!(r.last_section.page_num_start, Some(5));
-    assert_eq!(r.last_section.page_num_format, craft_wordmodel::section::NumFormat::LowerRoman);
+    assert_eq!(r.last_section.page_num_format, bharat_wordmodel::section::NumFormat::LowerRoman);
     assert_eq!((r.last_section.columns.count, r.last_section.columns.space), (3, 18.0));
     let q = &r.body[0].as_para().unwrap().props;
-    assert_eq!(q.shading, Some(craft_wordmodel::Rgb(0xDD, 0xEE, 0xFF)));
+    assert_eq!(q.shading, Some(bharat_wordmodel::Rgb(0xDD, 0xEE, 0xFF)));
     assert_eq!(q.widow_control, Some(false));
     assert_eq!(q.contextual_spacing, Some(true));
 }

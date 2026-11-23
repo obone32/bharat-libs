@@ -2,7 +2,7 @@
 //! reader (#863).
 use std::collections::HashSet;
 
-use craft_wordmodel::{Document, PartKind};
+use bharat_wordmodel::{Document, PartKind};
 
 use super::xml::events_at;
 use super::{Body, Ev, FBlock, Pages, SectionProps, Styles, get, model};
@@ -56,7 +56,7 @@ pub(super) struct Parts {
     parts: Vec<(PartKind, Vec<FBlock>)>,
     even_odd: bool,
     /// The watermark a header holds (the first found).
-    pub(super) watermark: Option<craft_wordmodel::Watermark>,
+    pub(super) watermark: Option<bharat_wordmodel::Watermark>,
 }
 
 impl Parts {
@@ -191,7 +191,7 @@ pub(super) fn add(doc: &mut Document, parts: Parts) {
     };
     remap(&mut doc.last_section);
     for b in &mut doc.body {
-        if let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b)
+        if let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b)
             && let Some(sec) = p.section.as_deref_mut()
         {
             remap(sec);

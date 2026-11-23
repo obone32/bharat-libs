@@ -1,6 +1,6 @@
 //! Tests for `.lin` and `.pat` text resource parsing.
 
-use craft_dxf::lin_pat::{MAX_LINETYPE_ELEMENTS, MAX_PATTERN_DASHES, MAX_PATTERN_FAMILIES, parse_lin, parse_pat};
+use bharat_dxf::lin_pat::{MAX_LINETYPE_ELEMENTS, MAX_PATTERN_DASHES, MAX_PATTERN_FAMILIES, parse_lin, parse_pat};
 
 const LIN: &str = "\
 ;; my own linetypes

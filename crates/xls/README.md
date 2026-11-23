@@ -1,9 +1,9 @@
-# craft-xls
+# bharat-xls
 
 A clean-room reader for Excel 97-2003 workbooks (`.xls`, BIFF8). It turns the bytes of a file
 into a `Workbook` that keeps the file's own terms: cells, formulas as text, the format table,
 column and row records. Mapping that onto an application's document is the caller's work.
-No `unsafe`. Dependencies: `craft-cfb` (the compound file container), `craft-sheet` (cell positions,
+No `unsafe`. Dependencies: `bharat-cfb` (the compound file container), `bharat-sheet` (cell positions,
 values and tables shared with the other spreadsheet formats), `md-5` and `sha1` (RC4 keys),
 `miniz_oxide` (compressed metafiles) and `thiserror`.
 No third-party implementation was consulted.
@@ -11,7 +11,7 @@ No third-party implementation was consulted.
 | Document | Used for |
 |---|---|
 | [MS-XLS] Excel Binary File Format (.xls) Structure (Microsoft Open Specifications) | the Workbook stream: record framing and Continue records, strings, the globals and worksheet substreams, cell records, parsed formulas (`Ptg` tokens, the `Ftab` function table), XF / Font / Palette / Style, defined names |
-| [MS-CFB] Compound File Binary File Format | the container, through `craft-cfb` |
+| [MS-CFB] Compound File Binary File Format | the container, through `bharat-cfb` |
 
 ## What is read
 
@@ -63,7 +63,7 @@ with `read_with_password` ([MS-OFFCRYPTO] 2.3.5, 2.3.6). Without a password, Exc
 is `Error::WrongPassword`; XOR obfuscation and CryptoAPI with AES, another cipher or hash, or an
 external provider are `Error::UnsupportedEncryption`. Every size in the FilePass record is
 checked before it is used. There is no writer
-(`craft_xls::testing` builds small fixtures for tests; another crate's tests get it through the
+(`bharat_xls::testing` builds small fixtures for tests; another crate's tests get it through the
 `test-support` feature).
 
 A formula that cannot be put back into text (a link to another workbook, a macro command, an
@@ -74,7 +74,7 @@ language has dynamic arrays adds Excel's implicit intersection itself.
 ## Use
 
 ```rust
-let read = craft_xls::read(&bytes)?;
+let read = bharat_xls::read(&bytes)?;
 for sheet in &read.workbook.sheets {
     for (at, cell) in &sheet.cells {
         let format = cell.format.map(|i| &read.workbook.formats[usize::from(i)]);
@@ -103,4 +103,4 @@ and past it cells keep their saved results. Nothing indexes by a number from the
 Moved from GridCraft's `gridcraft-xlsx` crate (`crates/xlsx/src/xls.rs` and `xls/`, at
 `5cf52c5f`), where it read straight into GridCraft's workbook model. RString cells come from
 WordCraft's mail-merge reader (`crates/formats/src/sheet/xls.rs`), as does the fixture writer
-in `craft_xls::testing`.
+in `bharat_xls::testing`.

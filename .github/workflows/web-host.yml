@@ -38,7 +38,7 @@ jobs:
           toolchain: stable
           components: clippy
           targets: wasm32-unknown-unknown
-      - run: cargo clippy -p craft-web-host --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
+      - run: cargo clippy -p bharat-web-host --all-targets --locked --target wasm32-unknown-unknown -- -D warnings
       - name: Read the wasm-bindgen version from Cargo.lock
         id: wasm-bindgen
         shell: bash
@@ -52,4 +52,4 @@ jobs:
         with:
           tool: wasm-bindgen@${{ steps.wasm-bindgen.outputs.version }}
           fallback: cargo-install
-      - run: cargo test -p craft-web-host --locked --target wasm32-unknown-unknown
+      - run: cargo test -p bharat-web-host --locked --target wasm32-unknown-unknown

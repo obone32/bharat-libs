@@ -1,8 +1,8 @@
 //! The optional `.scraftz` ZIP container for a `.scraft` session and its embedded audio files.
 
 use crate::{FileFormat, MAX_SESSION_BYTES, SESSION_EXTENSION, Session};
-use craft_audio::{BitDepth, EncodeFormat, EncodeOptions, encode};
-use craft_zip::{Archive, Compression, Limits, Writer};
+use bharat_audio::{BitDepth, EncodeFormat, EncodeOptions, encode};
+use bharat_zip::{Archive, Compression, Limits, Writer};
 use std::collections::{HashMap, HashSet};
 use std::ffi::OsStr;
 use std::path::Path;
@@ -150,12 +150,12 @@ fn account(count: &mut usize, total: &mut u64, len: usize, limits: BundleLimits)
     Ok(())
 }
 
-fn zip_error(error: craft_zip::Error) -> BundleError {
+fn zip_error(error: bharat_zip::Error) -> BundleError {
     match error {
-        craft_zip::Error::NotZip(message) => BundleError::Invalid(message),
-        craft_zip::Error::TooManyEntries { .. } => BundleError::Invalid("too many files".into()),
-        craft_zip::Error::EntryTooLarge { .. } | craft_zip::Error::BudgetSpent { .. } => BundleError::Invalid("too large".into()),
-        craft_zip::Error::Entry { name, msg } => BundleError::Invalid(format!("{name}: {msg}")),
+        bharat_zip::Error::NotZip(message) => BundleError::Invalid(message),
+        bharat_zip::Error::TooManyEntries { .. } => BundleError::Invalid("too many files".into()),
+        bharat_zip::Error::EntryTooLarge { .. } | bharat_zip::Error::BudgetSpent { .. } => BundleError::Invalid("too large".into()),
+        bharat_zip::Error::Entry { name, msg } => BundleError::Invalid(format!("{name}: {msg}")),
         other => BundleError::Invalid(other.to_string()),
     }
 }
@@ -186,7 +186,7 @@ mod tests {
     #[test]
     fn audio_is_stored_as_float_wav_and_the_session_path_is_rewritten() {
         use crate::{FileFormat, Source, SourceAudio, SourceId};
-        use craft_audio::AudioBuffer;
+        use bharat_audio::AudioBuffer;
         use std::sync::Arc;
 
         let id = SourceId(1);
@@ -217,7 +217,7 @@ mod tests {
         let parsed = Session::from_json(&text).unwrap();
         assert_eq!(parsed.sources[0].path, source.path);
         let wav = files.get(&source.path).unwrap();
-        let (_, decoded) = craft_audio::decode(wav, Some("wav")).unwrap();
+        let (_, decoded) = bharat_audio::decode(wav, Some("wav")).unwrap();
         assert_eq!(decoded.channels[0], samples);
     }
 

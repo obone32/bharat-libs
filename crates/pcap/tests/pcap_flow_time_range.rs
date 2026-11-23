@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::summarize;
+use bharat_pcap::summarize;
 use support::{block, eth, ipv4_pkt, pcap, pcapng, udp};
 
 fn frame() -> Vec<u8> {

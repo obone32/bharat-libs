@@ -78,7 +78,7 @@ fn has_merged_transparency(layer: &[u8], version: crate::Version) -> bool {
         if matches!(key, b"Mtrn" | b"MTrn" | b"Mt16" | b"Mt32") {
             return true;
         }
-        // Global tagged blocks pad their data to 4 bytes (per psd-tools and craft-psd).
+        // Global tagged blocks pad their data to 4 bytes (per psd-tools and bharat-psd).
         let Some(next) = len.checked_add(3).map(|v| v & !3).and_then(|p| at.checked_add(p)) else { return false };
         at = next;
     }

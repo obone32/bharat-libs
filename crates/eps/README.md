@@ -1,4 +1,4 @@
-# craft-eps
+# bharat-eps
 
 Encapsulated PostScript files as a container: what a file is, where its PostScript and its
 previews are, and what its header comments say, without running its program. It depends on
@@ -16,29 +16,29 @@ nothing.
 | `ascii85::encode`, `ascii85::decode` | The ASCII85 data encoding; lines never start with `%`, decoding is bounded |
 
 ```rust
-let parts = craft_eps::sections(bytes)?;
-let comments = craft_eps::Comments::read(parts.postscript);
+let parts = bharat_eps::sections(bytes)?;
+let comments = bharat_eps::Comments::read(parts.postscript);
 if let Some([x0, y0, x1, y1]) = comments.page_box() { /* points */ }
 ```
 
 ## What it is not
 
 There is no PostScript interpreter here, and no writer of drawings. This crate is the layer every
-EPS reader and writer in the Craft apps had its own copy of; what the program draws is read and
+EPS reader and writer in the Bharat apps had its own copy of; what the program draws is read and
 written elsewhere:
 
 - VectorCraft's `crates/eps` runs the program into its own document and writes EPS, PostScript
   print jobs and the legacy Illustrator format from it. That code speaks VectorCraft's document
   model throughout and has not moved.
 - A PostScript interpreter that returns what a file paints as a PDF is proposed in
-  craft-libs#159 (`craft-ps`, from DesignCraft).
-- Decoding the TIFF or metafile preview is the caller's (`craft-metafile` reads the latter).
+  bharat-libs#159 (`bharat-ps`, from DesignCraft).
+- Decoding the TIFF or metafile preview is the caller's (`bharat-metafile` reads the latter).
 - The editing copy of the art inside a PDF-based Illustrator file is in the PDF's `PieceInfo`,
   which a PDF reader finds.
 
 ## Where it came from
 
-The Craft apps' own code (MIT OR Apache-2.0), merged so that no caller loses a case:
+The Bharat apps' own code (MIT OR Apache-2.0), merged so that no caller loses a case:
 
 - the binary header reader and writer, the EPSI preview and ASCII85 from VectorCraft
   (`crates/eps/src/lib.rs`, `import/preview.rs`, `ps.rs` at `6e873b80`);

@@ -1,5 +1,5 @@
 [package]
-name = "craft-pcap"
+name = "bharat-pcap"
 description = "Read-only PCAP/PCAPNG and per-frame protocol inspection"
 version.workspace = true
 edition.workspace = true

@@ -7,7 +7,7 @@
 
 use crate::Timestamp;
 use base64::Engine as _;
-use craft_ber as ber;
+use bharat_ber as ber;
 
 use crate::cert::{Cert, MAX_CERT_BYTES, printable};
 

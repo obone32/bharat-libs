@@ -3,19 +3,19 @@
 #![cfg(feature = "flatten")]
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_pdf::write::backend::blend::Overprint as KOverprint;
-use craft_pdf::write::backend::geom::PathBuilder;
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::backend::paint::{Fill, FillRule as KFillRule};
-use craft_pdf::write::{Metadata, Writer};
-use craft_plate_test::reference::{self, Context};
-use craft_plate_test::scene;
-use craft_prepress::flatten::kurbo::{BezPath, PathEl, Point, Shape};
-use craft_prepress::flatten::pdf::{ReadOptions, ReadReport, read_page};
-use craft_prepress::flatten::{
+use bharat_pdf::write::backend::blend::Overprint as KOverprint;
+use bharat_pdf::write::backend::geom::PathBuilder;
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::backend::paint::{Fill, FillRule as KFillRule};
+use bharat_pdf::write::{Metadata, Writer};
+use bharat_plate_test::reference::{self, Context};
+use bharat_plate_test::scene;
+use bharat_prepress::flatten::kurbo::{BezPath, PathEl, Point, Shape};
+use bharat_prepress::flatten::pdf::{ReadOptions, ReadReport, read_page};
+use bharat_prepress::flatten::{
     BlendMode, DisplayList, FillItem, FillRule, GradientGeometry, GroupItem, ImageItem, ImageSpace, Item, MaskKind, Paint,
 };
-use craft_prepress::{CmsConversion, InkColor, InkId, Options, Overprint, Process, plates, to_pdf_color};
+use bharat_prepress::{CmsConversion, InkColor, InkId, Options, Overprint, Process, plates, to_pdf_color};
 
 fn scene_pdf(id: &str) -> Vec<u8> {
     let scenes = scene::load_dir(&scene::scenes_dir()).unwrap();
@@ -94,7 +94,7 @@ fn spot_inks_join_the_set() {
     assert!(matches!(tints[..], [(id, t)] if id == gold && (t - 0.5).abs() < 0.01), "{tints:?}");
     assert!(fills[1].1.overprint.fill);
     let alternate = list.inks.spots().find(|(id, _)| *id == gold).unwrap().1.alternate;
-    assert_eq!(alternate, craft_prepress::Alternate::Cmyk([0.0, 0.2, 0.6, 0.2]));
+    assert_eq!(alternate, bharat_prepress::Alternate::Cmyk([0.0, 0.2, 0.6, 0.2]));
 
     // An overprinting stroke carries `OP` in `fill`.
     let (list, _) = read(&scene_pdf("D06"));
@@ -566,7 +566,7 @@ fn write_fills(list: &DisplayList) -> Vec<u8> {
     writer.finish().unwrap()
 }
 
-fn krilla_path(path: &BezPath) -> craft_pdf::write::backend::geom::Path {
+fn krilla_path(path: &BezPath) -> bharat_pdf::write::backend::geom::Path {
     let mut b = PathBuilder::new();
     for el in path.elements() {
         match *el {

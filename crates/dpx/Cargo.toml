@@ -1,5 +1,5 @@
 [package]
-name = "craft-dpx"
+name = "bharat-dpx"
 description = "Clean-room DPX (SMPTE ST 268) and Kodak Cineon reader and writer: header fields, code values at 8, 10, 12 and 16 bits, RGB and Y'CbCr descriptors."
 version.workspace = true
 edition.workspace = true

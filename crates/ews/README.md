@@ -1,4 +1,4 @@
-# craft-ews
+# bharat-ews
 
 The SOAP layer of Exchange Web Services, without sockets.
 
@@ -7,7 +7,7 @@ The SOAP layer of Exchange Web Services, without sockets.
   its tabs and line feeds and writes a carriage return as `&#13;`, names keep only what a
   qualified name is made of. `envelope(Version, &operation)` writes the SOAP 1.1 envelope with
   `RequestServerVersion`.
-- **Answers**: `Answer::parse` reads the envelope with `craft-xml`. A fault is the error it names;
+- **Answers**: `Answer::parse` reads the envelope with `bharat-xml`. A fault is the error it names;
   `Answer::messages("GetFolder")` gives the `GetFolderResponseMessage`s with their
   `ResponseClass` and `ResponseCode`, and `ResponseMessage::ok` the element or the error. A busy
   server (`ErrorServerBusy`, or that code inside `ErrorInternalServerError`) gives its wait,
@@ -37,4 +37,4 @@ MailCraft `crates/ews` (`soap.rs`, `reply.rs`, the response codes of `error.rs`,
 `xml.rs`) at
 [a44a450](https://github.com/UCS-Care-Group/mailcraft/commit/a44a45013d1c6396229c40ab60172d1882b368d5),
 by Martin Ball and the MailCraft contributors (MIT OR Apache-2.0), with the tests of that layer.
-MailCraft's own bounded XML reader (`xml.rs`) is replaced by `craft-xml`.
+MailCraft's own bounded XML reader (`xml.rs`) is replaced by `bharat-xml`.

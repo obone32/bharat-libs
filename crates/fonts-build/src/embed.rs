@@ -1,4 +1,4 @@
-//! The build-script side: read `CRAFT_FONTS_DIR`, select faces, write the generated table.
+//! The build-script side: read `BHARAT_FONTS_DIR`, select faces, write the generated table.
 
 #[cfg(feature = "subset")]
 use std::collections::BTreeSet;
@@ -11,8 +11,8 @@ use std::path::{Component, Path, PathBuf};
 use crate::cmap::Cmap;
 use crate::manifest::{ManifestEntry, ParseError, parse_manifest, script_matches};
 
-const DIR_VAR: &str = "CRAFT_FONTS_DIR";
-const REQUIRED_VAR: &str = "CRAFT_FONTS_REQUIRED";
+const DIR_VAR: &str = "BHARAT_FONTS_DIR";
+const REQUIRED_VAR: &str = "BHARAT_FONTS_REQUIRED";
 const EMPTY_TABLE: &str = "&[]\n";
 /// The most a manifest may hold; the real one is a few KiB.
 const MAX_MANIFEST_BYTES: u64 = 1 << 20;
@@ -95,8 +95,8 @@ struct Face {
 }
 
 impl Embed {
-    /// Every face except the interface faces' sources (`role` `ui`), from `CRAFT_FONTS_DIR`,
-    /// required when `CRAFT_FONTS_REQUIRED=1`. Narrow it with [`Embed::scripts`] and
+    /// Every face except the interface faces' sources (`role` `ui`), from `BHARAT_FONTS_DIR`,
+    /// required when `BHARAT_FONTS_REQUIRED=1`. Narrow it with [`Embed::scripts`] and
     /// [`Embed::filter`]; a table of document fonts starts from [`Embed::documents`] instead.
     pub fn new() -> Self {
         Self::default()
@@ -106,14 +106,14 @@ impl Embed {
     /// is named as the manifest spells it (`"Noto Sans"`, `"Shippori Mincho"`) and contributes all
     /// its styles, interface faces included (`"BIZ UDPGothic"` brings its Regular as well).
     /// A name the manifest lacks is an [`Error::UnknownFamilies`], so the build fails with
-    /// `CRAFT_FONTS_REQUIRED=1` and warns and embeds nothing otherwise. Narrow it further with
+    /// `BHARAT_FONTS_REQUIRED=1` and warns and embeds nothing otherwise. Narrow it further with
     /// [`Embed::scripts`] and [`Embed::filter`].
     pub fn documents(families: &[&str]) -> Self {
         Self { families: Some(families.iter().map(|f| (*f).to_owned()).collect()), ..Self::default() }
     }
 
     /// Embed only faces with at least one of these script tags (see
-    /// [`ManifestEntry::has_script`]). With `CRAFT_FONTS_REQUIRED=1`, each tag must match a face.
+    /// [`ManifestEntry::has_script`]). With `BHARAT_FONTS_REQUIRED=1`, each tag must match a face.
     pub fn scripts(mut self, tags: &[&str]) -> Self {
         self.scripts = Some(tags.iter().map(|t| (*t).to_owned()).collect());
         self
@@ -131,7 +131,7 @@ impl Embed {
     /// out too, with a `cargo::warning`, so a full CJK face is never embedded for the interface.
     /// A manifest with no interface face is also a `cargo::warning` when that drops a CJK face.
     /// Combines with [`Embed::scripts`], [`Embed::filter`] and [`Embed::serve`]; with
-    /// `CRAFT_FONTS_REQUIRED=1`, an interface face satisfies its script tags.
+    /// `BHARAT_FONTS_REQUIRED=1`, an interface face satisfies its script tags.
     pub fn for_ui(mut self) -> Self {
         self.ui = true;
         self
@@ -174,13 +174,13 @@ impl Embed {
         self
     }
 
-    /// Read this checkout instead of `CRAFT_FONTS_DIR`.
+    /// Read this checkout instead of `BHARAT_FONTS_DIR`.
     pub fn dir(mut self, dir: impl Into<PathBuf>) -> Self {
         self.dir = Some(dir.into());
         self
     }
 
-    /// Override `CRAFT_FONTS_REQUIRED` (required only when it is exactly `1`).
+    /// Override `BHARAT_FONTS_REQUIRED` (required only when it is exactly `1`).
     pub fn required(mut self, required: bool) -> Self {
         self.required = Some(required);
         self
@@ -270,7 +270,7 @@ impl Embed {
             }
             Err(Error::NotSet) => (EMPTY_TABLE.to_owned(), Vec::new()),
             Err(e) => {
-                cargo.push(format!("cargo::warning=building without craft-fonts: {e}"));
+                cargo.push(format!("cargo::warning=building without bharat-fonts: {e}"));
                 (EMPTY_TABLE.to_owned(), Vec::new())
             }
         };
@@ -352,15 +352,15 @@ impl Embed {
         if !uncut.is_empty() {
             let why = if self.catalogs.is_some() { "Embed::subset_to was given no translation catalogs" } else { "no translation catalogs" };
             cargo.push(format!(
-                "cargo::warning=craft-fonts: not embedding the interface faces {}: {why}; pass the catalogs to \
+                "cargo::warning=bharat-fonts: not embedding the interface faces {}: {why}; pass the catalogs to \
                  Embed::subset_to (feature `subset`) to embed them cut to the catalogs' characters",
                 uncut.join(", ")
             ));
         }
         if dropped_cjk && !has_ui {
             cargo.push(format!(
-                "cargo::warning=craft-fonts: not embedding any CJK face for the interface: {} has no interface face \
-                 (role `ui`); use a craft-fonts checkout that has them",
+                "cargo::warning=bharat-fonts: not embedding any CJK face for the interface: {} has no interface face \
+                 (role `ui`); use a bharat-fonts checkout that has them",
                 manifest.display()
             ));
         }
@@ -383,7 +383,7 @@ impl Embed {
         for (start, end) in UI_RANGES {
             chars.extend(start..=end);
         }
-        let dir = out_dir.join("craft-fonts-ui");
+        let dir = out_dir.join("bharat-fonts-ui");
         std::fs::create_dir_all(&dir).map_err(|source| Error::Write { path: dir.clone(), source })?;
         for face in faces.iter_mut().filter(|face| face.cut) {
             let source = read_bounded(&face.path, MAX_FILE_BYTES).map_err(|source| Error::Read { path: face.path.clone(), source })?;
@@ -432,7 +432,7 @@ impl Embed {
         // `select` read and parsed this manifest already.
         let entries = read_text_bounded(&manifest, MAX_MANIFEST_BYTES).ok().and_then(|text| parse_manifest(&text).ok()).unwrap_or_default();
         for family in self.elsewhere.iter().filter(|f| !entries.iter().any(|e| &e.family == *f)) {
-            cargo.push(format!("cargo::warning=craft-fonts: embedded_elsewhere names {family}, which {} lacks", manifest.display()));
+            cargo.push(format!("cargo::warning=bharat-fonts: embedded_elsewhere names {family}, which {} lacks", manifest.display()));
         }
         let root = dir.canonicalize().ok();
         let inside = |file: &str| {
@@ -444,7 +444,7 @@ impl Embed {
             if !dir.join(&entry.file).exists() || inside(&entry.file) {
                 kept.push(entry);
             } else {
-                cargo.push(format!("cargo::warning=craft-fonts: {}: {:?} is not a file inside the checkout", manifest.display(), entry.file));
+                cargo.push(format!("cargo::warning=bharat-fonts: {}: {:?} is not a file inside the checkout", manifest.display(), entry.file));
             }
         }
         kept
@@ -468,14 +468,14 @@ impl Embed {
             match bytes.as_deref().and_then(|bytes| Cmap::read(bytes, *index)) {
                 Some(cmap) => cmaps.push(cmap),
                 None => cargo
-                    .push(format!("cargo::warning=craft-fonts: cannot read the character map of {} {} ({})", entry.family, entry.style, entry.file)),
+                    .push(format!("cargo::warning=bharat-fonts: cannot read the character map of {} {} ({})", entry.family, entry.style, entry.file)),
             }
         }
         for path in files {
             let text = match std::fs::read_to_string(path) {
                 Ok(text) => text,
                 Err(e) => {
-                    cargo.push(format!("cargo::warning=craft-fonts: cannot check {}: {e}", path.display()));
+                    cargo.push(format!("cargo::warning=bharat-fonts: cannot check {}: {e}", path.display()));
                     continue;
                 }
             };
@@ -488,7 +488,7 @@ impl Embed {
             let shown: String = missing.iter().take(SHOWN).collect();
             let more = if missing.len() > SHOWN { " …" } else { "" };
             cargo.push(format!(
-                "cargo::warning=craft-fonts: {} has {} character{} no embedded face covers ({shown}{more}); system fonts will draw them.",
+                "cargo::warning=bharat-fonts: {} has {} character{} no embedded face covers ({shown}{more}); system fonts will draw them.",
                 path.display(),
                 missing.len(),
                 if missing.len() == 1 { "" } else { "s" },
@@ -532,7 +532,7 @@ pub(crate) struct Env {
 /// The generated source; `include_bytes!` takes a string, so a face under a path that isn't UTF-8
 /// is an error rather than a lossy path the consumer's build can't find.
 fn table(faces: &[Face]) -> Result<String, Error> {
-    let mut src = String::from("// Generated by craft-fonts-build. Do not edit.\n&[\n");
+    let mut src = String::from("// Generated by bharat-fonts-build. Do not edit.\n&[\n");
     for Face { entry, path, index, .. } in faces {
         let file = path.to_str().ok_or_else(|| Error::NonUtf8Path { path: path.clone() })?;
         let scripts: Vec<String> = entry.scripts.iter().map(|s| format!("{s:?}")).collect();
@@ -556,7 +556,7 @@ impl Serve {
         let root = checkout.canonicalize().map_err(|source| Error::Read { path: checkout.to_path_buf(), source })?;
         let manifest = checkout.join("fonts/manifest.txt");
         let mut copied: Vec<String> = Vec::new();
-        let mut src = String::from("// Generated by craft-fonts-build. Do not edit.\n&[\n");
+        let mut src = String::from("// Generated by bharat-fonts-build. Do not edit.\n&[\n");
         for face in faces {
             let (entry, path) = (&face.entry, &face.path);
             let served = served_file(face);
@@ -582,7 +582,7 @@ impl Serve {
                     .flatten()
                     .filter(|licence| licence.is_file());
                 match licence {
-                    None => cargo.push(format!("cargo::warning=craft-fonts: no licence file beside {}", entry.file)),
+                    None => cargo.push(format!("cargo::warning=bharat-fonts: no licence file beside {}", entry.file)),
                     Some(licence) if !licence.starts_with(&root) => {
                         return Err(Error::OutsideCheckout { manifest, file: entry.licence_file.clone() });
                     }
@@ -590,7 +590,7 @@ impl Serve {
                 }
             }
             let coverage = crate::coverage::of_face(&font, face.index).unwrap_or_else(|| {
-                cargo.push(format!("cargo::warning=craft-fonts: no character map in {}; the face is never fetched for a character", entry.file));
+                cargo.push(format!("cargo::warning=bharat-fonts: no character map in {}; the face is never fetched for a character", entry.file));
                 Vec::new()
             });
             let scripts: Vec<String> = entry.scripts.iter().map(|s| format!("{s:?}")).collect();
@@ -722,7 +722,7 @@ fn write(path: &Path, contents: &str) -> Result<(), Error> {
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum Error {
-    /// `CRAFT_FONTS_REQUIRED=1` but `CRAFT_FONTS_DIR` is unset or empty.
+    /// `BHARAT_FONTS_REQUIRED=1` but `BHARAT_FONTS_DIR` is unset or empty.
     NotSet,
     /// The manifest or a font file it lists can't be read.
     Read { path: PathBuf, source: io::Error },
@@ -756,10 +756,10 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::NotSet => {
-                write!(f, "{REQUIRED_VAR}=1 but {DIR_VAR} is not: set {DIR_VAR} to the absolute path of a storytold/craft-fonts checkout")
+                write!(f, "{REQUIRED_VAR}=1 but {DIR_VAR} is not: set {DIR_VAR} to the absolute path of a obone32/bharat-fonts checkout")
             }
             Self::Read { path, source } => {
-                write!(f, "cannot read {} ({DIR_VAR} must be the absolute path of a storytold/craft-fonts checkout): {source}", path.display())
+                write!(f, "cannot read {} ({DIR_VAR} must be the absolute path of a obone32/bharat-fonts checkout): {source}", path.display())
             }
             Self::Parse { manifest, error } => write!(f, "{}: {error}", manifest.display()),
             Self::NoFaces { manifest } => write!(f, "{REQUIRED_VAR}=1 but no face in {} was selected", manifest.display()),
@@ -767,10 +767,10 @@ impl fmt::Display for Error {
                 write!(f, "{REQUIRED_VAR}=1 but {} has no face for {}", manifest.display(), scripts.join(", "))
             }
             Self::Write { path, source } => write!(f, "cannot write {}: {source}", path.display()),
-            Self::NoOutDir => write!(f, "OUT_DIR is not set: call craft-fonts-build from a build script, or pass an absolute out_file"),
+            Self::NoOutDir => write!(f, "OUT_DIR is not set: call bharat-fonts-build from a build script, or pass an absolute out_file"),
             Self::NotTrueType { path } => write!(
                 f,
-                "{} has CFF outlines, which craft-fonts-build can't subset correctly: an interface face (role ui) must be a TrueType (glyf) font",
+                "{} has CFF outlines, which bharat-fonts-build can't subset correctly: an interface face (role ui) must be a TrueType (glyf) font",
                 path.display()
             ),
             Self::Subset { path, reason } => write!(f, "cannot subset {}: {reason}", path.display()),

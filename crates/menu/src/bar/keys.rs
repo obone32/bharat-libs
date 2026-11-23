@@ -15,7 +15,7 @@
 
 use egui::{Color32, Event, Id, Key, Modifiers, Stroke, TextFormat};
 
-use craft_keymap::CommandRef;
+use bharat_keymap::CommandRef;
 
 use super::nav::{Nav, is_open};
 use crate::Gate;
@@ -39,11 +39,11 @@ pub(crate) struct Keys {
 }
 
 fn focus_id() -> Id {
-    Id::unique("craft-menu-bar-focus")
+    Id::unique("bharat-menu-bar-focus")
 }
 
 fn leave_id() -> Id {
-    Id::unique("craft-menu-bar-leave")
+    Id::unique("bharat-menu-bar-leave")
 }
 
 /// Whether the keyboard is on the bar (Alt tap or F10, no menu open yet). The app's shortcuts

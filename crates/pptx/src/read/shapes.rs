@@ -7,11 +7,11 @@ use crate::style::{ColorRef, Effects, Fill};
 use crate::table::{Cell, Row, Table};
 use crate::text::{Anchor, TextDir};
 use crate::{Geom, MediaClip, PhType, Placeholder, Shape, ShapeId, ShapeKind, ShapeStyle};
-use craft_drawingml::color::SchemeSlot;
-use craft_drawingml::{Xfrm, preset};
+use bharat_drawingml::color::SchemeSlot;
+use bharat_drawingml::{Xfrm, preset};
 
-use craft_drawingml::xmlx;
-use craft_xml::{El, Local, value};
+use bharat_drawingml::xmlx;
+use bharat_xml::{El, Local, value};
 
 use super::{Imp, Part, Src, dml};
 
@@ -229,8 +229,8 @@ fn sp_pr(imp: &mut Imp, part: &Part, s: &mut Shape, pr: &El) {
     if let Some(pg) = pr.child(Local("prstGeom")) {
         s.geom = preset_geom(pg);
     } else if let Some(cg) = pr.child(Local("custGeom")) {
-        let (w, h) = s.xfrm.map(|x| (craft_drawingml::pt_to_emu(x.w) as f64, craft_drawingml::pt_to_emu(x.h) as f64)).unwrap_or((21600.0, 21600.0));
-        let paths = craft_drawingml::custgeom::read_cust_geom(cg, w, h);
+        let (w, h) = s.xfrm.map(|x| (bharat_drawingml::pt_to_emu(x.w) as f64, bharat_drawingml::pt_to_emu(x.h) as f64)).unwrap_or((21600.0, 21600.0));
+        let paths = bharat_drawingml::custgeom::read_cust_geom(cg, w, h);
         if !paths.is_empty() {
             s.geom = Geom::Custom { paths };
         }
@@ -492,7 +492,7 @@ fn frame(imp: &mut Imp, part: &Part, ctx: &mut IdCtx, e: &El, depth: usize) -> S
         .map(|id| {
             let rel = part.rels.by_id(&id).filter(|r| !r.external)?;
             let pkg = imp.pkg;
-            if *imp.has_rels.entry(craft_opc::normalize(&rel.target)).or_insert_with(|| !pkg.rels(&rel.target).list.is_empty()) {
+            if *imp.has_rels.entry(bharat_opc::normalize(&rel.target)).or_insert_with(|| !pkg.rels(&rel.target).list.is_empty()) {
                 return None;
             }
             let (kind, target) = (rel.ty.clone(), rel.target.clone());
@@ -509,7 +509,7 @@ fn frame(imp: &mut Imp, part: &Part, ctx: &mut IdCtx, e: &El, depth: usize) -> S
 /// `v:imagedata` of the legacy VML drawing shape with that id, as PowerPoint 2007 wrote them.
 fn vml_preview(imp: &mut Imp, part: &Part, spid: &str) -> Option<crate::MediaId> {
     for rel in part.rels.list.iter().filter(|r| r.kind() == "vmlDrawing" && !r.external) {
-        let key = craft_opc::normalize(&rel.target);
+        let key = bharat_opc::normalize(&rel.target);
         if !imp.vml_previews.contains_key(&key) {
             let index = vml_index(imp.pkg, &rel.target);
             imp.vml_previews.insert(key.clone(), index);
@@ -545,7 +545,7 @@ fn vml_index(pkg: &crate::package::Package, vml: &str) -> std::collections::Hash
 /// relationship id, which a save renumbers. Only diagrams whose drawing is missing or empty get
 /// here, and those are drawn from their data.
 fn diagram_data(imp: &mut Imp, target: &str) -> Option<crate::MediaId> {
-    let norm_target = craft_opc::normalize(target);
+    let norm_target = bharat_opc::normalize(target);
     if let Some(&id) = imp.media_by_part.get(&norm_target) {
         return Some(id);
     }
@@ -553,7 +553,7 @@ fn diagram_data(imp: &mut Imp, target: &str) -> Option<crate::MediaId> {
         if depth > xmlx::MAX_DEPTH {
             return;
         }
-        e.children.retain(|n| !matches!(n, craft_xml::Node::El(c) if c.is(Local("ext")) && c.find(Local("dataModelExt")).is_some()));
+        e.children.retain(|n| !matches!(n, bharat_xml::Node::El(c) if c.is(Local("ext")) && c.find(Local("dataModelExt")).is_some()));
         for c in e.elements_mut() {
             strip(c, depth + 1);
         }
@@ -565,7 +565,7 @@ fn diagram_data(imp: &mut Imp, target: &str) -> Option<crate::MediaId> {
     let content_type = imp.pkg.content_type(target)?;
     imp.media.push(crate::MediaItem {
         id,
-        name: craft_opc::file_of(target).to_string(),
+        name: bharat_opc::file_of(target).to_string(),
         content_type,
         data: std::sync::Arc::new(xml.into_bytes()),
         link: None,
@@ -601,7 +601,7 @@ fn smartart(imp: &mut Imp, part: &Part, gd: &El, frame: &Shape, depth: usize) ->
     // Node pictures, from the blips of the data model's presentation points.
     if let Some(d) = &mut g.diagram {
         let rels = imp.pkg.rels(&dm.target);
-        for (k, rid) in craft_drawingml::diagram::parts::node_pictures(&data.root) {
+        for (k, rid) in bharat_drawingml::diagram::parts::node_pictures(&data.root) {
             let Some(target) = rels.by_id(&rid).filter(|r| !r.external).map(|r| r.target.clone()) else { continue };
             let media = imp.media_for(&target);
             if let Some(n) = d.nodes.get_mut(k) {
@@ -721,7 +721,7 @@ fn text_area(geom: &Geom, w: f64, h: f64) -> crate::Rect {
 /// The outline of a SmartArt graphic (for the Text Pane), with its layout, quick style and colour
 /// parts kept to be written back.
 fn diagram_outline(imp: &Imp, part: &Part, rel_ids: &El, data: &El) -> Option<crate::Diagram> {
-    let nodes = craft_drawingml::diagram::parts::outline(data);
+    let nodes = bharat_drawingml::diagram::parts::outline(data);
     if nodes.is_empty() {
         return None;
     }
@@ -750,10 +750,10 @@ fn diagram_outline(imp: &Imp, part: &Part, rel_ids: &El, data: &El) -> Option<cr
         .path(&[Local("ptLst")])
         .and_then(|l| l.children(Local("pt")).find(|p| p.attr_local("type") == Some("doc")))
         .and_then(|p| p.child(Local("prSet")));
-    let style = craft_drawingml::diagram::parts::style_for(pr.and_then(|p| p.attr_local("qsTypeId")).unwrap_or("")).to_string();
-    let colors = craft_drawingml::diagram::parts::colors_for(pr.and_then(|p| p.attr_local("csTypeId")).unwrap_or(""));
+    let style = bharat_drawingml::diagram::parts::style_for(pr.and_then(|p| p.attr_local("qsTypeId")).unwrap_or("")).to_string();
+    let colors = bharat_drawingml::diagram::parts::colors_for(pr.and_then(|p| p.attr_local("csTypeId")).unwrap_or(""));
     Some(crate::Diagram {
-        kind: craft_drawingml::diagram::parts::kind_for(&id, &cat).to_string(),
+        kind: bharat_drawingml::diagram::parts::kind_for(&id, &cat).to_string(),
         nodes,
         style,
         colors,
@@ -783,10 +783,10 @@ fn table(imp: &mut Imp, part: &Part, tbl: &El) -> Table {
             // A style the file defines is drawn from its definition (by its GUID).
             // DeckCraft's own styles (written with GUIDs derived from their ids) map back to them.
             let up = id.trim().to_ascii_uppercase();
-            t.style = if imp.table_style_ids.contains(&up) && !craft_drawingml::table::styles::is_own_guid(&up) {
+            t.style = if imp.table_style_ids.contains(&up) && !bharat_drawingml::table::styles::is_own_guid(&up) {
                 up
             } else {
-                craft_drawingml::table::styles::style_from_guid(id.trim())
+                bharat_drawingml::table::styles::style_from_guid(id.trim())
             };
         }
     }
@@ -806,7 +806,7 @@ fn table(imp: &mut Imp, part: &Part, tbl: &El) -> Table {
         t.cols = vec![72.0; n];
     }
     if t.over_cap() {
-        imp.warn(format!("a table in {} is over {} cells; its last rows were left out", part.name, craft_drawingml::table::MAX_CELLS));
+        imp.warn(format!("a table in {} is over {} cells; its last rows were left out", part.name, bharat_drawingml::table::MAX_CELLS));
     }
     t.normalize();
     t

@@ -8,7 +8,7 @@
 
 use std::fmt::Write as _;
 
-use craft_dxf::{Tag, Value, parse, write_ascii_as, write_binary};
+use bharat_dxf::{Tag, Value, parse, write_ascii_as, write_binary};
 
 const SENTINEL: &[u8] = b"AutoCAD Binary DXF\r\n\x1a\0";
 const FOLLOWING_BINARY: &[u8] = b"\x46\0\xf9\xff"; // group 70, signed i16 -7

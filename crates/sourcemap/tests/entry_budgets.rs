@@ -1,4 +1,4 @@
-use craft_sourcemap::{Limits, SourceMap, SourceMapError, parse};
+use bharat_sourcemap::{Limits, SourceMap, SourceMapError, parse};
 use serde_json::json;
 
 fn with(max_entries: usize) -> Limits {
@@ -118,7 +118,7 @@ fn a_hostile_map_of_empty_names_is_refused_by_default() {
 
 #[test]
 fn sources_are_read_from_a_map_with_broken_mappings_or_offsets() {
-    use craft_sourcemap::parse_sources;
+    use bharat_sourcemap::parse_sources;
     let bad = br#"{"version":3,"sourceRoot":"src","sources":["a.js"],"sourcesContent":["a();"],"names":["x"],"mappings":"!!"}"#;
     assert_eq!(parse(bad, Limits::default()), Err(SourceMapError::BadMappings(1)));
     let map = parse_sources(bad, Limits::default()).unwrap();

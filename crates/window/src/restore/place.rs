@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 const BAR: f32 = 64.0;
 const MAX_POINTS: f32 = 100_000.0;
 
-/// A rectangle in logical points at zoom 1: top-left corner and size. (Not `craft_window::Rect`,
+/// A rectangle in logical points at zoom 1: top-left corner and size. (Not `bharat_window::Rect`,
 /// which is the cascade module's.)
 ///
 /// `pos` is `Placement::position_px` divided by `Placement::scale`; it is informational, and

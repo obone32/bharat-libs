@@ -1,5 +1,5 @@
 [package]
-name = "craft-geom"
+name = "bharat-geom"
 description = "Plane geometry for photo editing: points, rectangles, orientation, crop geometry with straighten and aspect lock, homographies, crop-handle dragging."
 version.workspace = true
 edition.workspace = true

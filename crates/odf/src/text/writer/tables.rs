@@ -73,9 +73,9 @@ pub(in crate::text) fn cell_props(t: &FTable, ri: usize, g0: usize, c: &model::C
     });
     // Which way its text runs (§20.404; upward is LibreOffice's own `bt-lr`).
     p.push_str(match c.direction {
-        craft_wordmodel::props::TextDirection::Horizontal => "",
-        craft_wordmodel::props::TextDirection::Down => " style:writing-mode=\"tb-rl\"",
-        craft_wordmodel::props::TextDirection::Up => " loext:writing-mode=\"bt-lr\"",
+        bharat_wordmodel::props::TextDirection::Horizontal => "",
+        bharat_wordmodel::props::TextDirection::Down => " style:writing-mode=\"tb-rl\"",
+        bharat_wordmodel::props::TextDirection::Up => " loext:writing-mode=\"bt-lr\"",
     });
     p
 }
@@ -95,9 +95,9 @@ impl Writer {
             self.pictures.push((name.clone(), pic.img.data.clone(), super::mime_of(&pic.img.ext).to_string()));
         }
         let repeat = match pic.repeat {
-            craft_wordmodel::props::PictureRepeat::None => "no-repeat",
-            craft_wordmodel::props::PictureRepeat::Tile => "repeat",
-            craft_wordmodel::props::PictureRepeat::Stretch => "stretch",
+            bharat_wordmodel::props::PictureRepeat::None => "no-repeat",
+            bharat_wordmodel::props::PictureRepeat::Tile => "repeat",
+            bharat_wordmodel::props::PictureRepeat::Stretch => "stretch",
         };
         let pos = |a: f32, words: [&'static str; 3]| {
             if a < 0.25 {

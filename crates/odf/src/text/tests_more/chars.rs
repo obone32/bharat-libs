@@ -4,8 +4,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::props::{CharProps, Underline};
-use craft_wordmodel::{Document, Paragraph, Rgb, para_block};
+use bharat_wordmodel::props::{CharProps, Underline};
+use bharat_wordmodel::{Document, Paragraph, Rgb, para_block};
 
 fn spans(props: &[&str]) -> Document {
     let styles: String = props
@@ -109,8 +109,8 @@ fn character_formatting_round_trips() {
     for (i, props) in want.iter().enumerate() {
         let s = format!("s{i}|");
         p.text.push_str(&s);
-        p.runs.push(craft_wordmodel::para::Run { len: s.len() - 1, props: props.clone() });
-        p.runs.push(craft_wordmodel::para::Run { len: 1, props: Default::default() });
+        p.runs.push(bharat_wordmodel::para::Run { len: s.len() - 1, props: props.clone() });
+        p.runs.push(bharat_wordmodel::para::Run { len: 1, props: Default::default() });
     }
     let mut d = Document::new();
     d.body = vec![para_block(p)];
@@ -230,14 +230,14 @@ fn a_border_around_text_is_read_and_written() {
     let d = crate::text::import(&crate::text::tests::package(&content, None)).unwrap();
     let p = d.body.iter().find_map(|b| b.as_para()).unwrap();
     let b = p.runs.iter().find_map(|r| r.props.border).expect("a text border");
-    assert_eq!((b.color, (b.width * 100.0).round(), (b.space * 100.0).round()), (Some(craft_wordmodel::props::Rgb(255, 0, 0)), 74.0, 144.0));
+    assert_eq!((b.color, (b.width * 100.0).round(), (b.space * 100.0).round()), (Some(bharat_wordmodel::props::Rgb(255, 0, 0)), 74.0, 144.0));
     let c = crate::text::tests::content_of(&crate::text::tests::export_model(&d).unwrap());
     assert!(c.contains(r#"loext:border="0.74pt solid #ff0000" loext:padding="1.44pt""#), "{c}");
 }
 
 #[test]
 fn emphasis_marks_are_read_and_written() {
-    use craft_wordmodel::props::EmphasisMark as E;
+    use bharat_wordmodel::props::EmphasisMark as E;
     let style = |n: &str, v: &str| {
         format!(r#"<style:style style:name="{n}" style:family="text"><style:text-properties style:text-emphasize="{v}"/></style:style>"#)
     };
@@ -276,14 +276,14 @@ fn objects_in_hidden_text_are_kept() {
     let mut p = Paragraph::with_text("Shown. Hidden words.", CharProps::default());
     let n = p.len();
     p.format(7, n, &|c| c.hidden = Some(true)).unwrap();
-    p.insert_object(14, craft_wordmodel::para::InlineObject::BookmarkStart { name: "Secret".into() }, &hidden).unwrap();
+    p.insert_object(14, bharat_wordmodel::para::InlineObject::BookmarkStart { name: "Secret".into() }, &hidden).unwrap();
     let mut d = Document::new();
     d.body = vec![para_block(p)];
     let back = import(&export(&d).unwrap()).unwrap();
     let p = back.body[0].as_para().unwrap();
     assert!(p.text.contains("Hidden"), "{:?}", p.text);
     assert!(
-        p.objects.iter().any(|o| matches!(o, craft_wordmodel::para::InlineObject::BookmarkStart { name } if name == "Secret")),
+        p.objects.iter().any(|o| matches!(o, bharat_wordmodel::para::InlineObject::BookmarkStart { name } if name == "Secret")),
         "{:?}",
         p.objects
     );
@@ -519,7 +519,7 @@ fn a_language_with_a_script_keeps_it() {
     let content = format!(
         r#"<office:document-content {NS_T}><office:automatic-styles><style:style style:name="T1" style:family="text"><style:text-properties {run}/></style:style></office:automatic-styles><office:body><office:text><text:p text:style-name="Eigen">Own <text:span text:style-name="T1">span</text:span></text:p></office:text></office:body></office:document-content>"#
     );
-    let check = |d: &craft_wordmodel::Document| {
+    let check = |d: &bharat_wordmodel::Document| {
         let chr = &d.styles.get("Eigen").unwrap().chr;
         assert_eq!(
             (chr.lang.as_deref(), chr.lang_ea.as_deref(), chr.lang_bidi.as_deref()),
@@ -554,7 +554,7 @@ fn a_style_with_no_parent_has_the_default_styles_language() {
     let content = format!(
         r#"<office:document-content {NS_T}><office:body><office:text><text:p text:style-name="Eigen">a</text:p><text:p text:style-name="Gesagt">b</text:p><text:p text:style-name="Kind">c</text:p></office:text></office:body></office:document-content>"#
     );
-    let check = |d: &craft_wordmodel::Document| {
+    let check = |d: &bharat_wordmodel::Document| {
         assert_eq!(d.styles.default_chr.lang.as_deref(), Some("de-DE"));
         let lang = |id: &str| d.styles.resolve_char(Some(id), &Default::default()).lang;
         assert_eq!(lang("Eigen").as_deref(), Some("en-US"), "no parent: the default style's");
@@ -569,7 +569,7 @@ fn a_style_with_no_parent_has_the_default_styles_language() {
 /// WordCraft's own documents say their language, so a reader doesn't use its own default.
 #[test]
 fn a_new_documents_language_is_stated() {
-    let styles = crate::text::tests::entry(&export(&craft_wordmodel::Document::new()).unwrap(), "styles.xml");
+    let styles = crate::text::tests::entry(&export(&bharat_wordmodel::Document::new()).unwrap(), "styles.xml");
     assert!(default_style(&styles).contains(r#"fo:language="en" fo:country="US""#), "{styles}");
 }
 

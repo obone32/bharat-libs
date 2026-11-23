@@ -1,8 +1,8 @@
-//! CPU-only [`GpuContext`](craft_gpu::GpuContext) for tests and CI.
+//! CPU-only [`GpuContext`](bharat_gpu::GpuContext) for tests and CI.
 
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-use craft_gpu::{DeviceCaps, GpuContext, GpuFault, HandleId, ReadOutcome, ReadRequest, WorkerKind};
+use bharat_gpu::{DeviceCaps, GpuContext, GpuFault, HandleId, ReadOutcome, ReadRequest, WorkerKind};
 
 /// In-memory buffer store; no GPU hardware required. Reads resolve synchronously (there is
 /// nothing to wait for), so [`request_read`](GpuContext::request_read) and
@@ -82,7 +82,7 @@ impl GpuContext for NullContext {
 
 #[cfg(test)]
 mod tests {
-    use craft_gpu::{GpuContext, GpuFault, HandleId, WorkerKind};
+    use bharat_gpu::{GpuContext, GpuFault, HandleId, WorkerKind};
 
     use super::NullContext;
 

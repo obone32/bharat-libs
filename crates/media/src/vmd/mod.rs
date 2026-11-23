@@ -16,8 +16,8 @@
 //! runs on after the last picture.
 //!
 //! [`open`] reads the header and the table of contents; [`VmdFile::read_frame`] reads one frame's
-//! data on demand. The video decoder is `craft_video::vmd` and the sound decoder
-//! `craft_audio::vmd`; both take the header ([`VmdFile::header_bytes`]) as their configuration.
+//! data on demand. The video decoder is `bharat_video::vmd` and the sound decoder
+//! `bharat_audio::vmd`; both take the header ([`VmdFile::header_bytes`]) as their configuration.
 //!
 //! Only the 816-byte header is read: the later Coktel Vision revisions with a longer header or
 //! one without a palette are refused as [`Error::NotVmd`]. Files whose pictures are 16-bit,
@@ -94,7 +94,7 @@ pub fn sniff(head: &[u8]) -> bool {
 /// How the pictures are stored.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum VideoFormat {
-    /// 8-bit palette indices: what `craft_video::vmd` decodes.
+    /// 8-bit palette indices: what `bharat_video::vmd` decodes.
     Paletted,
     /// 16-bit RGB (codec version 13).
     Rgb16,
@@ -131,7 +131,7 @@ impl AudioHeader {
         if self.flags & 0x8000 != 0 { n / 2 } else { n }
     }
 
-    /// Whether the sound is IMA ADPCM, which `craft_audio::vmd` does not decode.
+    /// Whether the sound is IMA ADPCM, which `bharat_audio::vmd` does not decode.
     pub fn is_ima_adpcm(&self) -> bool {
         self.flags & 0x10 != 0
     }

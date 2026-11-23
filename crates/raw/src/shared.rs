@@ -2,7 +2,7 @@
 //! for files that state none.
 
 use crate::{BlackLevel, Cfa, LevelSource, Rect};
-use craft_tiff::Tiff;
+use bharat_tiff::Tiff;
 use std::ops::Range;
 
 /// The colour-filter layout from the Exif `CFAPattern` tag (`0xa302`: two 16-bit repeat counts, found in either
@@ -229,7 +229,7 @@ pub(crate) const ASPECT_INFO: u16 = 0x009a;
 /// The shot's aspect-ratio rectangle from a Canon maker note's `AspectInfo`, placed inside `image` (the image area
 /// it is measured from). `None` when the tag is absent or malformed, or its rectangle doesn't fit inside `image`.
 /// Used by CR2 and CR3, so it lives here rather than behind either decoder's feature.
-pub(crate) fn aspect_crop(maker: Option<&craft_tiff::Ifd>, image: Rect) -> Option<Rect> {
+pub(crate) fn aspect_crop(maker: Option<&bharat_tiff::Ifd>, image: Rect) -> Option<Rect> {
     let data = maker?.u64s(ASPECT_INFO)?;
     let [width, height, left, top] = [1usize, 2, 3, 4].map(|i| data.get(i).and_then(|&v| usize::try_from(v).ok()));
     let (width, height, left, top) = (width?, height?, left?, top?);
@@ -258,7 +258,7 @@ pub(crate) fn declare_strip_len(file: &mut [u8], len: u32, declared: u32) {
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
-    use craft_tiff::tags as t;
+    use bharat_tiff::tags as t;
 
     /// `file`, whose image IFD holds one strip, as two strips at the same offset whose StripByteCounts are LONG8 (which
     /// classic TIFF readers accept) `[u64::MAX, 1]`: their sum is past `u64::MAX`.

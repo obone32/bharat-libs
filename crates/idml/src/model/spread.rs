@@ -1,6 +1,6 @@
 //! Spreads, pages, guides, page items and graphics.
 
-use craft_xml::{El, Local, Node};
+use bharat_xml::{El, Local, Node};
 
 use super::{Matrix, PathGeometry, Values, bounds, concat, tidy};
 use crate::Document;

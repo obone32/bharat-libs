@@ -1,4 +1,4 @@
-//! craft-fonts' `fonts/manifest.txt`: one font face per line, eight or nine fields separated by
+//! bharat-fonts' `fonts/manifest.txt`: one font face per line, eight or nine fields separated by
 //! `" | "`:
 //!
 //! ```text
@@ -60,7 +60,7 @@ impl ManifestEntry {
 /// The `role` of an interface face.
 pub const UI_ROLE: &str = "ui";
 
-/// Script tags of the CJK faces, which craft-fonts also ships as interface faces. `Hant` covers
+/// Script tags of the CJK faces, which bharat-fonts also ships as interface faces. `Hant` covers
 /// `Hant-HK`.
 pub const CJK_SCRIPTS: &[&str] = &["Hans", "Hant", "Jpan", "Kore", "Hani"];
 

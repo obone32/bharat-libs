@@ -1,4 +1,4 @@
-# craft-ora
+# bharat-ora
 
 OpenRaster documents (`.ora`), read and written. Written from the public specification
 (<https://www.openraster.org/>, `stack.xml` 0.0.x).

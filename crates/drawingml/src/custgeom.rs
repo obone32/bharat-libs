@@ -2,7 +2,7 @@
 //! an `M L C Q Z` path syntax ([`CustomPath`]), and back.
 //!
 //! Elements are matched by local name, so the reader takes a tree parsed with any
-//! [`craft_xml::Names`] mode. The writer uses the `a:` prefix.
+//! [`bharat_xml::Names`] mode. The writer uses the `a:` prefix.
 //!
 //! Formulas follow the ECMA-376 shape guide semantics (§20.1.9.11): angles are in 1/60 000 degree,
 //! and every operand is a guide name, a built-in variable or an integer literal.
@@ -11,7 +11,7 @@ use std::collections::HashMap;
 use std::f64::consts::PI;
 use std::fmt::Write as _;
 
-use craft_xml::{El, Local, Writer};
+use bharat_xml::{El, Local, Writer};
 use serde::{Deserialize, Serialize};
 
 use crate::preset::FillMode;
@@ -571,7 +571,7 @@ pub fn write_cust_geom(w: &mut Writer, paths: &[CustomPath], sites: &[Connection
 #[cfg(test)]
 mod tests {
     use super::*;
-    use craft_xml::parse;
+    use bharat_xml::parse;
 
     #[test]
     fn formulas() {

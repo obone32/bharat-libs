@@ -1,4 +1,4 @@
-name: Craft documents
+name: Bharat documents
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ concurrency:
 # fmt, clippy and the tests run in the Workspace gate on every OS; this checks what it does not.
 jobs:
   doc:
-    name: Craft documents WASM
+    name: Bharat documents WASM
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -35,4 +35,4 @@ jobs:
         with:
           toolchain: stable
           targets: wasm32-unknown-unknown
-      - run: cargo check -p craft-doc --all-features --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-doc --all-features --locked --target wasm32-unknown-unknown

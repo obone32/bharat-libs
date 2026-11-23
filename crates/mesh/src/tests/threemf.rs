@@ -80,7 +80,7 @@ const MODEL: &str = r##"<?xml version="1.0" encoding="UTF-8"?>
 
 fn package(model: &str) -> Vec<u8> {
     let part = |name: &str, data: &[u8]| (name.to_string(), data.to_vec());
-    craft_opc::zip_entries(&[
+    bharat_opc::zip_entries(&[
         part("[Content_Types].xml", TYPES.as_bytes()),
         part("_rels/.rels", RELS.as_bytes()),
         part("3D/3dmodel.model", model.as_bytes()),
@@ -169,9 +169,9 @@ fn the_model_part_alone_and_what_is_not_read() {
     // A package without the relationship still finds its model part; one without a model part,
     // and XML that is not a model, are refused.
     let entry = |name: &str, data: &str| (name.to_string(), data.as_bytes().to_vec());
-    let loose = craft_opc::zip_entries(&[entry("Model/thing.model", bare)]).unwrap();
+    let loose = bharat_opc::zip_entries(&[entry("Model/thing.model", bare)]).unwrap();
     assert_eq!(parse(&loose).unwrap().meshes.len(), 1);
-    assert!(matches!(parse(&craft_opc::zip_entries(&[entry("readme.txt", "hello")]).unwrap()), Err(Error::Malformed(_))));
+    assert!(matches!(parse(&bharat_opc::zip_entries(&[entry("readme.txt", "hello")]).unwrap()), Err(Error::Malformed(_))));
     assert!(matches!(part("<svg/>", &Limits::default()), Err(Error::Malformed(_))));
     assert!(matches!(part("", &Limits::default()), Err(Error::Malformed(_))));
     assert!(matches!(parse(b"not a zip"), Err(Error::Malformed(_))));

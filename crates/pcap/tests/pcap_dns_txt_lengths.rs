@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::{Dns, decode};
+use bharat_pcap::{Dns, decode};
 use support::{ipv4_pkt, udp};
 
 fn response(data: &[u8]) -> Dns {

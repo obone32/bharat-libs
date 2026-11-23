@@ -9,7 +9,7 @@
 //! the gate step.
 //!
 //! ```
-//! use craft_xtask::assets::{self, Policy, Violation};
+//! use bharat_xtask::assets::{self, Policy, Violation};
 //!
 //! const POLICY: Policy<'static> =
 //!     Policy { extra_ext: &["appdoc"], all_files_under: &["assets", "docs/images"], ..Policy::new("ASSETS.md") };

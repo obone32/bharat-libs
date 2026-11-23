@@ -6,7 +6,7 @@
 //! - [`soap`]: the request envelope ([`envelope`]) with the schema version asked for ([`Version`]),
 //!   and [`Element`], a builder of the operation's elements that escapes everything it is given, so
 //!   nothing a caller hands in can end an element, open another or break a line of the protocol.
-//! - [`answer`]: the answer envelope read with `craft-xml` ([`Answer::parse`]): a fault as the error
+//! - [`answer`]: the answer envelope read with `bharat-xml` ([`Answer::parse`]): a fault as the error
 //!   it names, the response messages of an operation ([`Answer::messages`]) with their class and code
 //!   ([`codes`]), and a busy server's wait.
 //!

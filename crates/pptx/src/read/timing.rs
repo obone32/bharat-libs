@@ -6,7 +6,7 @@ use crate::{Shape, ShapeKind, TextBody, find_shape, find_shape_mut};
 use super::shapes::IdCtx;
 use super::{Imp, Part, Src, dml};
 use crate::maps;
-use craft_xml::{El, Local, value};
+use bharat_xml::{El, Local, value};
 
 fn ms_attr(e: &El, name: &str) -> Option<u32> {
     let v = e.attr_local(name)?.trim();

@@ -6,7 +6,7 @@ use std::sync::{Arc, OnceLock};
 use egui::{FontData, FontDefinitions, FontId};
 use sha2::{Digest, Sha256};
 
-// Assets from craft-fonts b076417b5880bd4154bd22f00695b1d28c6bea83. Keep the
+// Assets from bharat-fonts b076417b5880bd4154bd22f00695b1d28c6bea83. Keep the
 // input outside this repository; do not fall back to machine-installed fonts.
 const INPUTS: [(&str, &str, &str); 2] = [
     ("keymap-symbols", "fonts/noto-sans-symbols/NotoSansSymbols.ttf", "f7e7e04b4a24b6c78893d50cbfd2b2f6cae49617ab047bfef668d252adb128f7"),
@@ -17,18 +17,18 @@ const INPUTS: [(&str, &str, &str); 2] = [
     ),
 ];
 
-/// Load the pinned craft-fonts inputs once for all dialog tests.
+/// Load the pinned bharat-fonts inputs once for all dialog tests.
 ///
-/// Requires an absolute `CRAFT_FONTS_DIR`, verifies the SHA-256 of both symbol faces, refuses any
+/// Requires an absolute `BHARAT_FONTS_DIR`, verifies the SHA-256 of both symbol faces, refuses any
 /// installed-font fallback, and appends the two pinned faces plus egui's Hack to every family.
 fn definitions() -> FontDefinitions {
     static FONTS: OnceLock<FontDefinitions> = OnceLock::new();
     FONTS
         .get_or_init(|| {
-            let root = PathBuf::from(std::env::var_os("CRAFT_FONTS_DIR").unwrap_or_else(|| {
-                panic!("UI tests require absolute CRAFT_FONTS_DIR at craft-fonts b076417b5880bd4154bd22f00695b1d28c6bea83; see README.md")
+            let root = PathBuf::from(std::env::var_os("BHARAT_FONTS_DIR").unwrap_or_else(|| {
+                panic!("UI tests require absolute BHARAT_FONTS_DIR at bharat-fonts b076417b5880bd4154bd22f00695b1d28c6bea83; see README.md")
             }));
-            assert!(root.is_absolute(), "CRAFT_FONTS_DIR must be absolute: {}", root.display());
+            assert!(root.is_absolute(), "BHARAT_FONTS_DIR must be absolute: {}", root.display());
             let mut fonts = FontDefinitions::default();
             assert!(fonts.font_data.contains_key("Hack"), "UI tests require egui default_fonts");
             for (name, relative, expected) in INPUTS {

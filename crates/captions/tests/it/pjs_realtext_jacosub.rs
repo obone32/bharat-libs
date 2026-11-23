@@ -1,6 +1,6 @@
 //! Integration and FFmpeg oracle tests for PJS, RealText, and JACOsub legacy caption formats.
 
-use craft_captions::{Cue, Document, Format, TICKS_PER_SECOND, Tick, WriteOptions, detect, parse, write};
+use bharat_captions::{Cue, Document, Format, TICKS_PER_SECOND, Tick, WriteOptions, detect, parse, write};
 
 fn ms(millis: i64) -> Tick {
     Tick(millis.saturating_mul(TICKS_PER_SECOND / 1000))
@@ -104,9 +104,9 @@ fn test_hostile_inputs_never_panic() {
 
 #[test]
 fn test_ffmpeg_oracle_pjs_realtext_jacosub() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("legacy text subtitles oracle") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("legacy text subtitles oracle") else { return };
 
-    let temp_dir = std::env::temp_dir().join("craft_captions_legacy_test");
+    let temp_dir = std::env::temp_dir().join("bharat_captions_legacy_test");
     let _ = std::fs::create_dir_all(&temp_dir);
 
     // 1. PJS Oracle: write PJS -> decode with FFmpeg -> compare cues

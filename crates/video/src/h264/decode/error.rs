@@ -1,4 +1,4 @@
-use craft_media::bitstream::BitError;
+use bharat_media::bitstream::BitError;
 
 /// Errors produced by the decoder.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

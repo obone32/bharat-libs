@@ -5,9 +5,9 @@ use std::collections::BTreeMap;
 use std::io::Read;
 use std::sync::Arc;
 
-use craft_wordmodel::props::CharProps;
-use craft_wordmodel::table::Table;
-use craft_wordmodel::{Block, Document, Paragraph};
+use bharat_wordmodel::props::CharProps;
+use bharat_wordmodel::table::Table;
+use bharat_wordmodel::{Block, Document, Paragraph};
 
 fn unzip(bytes: &[u8]) -> BTreeMap<String, String> {
     let mut z = zip::ZipArchive::new(std::io::Cursor::new(bytes)).unwrap();
@@ -52,7 +52,7 @@ fn a_built_document_names_its_fonts_with_their_family_and_pitch() {
     append(&mut serif, " east", &CharProps { font_ea: Some("MS Mincho".into()), ..Default::default() });
     d.body =
         vec![Arc::new(Block::Para(run("sans", "Arial"))), Arc::new(Block::Table(table)), Arc::new(Block::Para(serif)), Arc::new(Block::Para(symbol))];
-    let files = unzip(&craft_docx::write(&d).unwrap());
+    let files = unzip(&bharat_docx::write(&d).unwrap());
     let t = files.get("word/fontTable.xml").unwrap_or_else(|| panic!("no font table in {:?}", files.keys()));
     assert!(font(t, "Arial").contains(r#"<w:family w:val="swiss"/><w:pitch w:val="variable"/>"#), "{t}");
     assert!(font(t, "Times New Roman").contains(r#"<w:family w:val="roman"/>"#), "{t}");
@@ -71,11 +71,11 @@ fn a_built_document_names_its_fonts_with_their_family_and_pitch() {
     );
     assert!(files["[Content_Types].xml"].contains("wordprocessingml.fontTable+xml"));
     // The reader takes the families back: Times New Roman is a serif.
-    let back = craft_docx::read(&craft_docx::write(&d).unwrap()).unwrap();
+    let back = bharat_docx::read(&bharat_docx::write(&d).unwrap()).unwrap();
     assert!(back.settings.roman_fonts.iter().any(|f| f == "Times New Roman"), "{:?}", back.settings.roman_fonts);
     assert!(!back.settings.roman_fonts.iter().any(|f| f == "Arial"));
     // Saved again, the table read back is written as it was.
-    let again = unzip(&craft_docx::write(&back).unwrap());
+    let again = unzip(&bharat_docx::write(&back).unwrap());
     assert_eq!(again.get("word/fontTable.xml"), Some(t));
 }
 
@@ -86,7 +86,7 @@ fn a_file_font_table_family_wins_over_the_name() {
     let mut d = Document::new();
     d.body = vec![Arc::new(Block::Para(run("x", "Fancy Face")))];
     d.settings.roman_fonts = vec!["Fancy Face".into()];
-    let files = unzip(&craft_docx::write(&d).unwrap());
+    let files = unzip(&bharat_docx::write(&d).unwrap());
     assert!(font(&files["word/fontTable.xml"], "Fancy Face").contains(r#"<w:family w:val="roman"/>"#));
 }
 
@@ -99,7 +99,7 @@ fn hostile_font_counts_and_names_are_bounded() {
     }
     append(&mut p, "y", &CharProps { font: Some("N".repeat(10_000)), ..Default::default() });
     d.body = vec![Arc::new(Block::Para(p))];
-    let files = unzip(&craft_docx::write(&d).unwrap());
+    let files = unzip(&bharat_docx::write(&d).unwrap());
     let t = &files["word/fontTable.xml"];
     assert!(t.matches("<w:font ").count() <= 1000, "{}", t.matches("<w:font ").count());
     assert!(!t.contains(&"N".repeat(300)));

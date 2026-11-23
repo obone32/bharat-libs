@@ -1,9 +1,9 @@
 //! QOA against ffmpeg's decoder as the reference (oracle; skipped when ffmpeg is absent, a failure
-//! with `CRAFT_MEDIA_REQUIRE_ORACLES=1`): ffmpeg decodes the files our encoder writes to exactly
+//! with `BHARAT_MEDIA_REQUIRE_ORACLES=1`): ffmpeg decodes the files our encoder writes to exactly
 //! the samples our decoder returns for them, over several sizes (partial slices, partial frames,
 //! several frames), channel counts and rates.
 
-use craft_audio::qoa::{decode, encode};
+use bharat_audio::qoa::{decode, encode};
 use std::process::Command;
 
 fn signal(channels: usize, frames: usize) -> Vec<Vec<i16>> {
@@ -37,8 +37,8 @@ fn signal(channels: usize, frames: usize) -> Vec<Vec<i16>> {
 
 #[test]
 fn ffmpeg_decodes_our_files_to_the_same_samples() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("qoa");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("qoa");
     for (rate, channels, frames) in
         [(44_100u32, 1usize, 1usize), (8_000, 1, 19), (48_000, 2, 5_121), (22_050, 2, 12_345), (96_000, 1, 20_000), (44_100, 4, 6_000)]
     {

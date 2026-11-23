@@ -23,7 +23,7 @@ impl Methods {
 }
 
 impl Default for Methods {
-    /// The desktop control-server method names every Craft web build shares.
+    /// The desktop control-server method names every Bharat web build shares.
     fn default() -> Self {
         Self {
             commands: Some("engine.commands"),

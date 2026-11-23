@@ -1,4 +1,4 @@
-//! What an e-sign service has to offer the Craft apps, and nothing about who
+//! What an e-sign service has to offer the Bharat apps, and nothing about who
 //! provides it.
 //!
 //! An envelope is a ceremony: a document snapshot, a set of recipients, field
@@ -11,9 +11,9 @@
 //! transport. No type here names a vendor. No type here knows about PDF
 //! structure: a document is opaque bytes plus a content hash.
 //!
-//! This crate sits beside `craft-cloud`. It reuses [`craft_cloud::Identity`]
+//! This crate sits beside `bharat-cloud`. It reuses [`bharat_cloud::Identity`]
 //! and the idea of a contact for autocomplete, but it does not extend
-//! [`craft_cloud::Provider`] or [`craft_cloud::Capability`]. Signing is not
+//! [`bharat_cloud::Provider`] or [`bharat_cloud::Capability`]. Signing is not
 //! file access, and a signer role is not a share permission.
 
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
@@ -29,7 +29,7 @@ pub use types::{
 /// Creating and driving envelopes.
 ///
 /// Methods that a minimal service may omit are defaulted to
-/// [`Error::Unsupported`], the same pattern [`craft_cloud::Conversations`]
+/// [`Error::Unsupported`], the same pattern [`bharat_cloud::Conversations`]
 /// uses for optional cloud features.
 pub trait Envelopes {
     /// Create a draft from a document snapshot.
@@ -106,7 +106,7 @@ mod tests {
     use std::sync::Mutex;
 
     use super::*;
-    use craft_cloud::Identity;
+    use bharat_cloud::Identity;
 
     struct RefuseAll;
 
@@ -193,7 +193,7 @@ mod tests {
 
     #[test]
     fn cloud_errors_wrap_and_report_transient() {
-        let err = Error::from(craft_cloud::Error::Unreachable("down".into()));
+        let err = Error::from(bharat_cloud::Error::Unreachable("down".into()));
         assert!(err.is_transient());
         let err = Error::Declined("no".into());
         assert!(!err.is_transient());

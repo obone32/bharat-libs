@@ -1,5 +1,5 @@
 [package]
-name = "craft-pptx"
+name = "bharat-pptx"
 description = "PresentationML (ECMA-376 part 1, chapter 19): the model of a .pptx presentation (masters, layouts, slides, shapes, placeholders, transitions and animations)"
 version.workspace = true
 edition.workspace = true
@@ -11,11 +11,11 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-drawingml = { workspace = true }
+bharat-drawingml = { workspace = true }
 kurbo = { workspace = true, features = ["serde"] }
 serde = { workspace = true, features = ["rc"] }
 serde_json = { workspace = true }
-craft-opc = { workspace = true }
-craft-xml = { workspace = true }
+bharat-opc = { workspace = true }
+bharat-xml = { workspace = true }
 log = "0.4"
 thiserror = { workspace = true }

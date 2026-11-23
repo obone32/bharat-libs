@@ -3,11 +3,11 @@
 use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
-use craft_cms::math;
-use craft_pdf::interpret::color::CmykConversion;
-use craft_pdf::write::backend::color::device_n::{self, Colorant, DeviceNSpace};
-use craft_pdf::write::backend::color::separation::{self, SeparationColorant, SeparationSpace};
-use craft_pdf::write::backend::color::{Color as PdfColor, RegularColor, cmyk};
+use bharat_cms::math;
+use bharat_pdf::interpret::color::CmykConversion;
+use bharat_pdf::write::backend::color::device_n::{self, Colorant, DeviceNSpace};
+use bharat_pdf::write::backend::color::separation::{self, SeparationColorant, SeparationSpace};
+use bharat_pdf::write::backend::color::{Color as PdfColor, RegularColor, cmyk};
 
 use crate::cms::lab_to_srgb8;
 
@@ -296,7 +296,7 @@ impl InkSet {
     /// Spot ink `id` at 100% as process color, `0.0..=1.0` per component: its CMYK alternate
     /// as it is, a Lab alternate through `cms`, or, when `cms` can't convert, through sRGB and
     /// the ISO 32000-2 §10.4.2.4 formulas (full black generation and undercolor removal).
-    /// `None` for process inks, inks not in the set, and Lab colors craft-cms can't convert.
+    /// `None` for process inks, inks not in the set, and Lab colors bharat-cms can't convert.
     pub fn spot_cmyk(&self, id: InkId, cms: &dyn CmykConversion) -> Option<[f32; 4]> {
         let lab = match self.spot(id)?.alternate {
             Alternate::Cmyk(cmyk) => return Some(cmyk.map(|v| if v.is_finite() { v.clamp(0.0, 1.0) } else { 0.0 })),

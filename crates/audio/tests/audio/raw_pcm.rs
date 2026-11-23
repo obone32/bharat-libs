@@ -1,6 +1,6 @@
 //! Integer PCM in and out of WAV and AIFF files bit for bit (`wav_pcm`, `aiff_pcm`, `pcm_*`).
 
-use craft_audio::{
+use bharat_audio::{
     AudioBuffer, BitDepth, EncodeFormat, EncodeOptions, RawPcm, aiff_pcm, encode, pcm_aiff_file, pcm_aiff_header, pcm_wav_file, pcm_wav_header,
     wav_pcm,
 };

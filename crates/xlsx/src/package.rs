@@ -1,10 +1,10 @@
 //! The OPC package of a workbook and the parts this crate reads from it.
 
-use craft_opc::{ContentTypes, LazyPackage, Rels};
-use craft_xml::{El, Options, UnknownEntity};
+use bharat_opc::{ContentTypes, LazyPackage, Rels};
+use bharat_xml::{El, Options, UnknownEntity};
 
-use craft_drawingml::chart::Chart;
-use craft_drawingml::theme::Theme;
+use bharat_drawingml::chart::Chart;
+use bharat_drawingml::theme::Theme;
 
 use crate::drawing::Drawing;
 use crate::features::{Comments, NoteShape, Table};
@@ -213,7 +213,7 @@ impl<'a> Package<'a> {
         let mut items = Vec::new();
         let (_, err) = self.xml_options().parse_streaming_partial(&bytes, &["si"], |si| {
             items.push(StringItem::read(&si));
-            Ok::<(), craft_xml::Error>(())
+            Ok::<(), bharat_xml::Error>(())
         });
         if let Some(e) = err {
             self.warn(format!("shared strings are damaged ({e}); kept {} strings", items.len()));
@@ -423,25 +423,25 @@ impl<'a> Package<'a> {
     }
 
     /// A chart part (`c:chartSpace`, or `cx:chartSpace` of an Office 2016 chart) through
-    /// `craft-drawingml`. `None` when the part is missing or holds no chart it can read.
+    /// `bharat-drawingml`. `None` when the part is missing or holds no chart it can read.
     pub fn chart(&mut self, part: &str) -> Result<Option<Chart>, Error> {
         let Some(bytes) = self.opc.read(part)? else {
             self.warn(format!("missing part {part}"));
             return Ok(None);
         };
-        let chart = craft_drawingml::chart::read::read_chart_xml(&bytes).or_else(|| craft_drawingml::chart::chartex::read_chartex_xml(&bytes));
+        let chart = bharat_drawingml::chart::read::read_chart_xml(&bytes).or_else(|| bharat_drawingml::chart::chartex::read_chartex_xml(&bytes));
         if chart.is_none() {
             self.warn(format!("skipped {part}: not a chart that can be read"));
         }
         Ok(chart)
     }
 
-    /// The workbook's theme (`a:theme`) through `craft-drawingml`; `None` when it has none.
+    /// The workbook's theme (`a:theme`) through `bharat-drawingml`; `None` when it has none.
     pub fn theme(&mut self) -> Result<Option<Theme>, Error> {
         let rels = self.workbook_rels()?;
         let Some(rel) = rels.first("theme").filter(|r| !r.external) else { return Ok(None) };
         let root = self.optional_xml(&rel.target.clone())?;
-        Ok(root.map(|r| craft_drawingml::theme::read_theme(&mut craft_drawingml::part::NoSource, &r)))
+        Ok(root.map(|r| bharat_drawingml::theme::read_theme(&mut bharat_drawingml::part::NoSource, &r)))
     }
 
     /// A part of a binary workbook, checked against its content type.
@@ -478,12 +478,12 @@ impl<'a> Package<'a> {
 
 /// Why a streamed worksheet stopped: the XML, or the caller.
 enum Stop {
-    Xml(craft_xml::Error),
+    Xml(bharat_xml::Error),
     Caller(Error),
 }
 
-impl From<craft_xml::Error> for Stop {
-    fn from(e: craft_xml::Error) -> Self {
+impl From<bharat_xml::Error> for Stop {
+    fn from(e: bharat_xml::Error) -> Self {
         Stop::Xml(e)
     }
 }

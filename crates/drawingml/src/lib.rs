@@ -20,8 +20,8 @@
 //!   What they need from the package is the caller's [`part::Source`] or [`part::Sink`];
 //!   [`xmlx`] holds the parser settings and markup-compatibility handling they share.
 //!
-//! Nothing here opens a package: readers take a [`craft_xml::El`] and writers a
-//! [`craft_xml::Writer`], so the same code serves a slide, a document or a worksheet drawing.
+//! Nothing here opens a package: readers take a [`bharat_xml::El`] and writers a
+//! [`bharat_xml::Writer`], so the same code serves a slide, a document or a worksheet drawing.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
 pub mod chart;

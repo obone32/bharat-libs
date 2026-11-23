@@ -1,19 +1,19 @@
-# craft-captions
+# bharat-captions
 
 Caption and subtitle files behind one neutral model: bytes in, a `Document` of `Cue`s out, and
-back. One module per format. Depends on `craft-timeline` (exact time),
-`craft-xml` (TTML) and `thiserror`.
+back. One module per format. Depends on `bharat-timeline` (exact time),
+`bharat-xml` (TTML) and `thiserror`.
 
 ```rust
-use craft_captions::{Format, WriteOptions, detect, parse, write};
+use bharat_captions::{Format, WriteOptions, detect, parse, write};
 
 let bytes = b"1\n00:00:01,000 --> 00:00:02,500\nHello\n";
-let format = detect(bytes, Some("srt")).ok_or(craft_captions::Error::NotFormat("caption"))?;
+let format = detect(bytes, Some("srt")).ok_or(bharat_captions::Error::NotFormat("caption"))?;
 let mut doc = parse(bytes, format)?;
-doc.snap_to_frames(craft_captions::FrameRate::FPS_25);
+doc.snap_to_frames(bharat_captions::FrameRate::FPS_25);
 let scc = write(&doc, Format::Scc, WriteOptions::default());
 assert!(scc.starts_with(b"Scenarist_SCC V1.0"));
-# Ok::<(), craft_captions::Error>(())
+# Ok::<(), bharat_captions::Error>(())
 ```
 
 - `detect(bytes, extension)` guesses the format; `parse(bytes, format)` reads; `write(doc,
@@ -36,14 +36,14 @@ assert!(scc.starts_with(b"Scenarist_SCC V1.0"));
 
 `Tick` is an integer count of 1/254 016 000 000 s: a whole number of ticks per millisecond and
 per frame at every broadcast rate, so no format's times are rounded on the way in. `FrameRate`
-is an exact rational. Both are `craft-timeline`'s (`craft_timeline::time`), re-exported here as
-`craft_captions::time`, so a caller that already uses that crate passes its values straight in.
+is an exact rational. Both are `bharat-timeline`'s (`bharat_timeline::time`), re-exported here as
+`bharat_captions::time`, so a caller that already uses that crate passes its values straight in.
 No format computes with floating-point seconds.
 
 ## Limits
 
 `parse` refuses input over `MAX_INPUT` (64 MiB) and keeps at most `MAX_CUES` (1,000,000) cues,
-with a warning. TTML is read by `craft-xml`: no DTD processing or entity expansion, at most 128
+with a warning. TTML is read by `bharat-xml`: no DTD processing or entity expansion, at most 128
 levels of nesting, and its node and attribute limits. A TTML speaker label is at most 4096 bytes
 from at most 64 agent references; a language tag at most 35 characters. `charset_warnings`
 lists at most 20 characters per stream.

@@ -1,4 +1,4 @@
-# craft-gridcraft-format
+# bharat-gridcraft-format
 
 GridCraft's native workbook file is one pretty-printed UTF-8 JSON object, with a two-space indent
 and no newline at the end. It is saved as `.json`, or as `.scjson` by older builds.

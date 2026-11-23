@@ -2,7 +2,7 @@
 //!
 //! The official vectors (opus_testvectors-rfc8251) are test data downloaded to
 //! `target/fixtures/opus/vectors/` by `scripts/fetch-opus-vectors.sh` (never committed). Without
-//! them the tests print `SKIPPED`, or fail with `CRAFT_MEDIA_REQUIRE_ORACLES=1` (as in CI).
+//! them the tests print `SKIPPED`, or fail with `BHARAT_MEDIA_REQUIRE_ORACLES=1` (as in CI).
 //! For each vector we check (1) the final range-coder state after every packet against the value
 //! stored in the `.bit` file (bit-exact parsing), and (2) the decoded PCM against the reference
 //! `.dec` output using our implementation of the opus_compare-style quality metric
@@ -12,10 +12,10 @@ use super::common;
 
 use std::path::PathBuf;
 
-use craft_audio::opus::StreamDecoder;
+use bharat_audio::opus::StreamDecoder;
 
 /// The RFC 8251 vectors, or `None` after printing `SKIPPED` (a failure with
-/// `CRAFT_MEDIA_REQUIRE_ORACLES=1`). `scripts/fetch-opus-vectors.sh` fetches them.
+/// `BHARAT_MEDIA_REQUIRE_ORACLES=1`). `scripts/fetch-opus-vectors.sh` fetches them.
 fn vectors_dir() -> Option<PathBuf> {
     let d = crate::common::fixture_subdir("opus").join("vectors");
     if d.join("testvector01.bit").exists() {
@@ -148,7 +148,7 @@ fn vector_diag() {
             dec.decode_interleaved(None, &mut out).unwrap();
             lines.push((start, "LOST".to_string()));
         } else {
-            let p = craft_audio::opus::Packet::parse(pkt).unwrap();
+            let p = bharat_audio::opus::Packet::parse(pkt).unwrap();
             dec.decode_interleaved(Some(pkt), &mut out).unwrap();
             lines.push((start, format!("{:?} {:?} st{} n{}", p.toc.mode, p.toc.bandwidth, p.toc.stereo as u8, p.frames.len())));
         }

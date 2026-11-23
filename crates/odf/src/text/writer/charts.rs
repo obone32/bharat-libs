@@ -3,12 +3,12 @@
 //! (`local-table`, labels in the first row and column), each series pointing at its column, its
 //! colour the theme accent WordCraft draws it in.
 
-use craft_wordmodel::Rgb;
-use craft_wordmodel::chart::{ChartSpec, ChartType, LegendPos};
+use bharat_wordmodel::Rgb;
+use bharat_wordmodel::chart::{ChartSpec, ChartType, LegendPos};
 
 use super::drawing::{Place, placement};
 use super::{Writer, pt, x};
-use craft_flow as model;
+use bharat_flow as model;
 
 /// The table's column `i` (from 0) as a cell address names it: `A`, `B`… `Z`, `AA`…
 fn column(i: usize) -> String {
