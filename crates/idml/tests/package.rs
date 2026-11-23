@@ -3,7 +3,7 @@
 
 use std::io::{Cursor, Read, Write};
 
-use craft_idml::{
+use bharat_idml::{
     El, Error, Limits, Local, MIMETYPE, Node, Package, Props, designmap_xml, is_idml, parse_part, part_root, part_xml, prop, with_props,
     write_package,
 };
@@ -20,8 +20,8 @@ fn zip_of(entries: &[(&str, &[u8])]) -> Vec<u8> {
 
 fn designmap() -> El {
     El::new("Document")
-        .with_attr("xmlns:idPkg", craft_idml::PACKAGING_NS)
-        .with_attr("DOMVersion", craft_idml::DOM_VERSION)
+        .with_attr("xmlns:idPkg", bharat_idml::PACKAGING_NS)
+        .with_attr("DOMVersion", bharat_idml::DOM_VERSION)
         .with_attr("Self", "d")
         .with_child(El::new("Language").with_attr("Self", "Language/$ID/English%3a USA"))
         .with_child(El::new("idPkg:Styles").with_attr("src", "Resources/Styles.xml"))
@@ -45,7 +45,7 @@ fn sample() -> Vec<u8> {
         part_root("Styles").with_child(El::new("RootParagraphStyleGroup").with_attr("Self", "g")).with_child(El::new("RootCharacterStyleGroup"));
     let spread = part_root("Spread").with_child(El::new("Spread").with_attr("Self", "u1"));
     write_package(&[
-        ("META-INF/container.xml", craft_idml::CONTAINER_XML.as_bytes().to_vec()),
+        ("META-INF/container.xml", bharat_idml::CONTAINER_XML.as_bytes().to_vec()),
         ("META-INF/metadata.xml", b"<x:xmpmeta><xmp:CreateDate>2026-01-02T03:04:05Z</xmp:CreateDate></x:xmpmeta>".to_vec()),
         ("designmap.xml", designmap_xml(&designmap())),
         ("Resources/Styles.xml", part_xml(&styles)),
@@ -87,7 +87,7 @@ fn the_document_has_its_includes_in_place() {
     let names: Vec<&str> = doc.top.iter().map(|e| e.name.as_str()).collect();
     assert_eq!(names, ["Language", "RootParagraphStyleGroup", "RootCharacterStyleGroup", "Layer", "Spread", "Story"]);
     assert!(doc.warnings.is_empty());
-    assert_eq!(doc.metadata.as_deref().and_then(|m| craft_idml::value::xmp_value(m, "xmp:CreateDate")), Some("2026-01-02T03:04:05Z"));
+    assert_eq!(doc.metadata.as_deref().and_then(|m| bharat_idml::value::xmp_value(m, "xmp:CreateDate")), Some("2026-01-02T03:04:05Z"));
 }
 
 #[test]
@@ -185,9 +185,9 @@ fn a_package_with_too_many_entries_is_refused() {
 #[test]
 fn nesting_past_the_budget_is_refused() {
     let nested = |n: usize| format!("{}{}", "<A>".repeat(n), "</A>".repeat(n)).into_bytes();
-    let depth = craft_idml::xml_limits().max_depth;
+    let depth = bharat_idml::xml_limits().max_depth;
     assert!(parse_part(&nested(depth)).is_ok(), "the budget itself parses");
-    assert_eq!(parse_part(&nested(depth + 1)), Err(craft_xml::Error::TooDeep(depth)));
+    assert_eq!(parse_part(&nested(depth + 1)), Err(bharat_xml::Error::TooDeep(depth)));
     assert!(parse_part(&nested(100_000)).is_err());
 }
 
@@ -195,7 +195,7 @@ fn nesting_past_the_budget_is_refused() {
 fn a_part_with_more_nodes_than_the_limit_is_refused() {
     let part = format!("<Document>{}</Document>", "<A/>".repeat(50));
     let bytes = zip_of(&[("designmap.xml", part.as_bytes())]);
-    let limits = |max_nodes| Limits { xml: craft_xml::Limits { max_nodes, ..craft_idml::xml_limits() }, ..Limits::DEFAULT };
+    let limits = |max_nodes| Limits { xml: bharat_xml::Limits { max_nodes, ..bharat_idml::xml_limits() }, ..Limits::DEFAULT };
     assert!(Package::open_with(&bytes, limits(51)).unwrap().document().is_ok());
     assert!(matches!(Package::open_with(&bytes, limits(50)).unwrap().document(), Err(Error::Part { msg, .. }) if msg.contains("50 nodes")));
 }
@@ -249,7 +249,7 @@ fn parts_are_written_one_element_per_line_without_touching_text() {
 /// the raw bytes, before the archive is indexed.
 #[test]
 fn a_package_declaring_too_many_entries_is_refused_before_it_is_indexed() {
-    let bomb = craft_zip::zip64_entry_count_sample(100_001);
+    let bomb = bharat_zip::zip64_entry_count_sample(100_001);
     assert_eq!(Package::open(&bomb).err(), Some(Error::TooManyEntries { found: 100_001, limit: 100_000 }));
 }
 

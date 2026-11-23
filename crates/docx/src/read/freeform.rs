@@ -1,7 +1,7 @@
 //! Freeform shapes (DrawingML custom geometry, `a:custGeom`; legacy VML paths) and ink strokes
 //! drawn with them.
 
-use craft_wordmodel::freeform::{FreePath, Freeform, InkTool, MAX_PATHS, MAX_POINTS};
+use bharat_wordmodel::freeform::{FreePath, Freeform, InkTool, MAX_PATHS, MAX_POINTS};
 
 use crate::units::int;
 use crate::xml::El;
@@ -11,7 +11,7 @@ const CURVE_STEPS: usize = 8;
 /// Largest path coordinate kept, in EMUs.
 const MAX_EMU: f64 = 1.0e12;
 
-/// The paths of the custom geometry in `sppr` (`wps:spPr`), read by `craft-drawingml` (guides,
+/// The paths of the custom geometry in `sppr` (`wps:spPr`), read by `bharat-drawingml` (guides,
 /// arcs as Bézier curves), mapped onto a `w` × `h` shape (points): each path in its own
 /// coordinate space (EMUs of the shape's size when it gives none). Curves are flattened. `None`
 /// when there is no `a:custGeom` or it has no points.
@@ -19,7 +19,7 @@ pub fn cust_geom(sppr: &El, w: f32, h: f32) -> Option<Freeform> {
     let cg = sppr.child("a:custGeom")?;
     let (w_emu, h_emu) = (w as f64 * 12_700.0, h as f64 * 12_700.0);
     let mut paths = Vec::new();
-    for p in craft_drawingml::custgeom::read_cust_geom(&crate::xml::to_craft(cg), w_emu, h_emu).into_iter().take(MAX_PATHS) {
+    for p in bharat_drawingml::custgeom::read_cust_geom(&crate::xml::to_craft(cg), w_emu, h_emu).into_iter().take(MAX_PATHS) {
         // Subpaths count too: stop once the shape has as many paths as it may keep.
         if paths.len() >= MAX_PATHS {
             break;
@@ -33,7 +33,7 @@ pub fn cust_geom(sppr: &El, w: f32, h: f32) -> Option<Freeform> {
         // Each subpath (from a move) becomes a path of its own.
         let mut cur: Vec<[f64; 2]> = Vec::new();
         let mut done: Vec<(Vec<[f64; 2]>, bool)> = Vec::new();
-        for (op, args) in craft_drawingml::custgeom::parse_path(&p.d) {
+        for (op, args) in bharat_drawingml::custgeom::parse_path(&p.d) {
             if cur.len() >= MAX_POINTS || done.len() >= MAX_PATHS {
                 break;
             }
@@ -67,7 +67,7 @@ pub fn cust_geom(sppr: &El, w: f32, h: f32) -> Option<Freeform> {
             let back = cur.len() > 2 && cur.first() == cur.last();
             done.push((cur, back));
         }
-        let fill_none = p.fill == craft_drawingml::preset::FillMode::None;
+        let fill_none = p.fill == bharat_drawingml::preset::FillMode::None;
         for (pts, closed) in done.into_iter().take(MAX_PATHS.saturating_sub(paths.len())) {
             paths.push(FreePath { pts: pts.into_iter().take(MAX_POINTS).map(scale).collect(), closed: closed && !fill_none });
         }
@@ -383,7 +383,7 @@ mod tests {
         assert!(f.paths[0].pts.len() >= 2 && f.paths[0].pts.len() <= 1 + CURVE_STEPS);
     }
 
-    /// Arcs and guide-named points are read (craft-drawingml); they were drawn straight, and a
+    /// Arcs and guide-named points are read (bharat-drawingml); they were drawn straight, and a
     /// point given by a guide was lost.
     #[test]
     fn arcs_and_guides_are_read() {

@@ -2,7 +2,7 @@
 //! signed, and ICCLab (9) with them offset, both read into the Lab layout (a* and b* as
 //! `(a + 128) / 255`).
 
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 /// One Lab pixel in the codec's normalized form.
 fn lab(l: f32, a: f32, b: f32) -> [f32; 3] {

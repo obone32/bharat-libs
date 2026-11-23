@@ -38,7 +38,7 @@ pub use program::{ProgrammeDecoder, ProgrammeFrame};
 pub mod encoder;
 mod tables;
 
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 use std::sync::OnceLock;
 
 /// Errors from header parsing and decoding.

@@ -1,9 +1,9 @@
-//! The package being read: craft-opc's [`craft_opc::Package`] with the limits and lookups the
+//! The package being read: bharat-opc's [`bharat_opc::Package`] with the limits and lookups the
 //! reader uses.
 
-use craft_drawingml::xmlx;
-use craft_opc::{ContentTypes, Limits, Oversized, Rels};
-use craft_xml::El;
+use bharat_drawingml::xmlx;
+use bharat_opc::{ContentTypes, Limits, Oversized, Rels};
+use bharat_xml::El;
 
 use crate::Error;
 
@@ -42,13 +42,13 @@ pub(crate) fn parse(bytes: &[u8]) -> Result<Doc, Error> {
 }
 
 pub(crate) struct Package {
-    pkg: craft_opc::Package,
+    pkg: bharat_opc::Package,
     types: ContentTypes,
 }
 
 impl Package {
     pub fn open(bytes: &[u8]) -> Result<Self, Error> {
-        let pkg = craft_opc::Package::open(bytes, &LIMITS).map_err(|e| Error::NotPptx(e.to_string()))?;
+        let pkg = bharat_opc::Package::open(bytes, &LIMITS).map_err(|e| Error::NotPptx(e.to_string()))?;
         Ok(Package { types: pkg.content_types(), pkg })
     }
     pub fn get(&self, name: &str) -> Option<&[u8]> {

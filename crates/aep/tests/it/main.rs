@@ -1,4 +1,4 @@
-//! The integration tests of craft-aep, one binary: the container (chunk tree and typed view) and
+//! The integration tests of bharat-aep, one binary: the container (chunk tree and typed view) and
 //! the fixture access the tests share (`common`).
 
 // Test tables are tuples of plain values; naming each shape would not make them clearer.

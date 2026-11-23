@@ -1,4 +1,4 @@
-use craft_jxl::{
+use bharat_jxl::{
     DecodeLimits, EncodeOptions, HDR_REFERENCE_WHITE_NITS, ImageRef, JxlColour, Layout, Metadata, OutputColor, Samples, decode, decode_with_color,
     encode,
 };
@@ -125,9 +125,9 @@ fn decoder_enforces_input_and_pixel_limits() {
     let Ok(encoded) = encoded else { return };
 
     let input_limit = DecodeLimits { max_input_bytes: encoded.len() - 1, ..DecodeLimits::default() };
-    assert!(matches!(decode(&encoded, input_limit), Err(craft_jxl::Error::LimitExceeded(_))));
+    assert!(matches!(decode(&encoded, input_limit), Err(bharat_jxl::Error::LimitExceeded(_))));
     let pixel_limit = DecodeLimits { max_pixels: 0, ..DecodeLimits::default() };
-    assert!(matches!(decode(&encoded, pixel_limit), Err(craft_jxl::Error::PixelLimitExceeded { width: 1, height: 1, max_pixels: 0 })));
+    assert!(matches!(decode(&encoded, pixel_limit), Err(bharat_jxl::Error::PixelLimitExceeded { width: 1, height: 1, max_pixels: 0 })));
 }
 
 #[test]
@@ -138,7 +138,7 @@ fn malformed_input_returns_an_error() {
 #[test]
 fn encoder_rejects_short_sample_buffers() {
     let image = ImageRef { width: 2, height: 1, layout: Layout::Rgb, samples: Samples::U8(&[1, 2, 3]) };
-    assert!(matches!(encode(&image, EncodeOptions::default(), &Metadata::default()), Err(craft_jxl::Error::InvalidImage(_))));
+    assert!(matches!(encode(&image, EncodeOptions::default(), &Metadata::default()), Err(bharat_jxl::Error::InvalidImage(_))));
 }
 
 #[test]
@@ -257,7 +257,7 @@ fn xybcoded_pixels_use_the_linear_srgb_workaround_before_rec2020() {
 fn icc_encoded_pixels_keep_the_embedded_profile_under_linear_target_request() {
     let samples = [180, 40, 20, 10, 140, 60, 20, 80, 180];
     let image = ImageRef { width: 3, height: 1, layout: Layout::Rgb, samples: Samples::U8(&samples) };
-    let icc = craft_cms::Builtin::DisplayP3.profile().to_bytes();
+    let icc = bharat_cms::Builtin::DisplayP3.profile().to_bytes();
     let metadata = Metadata { icc: Some(icc.as_ref().clone()), ..Metadata::default() };
     let encoded = encode(&image, EncodeOptions { lossless: true, colour: JxlColour::DisplayP3, ..EncodeOptions::default() }, &metadata);
     assert!(encoded.is_ok(), "valid image should encode: {encoded:?}");
@@ -286,8 +286,8 @@ fn lossy_quality_effort_and_progressive_options_produce_decodable_images() {
     }
     let image = ImageRef { width, height, layout: Layout::Rgba, samples: Samples::U8(&samples) };
     let encode_options = |quality, effort, progressive| EncodeOptions { quality, effort, progressive, ..EncodeOptions::default() };
-    let hi = encode(&image, encode_options(95, craft_jxl::Effort::Normal, false), &Metadata::default());
-    let lo = encode(&image, encode_options(40, craft_jxl::Effort::Normal, false), &Metadata::default());
+    let hi = encode(&image, encode_options(95, bharat_jxl::Effort::Normal, false), &Metadata::default());
+    let lo = encode(&image, encode_options(40, bharat_jxl::Effort::Normal, false), &Metadata::default());
     assert!(hi.is_ok(), "high-quality image should encode: {hi:?}");
     assert!(lo.is_ok(), "low-quality image should encode: {lo:?}");
     let (Ok(hi), Ok(lo)) = (hi, lo) else { return };
@@ -304,7 +304,7 @@ fn lossy_quality_effort_and_progressive_options_produce_decodable_images() {
         assert!(psnr > threshold, "PSNR {psnr:.2} dB must exceed {threshold:.1} dB");
     }
 
-    for effort in [craft_jxl::Effort::Fast, craft_jxl::Effort::Normal] {
+    for effort in [bharat_jxl::Effort::Fast, bharat_jxl::Effort::Normal] {
         for progressive in [false, true] {
             let encoded = encode(&image, encode_options(90, effort, progressive), &Metadata::default());
             assert!(encoded.is_ok(), "{effort:?} progressive={progressive} should encode: {encoded:?}");
@@ -361,7 +361,7 @@ fn rec2020_pq_float_samples_are_written_as_hdr() {
             assert!((actual - encoded_pq).abs() < 0.005, "lossless={lossless}: {nits} nits encoded as {actual}, expected {encoded_pq}");
         }
     }
-    assert!(matches!(encode(&image, EncodeOptions::default(), &Metadata::default()), Err(craft_jxl::Error::InvalidImage(_))));
+    assert!(matches!(encode(&image, EncodeOptions::default(), &Metadata::default()), Err(bharat_jxl::Error::InvalidImage(_))));
 }
 
 fn pq_encode(nits: f32) -> f32 {

@@ -1,8 +1,8 @@
 //! Decode a long file block by block from disk, starting at an offset, without loading it.
 //!
-//! `cargo run -p craft-audio --example stream --features decode -- recording.m4a 60`
+//! `cargo run -p bharat-audio --example stream --features decode -- recording.m4a 60`
 
-use craft_audio::{DecodeOptions, Decoder};
+use bharat_audio::{DecodeOptions, Decoder};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args().skip(1);

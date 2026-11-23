@@ -1,4 +1,4 @@
-use craft_captions::{Cue, Document, Format, TICKS_PER_SECOND, Tick, WriteOptions, parse, write};
+use bharat_captions::{Cue, Document, Format, TICKS_PER_SECOND, Tick, WriteOptions, parse, write};
 
 fn cue() -> Cue {
     Cue { start: Tick(TICKS_PER_SECOND), end: Tick(2 * TICKS_PER_SECOND), text: "Olá".into(), ..Default::default() }

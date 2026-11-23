@@ -1,4 +1,4 @@
-//! Header, mapping and Rich header tests. `header_rvas_stop_before_file_padding` is from Craft
+//! Header, mapping and Rich header tests. `header_rvas_stop_before_file_padding` is from Bharat
 //! Anything's `pe.rs`; the image builder here is a small stand-in for its testkit's `pe64`.
 
 use super::*;

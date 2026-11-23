@@ -1,11 +1,11 @@
 [package]
-name = "craft-ai"
+name = "bharat-ai"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 repository.workspace = true
-description = "AI provider abstraction for the Craft suite — BYO API keys and one-click local models"
+description = "AI provider abstraction for the Bharat suite — BYO API keys and one-click local models"
 
 [lints]
 workspace = true

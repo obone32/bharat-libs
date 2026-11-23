@@ -6,10 +6,10 @@
 
 use crate::text::tests::{NS_T, content_of, package};
 use crate::text::{export, import};
-use craft_wordmodel::Align;
-use craft_wordmodel::props::HeightRule;
+use bharat_wordmodel::Align;
+use bharat_wordmodel::props::HeightRule;
 
-fn doc(styles: &str, body: &str) -> craft_wordmodel::Document {
+fn doc(styles: &str, body: &str) -> bharat_wordmodel::Document {
     let content = format!(
         r#"<office:document-content {NS_T}><office:automatic-styles>{styles}</office:automatic-styles><office:body><office:text>{body}</office:text></office:body></office:document-content>"#
     );
@@ -22,7 +22,7 @@ fn para_style(name: &str, para: &str, text: &str) -> String {
     )
 }
 
-fn paras(d: &craft_wordmodel::Document) -> Vec<&craft_wordmodel::props::ParaProps> {
+fn paras(d: &bharat_wordmodel::Document) -> Vec<&bharat_wordmodel::props::ParaProps> {
     d.body.iter().filter_map(|b| b.as_para()).map(|p| &p.props).collect()
 }
 
@@ -133,7 +133,7 @@ fn a_tables_own_space_above_and_below_is_kept() {
         styles,
         r#"<table:table table:style-name="T"><table:table-row><table:table-cell><text:p>Cell</text:p></table:table-cell></table:table-row></table:table><text:p>After.</text:p>"#,
     );
-    let space = |d: &craft_wordmodel::Document| {
+    let space = |d: &bharat_wordmodel::Document| {
         let t = d.body.iter().find_map(|b| b.as_table()).expect("a table");
         (t.props.space_before.map(|v| (v * 100.0).round() / 100.0), t.props.space_after.map(|v| (v * 100.0).round() / 100.0))
     };
@@ -170,7 +170,7 @@ fn columns_stating_only_their_shares_keep_their_proportions() {
         )
     };
     let table = r#"<table:table><table:table-column table:style-name="A"/><table:table-column table:style-name="B"/><table:table-row><table:table-cell><text:p>a</text:p></table:table-cell><table:table-cell><text:p>b</text:p></table:table-cell></table:table-row></table:table>"#;
-    let grid = |d: &craft_wordmodel::Document| d.body.iter().find_map(|b| b.as_table()).map(|t| t.grid.clone()).unwrap_or_default();
+    let grid = |d: &bharat_wordmodel::Document| d.body.iter().find_map(|b| b.as_table()).map(|t| t.grid.clone()).unwrap_or_default();
     let d = doc(&format!("{}{}", column("A", "1000*"), column("B", "3000*")), table);
     let g = grid(&d);
     assert_eq!(g.len(), 2, "{g:?}");
@@ -210,7 +210,7 @@ fn columns_by_shares_divide_the_right_width() {
         let cells: String = names.iter().map(|_| "<table:table-cell><text:p>x</text:p></table:table-cell>").collect();
         format!(r#"<table:table table:style-name="T">{columns}<table:table-row>{cells}</table:table-row></table:table>"#)
     };
-    let grid = |d: &craft_wordmodel::Document| d.body.iter().find_map(|b| b.as_table()).map(|t| t.grid.clone()).unwrap_or_default();
+    let grid = |d: &bharat_wordmodel::Document| d.body.iter().find_map(|b| b.as_table()).map(|t| t.grid.clone()).unwrap_or_default();
     let near = |got: &[f32], want: &[f32]| {
         assert!(got.len() == want.len() && got.iter().zip(want).all(|(a, b)| (a - b).abs() < 0.5), "{got:?}, not {want:?}")
     };
@@ -312,7 +312,7 @@ fn a_tables_and_rows_background_show_behind_their_cells() {
     // Table Properties › Background: it was dropped, on screen and in LibreOffice after a save.
     let styles = r##"<style:style style:name="T" style:family="table"><style:table-properties fo:background-color="#ddffdd"/></style:style><style:style style:name="R" style:family="table-row"><style:table-row-properties fo:background-color="#ffdddd"/></style:style><style:style style:name="C" style:family="table-cell"><style:table-cell-properties fo:background-color="#ddddff"/></style:style>"##;
     let table = r#"<table:table table:style-name="T"><table:table-row><table:table-cell><text:p>table</text:p></table:table-cell><table:table-cell table:style-name="C"><text:p>cell</text:p></table:table-cell></table:table-row><table:table-row table:style-name="R"><table:table-cell><text:p>row</text:p></table:table-cell><table:table-cell table:style-name="C"><text:p>cell</text:p></table:table-cell></table:table-row></table:table>"#;
-    let colours = |d: &craft_wordmodel::Document| {
+    let colours = |d: &bharat_wordmodel::Document| {
         d.body
             .iter()
             .find_map(|b| b.as_table())
@@ -344,7 +344,7 @@ fn a_cells_background_comes_from_its_column_then_row_then_table() {
     let table = format!(
         r#"<table:table table:style-name="T"><table:table-column table:default-cell-style-name="InColumn"/><table:table-column/><table:table-row table:style-name="R" table:default-cell-style-name="InRow">{c}{c}</table:table-row><table:table-row>{c}{c}</table:table-row><table:table-row table:style-name="Clear">{c}{c}</table:table-row></table:table>"#
     );
-    let colours = |d: &craft_wordmodel::Document| {
+    let colours = |d: &bharat_wordmodel::Document| {
         d.body
             .iter()
             .find_map(|b| b.as_table())
@@ -393,7 +393,7 @@ fn a_transparent_cell_style_stops_its_parents_colour() {
         );
         let d = doc(styles, &table);
         let t = d.body.iter().find_map(|b| b.as_table()).unwrap();
-        assert_eq!(t.rows[0].cells[0].props.shading, craft_flow::parse_color("#0000ff"), "{column}{cell}");
+        assert_eq!(t.rows[0].cells[0].props.shading, bharat_flow::parse_color("#0000ff"), "{column}{cell}");
     }
 }
 
@@ -408,7 +408,7 @@ fn a_row_that_keeps_together_says_so() {
         row("", "free"),
         row(r#" table:style-name="H""#, "kept and tall")
     );
-    let shape = |d: &craft_wordmodel::Document| {
+    let shape = |d: &bharat_wordmodel::Document| {
         d.body
             .iter()
             .find_map(|b| b.as_table())
@@ -434,7 +434,7 @@ fn a_rows_keep_together_defaults_to_the_default_style() {
         row(r#" table:style-name="H""#),
         row(r#" table:style-name="F""#)
     );
-    let keeps = |d: &craft_wordmodel::Document| {
+    let keeps = |d: &bharat_wordmodel::Document| {
         d.body.iter().find_map(|b| b.as_table()).map(|t| t.rows.iter().map(|r| r.props.cant_split).collect::<Vec<_>>()).unwrap_or_default()
     };
     let d = import(&package(&content, Some(styles))).unwrap();
@@ -454,12 +454,12 @@ fn a_row_free_to_break_stays_so_over_the_default_style() {
         row("")
     );
     let mut d = import(&package(&content, Some(styles))).unwrap();
-    let keeps = |d: &craft_wordmodel::Document| {
+    let keeps = |d: &bharat_wordmodel::Document| {
         d.body.iter().find_map(|b| b.as_table()).map(|t| t.rows.iter().map(|r| r.props.cant_split).collect::<Vec<_>>()).unwrap_or_default()
     };
     assert_eq!(keeps(&d), [false, true]);
-    if let Some(craft_wordmodel::Block::Table(t)) = d.body.get_mut(0).map(std::sync::Arc::make_mut)
-        && let Some(craft_wordmodel::Block::Para(p)) = t.rows[0].cells[0].blocks.get_mut(0).map(std::sync::Arc::make_mut)
+    if let Some(bharat_wordmodel::Block::Table(t)) = d.body.get_mut(0).map(std::sync::Arc::make_mut)
+        && let Some(bharat_wordmodel::Block::Para(p)) = t.rows[0].cells[0].blocks.get_mut(0).map(std::sync::Arc::make_mut)
     {
         p.text.push('!');
         if let Some(r) = p.runs.last_mut() {

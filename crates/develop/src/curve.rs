@@ -5,7 +5,7 @@
 //! forced monotone.
 
 use crate::color::spline::Lut1;
-use craft_develop_model::ToneCurve;
+use bharat_develop_model::ToneCurve;
 
 /// The four shape controls of the parametric curve, in graph order: region 0 is the darkest.
 pub const PARAM_AMOUNTS: [&str; 4] = ["curve.shadows", "curve.darks", "curve.lights", "curve.highlights"];

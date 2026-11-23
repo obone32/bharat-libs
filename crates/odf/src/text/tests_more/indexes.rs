@@ -6,8 +6,8 @@
 
 use crate::text::tests::{NS_T, content_of, package, styles_of};
 use crate::text::{export, import};
-use craft_wordmodel::para::{InlineObject, OBJ};
-use craft_wordmodel::{Document, Paragraph, para_block};
+use bharat_wordmodel::para::{InlineObject, OBJ};
+use bharat_wordmodel::{Document, Paragraph, para_block};
 
 const NS_X: &str = r#"xmlns:xlink="http://www.w3.org/1999/xlink""#;
 
@@ -149,7 +149,7 @@ fn index_marks_are_xe_fields_and_written_back() {
         .iter()
         .filter_map(|b| b.as_para())
         .flat_map(|p| p.objects.iter())
-        .filter_map(|o| if let craft_wordmodel::para::InlineObject::Field { instr, .. } = o { Some(instr.clone()) } else { None })
+        .filter_map(|o| if let bharat_wordmodel::para::InlineObject::Field { instr, .. } = o { Some(instr.clone()) } else { None })
         .collect();
     assert_eq!(xe, [r#"XE "Fruit:apple""#, r#"XE "bananas""#, r#"XE "a quoted one here""#]);
     // The marked text stays text.

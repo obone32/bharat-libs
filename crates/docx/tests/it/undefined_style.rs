@@ -1,8 +1,8 @@
 //! A paragraph whose `w:pStyle` names a style `styles.xml` doesn't define is formatted as Normal,
 //! as in Word, not with the document defaults alone (#5077). Pandoc writes footers as
 //! `<w:pStyle w:val="Footer"/>` without defining Footer.
-use craft_wordmodel::props::LineSpacing;
-use craft_wordmodel::{Block, Document, PartKind};
+use bharat_wordmodel::props::LineSpacing;
+use bharat_wordmodel::{Block, Document, PartKind};
 use std::io::{Read, Write};
 
 const W: &str = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
@@ -47,17 +47,17 @@ fn package_with_body_default(normal_id: &str, is_default: bool, has_body_default
 
 #[test]
 fn an_explicit_normal_style_is_the_default_even_without_w_default() {
-    let doc = craft_docx::read(&package_with_default("Normal", false)).unwrap();
+    let doc = bharat_docx::read(&package_with_default("Normal", false)).unwrap();
     let normal = doc.styles.get("Normal").expect("the explicit Normal style");
     assert!(normal.default, "Word treats the explicitly declared built-in Normal style as the default");
 }
 
 #[test]
 fn an_explicit_body_default_on_prevents_normal_inference() {
-    let doc = craft_docx::read(&package_with_body_default("Normal", false, true)).unwrap();
+    let doc = bharat_docx::read(&package_with_body_default("Normal", false, true)).unwrap();
     assert!(doc.styles.styles.iter().any(|style| style.id == "Body" && style.default));
     assert!(!doc.styles.styles.iter().any(|style| style.id == "Normal" && style.default));
-    let saved = craft_docx::write(&doc).unwrap();
+    let saved = bharat_docx::write(&doc).unwrap();
     let mut archive = zip::ZipArchive::new(std::io::Cursor::new(saved)).unwrap();
     let mut file = archive.by_name("word/styles.xml").unwrap();
     let mut styles = String::new();
@@ -66,7 +66,7 @@ fn an_explicit_body_default_on_prevents_normal_inference() {
     assert!(styles.contains(r#"w:styleId="Body" w:default="1""#) || styles.contains(r#"w:default="1" w:styleId="Body""#));
 }
 
-fn footer_para(d: &Document) -> &craft_wordmodel::Paragraph {
+fn footer_para(d: &Document) -> &bharat_wordmodel::Paragraph {
     let part = d.parts.values().find(|p| p.kind == PartKind::Footer).expect("a footer");
     match part.blocks.first().map(|b| &**b) {
         Some(Block::Para(p)) => p,
@@ -78,7 +78,7 @@ fn footer_para(d: &Document) -> &craft_wordmodel::Paragraph {
 fn a_paragraph_naming_an_undefined_style_is_formatted_as_normal() {
     // Also when the file's default paragraph style has another id (read as Normal).
     for normal_id in ["Normal", "a"] {
-        let d = craft_docx::read(&package(normal_id)).unwrap();
+        let d = bharat_docx::read(&package(normal_id)).unwrap();
         let Some(Block::Para(body)) = d.body.first().map(|b| &**b) else { panic!("a body paragraph") };
         let Some(Block::Para(normal)) = d.body.get(1).map(|b| &**b) else { panic!("a second body paragraph") };
         let normal_rp = d.styles.resolve_para(&normal.props);
@@ -96,8 +96,8 @@ fn a_paragraph_naming_an_undefined_style_is_formatted_as_normal() {
 
 #[test]
 fn an_undefined_style_is_written_back_as_it_was_named() {
-    let d = craft_docx::read(&package("Normal")).unwrap();
-    let again = craft_docx::read(&craft_docx::write(&d).unwrap()).unwrap();
+    let d = bharat_docx::read(&package("Normal")).unwrap();
+    let again = bharat_docx::read(&bharat_docx::write(&d).unwrap()).unwrap();
     assert_eq!(footer_para(&again).props.style.as_deref(), Some("Footer"));
     assert_eq!(again.styles.resolve_para(&footer_para(&again).props).space_after, 2.0);
 }
@@ -127,7 +127,7 @@ fn conventional_styles_and_numbering_parts_without_relationships_are_read() {
             zw.start_file(name, zip::write::SimpleFileOptions::default()).unwrap();
             zw.write_all(body.as_bytes()).unwrap();
         }
-        let d = craft_docx::read(&zw.finish().unwrap().into_inner()).unwrap();
+        let d = bharat_docx::read(&zw.finish().unwrap().into_inner()).unwrap();
         assert!(d.styles.styles.iter().any(|style| style.id == "Body"));
         let Some(Block::Para(p)) = d.body.first().map(|b| &**b) else { panic!("a body paragraph") };
         assert_eq!(p.props.style.as_deref(), Some("Body"));

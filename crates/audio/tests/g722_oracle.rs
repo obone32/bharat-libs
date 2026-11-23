@@ -1,8 +1,8 @@
 //! ITU-T G.722 SB-ADPCM tests and FFmpeg oracle comparisons.
 //!
-//! Skipped when FFmpeg is not found, unless `CRAFT_MEDIA_REQUIRE_ORACLES=1` is set.
+//! Skipped when FFmpeg is not found, unless `BHARAT_MEDIA_REQUIRE_ORACLES=1` is set.
 
-use craft_audio::g722::{Decoder, Encoder, Error, decode, decode_interleaved, encode, encode_interleaved};
+use bharat_audio::g722::{Decoder, Encoder, Error, decode, decode_interleaved, encode, encode_interleaved};
 use std::process::Command;
 
 fn generate_signal(samples: usize, freq: f64) -> Vec<i16> {
@@ -101,8 +101,8 @@ fn test_encoder_and_decoder_reset() {
 
 #[test]
 fn test_ffmpeg_g722_oracle_encoder_and_decoder() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("g722_oracle");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("g722_oracle");
 
     // 1. Generate test 1000 Hz tone at 16 kHz mono (800 samples = 0.05s)
     let pcm = generate_signal(800, 1000.0);

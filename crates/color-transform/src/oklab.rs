@@ -151,7 +151,7 @@ mod tests {
     /// oklab(54.43237% 0.0681665 -0.1656703).
     #[test]
     fn an_srgb_color_matches_css_color_4() {
-        let rgb = [0x76, 0x54, 0xCD].map(|v: u8| craft_color::srgb_to_linear(f32::from(v) / 255.0));
+        let rgb = [0x76, 0x54, 0xCD].map(|v: u8| bharat_color::srgb_to_linear(f32::from(v) / 255.0));
         let lab = from_linear_srgb(rgb);
         let want = [0.5443237, 0.0681665, -0.1656703];
         for i in 0..3 {

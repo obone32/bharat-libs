@@ -1,4 +1,4 @@
-# craft-mcmat
+# bharat-mcmat
 
 The MCMAT v3 portable material is a ZIP containing a version-only `material.json`, one
 `source.sbs`, and the required source assets under `resources/`. The sole root-level

@@ -1,7 +1,7 @@
 #![cfg(feature = "read")]
 #![allow(clippy::unwrap_used)]
 
-use craft_pdf::{CancellableOpenError, OpenError, OpenOptions, open, open_slice_with_options_and_cancel, open_with_options_and_cancel, syntax};
+use bharat_pdf::{CancellableOpenError, OpenError, OpenOptions, open, open_slice_with_options_and_cancel, open_with_options_and_cancel, syntax};
 use std::sync::{
     Arc,
     atomic::{AtomicUsize, Ordering},

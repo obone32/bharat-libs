@@ -1,5 +1,5 @@
 [package]
-name = "craft-metafile"
+name = "bharat-metafile"
 description = "Windows Metafile (WMF), Enhanced Metafile (EMF) and EMF+ reader into a neutral vector model, and EMF and WMF writers."
 version.workspace = true
 edition.workspace = true

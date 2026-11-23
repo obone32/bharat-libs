@@ -4,7 +4,7 @@
 mod common;
 
 use common::{deflated, store, zip};
-use craft_doc::{Error, Limits, pcraft_icc_profile};
+use bharat_doc::{Error, Limits, pcraft_icc_profile};
 
 /// Blob identity is over the decoded payload, not its compressed representation.
 fn hash(bytes: &[u8]) -> String {
@@ -28,7 +28,7 @@ fn named_manifest(hash: &str) -> String {
 
 /// Store a blob at its content address without assuming its bytes are a valid ICC profile.
 fn bundle(payload: &[u8]) -> Vec<u8> {
-    let name = craft_pcraft_format::blob_path(&hash(payload)).unwrap();
+    let name = bharat_pcraft_format::blob_path(&hash(payload)).unwrap();
     zip(&[store("manifest.json", named_manifest(&hash(payload)).as_bytes()), store(&name, &frame(payload))])
 }
 
@@ -48,7 +48,7 @@ fn absent_and_null_are_none_but_declared_payloads_are_returned_without_semantic_
 fn store_and_deflate_entries_use_the_same_bounded_blob_reader() {
     let payload = b"synthetic profile bytes";
     let h = hash(payload);
-    let path = craft_pcraft_format::blob_path(&h).unwrap();
+    let path = bharat_pcraft_format::blob_path(&h).unwrap();
     let m = named_manifest(&h);
     let z = frame(payload);
     for archive in
@@ -82,7 +82,7 @@ fn invalid_references_types_and_duplicate_profile_members_are_malformed() {
 /// A declared payload must exist, match its content address and occupy exactly one frame.
 fn missing_wrong_hash_or_damaged_declared_blobs_are_errors() {
     let h = hash(b"wanted");
-    let path = craft_pcraft_format::blob_path(&h).unwrap();
+    let path = bharat_pcraft_format::blob_path(&h).unwrap();
     let m = named_manifest(&h);
     let valid = frame(b"wanted");
     let mut trailing = valid.clone();
@@ -106,7 +106,7 @@ fn missing_wrong_hash_or_damaged_declared_blobs_are_errors() {
 fn unrelated_payloads_are_never_read_and_document_metadata_is_skipped() {
     let payload = b"profile";
     let h = hash(payload);
-    let path = craft_pcraft_format::blob_path(&h).unwrap();
+    let path = bharat_pcraft_format::blob_path(&h).unwrap();
     let m = format!(
         r#"{{"format_version":1,"generator":"synthetic","thumbnail":"thumb.png","composite":"composite/preview.png",
         "document":{{"icc_profile":"{h}","layers":[{{"content":{{"surface":{{"tiles":[{{"hash":"invalid"}}]}}}}}}],"future":[{{"ignored":true}}]}}}}"#
@@ -120,7 +120,7 @@ fn unrelated_payloads_are_never_read_and_document_metadata_is_skipped() {
 fn manifest_frame_and_decoded_profile_have_exact_total_and_entry_boundaries() {
     let payload = vec![7; 32 << 10];
     let h = hash(&payload);
-    let path = craft_pcraft_format::blob_path(&h).unwrap();
+    let path = bharat_pcraft_format::blob_path(&h).unwrap();
     let m = named_manifest(&h);
     let z = frame(&payload);
     let archive = zip(&[store("manifest.json", m.as_bytes()), store(&path, &z)]);
@@ -149,7 +149,7 @@ fn manifest_frame_and_decoded_profile_have_exact_total_and_entry_boundaries() {
 /// The frame's ZIP size must fail admission even if its bytes would also fail decoding.
 fn an_oversized_frame_is_refused_before_the_zstd_decoder() {
     let m = named_manifest(&hash(b"p"));
-    let path = craft_pcraft_format::blob_path(&hash(b"p")).unwrap();
+    let path = bharat_pcraft_format::blob_path(&hash(b"p")).unwrap();
     let mut limits = Limits::default();
     limits.max_entry = m.len() as u64;
     let archive = zip(&[store("manifest.json", m.as_bytes()), store(&path, &vec![0; m.len() + 1])]);
@@ -197,7 +197,7 @@ fn versions_kinds_envelope_and_depth_are_checked_even_without_a_profile() {
 fn excessive_window_and_size_less_expansion_are_limits() {
     let payload = vec![0; 64 << 10];
     let h = hash(&payload);
-    let path = craft_pcraft_format::blob_path(&h).unwrap();
+    let path = bharat_pcraft_format::blob_path(&h).unwrap();
     let m = named_manifest(&h);
     let z = frame(&payload);
     // Producer frames omit their content size; output admission must work without that hint.
@@ -218,7 +218,7 @@ fn excessive_window_and_size_less_expansion_are_limits() {
 /// Nonzero size hints permit early refusal but never replace checking actual decoded bytes.
 fn declared_nonzero_content_sizes_are_checked_before_and_after_decoding() {
     let h = hash(b"p");
-    let path = craft_pcraft_format::blob_path(&h).unwrap();
+    let path = bharat_pcraft_format::blob_path(&h).unwrap();
     let m = named_manifest(&h);
     // A single-segment frame declaring 4096 bytes, but holding one raw byte.
     let mut z = vec![0x28, 0xb5, 0x2f, 0xfd, 0x60];
@@ -240,7 +240,7 @@ fn explicit_zero_content_sizes_match_only_empty_payloads() {
     for (descriptor, width, single) in [(0x80, 4, false), (0xc0, 8, false), (0x20, 1, true), (0xa0, 4, true), (0xe0, 8, true)] {
         for payload in [b"p".as_slice(), b"".as_slice()] {
             let h = hash(payload);
-            let path = craft_pcraft_format::blob_path(&h).unwrap();
+            let path = bharat_pcraft_format::blob_path(&h).unwrap();
             let m = named_manifest(&h);
             let mut z = vec![0x28, 0xb5, 0x2f, 0xfd, descriptor];
             if !single {

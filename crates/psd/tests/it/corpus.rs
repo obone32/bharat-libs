@@ -1,11 +1,11 @@
 //! Corpus test (feature `corpus`): iterates
 //! `corpus/psd/**/*.{psd,psb}` and `corpus/psd-tools/**/*.{psd,psb}` at the workspace root,
-//! or under `CRAFT_PSD_CORPUS` (PhotoCraft's `cargo xtask corpus --all` fetches and verifies it). A missing corpus fails.
+//! or under `BHARAT_PSD_CORPUS` (PhotoCraft's `cargo xtask corpus --all` fetches and verifies it). A missing corpus fails.
 #![cfg(feature = "corpus")]
 
 use std::path::{Path, PathBuf};
 
-use craft_psd::PsdFile;
+use bharat_psd::PsdFile;
 
 fn collect(dir: &Path, out: &mut Vec<PathBuf>) {
     let Ok(rd) = std::fs::read_dir(dir) else { return };
@@ -23,9 +23,9 @@ fn collect(dir: &Path, out: &mut Vec<PathBuf>) {
 /// against those without adding personal files or new corpus pins.
 #[test]
 fn corpus_animation_syntax() {
-    use craft_psd::ResourceData;
-    use craft_psd::animation::{frame_info, frame_sets, layer_frame_states};
-    use craft_psd::metadata::parse_shmd;
+    use bharat_psd::ResourceData;
+    use bharat_psd::animation::{frame_info, frame_sets, layer_frame_states};
+    use bharat_psd::metadata::parse_shmd;
 
     let root = crate::corpus_dir("psd/ag-psd/read-write");
     for (case, delay) in [("animation-frame", Some(30)), ("animation-offset", Some(50)), ("animation-effects", None)] {

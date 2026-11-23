@@ -34,7 +34,7 @@ pub fn validate_raster(kind: &usvg::ImageKind, max_pixels: u64, pixels_left: &mu
 
 pub(in crate::tree) fn probe_raster_pixels(data: &[u8], max_pixels: u64) -> Result<u64, RasterValidationFailure> {
     // The allocation probe accounts for oversized GIF/WebP frames as well as the canvas.
-    let (width, height) = craft_image_codecs::probe_allocation_size(data).map_err(|_| RasterValidationFailure::Invalid)?;
+    let (width, height) = bharat_image_codecs::probe_allocation_size(data).map_err(|_| RasterValidationFailure::Invalid)?;
     let pixels = area(width, height)?;
     if pixels > max_pixels {
         return Err(RasterValidationFailure::Limit);
@@ -49,8 +49,8 @@ pub(in crate::tree) fn decode_raster(format: SvgRaster, data: &[u8], pixels: u64
             rgba_bytes(decoded.width(), decoded.height(), pixels)?;
             Ok(())
         }
-        SvgRaster::Jpeg => craft_image_codecs::validate_jpeg_rgba8(data, pixels).map_err(|error| match error {
-            craft_image_codecs::CodecError::LimitExceeded(_) => RasterValidationFailure::Limit,
+        SvgRaster::Jpeg => bharat_image_codecs::validate_jpeg_rgba8(data, pixels).map_err(|error| match error {
+            bharat_image_codecs::CodecError::LimitExceeded(_) => RasterValidationFailure::Limit,
             _ => RasterValidationFailure::Invalid,
         }),
         SvgRaster::Gif => gif(data, pixels),

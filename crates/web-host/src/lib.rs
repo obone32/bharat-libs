@@ -1,5 +1,5 @@
-//! The host messages between a Craft app's web build and the page that hosts it: one contract for
-//! the whole family (storytold/craft-libs#358), so each app's bridge is a few calls instead of its
+//! The host messages between a Bharat app's web build and the page that hosts it: one contract for
+//! the whole family (obone32/bharat-libs#358), so each app's bridge is a few calls instead of its
 //! own copy.
 //!
 //! Messages are plain objects with a `type` of `<app>:<kind>` (`cadcraft:open`):

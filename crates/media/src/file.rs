@@ -219,7 +219,7 @@ mod tests {
     #[test]
     fn file_reader_reads_ranges_in_place() {
         let v: Vec<u8> = (0..=255).collect();
-        let dir = craft_media_testkit::private_dir("file-reader");
+        let dir = bharat_media_testkit::private_dir("file-reader");
         let path = dir.join("bytes.bin");
         std::fs::write(&path, &v).unwrap();
         let r = FileReader::open(&path).unwrap();
@@ -241,7 +241,7 @@ mod tests {
     /// file is closed and reopened on demand, and a file truncated meanwhile is refused.
     #[test]
     fn more_file_readers_than_the_pool_holds_stay_readable() {
-        let dir = craft_media_testkit::private_dir("file-pool");
+        let dir = bharat_media_testkit::private_dir("file-pool");
         let pool = Arc::new(FilePool::new(2));
         let paths: Vec<_> = (0..5).map(|i| dir.join(format!("{i}.bin"))).collect();
         for (i, p) in paths.iter().enumerate() {
@@ -270,7 +270,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn a_fifo_is_refused_without_blocking() {
-        let dir = craft_media_testkit::private_dir("file-fifo");
+        let dir = bharat_media_testkit::private_dir("file-fifo");
         let fifo = dir.join("pipe");
         if !std::process::Command::new("mkfifo").arg(&fifo).status().is_ok_and(|s| s.success()) {
             return; // no mkfifo here
@@ -283,7 +283,7 @@ mod tests {
     #[cfg(target_os = "linux")]
     #[test]
     fn opening_a_fifo_with_no_writer_does_not_block() {
-        let dir = craft_media_testkit::private_dir("file-fifo-open");
+        let dir = bharat_media_testkit::private_dir("file-fifo-open");
         let fifo = dir.join("pipe");
         if std::process::Command::new("mkfifo").arg(&fifo).status().is_ok_and(|s| s.success()) {
             let f = super::open_nonblocking(&fifo).unwrap();
@@ -297,8 +297,8 @@ mod tests {
     /// The harness runs in a subprocess so it cannot change this process's cwd.
     #[test]
     fn reopening_a_relative_path_stays_on_the_original_file() {
-        const FLAG: &str = "CRAFT_MEDIA_FILE_READER_CWD_TEST";
-        const ROOT: &str = "CRAFT_MEDIA_FILE_READER_CWD_ROOT";
+        const FLAG: &str = "BHARAT_MEDIA_FILE_READER_CWD_TEST";
+        const ROOT: &str = "BHARAT_MEDIA_FILE_READER_CWD_ROOT";
         if std::env::var_os(FLAG).is_some() {
             let root = PathBuf::from(std::env::var_os(ROOT).expect("test root"));
             let a = root.join("a");
@@ -314,7 +314,7 @@ mod tests {
             return;
         }
 
-        let dir = craft_media_testkit::private_dir("file-cwd");
+        let dir = bharat_media_testkit::private_dir("file-cwd");
         std::fs::create_dir_all(dir.join("a")).unwrap();
         std::fs::create_dir_all(dir.join("b")).unwrap();
         std::fs::write(dir.join("a").join("clip.bin"), b"AAAA").unwrap();
@@ -343,7 +343,7 @@ mod tests {
     /// A file truncated while its handle is still in the pool is refused, same as after eviction.
     #[test]
     fn a_truncated_file_is_refused_while_still_pooled() {
-        let dir = craft_media_testkit::private_dir("file-trunc-hit");
+        let dir = bharat_media_testkit::private_dir("file-trunc-hit");
         let path = dir.join("clip.bin");
         std::fs::write(&path, b"0123456789").unwrap();
         let pool = Arc::new(FilePool::new(2));

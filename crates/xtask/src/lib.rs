@@ -1,7 +1,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 
-//! Library for the Craft apps' `cargo xtask` binaries.
+//! Library for the Bharat apps' `cargo xtask` binaries.
 //!
 //! Each app keeps its own `xtask` binary, its command dispatch, its step list and its app-only
 //! commands, and calls this crate with its own policy:
@@ -18,7 +18,7 @@
 //!
 //! ```no_run
 //! use std::path::Path;
-//! use craft_xtask::runner::{self, RunOptions, Step, TestMode};
+//! use bharat_xtask::runner::{self, RunOptions, Step, TestMode};
 //!
 //! fn ci() -> Result<(), runner::Error> {
 //!     // The app's own manifest directory, never this library's.

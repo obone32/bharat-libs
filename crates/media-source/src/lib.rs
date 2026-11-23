@@ -2,15 +2,15 @@
 //!
 //! This crate is the EffectCraft / FilmCraft opener hub: a [`MediaSource`] yields compositor
 //! [`VideoFrame`]s and [`AudioBuffer`]s, and [`open_bytes`] / [`open_reader`] try caller-supplied
-//! openers in order. It lives in its own crate rather than `craft-media` so it can depend on
-//! `craft-audio` without a cycle (`craft-audio` already depends on `craft-media`).
+//! openers in order. It lives in its own crate rather than `bharat-media` so it can depend on
+//! `bharat-audio` without a cycle (`bharat-audio` already depends on `bharat-media`).
 //!
 //! Built-in still-image, WAV, and generator openers stay in the apps. [`open_bytes`] only runs the
 //! `extra` openers; [`open_reader`] tries `reader_openers` and otherwise reads the file whole
 //! (up to `max_whole`) and falls back to [`open_bytes`]. Container sources register themselves
 //! from later PRs.
 //!
-//! [`SharedSource`] is `Arc<dyn MediaSource>`. It is not `craft_audio::SharedSource`, which is a
+//! [`SharedSource`] is `Arc<dyn MediaSource>`. It is not `bharat_audio::SharedSource`, which is a
 //! `ByteSource` marker used by the audio decoder.
 
 #![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable))]
@@ -19,11 +19,11 @@ use std::io;
 use std::path::Path;
 use std::sync::Arc;
 
-use craft_audio::AudioBuffer;
-use craft_color::{ColorInfo, HdrMetadata};
-use craft_frame::VideoFrame;
-use craft_media::ByteSource;
-use craft_time::{FrameRate, Tick};
+use bharat_audio::AudioBuffer;
+use bharat_color::{ColorInfo, HdrMetadata};
+use bharat_frame::VideoFrame;
+use bharat_media::ByteSource;
+use bharat_time::{FrameRate, Tick};
 use serde::{Deserialize, Serialize};
 
 /// Errors from opening or reading a media source.
@@ -198,7 +198,7 @@ pub trait MediaSource: Send + Sync {
     }
 }
 
-/// Shared compositor source. Distinct from [`craft_audio::SharedSource`], a `ByteSource` marker.
+/// Shared compositor source. Distinct from [`bharat_audio::SharedSource`], a `ByteSource` marker.
 pub type SharedSource = Arc<dyn MediaSource>;
 
 /// Random-access bytes used by [`open_reader`].
@@ -309,7 +309,7 @@ pub fn open_reader_within(
 /// are refused without a blocking open, using the same contract as other media readers.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn open_path(path: &Path, reader_openers: &[ReaderOpener], extra: &[Opener]) -> Result<SharedSource> {
-    let file = craft_media::FileReader::open(path).map_err(|e| MediaError::Io(format!("{}: {e}", path.display())))?;
+    let file = bharat_media::FileReader::open(path).map_err(|e| MediaError::Io(format!("{}: {e}", path.display())))?;
     let name = path.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
     open_reader(&name, Arc::new(file), reader_openers, extra)
 }
@@ -474,7 +474,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn open_path_refuses_a_fifo_without_waiting_for_a_writer() {
-        let root = std::env::temp_dir().join(format!("craft-media-source-fifo-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("bharat-media-source-fifo-{}", std::process::id()));
         std::fs::create_dir(&root).unwrap();
         let path = root.join("fifo");
         if std::process::Command::new("mkfifo").arg(&path).status().is_ok_and(|s| s.success()) {

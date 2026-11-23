@@ -1,5 +1,5 @@
 [package]
-name = "craft-video"
+name = "bharat-video"
 description = "Clean-room pure-Rust video codecs, one feature per codec: DNxHD/DNxHR, VP8, ProRes, H.264, HEVC, VP9, AV1, MPEG-4 Part 2, Sierra VMD."
 version.workspace = true
 edition.workspace = true
@@ -21,8 +21,8 @@ screen-video = ["dep:miniz_oxide"]
 dnx = []
 # APV (Advanced Professional Video, RFC 9924): decoder and encoder; `apv-decode` or `apv-encode` for one of them.
 apv = ["apv-decode", "apv-encode"]
-apv-decode = ["craft-media/bitstream"]
-apv-encode = ["craft-media/bitstream"]
+apv-decode = ["bharat-media/bitstream"]
+apv-encode = ["bharat-media/bitstream"]
 # VP8 (RFC 6386): decoder and encoder; `vp8-decode` or `vp8-encode` for one of them.
 vp8 = ["vp8-decode", "vp8-encode"]
 vp8-decode = []
@@ -35,31 +35,31 @@ mpeg2-decode = []
 mpeg2-encode = ["mpeg2-decode"]
 # MPEG-4 Part 2 video (ISO/IEC 14496-2, the Xvid/DivX format): Simple profile encoder.
 mpeg4 = ["mpeg4-encode"]
-mpeg4-encode = ["craft-media/bitstream"]
+mpeg4-encode = ["bharat-media/bitstream"]
 # FFV1 lossless video (RFC 9043): version 3, range coder, decoder and encoder.
 ffv1 = []
 # Hap (Vidvox): decoder and encoder, with Snappy and chunked second stages.
 hap = []
-# Motion JPEG: a frame-level decoder and encoder over `craft-jpeg`.
-mjpeg = ["dep:craft-jpeg"]
+# Motion JPEG: a frame-level decoder and encoder over `bharat-jpeg`.
+mjpeg = ["dep:bharat-jpeg"]
 # Apple ProRes (SMPTE RDD 36): decoder and encoder.
-prores = ["craft-media/bitstream"]
+prores = ["bharat-media/bitstream"]
 # H.264 / AVC: decoder and encoder; `h264-decode` or `h264-encode` for one of them.
 h264 = ["h264-decode", "h264-encode"]
-h264-decode = ["craft-media/bitstream"]
-h264-encode = ["craft-media/isobmff"]
+h264-decode = ["bharat-media/bitstream"]
+h264-encode = ["bharat-media/isobmff"]
 # H.265 / HEVC: decoder and encoder; `hevc-decode` or `hevc-encode` for one of them.
 hevc = ["hevc-decode", "hevc-encode"]
-hevc-decode = ["craft-media/bitstream"]
-hevc-encode = ["craft-media/isobmff"]
+hevc-decode = ["bharat-media/bitstream"]
+hevc-encode = ["bharat-media/isobmff"]
 # VP9: decoder and encoder; `vp9-decode` or `vp9-encode` for one of them.
 vp9 = ["vp9-decode", "vp9-encode"]
-vp9-decode = ["craft-media/bitstream"]
-vp9-encode = ["craft-media/isobmff"]
+vp9-decode = ["bharat-media/bitstream"]
+vp9-encode = ["bharat-media/isobmff"]
 # AV1: decoder and encoder; `av1-decode` or `av1-encode` for one of them.
 av1 = ["av1-decode", "av1-encode"]
 av1-decode = []
-av1-encode = ["craft-media/isobmff"]
+av1-encode = ["bharat-media/isobmff"]
 # Tiled AV1 fallback for frames that exceed the clean-room encoder's single-tile limits.
 av1-large-encode = ["av1-encode", "dep:rav1e"]
 # Sierra VMD video (8-bit paletted): decoder; `vmd` turns it on too.
@@ -70,8 +70,8 @@ threads = ["dep:rayon", "rav1e?/threading"]
 
 [dependencies]
 miniz_oxide = { workspace = true, optional = true }
-craft-media = { workspace = true }
-craft-jpeg = { workspace = true, optional = true }
+bharat-media = { workspace = true }
+bharat-jpeg = { workspace = true, optional = true }
 thiserror = { workspace = true }
 rayon = { workspace = true, optional = true }
 
@@ -79,9 +79,9 @@ rayon = { workspace = true, optional = true }
 rav1e = { version = "0.8", default-features = false, optional = true }
 
 [dev-dependencies]
-craft-media-testkit = { workspace = true }
+bharat-media-testkit = { workspace = true }
 # The AVI muxer, for the MPEG-4 Part 2 encoder's end-to-end test, and the VMD demuxer for the VMD decoder's.
-craft-media = { workspace = true, features = ["avi", "vmd"] }
+bharat-media = { workspace = true, features = ["avi", "vmd"] }
 
 [[test]]
 name = "vmd"

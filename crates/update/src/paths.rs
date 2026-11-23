@@ -64,7 +64,7 @@ impl Paths {
     }
 
     /// The folder an app unpacked in [`Self::apps`] sees as its home: `<data>/apps/<app>/home`.
-    /// A Craft App keeps its settings in the XDG folders (`~/.config`, `~/.local/share`,
+    /// A Bharat App keeps its settings in the XDG folders (`~/.config`, `~/.local/share`,
     /// `~/.cache`), so pointing `HOME` and those variables here keeps every app's configuration
     /// beside it, inside the folder the installer owns.
     #[cfg(target_os = "linux")]

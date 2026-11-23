@@ -4,7 +4,7 @@ use std::borrow::Cow;
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
-use craft_keymap::{Chord, CommandRef, Key, Mods};
+use bharat_keymap::{Chord, CommandRef, Key, Mods};
 
 use crate::layout::{Clash, Layout};
 use crate::model::{Builtin, Item, ItemKind, MenuBar, Node};
@@ -222,7 +222,7 @@ impl NativeMenu {
     /// - While [`Gate::text_editing`] is on (in egui, `ctx.wants_keyboard_input()`), a key
     ///   equivalent runs its item as an [`Event::Click`], as a Mac app's menu commands run while
     ///   typing, except the keys the field handles itself: ⌘C, ⌘X and ⌘V (following
-    ///   [`ClipboardKeys`]) and [`craft_keymap::text_editing_chords`] (⌘A, ⌘Z, ⇧⌘Z, ⌘←, …) stay
+    ///   [`ClipboardKeys`]) and [`bharat_keymap::text_editing_chords`] (⌘A, ⌘Z, ⇧⌘Z, ⌘←, …) stay
     ///   key presses.
     pub fn set_gate(&mut self, gate: Gate) {
         self.gate = gate;
@@ -309,7 +309,7 @@ impl NativeMenu {
     /// The commands clicked since the last call that the gate ([`NativeMenu::set_gate`]) allows
     /// now, for the app to run like in-window menu clicks; the others are dropped.
     /// [`Builtin::Minimize`] (minimizes the window) and [`Builtin::Quit`] (asks the window to
-    /// close, see [`craft_quit::on_menu_event`]) are run here and left out. A ⌘V from the menu
+    /// close, see [`bharat_quit::on_menu_event`]) are run here and left out. A ⌘V from the menu
     /// ([`ClipboardKeys::Egui`]) is asked of eframe here too.
     pub fn take_clicks(&mut self, ctx: &egui::Context) -> Vec<CommandRef> {
         if std::mem::take(&mut self.paste) {
@@ -323,7 +323,7 @@ impl NativeMenu {
             match Builtin::of(&command) {
                 Some(Builtin::Minimize) => ctx.send_viewport_cmd(egui::ViewportCommand::Minimized(true)),
                 Some(Builtin::Quit) => {
-                    craft_quit::on_menu_event(ctx, Builtin::Quit.id());
+                    bharat_quit::on_menu_event(ctx, Builtin::Quit.id());
                 }
                 _ => out.push(command),
             }
@@ -434,7 +434,7 @@ pub(crate) fn dismiss_input(raw: &mut egui::RawInput, tracking: impl FnOnce() ->
 /// A key-down is the item's key equivalent, reported as the key press, unless it was ↩ or Space
 /// inside the open menu: the item's shortcut is not a key equivalent at all ([`native_ok`]), or
 /// neither ⌘ nor ⌃ is held. The key is the item's (AppKit matched on it); the modifiers are the
-/// ones held, since AppKit may match ⌘R to a ⇧⌘R item. Minimize, craft-quit's Quit and shortcuts
+/// ones held, since AppKit may match ⌘R to a ⇧⌘R item. Minimize, bharat-quit's Quit and shortcuts
 /// the layout assigned are run by the driver or the app's click handling, not by its key
 /// handling, so they stay clicks. While text editing, the app's key handling leaves shortcuts to
 /// the field, so a key equivalent is a click too, except the field's own editing keys
@@ -460,11 +460,11 @@ pub(crate) fn chosen_event(command: &CommandRef, chord: Option<&Chord>, layout_s
     }
 }
 
-/// A chord a text field handles itself: the clipboard keys and craft-keymap's text-editing
+/// A chord a text field handles itself: the clipboard keys and bharat-keymap's text-editing
 /// chords (undo, redo, select all, moving by word and line).
 fn text_editing_key(c: &Chord) -> bool {
     const CLIPBOARD: [Chord; 3] = [Chord::new(Mods::CMD, Key::C), Chord::new(Mods::CMD, Key::X), Chord::new(Mods::CMD, Key::V)];
-    CLIPBOARD.contains(c) || craft_keymap::text_editing_chords(craft_keymap::Platform::Mac).contains(c)
+    CLIPBOARD.contains(c) || bharat_keymap::text_editing_chords(bharat_keymap::Platform::Mac).contains(c)
 }
 
 /// May the native menu make this a key equivalent? Only with ⌘ or ⌃. Other shortcuts (a bare

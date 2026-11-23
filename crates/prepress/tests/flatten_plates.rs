@@ -5,10 +5,10 @@
 #![cfg(feature = "flatten")]
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_plate_test::reference::{self, Context};
-use craft_plate_test::report::{self, Status};
-use craft_plate_test::{gs, scene};
-use craft_prepress::flatten::{FlattenPageOptions, flatten_page};
+use bharat_plate_test::reference::{self, Context};
+use bharat_plate_test::report::{self, Status};
+use bharat_plate_test::{gs, scene};
+use bharat_prepress::flatten::{FlattenPageOptions, flatten_page};
 
 #[test]
 #[ignore = "needs Ghostscript; run scripts/plate-check.sh --flatten"]

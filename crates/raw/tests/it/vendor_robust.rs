@@ -1,8 +1,8 @@
 //! Malformed maker raw files must decode to an error, never panic: every truncation and random mutations of one
 //! small synthetic file per maker layout.
 
-use craft_tiff::tags as t;
-use craft_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
+use bharat_tiff::tags as t;
+use bharat_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
 use proptest::prelude::*;
 
 const W: u32 = 32;
@@ -49,7 +49,7 @@ fn pef(compression: u16) -> Vec<u8> {
 /// A Canon CR2: three placeholder IFDs and IFD3 with a 2-component lossless JPEG frame.
 fn cr2() -> Vec<u8> {
     let img: Vec<u16> = (0..(W * H) as usize).map(|i| 1024 + (i * 7919 % 12000) as u16).collect();
-    let enc = craft_raw::ljpeg::encode(&img, W as usize / 2, H as usize, 2, 14, 1, 0);
+    let enc = bharat_raw::ljpeg::encode(&img, W as usize / 2, H as usize, 2, 14, 1, 0);
     let mut ifd0 = IfdBuilder::new();
     ifd0.set(t::MAKE, Value::Ascii("Canon".into()));
     let mut ifd3 = IfdBuilder::new();
@@ -165,7 +165,7 @@ fn rw2_formats() -> Vec<Vec<u8>> {
 #[test]
 fn rw2_samples_decode_unmutated() {
     for s in &rw2_formats() {
-        let r = craft_raw::decode(s).unwrap();
+        let r = bharat_raw::decode(s).unwrap();
         assert_eq!((r.width, r.height), (W as usize, H as usize));
     }
 }
@@ -279,10 +279,10 @@ fn samples() -> Vec<Vec<u8>> {
 }
 
 fn exercise(bytes: &[u8]) {
-    let _ = craft_raw::probe(bytes);
-    let _ = craft_raw::probe_info(bytes);
-    let _ = craft_raw::embedded_preview(bytes);
-    if let Ok(img) = craft_raw::decode(bytes) {
+    let _ = bharat_raw::probe(bytes);
+    let _ = bharat_raw::probe_info(bytes);
+    let _ = bharat_raw::embedded_preview(bytes);
+    if let Ok(img) = bharat_raw::decode(bytes) {
         assert!(img.validate().is_ok());
     }
 }

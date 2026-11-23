@@ -4,7 +4,7 @@
 
 use std::collections::BTreeMap;
 
-use craft_aep::{AepFile, Body, parse, write};
+use bharat_aep::{AepFile, Body, parse, write};
 
 /// The binary files of the fixture directory (the `.aepx` has its own tests).
 fn files() -> Vec<&'static str> {

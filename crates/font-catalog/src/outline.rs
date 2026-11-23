@@ -268,7 +268,7 @@ mod tests {
 
     #[test]
     fn reads_craft_font_when_available() {
-        let Ok(dir) = std::env::var("CRAFT_FONTS_DIR") else { return };
+        let Ok(dir) = std::env::var("BHARAT_FONTS_DIR") else { return };
         let bytes = std::fs::read(std::path::Path::new(&dir).join("fonts/noto-sans-hebrew/NotoSansHebrew-Regular.ttf")).unwrap();
         let data = FontData { bytes: bytes.into(), index: 0 };
         let face = FontOutline::new(&data, &[]).unwrap();
@@ -282,7 +282,7 @@ mod tests {
 
     #[test]
     fn variation_changes_glyph_geometry() {
-        let Ok(dir) = std::env::var("CRAFT_FONTS_DIR") else { return };
+        let Ok(dir) = std::env::var("BHARAT_FONTS_DIR") else { return };
         let bytes = std::fs::read(std::path::Path::new(&dir).join("fonts/noto-sans-arabic/NotoSansArabic.ttf")).unwrap();
         let data = FontData { bytes: bytes.into(), index: 0 };
         let light = FontOutline::new(&data, &[(*b"wght", 100.0)]).unwrap();

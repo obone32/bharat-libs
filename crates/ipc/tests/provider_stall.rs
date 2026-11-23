@@ -13,12 +13,12 @@ use std::time::{Duration, Instant};
 
 use serde_json::{Value, json};
 
-use craft_ipc::asset::{Described, Refreshed, Resolved};
-use craft_ipc::moniker::Moniker;
-use craft_ipc::record::AssetKind;
-use craft_ipc::refresh::FileState;
-use craft_ipc::server::{Activate, Activation, Assets, ControlSink, Extensions, FrameOpen, Frames, Limits, Server, ServerConfig};
-use craft_ipc::{Endpoint, LinkError, RuntimeDir};
+use bharat_ipc::asset::{Described, Refreshed, Resolved};
+use bharat_ipc::moniker::Moniker;
+use bharat_ipc::record::AssetKind;
+use bharat_ipc::refresh::FileState;
+use bharat_ipc::server::{Activate, Activation, Assets, ControlSink, Extensions, FrameOpen, Frames, Limits, Server, ServerConfig};
+use bharat_ipc::{Endpoint, LinkError, RuntimeDir};
 
 const DEADLINE: Duration = Duration::from_millis(400);
 /// `link.refresh` with this link id blocks until the test releases it. `app.activate` with this

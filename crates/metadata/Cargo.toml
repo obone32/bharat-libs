@@ -1,5 +1,5 @@
 [package]
-name = "craft-metadata"
+name = "bharat-metadata"
 description = "Photo metadata: EXIF, IPTC-IIM, XMP packets (read, write, merge) and GPX track logs, the blocks that carry them in JPEG, PNG, WebP, TIFF and CR3 files, and one model they all read into."
 version.workspace = true
 edition.workspace = true
@@ -11,7 +11,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-tiff = { workspace = true }
+bharat-tiff = { workspace = true }
 serde = { workspace = true }
 quick-xml = "0.41"
 chrono = { workspace = true }

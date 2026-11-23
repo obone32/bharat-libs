@@ -109,7 +109,7 @@ pub struct Archive<'b> {
     pub pages: Vec<(String, Value)>,
     /// Problems met while reading (pages skipped, a newer format than tested).
     pub warnings: Vec<String>,
-    zip: craft_zip::Archive<'b>,
+    zip: bharat_zip::Archive<'b>,
     limits: Limits,
     /// Image bytes read so far.
     image_total: Cell<u64>,
@@ -219,7 +219,7 @@ pub fn embedded_font_families(document: &Value) -> Vec<String> {
 /// Member `name`, refused before unpacking when it would be larger than `limit`, than
 /// [`MAX_RATIO`] times what it takes in the archive (past a floor), or than what is left of
 /// `max_total` (`total`: read so far, counted up).
-fn capped_member(z: &mut craft_zip::Archive<'_>, name: &str, limit: u64, total: &mut u64, max_total: u64) -> Result<Vec<u8>, Error> {
+fn capped_member(z: &mut bharat_zip::Archive<'_>, name: &str, limit: u64, total: &mut u64, max_total: u64) -> Result<Vec<u8>, Error> {
     let not_found = || corrupt(format!("{name}: not in the archive"));
     let (size, packed) = (z.declared_size(name).ok_or_else(not_found)?, z.compressed_size(name).ok_or_else(not_found)?);
     let allowed = limit.min(packed.saturating_mul(MAX_RATIO).max(MIN_ALLOWANCE)).min(max_total.saturating_sub(*total));
@@ -232,7 +232,7 @@ fn capped_member(z: &mut craft_zip::Archive<'_>, name: &str, limit: u64, total: 
     let result = match z.read(name, allowed) {
         Ok(Some(data)) => Ok(data),
         Ok(None) => Err(not_found()),
-        Err(craft_zip::Error::EntryTooLarge { .. }) => Err(corrupt(format!("{name} is too large"))),
+        Err(bharat_zip::Error::EntryTooLarge { .. }) => Err(corrupt(format!("{name} is too large"))),
         Err(e) => Err(corrupt(e.to_string())),
     };
     *total = total.saturating_add(result.as_ref().map_or(size, |d| d.len() as u64));
@@ -241,12 +241,12 @@ fn capped_member(z: &mut craft_zip::Archive<'_>, name: &str, limit: u64, total: 
 
 /// The archive, its declared entry count checked before it is indexed. Every budget is this
 /// crate's own ([`Limits`], [`MAX_JSON_TOTAL`]), so the archive's total is not used.
-fn open_zip(bytes: &[u8]) -> Result<craft_zip::Archive<'_>, craft_zip::Error> {
-    craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes: u64::MAX })
+fn open_zip(bytes: &[u8]) -> Result<bharat_zip::Archive<'_>, bharat_zip::Error> {
+    bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes: u64::MAX })
 }
 
 /// JSON member `name`, read by [`capped_member`] within the file's [`MAX_JSON_TOTAL`].
-fn json_member(z: &mut craft_zip::Archive<'_>, name: &str, limit: u64, total: &mut u64) -> Result<Value, Error> {
+fn json_member(z: &mut bharat_zip::Archive<'_>, name: &str, limit: u64, total: &mut u64) -> Result<Value, Error> {
     let data = capped_member(z, name, limit, total, MAX_JSON_TOTAL)?;
     serde_json::from_slice(&data).map_err(|e| corrupt(format!("{name}: {e}")))
 }

@@ -1,4 +1,4 @@
-// Checked reader subset retained from Craft Anything; MIT OR Apache-2.0.
+// Checked reader subset retained from Bharat Anything; MIT OR Apache-2.0.
 pub(crate) struct Reader<'a> {
     data: &'a [u8],
 }

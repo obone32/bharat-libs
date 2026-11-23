@@ -1,5 +1,5 @@
-use craft_captions::{Cue, Document, Format, WriteOptions, parse, write};
-use craft_captions::{TICKS_PER_SECOND, Tick};
+use bharat_captions::{Cue, Document, Format, WriteOptions, parse, write};
+use bharat_captions::{TICKS_PER_SECOND, Tick};
 
 /// Control characters that XML 1.0 forbids must not make the export unreadable.
 #[test]

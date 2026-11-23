@@ -7,7 +7,7 @@ use super::{Borders, Cell, FTable};
 /// while WordCraft's cells each draw their own four sides. The cell below is the one in the next
 /// row starting at the same column.
 pub(in crate::text) fn share_edges(rows: &mut [Vec<Cell>]) {
-    let visible = |b: Option<craft_wordmodel::props::Border>| b.filter(|b| b.is_visible());
+    let visible = |b: Option<bharat_wordmodel::props::Border>| b.filter(|b| b.is_visible());
     for r in 0..rows.len() {
         let starts: Vec<usize> = rows
             .get(r)
@@ -79,13 +79,13 @@ pub(in crate::text) struct TableB {
     pub(in crate::text) room: Option<f32>,
     /// It is in a cell, a frame or a column narrower than the page, whose width isn't known here.
     pub(in crate::text) contained: bool,
-    /// Its alignment and width, and each row's height so far (see [`craft_flow::TableExtra`]).
-    pub(in crate::text) extra: craft_flow::TableExtra,
+    /// Its alignment and width, and each row's height so far (see [`bharat_flow::TableExtra`]).
+    pub(in crate::text) extra: bharat_flow::TableExtra,
     /// The background of each column's default cell style (`table:default-cell-style-name`).
-    pub(in crate::text) column_backgrounds: Vec<Option<craft_wordmodel::props::Rgb>>,
+    pub(in crate::text) column_backgrounds: Vec<Option<bharat_wordmodel::props::Rgb>>,
     /// The table's background, and the row's being read.
-    pub(in crate::text) background: Option<craft_wordmodel::props::Rgb>,
-    pub(in crate::text) row_background: Option<craft_wordmodel::props::Rgb>,
+    pub(in crate::text) background: Option<bharat_wordmodel::props::Rgb>,
+    pub(in crate::text) row_background: Option<bharat_wordmodel::props::Rgb>,
 }
 
 /// The narrowest column the document model keeps (a narrower one would lose the table its grid).

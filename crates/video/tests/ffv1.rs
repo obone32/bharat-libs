@@ -1,12 +1,12 @@
 //! FFV1 tests: round trips, hostile input, and ffmpeg as the reference (oracle; skipped when ffmpeg
-//! is absent, a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+//! is absent, a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 //!
 //! - Our packets, in an AVI with our configuration record, decode in ffmpeg to our source pixels.
 //! - ffmpeg's FFV1 files (version 3, range coder, several pixel formats and slice counts) decode
 //!   with our decoder to ffmpeg's pixels.
 
-use craft_media::avi::{AviWriter, MuxOptions, StreamSpec, VideoSpec};
-use craft_video::ffv1::{Colorspace, Decoder, Encoder, EncoderConfig, Error, Frame};
+use bharat_media::avi::{AviWriter, MuxOptions, StreamSpec, VideoSpec};
+use bharat_video::ffv1::{Colorspace, Decoder, Encoder, EncoderConfig, Error, Frame};
 use std::path::Path;
 use std::process::Command;
 
@@ -216,8 +216,8 @@ fn avi_with(frame: &Frame, config: &[u8], packet: &[u8]) -> Vec<u8> {
 
 #[test]
 fn ffmpeg_decodes_our_packets_to_our_pixels() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("ffv1");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("ffv1");
     for &(pix_fmt, cs, bits, shift, planes) in FORMATS {
         for (slices_h, slices_v) in [(1, 1), (2, 2), (3, 2)] {
             let f = frame(96, 48, cs, bits, shift, planes);
@@ -238,8 +238,8 @@ fn ffmpeg_decodes_our_packets_to_our_pixels() {
 
 #[test]
 fn our_decoder_reads_ffmpegs_files() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("ffv1");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("ffv1");
     for &(pix_fmt, cs, bits, shift, planes) in FORMATS.iter().chain(DECODE_ONLY) {
         for slices in ["1", "4", "6"] {
             for (ctx, extra) in [("0", false), ("1", true)] {
@@ -275,7 +275,7 @@ fn our_decoder_reads_ffmpegs_files() {
                 );
                 let _ = extra;
                 let file = std::fs::read(&path).expect("read");
-                let avi = craft_media::avi::open(&file[..]).expect("open avi");
+                let avi = bharat_media::avi::open(&file[..]).expect("open avi");
                 let stream = &avi.streams[0];
                 let config = stream.video.as_ref().expect("video").extra.clone();
                 let chunk = stream.chunks[0];

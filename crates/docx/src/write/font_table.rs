@@ -6,11 +6,11 @@
 
 use std::collections::BTreeSet;
 
-use craft_wordmodel::font_kind::GenericFamily;
-use craft_wordmodel::props::CharProps;
-use craft_wordmodel::symbol_fonts::is_symbol_font;
-use craft_wordmodel::walk::each_para;
-use craft_wordmodel::{Document, Paragraph};
+use bharat_wordmodel::font_kind::GenericFamily;
+use bharat_wordmodel::props::CharProps;
+use bharat_wordmodel::symbol_fonts::is_symbol_font;
+use bharat_wordmodel::walk::each_para;
+use bharat_wordmodel::{Document, Paragraph};
 
 use crate::xml::W;
 

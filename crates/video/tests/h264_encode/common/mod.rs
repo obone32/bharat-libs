@@ -13,8 +13,8 @@ pub struct Yuv {
 }
 
 impl Yuv {
-    pub fn frame(&self) -> craft_video::h264::YuvFrame<'_> {
-        craft_video::h264::YuvFrame { y: &self.y, u: &self.u, v: &self.v, y_stride: self.w, uv_stride: self.w / 2 }
+    pub fn frame(&self) -> bharat_video::h264::YuvFrame<'_> {
+        bharat_video::h264::YuvFrame { y: &self.y, u: &self.u, v: &self.v, y_stride: self.w, uv_stride: self.w / 2 }
     }
     pub fn bytes(&self) -> Vec<u8> {
         let mut v = self.y.clone();
@@ -96,19 +96,19 @@ pub fn synth(w: usize, h: usize, t: usize) -> Yuv {
     Yuv { w, h, y, u, v }
 }
 
-/// ffmpeg (see `craft_media_testkit`); `None` after printing `SKIPPED`.
+/// ffmpeg (see `bharat_media_testkit`); `None` after printing `SKIPPED`.
 pub fn ffmpeg() -> Option<PathBuf> {
-    craft_media_testkit::ffmpeg_or_skip("h264enc oracle")
+    bharat_media_testkit::ffmpeg_or_skip("h264enc oracle")
 }
 
-/// ffprobe (see `craft_media_testkit`); `None` after printing `SKIPPED`.
+/// ffprobe (see `bharat_media_testkit`); `None` after printing `SKIPPED`.
 pub fn ffprobe() -> Option<PathBuf> {
-    craft_media_testkit::ffprobe().or_else(|| craft_media_testkit::skip("h264enc oracle: ffprobe not found"))
+    bharat_media_testkit::ffprobe().or_else(|| bharat_media_testkit::skip("h264enc oracle: ffprobe not found"))
 }
 
 /// Per-test output directory under `<workspace>/target/fixtures/h264enc/`.
 pub fn out_dir(name: &str) -> PathBuf {
-    craft_media_testkit::fixtures_dir(&format!("h264enc/{name}"))
+    bharat_media_testkit::fixtures_dir(&format!("h264enc/{name}"))
 }
 
 /// Strict decode of an Annex-B file with ffmpeg; returns (diagnostics, raw yuv420p bytes). Any diagnostic
@@ -183,8 +183,8 @@ pub struct Yuv16 {
 }
 
 impl Yuv16 {
-    pub fn frame(&self) -> craft_video::h264::YuvFrame16<'_> {
-        craft_video::h264::YuvFrame16 { y: &self.y, u: &self.u, v: &self.v, y_stride: self.w, uv_stride: self.w / 2 }
+    pub fn frame(&self) -> bharat_video::h264::YuvFrame16<'_> {
+        bharat_video::h264::YuvFrame16 { y: &self.y, u: &self.u, v: &self.v, y_stride: self.w, uv_stride: self.w / 2 }
     }
     /// The planes as `yuv420p10le` bytes.
     pub fn bytes(&self) -> Vec<u8> {

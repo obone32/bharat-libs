@@ -146,7 +146,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
     }
 
-    /// craft-libs#487 review: a hyphenated dictionary entry is a word even when its parts aren't.
+    /// bharat-libs#487 review: a hyphenated dictionary entry is a word even when its parts aren't.
     #[test]
     fn a_hyphenated_entry_is_looked_up_whole() {
         let d = AffixDict::from_hunspell("SET UTF-8\n", "1\ntic-tac\n", &[]).unwrap();
@@ -154,7 +154,7 @@ mod tests {
         assert!(!is_correct_with(&d, "tic-tacc"));
     }
 
-    /// craft-libs#496 review: an elision inside a hyphenated word (`l'ex-amico`) is read per part.
+    /// bharat-libs#496 review: an elision inside a hyphenated word (`l'ex-amico`) is read per part.
     #[test]
     fn an_elision_in_a_hyphenated_part_is_read() {
         let d = AffixDict::from_hunspell("SET UTF-8\n", "2\nex\namico\n", &[]).unwrap();

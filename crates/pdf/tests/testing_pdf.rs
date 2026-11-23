@@ -1,12 +1,12 @@
-//! `craft_pdf::testing::Pdf`, the builder other crates' tests reach through `test-support`: a file
+//! `bharat_pdf::testing::Pdf`, the builder other crates' tests reach through `test-support`: a file
 //! it builds opens in the object layer with every object where the cross-reference table says.
 #![cfg(feature = "test-support")]
 #![allow(clippy::unwrap_used, clippy::panic)]
 
 use std::sync::Arc;
 
-use craft_pdf::cos::{Document, ObjRef, Object, XrefEntry};
-use craft_pdf::testing::Pdf;
+use bharat_pdf::cos::{Document, ObjRef, Object, XrefEntry};
+use bharat_pdf::testing::Pdf;
 
 fn one_page() -> Pdf {
     Pdf::new()

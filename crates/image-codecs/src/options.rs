@@ -235,8 +235,8 @@ impl DpxBits {
     }
 }
 
-/// How a DDS texture stores its pixels and whether it carries a mip chain, from [`craft_dds`].
-pub use craft_dds::{DdsCompression, DdsOptions};
+/// How a DDS texture stores its pixels and whether it carries a mip chain, from [`bharat_dds`].
+pub use bharat_dds::{DdsCompression, DdsOptions};
 
 /// The longer side, in pixels, at which a TIFF image pyramid stops: the last level written is
 /// the first one no longer than this ([`EncodeOptions::tiff_pyramid`]).

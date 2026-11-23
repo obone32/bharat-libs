@@ -1,6 +1,6 @@
-# Craft Time
+# Bharat Time
 
-`craft-time` provides exact, drift-free media time representation, rational frame-rate mathematics, SMPTE timecode formatting/parsing, and film footage calculations for the Craft suite.
+`bharat-time` provides exact, drift-free media time representation, rational frame-rate mathematics, SMPTE timecode formatting/parsing, and film footage calculations for the Bharat suite.
 
 Extracted from the common time engine in **FilmCraft** and **EffectCraft** (refs #2), it is designed for NLEs, motion graphics compositors, audio workstations, and media transcoders.
 
@@ -20,7 +20,7 @@ This rate was chosen because it divides evenly into every broadcast and cinemati
 Edits, clip slicing, frame stepping, and audio/video alignment never suffer cumulative floating-point drift.
 
 ```rust
-use craft_time::{Tick, TICKS_PER_SECOND};
+use bharat_time::{Tick, TICKS_PER_SECOND};
 
 // Convert from seconds or sample units
 let one_sec = Tick::from_seconds_f64(1.0);
@@ -35,7 +35,7 @@ assert_eq!(audio_sample, one_sec);
 Frame rates are represented as exact fractions (`num / den`):
 
 ```rust
-use craft_time::{FrameRate, Tick};
+use bharat_time::{FrameRate, Tick};
 
 // Standard NTSC and PAL rates
 let ntsc_24 = FrameRate::FPS_23_976; // 24000 / 1001
@@ -59,7 +59,7 @@ assert_eq!(snapped, start_tick);
 Full support for SMPTE standard drop-frame (semicolon `;` separator) and non-drop frame (colon `:` separator) timecode:
 
 ```rust
-use craft_time::{FrameRate, format_timecode_frames, parse_timecode};
+use bharat_time::{FrameRate, format_timecode_frames, parse_timecode};
 
 let r = FrameRate::FPS_29_97;
 
@@ -77,7 +77,7 @@ assert_eq!(parsed, 1800);
 Calculates 35mm (16 frames/foot) and 16mm (40 frames/foot) film footage counts:
 
 ```rust
-use craft_time::{format_feet_frames, parse_feet_frames};
+use bharat_time::{format_feet_frames, parse_feet_frames};
 
 // 35mm (16 frames per foot)
 assert_eq!(format_feet_frames(199, 16), "0012+07");
@@ -94,20 +94,20 @@ The `soundcraft` module carries SoundCraft's existing sample-index clock (`i64` 
 session sample rate), `SampleRate`, `TempoMap`, grid calculations and five timebase parsers and
 formatters. It keeps the serialized representation and existing saturation, sanitization and
 rounding behavior intact while the rest of the suite can use exact `Tick` values. SoundCraft's
-session model imports these types from `craft_time::soundcraft`; the APIs in that module retain
+session model imports these types from `bharat_time::soundcraft`; the APIs in that module retain
 the original SoundCraft names and meanings.
 
 ## EffectCraft & FilmCraft Compatibility Differences
 
-`craft-time` unifies time representation across the Craft suite while explicitly documenting application-specific design choices:
+`bharat-time` unifies time representation across the Bharat suite while explicitly documenting application-specific design choices:
 
 1. **After Effects Display Formatting**:
    FilmCraft uses standard broadcast SMPTE zero-padded hours (`00:00:02:15` via `format_timecode_frames`).
    EffectCraft / After Effects displays hours without leading zeroes (`0:00:02:15` via `format_timecode_ae`). Both functions are provided.
 2. **Oversized Timecode Saturation**:
-   In `craft-time`, `parse_timecode` employs saturating arithmetic (`saturating_mul`, `saturating_add`) when frame calculations exceed 64-bit limits, saturating to `i64::MAX` or `i64::MIN` to keep operations total without unrecoverable errors. In contrast, EffectCraft returns `Err(ParseError("timecode too large"))`.
+   In `bharat-time`, `parse_timecode` employs saturating arithmetic (`saturating_mul`, `saturating_add`) when frame calculations exceed 64-bit limits, saturating to `i64::MAX` or `i64::MIN` to keep operations total without unrecoverable errors. In contrast, EffectCraft returns `Err(ParseError("timecode too large"))`.
 3. **Degenerate `{0, 0}` Frame Rates**:
-   In `craft-time`, `FrameRate::sane()` normalizes non-positive or zero rates (such as `{ num: 0, den: 0 }` or negative denominators) to `FrameRate::FPS_23_976` (nominal timecode base 24), maintaining standard broadcast defaults. In contrast, EffectCraft falls back to a timecode base of 1.
+   In `bharat-time`, `FrameRate::sane()` normalizes non-positive or zero rates (such as `{ num: 0, den: 0 }` or negative denominators) to `FrameRate::FPS_23_976` (nominal timecode base 24), maintaining standard broadcast defaults. In contrast, EffectCraft falls back to a timecode base of 1.
 4. **Monotonic Operator Division**:
    Operator division on `Tick` (`Tick / i64`) and `Tick::saturating_div` saturate on overflow (`Tick(i64::MIN) / -1 -> Tick(i64::MAX)`), preserving strict mathematical monotonicity across the entire signed 64-bit range without inflection.
 

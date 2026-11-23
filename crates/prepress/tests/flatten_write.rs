@@ -1,33 +1,33 @@
 //! The flattener's writer: display lists written with krilla and separated again by `plates`.
 //! Pages are 100 pt square and separated at 36 dpi; sample points are in points.
 //!
-//! Text cases with an embedded font need Inter from `CRAFT_PDF_TEST_FONT_DIR` or
-//! `~/.cache/craft-pdf-test-fonts`, and are skipped when it is missing.
+//! Text cases with an embedded font need Inter from `BHARAT_PDF_TEST_FONT_DIR` or
+//! `~/.cache/bharat-pdf-test-fonts`, and are skipped when it is missing.
 #![cfg(feature = "flatten")]
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};
 
-use craft_pdf::interpret::font::Glyph;
-use craft_pdf::interpret::hayro_cmap::BfString;
-use craft_pdf::interpret::{
+use bharat_pdf::interpret::font::Glyph;
+use bharat_pdf::interpret::hayro_cmap::BfString;
+use bharat_pdf::interpret::{
     BlendMode as HBlendMode, ClipPath, Context, Device, GlyphDrawMode, Image, InterpreterCache, InterpreterSettings, Paint as HPaint, PathDrawMode,
     SoftMask, TransformExt, interpret_page,
 };
-use craft_pdf::syntax::object::{Dict, Name, Stream};
-use craft_pdf::write::backend::SerializeSettings;
-use craft_pdf::write::backend::configure::PdfVersion;
-use craft_pdf::write::backend::page::PageSettings;
-use craft_pdf::write::print::{self, PrintColor};
-use craft_pdf::write::{Metadata, Writer};
-use craft_prepress::flatten::kurbo::{Affine, BezPath, Point, Rect, Shape};
-use craft_prepress::flatten::write::{WriteError, page_pdf, write_flattened};
-use craft_prepress::flatten::{
+use bharat_pdf::syntax::object::{Dict, Name, Stream};
+use bharat_pdf::write::backend::SerializeSettings;
+use bharat_pdf::write::backend::configure::PdfVersion;
+use bharat_pdf::write::backend::page::PageSettings;
+use bharat_pdf::write::print::{self, PrintColor};
+use bharat_pdf::write::{Metadata, Writer};
+use bharat_prepress::flatten::kurbo::{Affine, BezPath, Point, Rect, Shape};
+use bharat_prepress::flatten::write::{WriteError, page_pdf, write_flattened};
+use bharat_prepress::flatten::{
     BlendMode, ComplexRegion, DisplayList, FillItem, FillRule, FlattenOptions, GradientGeometry, GroupItem, ImageItem, ImageSpace, Item, Paint,
     PlacedGlyph, TextFont, TextItem, flatten,
 };
-use craft_prepress::{Alternate, CmsConversion, Ink, InkColor, InkId, InkSet, Options, Overprint, Plates, Process, Spot, plates};
+use bharat_prepress::{Alternate, CmsConversion, Ink, InkColor, InkId, InkSet, Options, Overprint, Plates, Process, Spot, plates};
 
 const C: InkId = InkId::process(Process::Cyan);
 const M: InkId = InkId::process(Process::Magenta);
@@ -64,7 +64,7 @@ fn page(inks: InkSet, items: Vec<Item>) -> DisplayList {
 fn pdf(list: &DisplayList) -> Vec<u8> {
     // Reading the profile takes a quarter second in a debug build.
     static SETTINGS: OnceLock<SerializeSettings> = OnceLock::new();
-    let settings = SETTINGS.get_or_init(|| print::settings(PrintColor::fogra39(craft_cms::builtin::COATED_FOGRA39_ICC)).unwrap());
+    let settings = SETTINGS.get_or_init(|| print::settings(PrintColor::fogra39(bharat_cms::builtin::COATED_FOGRA39_ICC)).unwrap());
     page_pdf(list, settings.clone(), &CmsConversion::fogra39()).unwrap()
 }
 
@@ -199,9 +199,9 @@ fn spot_fills_print_on_their_plate_or_where_the_ink_manager_sends_them() {
 const SAMPLE: &str = "Hamburg";
 
 fn inter() -> Option<Vec<u8>> {
-    let dir = std::env::var_os("CRAFT_PDF_TEST_FONT_DIR")
+    let dir = std::env::var_os("BHARAT_PDF_TEST_FONT_DIR")
         .map(PathBuf::from)
-        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".cache/craft-pdf-test-fonts")));
+        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".cache/bharat-pdf-test-fonts")));
     let data = dir.as_ref().and_then(|d| std::fs::read(d.join("Inter-Regular.ttf")).ok());
     if data.is_none() {
         println!("note: Inter-Regular.ttf not found in {dir:?}; case skipped");
@@ -289,7 +289,7 @@ impl<'a> Device<'a> for Reader {
 }
 
 fn read_text(pdf: &[u8]) -> Reader {
-    let doc = craft_pdf::syntax::Pdf::new(Arc::new(pdf.to_vec())).unwrap();
+    let doc = bharat_pdf::syntax::Pdf::new(Arc::new(pdf.to_vec())).unwrap();
     let page = &doc.pages()[0];
     let cache = InterpreterCache::new();
     let bbox = Rect::new(0.0, 0.0, 100.0, 100.0);
@@ -338,7 +338,7 @@ fn text_without_a_font_is_drawn_as_outlines_with_its_text() {
 /// Transparency left on a page: groups, soft masks, blend modes other than Normal and
 /// constant opacity below 1, in its resources and those of the forms it uses.
 fn transparency(pdf: &[u8]) -> Vec<String> {
-    let doc = craft_pdf::syntax::Pdf::new(Arc::new(pdf.to_vec())).unwrap();
+    let doc = bharat_pdf::syntax::Pdf::new(Arc::new(pdf.to_vec())).unwrap();
     let page = &doc.pages()[0];
     let mut found = Vec::new();
     if page.raw().get::<Dict<'_>>(b"Group".as_slice()).is_some() {
@@ -474,7 +474,7 @@ fn complex_regions_are_drawn_where_the_flattened_items_put_them() {
             jpeg: None,
         }))
     };
-    let settings = print::settings(PrintColor::fogra39(craft_cms::builtin::COATED_FOGRA39_ICC)).unwrap();
+    let settings = print::settings(PrintColor::fogra39(bharat_cms::builtin::COATED_FOGRA39_ICC)).unwrap();
     let mut writer = Writer::new(settings, Metadata::default());
     let mut page_builder = writer.document_mut().start_page_with(PageSettings::from_wh(100.0, 100.0).unwrap());
     let mut surface = page_builder.surface();

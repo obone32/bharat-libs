@@ -1,8 +1,8 @@
 //! HTML documents (feature `flow`): the HTML parts of WordCraft's cross-format and MathML tests
 //! (`crates/formats/src/tests.rs`, `mathml.rs`): equations through HTML, hostile input, entities.
 
-use craft_flow::{FBlock, Inline};
-use craft_html::doc::{import, inlines_html, parse};
+use bharat_flow::{FBlock, Inline};
+use bharat_html::doc::{import, inlines_html, parse};
 use std::time::{Duration, Instant};
 
 fn equations(html: &str) -> Vec<(String, bool)> {
@@ -36,7 +36,7 @@ fn html_export_round_trips_equations() {
 #[test]
 fn math_over_the_token_cap_is_skipped_to_its_end() {
     // Past the cap, the rest of the element is dropped, not read as body text.
-    let html = format!("<p><math>{}<mrow><mi>z</mi></mrow></math> tail</p>", "<mi>y</mi>".repeat(craft_math::mathml::MAX_NODES * 2));
+    let html = format!("<p><math>{}<mrow><mi>z</mi></mrow></math> tail</p>", "<mi>y</mi>".repeat(bharat_math::mathml::MAX_NODES * 2));
     let mut text = String::new();
     for b in &parse(&html).blocks {
         if let FBlock::Para(p) = b {
@@ -88,6 +88,6 @@ proptest::proptest! {
     #[test]
     fn fuzz_html(s in "(<(/)?(p|b|i|ul|ol|li|table|tr|td|th|pre|blockquote|a href=x|img src=data:,|br|h2|span style='color:red')>|[a-z &;#<>\"'=]){0,120}") {
         let d = import(&s);
-        let _ = craft_html::doc::export(&d);
+        let _ = bharat_html::doc::export(&d);
     }
 }

@@ -6,7 +6,7 @@
 //! lifts the target black with a tapered offset. [`ToneMap`] applies it to RGB by max(R, G, B),
 //! the "maxRGB" option of the Annex, as a ratio, so hue and saturation are kept.
 
-use craft_color::{REFERENCE_WHITE_NITS, pq_eotf, pq_inverse_eotf};
+use bharat_color::{REFERENCE_WHITE_NITS, pq_eotf, pq_inverse_eotf};
 
 /// PQ code value (0..1) of `nits`.
 fn pq(nits: f64) -> f64 {
@@ -149,7 +149,7 @@ pub struct ToneMap {
 }
 
 impl ToneMap {
-    /// Tone mapping with reference white at `craft_color::REFERENCE_WHITE_NITS` (203 nits,
+    /// Tone mapping with reference white at `bharat_color::REFERENCE_WHITE_NITS` (203 nits,
     /// Report ITU-R BT.2408).
     pub fn new(src_peak_nits: f64, dst_peak_nits: f64) -> ToneMap {
         ToneMap::with_reference_white(src_peak_nits, dst_peak_nits, REFERENCE_WHITE_NITS)

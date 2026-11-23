@@ -6,7 +6,7 @@
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
-use craft_video::mpeg2::{ChromaFormat, Encoder, EncoderConfig, Packet, RateControl, ReconFrame, YuvFrame};
+use bharat_video::mpeg2::{ChromaFormat, Encoder, EncoderConfig, Packet, RateControl, ReconFrame, YuvFrame};
 
 use crate::common::{Stats, fixture_dir, pix_fmt_of};
 use crate::oracle::{MAX_DIFFERING, MIN_PSNR, TOL_MAX};
@@ -72,7 +72,7 @@ fn ffmpeg_decode(ff: &Path, file: &Path, pix_fmt: &str) -> Vec<u8> {
 
 /// ffprobe's stream description and per-frame picture types.
 fn ffprobe(file: &Path) -> Option<(String, Vec<String>)> {
-    let fp = craft_media_testkit::ffprobe()?;
+    let fp = bharat_media_testkit::ffprobe()?;
     let stream = Command::new(&fp)
         .args(["-v", "error", "-select_streams", "v:0", "-show_entries", "stream=codec_name,profile,level,pix_fmt", "-of", "default=nw=1"])
         .arg(file)
@@ -161,7 +161,7 @@ fn check(ff: &Path, c: &Case) -> (Vec<u8>, f64) {
 
 #[test]
 fn ffmpeg_decodes_our_streams() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("mpeg2 encoder oracle") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("mpeg2 encoder oracle") else { return };
     let cif = EncoderConfig { gop_size: 12, ..EncoderConfig::new(352, 288, 25, 1) };
     let cases = [
         Case { name: "cif_q4", cfg: cif.clone(), frames: 25, probe: "mpeg2video,Main,10,yuv420p", min_psnr: 36.0 },
@@ -210,7 +210,7 @@ fn ffmpeg_decodes_our_streams() {
 
 #[test]
 fn average_bitrate_reaches_its_target() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("mpeg2 encoder bitrate") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("mpeg2 encoder bitrate") else { return };
     for (kbps, b) in [(800u32, 2), (2500, 2), (800, 0)] {
         let c = Case {
             name: match (kbps, b) {
@@ -231,7 +231,7 @@ fn average_bitrate_reaches_its_target() {
 
 #[test]
 fn constant_bitrate_streams_hold_their_rate() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("mpeg2 encoder constant bitrate") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("mpeg2 encoder constant bitrate") else { return };
     // a small buffer, so what it holds at the start and end moves the average little
     let vbv = 16384 * 16;
     for (kbps, b) in [(1500u32, 2), (3000, 0)] {
@@ -252,7 +252,7 @@ fn constant_bitrate_streams_hold_their_rate() {
 
 #[test]
 fn ffmpeg_decodes_a_dvd_like_variable_bitrate_stream() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("mpeg2 encoder variable bitrate") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("mpeg2 encoder variable bitrate") else { return };
     // DVD-Video's limits: 9.8 Mbit/s into a 224 KiB buffer
     let cfg = EncoderConfig {
         rate: RateControl::Vbr { kbps: 5000, max_kbps: 9800 },

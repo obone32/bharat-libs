@@ -1,8 +1,8 @@
 //! iXML timestamp parity with FilmCraft's streaming WAV reader, including hostile metadata.
 use std::io::Cursor;
 
-use craft_audio::{DecodeOptions, Decoder};
-use craft_media::ReadSeekSource;
+use bharat_audio::{DecodeOptions, Decoder};
+use bharat_media::ReadSeekSource;
 
 fn chunk(id: &[u8; 4], body: &[u8]) -> Vec<u8> {
     let mut out = id.to_vec();

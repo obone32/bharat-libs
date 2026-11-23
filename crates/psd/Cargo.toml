@@ -1,5 +1,5 @@
 [package]
-name = "craft-psd"
+name = "bharat-psd"
 description = "Faithful, lossless reader and writer for Adobe Photoshop PSD and PSB files, and for the Photoshop resource files that share their primitives (ABR, ASL, ACO, ACT, ASE, GRD, PAT, ATN, CSH, SHC)"
 version.workspace = true
 edition.workspace = true
@@ -29,7 +29,7 @@ rayon = { workspace = true }
 
 [dev-dependencies]
 proptest = { workspace = true }
-craft-psd = { path = ".", features = ["test-support"] }
+bharat-psd = { path = ".", features = ["test-support"] }
 
 [lints]
 workspace = true

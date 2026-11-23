@@ -10,7 +10,7 @@
 //! directory count is bounded by the complete entries in the optional header, and at most
 //! [`MAX_SECTIONS`] sections are read.
 //!
-//! From Craft Anything (`crates/formats/src/pe.rs`), where the import, export, resource and
+//! From Bharat Anything (`crates/formats/src/pe.rs`), where the import, export, resource and
 //! program-model code built on these headers stays. With the `serde` feature, [`PeSection`] is
 //! `Serialize`.
 

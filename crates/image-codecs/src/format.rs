@@ -97,19 +97,19 @@ pub const ASYMMETRIC_EXCEPTIONS: &[(Format, &str)] = &[
     (
         Format::Avif,
         "AVIF encode (ravif and rav1e, pure Rust) is behind the non-default `avif` feature and AVIF \
-         decode (craft-video's clean-room pure-Rust AV1 decoder) behind the non-default \
+         decode (bharat-video's clean-room pure-Rust AV1 decoder) behind the non-default \
          `avif-decode` feature, native targets only (on wasm32 a decoder panic would abort). A build \
          with only one of them reads or writes AVIF, not both.",
     ),
     (
         Format::Jxl,
         "Lossless JPEG XL export uses the pure-Rust zune-jpegxl encoder in every build; JPEG XL decode \
-         (craft-jxl on jxl-oxide, pure Rust) is behind the non-default `jxl` feature, which official \
+         (bharat-jxl on jxl-oxide, pure Rust) is behind the non-default `jxl` feature, which official \
          builds enable. Without the feature JPEG XL is written but not read.",
     ),
     (
         Format::Heif,
-        "HEIC decode uses heic-rs (pure Rust, in the optional craft-heif crate behind the \
+        "HEIC decode uses heic-rs (pure Rust, in the optional bharat-heif crate behind the \
          non-default `heif` feature, which official builds enable), so iPhone and Mac photos open; \
          writing needs an HEVC encoder, and the mature ones (x265, libheif) are C, so write stays \
          unsupported. Without the feature HEIF is detected but neither read nor written.",

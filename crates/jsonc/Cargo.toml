@@ -1,5 +1,5 @@
 [package]
-name = "craft-jsonc"
+name = "bharat-jsonc"
 description = "Span-preserving JSON/JSONC object editor with strict mode and caller-controlled input admission"
 version.workspace = true
 edition.workspace = true

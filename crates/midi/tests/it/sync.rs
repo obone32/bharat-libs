@@ -1,4 +1,4 @@
-use craft_midi::sync::{CLOCK, CONTINUE, MAX_POSITION, Rate, SONG_POSITION, START, STOP, SyncMessage, full_frame, quarter_frames, song_position};
+use bharat_midi::sync::{CLOCK, CONTINUE, MAX_POSITION, Rate, SONG_POSITION, START, STOP, SyncMessage, full_frame, quarter_frames, song_position};
 
 #[test]
 fn transport_prefix_compatibility() {

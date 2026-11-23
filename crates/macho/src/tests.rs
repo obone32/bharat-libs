@@ -1,4 +1,4 @@
-//! Slice table, name and thread-state tests. The thread-state cases are Craft Anything's
+//! Slice table, name and thread-state tests. The thread-state cases are Bharat Anything's
 //! `macho_thread_state` integration test, called on the command body directly instead of
 //! through the app's program model.
 

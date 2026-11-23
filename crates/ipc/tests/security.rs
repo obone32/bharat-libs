@@ -9,8 +9,8 @@ use std::time::Duration;
 
 use serde_json::{Value, json};
 
-use craft_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
-use craft_ipc::{LinkError, RuntimeDir};
+use bharat_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
+use bharat_ipc::{LinkError, RuntimeDir};
 
 struct Tmp(PathBuf);
 
@@ -82,7 +82,7 @@ fn boot_with(tcp_port: Option<u16>) -> Running {
     })
     .unwrap();
     let socket = match &server.record().endpoint {
-        craft_ipc::Endpoint::Unix { path } => PathBuf::from(path),
+        bharat_ipc::Endpoint::Unix { path } => PathBuf::from(path),
         other => panic!("expected a unix endpoint, got {other:?}"),
     };
     let token = server.record().token.clone();
@@ -184,12 +184,12 @@ fn tcp_with_the_record_token_works_and_the_record_publishes_the_port() {
     let running = boot_with(Some(0));
     let port = running.server.tcp_port().expect("tcp port");
     match &running.server.record().endpoint {
-        craft_ipc::Endpoint::Unix { .. } => {}
+        bharat_ipc::Endpoint::Unix { .. } => {}
         other => panic!("the instance record must keep the unix socket, got {other:?}"),
     }
     assert_eq!(running.server.record().tcp_port(), Some(port));
     let mut record = running.server.record().clone();
-    record.endpoint = craft_ipc::Endpoint::Tcp { port };
+    record.endpoint = bharat_ipc::Endpoint::Tcp { port };
     let mut stream = std::net::TcpStream::connect(("127.0.0.1", port)).unwrap();
     stream.set_read_timeout(Some(Duration::from_secs(3))).unwrap();
     let auth = json!({"id": 0, "method": "auth", "params": {"token": running.token}});
@@ -211,7 +211,7 @@ fn tcp_with_the_record_token_works_and_the_record_publishes_the_port() {
     assert_eq!(value["ok"], json!(true), "{value}");
     assert_eq!(value["result"], json!({}), "{value}");
     // The library client does the same from the published record.
-    let mut client = craft_ipc::client::Client::connect_tcp(running.server.record()).unwrap();
+    let mut client = bharat_ipc::client::Client::connect_tcp(running.server.record()).unwrap();
     assert_eq!(client.call("engine.commands", json!({})).unwrap(), json!({}));
     running.server.shutdown().unwrap();
 }
@@ -220,7 +220,7 @@ fn tcp_with_the_record_token_works_and_the_record_publishes_the_port() {
 fn tcp_is_not_published_when_it_is_off() {
     let running = boot();
     assert_eq!(running.server.record().tcp_port(), None);
-    assert!(craft_ipc::client::Client::connect_tcp(running.server.record()).is_err());
+    assert!(bharat_ipc::client::Client::connect_tcp(running.server.record()).is_err());
     running.server.shutdown().unwrap();
 }
 
@@ -228,7 +228,7 @@ fn tcp_is_not_published_when_it_is_off() {
 fn silent_tcp_connections_hit_the_unauthenticated_cap() {
     let running = boot_with(Some(0));
     let port = running.server.tcp_port().expect("tcp port");
-    let silent: Vec<_> = (0..craft_ipc::wire::MAX_UNAUTHENTICATED).map(|_| std::net::TcpStream::connect(("127.0.0.1", port)).unwrap()).collect();
+    let silent: Vec<_> = (0..bharat_ipc::wire::MAX_UNAUTHENTICATED).map(|_| std::net::TcpStream::connect(("127.0.0.1", port)).unwrap()).collect();
     std::thread::sleep(Duration::from_millis(400));
     let text = tcp_exchange(port, b"");
     assert!(text.contains("too many unauthenticated connections"), "{text}");
@@ -238,7 +238,7 @@ fn silent_tcp_connections_hit_the_unauthenticated_cap() {
 
 #[test]
 fn other_uid_is_refused_when_the_env_is_set() {
-    let Ok(user) = std::env::var("CRAFT_TEST_OTHER_USER") else {
+    let Ok(user) = std::env::var("BHARAT_TEST_OTHER_USER") else {
         return;
     };
     let running = boot();

@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! The installed fonts, for every Craft app: discovery on every platform, lookup by family and
+//! The installed fonts, for every Bharat app: discovery on every platform, lookup by family and
 //! style or by any other name, and loading shared between threads.
 //!
 //! A [`Catalog`] scans the platform's font folders ([`font_dirs`]), the suite's font store
@@ -11,7 +11,7 @@
 //! `fvar` tables, never whole files, and a rescan reads only files that changed.
 //!
 //! ```no_run
-//! use craft_font_catalog::{Catalog, Match};
+//! use bharat_font_catalog::{Catalog, Match};
 //!
 //! let catalog = Catalog::global();
 //! catalog.scan_in_background();

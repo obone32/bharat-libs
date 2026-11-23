@@ -1,6 +1,6 @@
 //! The writer scales: adding many children to one storage, and the duplicate-name rules that check keeps.
 
-use craft_cfb::{Version, Writer};
+use bharat_cfb::{Version, Writer};
 
 /// Adding a child compared its name with every sibling (allocating twice per comparison), so n children
 /// cost O(n^2): 20 000 children in one storage took about a minute. The duplicate check is a hash

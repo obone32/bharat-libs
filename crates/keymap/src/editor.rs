@@ -4,8 +4,8 @@
 //! A shortcut dialog drives it like this:
 //!
 //! ```
-//! use craft_keymap::editor::holders;
-//! use craft_keymap::{AssignError, Bindable, Binding, Chord, EditSession, Keymap, Platform, Policy, Recorded, Recorder, Scope, Scopes};
+//! use bharat_keymap::editor::holders;
+//! use bharat_keymap::{AssignError, Bindable, Binding, Chord, EditSession, Keymap, Platform, Policy, Recorded, Recorder, Scope, Scopes};
 //!
 //! let catalog = vec![
 //!     Bindable::new("file.save", "Save", Scope::app()).with_default(Binding::parse("Cmd+S").unwrap()),

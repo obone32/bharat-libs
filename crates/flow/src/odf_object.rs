@@ -5,8 +5,8 @@
 
 use std::sync::Arc;
 
-use craft_wordmodel::Document;
-use craft_wordmodel::graphic::{Embedded, EmbeddedRef};
+use bharat_wordmodel::Document;
+use bharat_wordmodel::graphic::{Embedded, EmbeddedRef};
 
 use super::types::OdfObject;
 

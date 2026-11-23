@@ -35,7 +35,7 @@ jobs:
         with:
           toolchain: stable
           targets: wasm32-unknown-unknown
-      - run: cargo check -p craft-crw --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-crw --locked --target wasm32-unknown-unknown
 
   samples:
     timeout-minutes: 20
@@ -59,7 +59,7 @@ jobs:
           key: crw-samples-${{ hashFiles('crates/crw/tests/samples.json') }}
       - name: Fetch the pinned CC0 sample files (raw.pixls.us)
         run: python scripts/fetch-crw-samples.py "$RUNNER_TEMP/crw-samples"
-      - run: cargo test -p craft-crw --release --locked --test samples -- --nocapture
+      - run: cargo test -p bharat-crw --release --locked --test samples -- --nocapture
         env:
-          CRAFT_CRW_SAMPLES: ${{ runner.temp }}/crw-samples
-          CRAFT_CRW_REQUIRE_SAMPLES: "1"
+          BHARAT_CRW_SAMPLES: ${{ runner.temp }}/crw-samples
+          BHARAT_CRW_REQUIRE_SAMPLES: "1"

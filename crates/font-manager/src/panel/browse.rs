@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use craft_ui::direction;
+use bharat_ui::direction;
 use egui::{CornerRadius, FontFamily, FontId, Id, Rect, Role, Sense, StrokeKind, Ui, UiBuilder, WidgetInfo, pos2, vec2};
 
 use crate::index::{Category, Index, script_name, source_label};
@@ -69,7 +69,7 @@ impl FontsPanel {
 
     pub(crate) fn sidebar(&mut self, ui: &mut Ui) {
         let s = self.skin.clone();
-        egui::ScrollArea::vertical().id_salt("craft-fonts.filters").auto_shrink([false, false]).show(ui, |ui| {
+        egui::ScrollArea::vertical().id_salt("bharat-fonts.filters").auto_shrink([false, false]).show(ui, |ui| {
             ui.with_layout(direction::column(ui), |ui| {
                 ui.spacing_mut().item_spacing.y = 8.0;
                 match self.tab {
@@ -138,7 +138,7 @@ impl FontsPanel {
                 }
             }
         };
-        let inner = widgets::select_box("craft-fonts.language", &selected, width).show_rows_with_header(ui, header, row, |m| m.len() + 1, rows);
+        let inner = widgets::select_box("bharat-fonts.language", &selected, width).show_rows_with_header(ui, header, row, |m| m.len() + 1, rows);
         widgets::name(ui, &inner.response, tl!("Language"));
         if self.query.language != before {
             self.focus_row = None;
@@ -149,7 +149,7 @@ impl FontsPanel {
         let any = tl!("Any script");
         let selected = self.query.script.as_deref().and_then(|id| script_name(&index, id)).unwrap_or(any).to_owned();
         let query = &mut self.query;
-        widgets::select(ui, "craft-fonts.script", tl!("Script"), &selected, width, |ui| {
+        widgets::select(ui, "bharat-fonts.script", tl!("Script"), &selected, width, |ui| {
             ui.selectable_value(&mut query.script, None, any);
             for &i in c.search.scripts() {
                 if let Some(script) = index.scripts().get(i) {
@@ -214,7 +214,7 @@ impl FontsPanel {
         ];
         widgets::cells_column(ui, s, &mut self.origin, &options);
         ui.add_space(8.0);
-        let note = tl!("Every Craft app uses the fonts in the font store. System fonts are added and removed with your system's own font tools.");
+        let note = tl!("Every Bharat app uses the fonts in the font store. System fonts are added and removed with your system's own font tools.");
         ui.add(egui::Label::new(egui::RichText::new(note).size(12.0).color(s.p.muted)).wrap());
     }
 
@@ -247,7 +247,7 @@ impl FontsPanel {
                 Preset::Numerals => tl!("Numerals"),
             };
             let settings = &mut self.settings;
-            widgets::select(ui, "craft-fonts.preset", tl!("Sample"), preset_name(preset), 128.0, |ui| {
+            widgets::select(ui, "bharat-fonts.preset", tl!("Sample"), preset_name(preset), 128.0, |ui| {
                 for p in [Preset::Sentence, Preset::Alphabet, Preset::Numerals] {
                     if ui.selectable_label(preset == p && settings.sample.is_empty(), preset_name(p)).clicked() {
                         settings.preset = p;
@@ -307,12 +307,12 @@ impl FontsPanel {
     /// The scroll area for `count` cards; `card` draws row `n` into the rect it is given.
     fn cards(&mut self, ui: &mut Ui, count: usize, mut card: impl FnMut(&mut FontsPanel, &mut Ui, usize, Rect) -> egui::Response) {
         let row = self.row_height();
-        let mut area = egui::ScrollArea::vertical().id_salt(("craft-fonts.cards", self.tab == Tab::Catalogue)).auto_shrink([false, false]);
+        let mut area = egui::ScrollArea::vertical().id_salt(("bharat-fonts.cards", self.tab == Tab::Catalogue)).auto_shrink([false, false]);
         let viewport_h = ui.available_height();
         if std::mem::take(&mut self.scroll_to_focus)
             && let Some(focus) = self.focus_row
         {
-            let offset = ui.ctx().data(|d| d.get_temp::<f32>(Id::unique(("craft-fonts.offset", self.tab == Tab::Catalogue)))).unwrap_or(0.0);
+            let offset = ui.ctx().data(|d| d.get_temp::<f32>(Id::unique(("bharat-fonts.offset", self.tab == Tab::Catalogue)))).unwrap_or(0.0);
             let top = focus as f32 * row;
             if top < offset {
                 area = area.vertical_scroll_offset(top);
@@ -358,7 +358,7 @@ impl FontsPanel {
                 }
             }
         });
-        ui.ctx().data_mut(|d| d.insert_temp(Id::unique(("craft-fonts.offset", self.tab == Tab::Catalogue)), output.state.clamped_offset().y));
+        ui.ctx().data_mut(|d| d.insert_temp(Id::unique(("bharat-fonts.offset", self.tab == Tab::Catalogue)), output.state.clamped_offset().y));
     }
 
     fn empty(&mut self, ui: &mut Ui, s: &Skin, title: &str, body: &str, clear: bool) {
@@ -452,7 +452,7 @@ impl FontsPanel {
         ui.add_space(8.0);
         if shown.is_empty() {
             let body = if self.origin == Origin::Store && self.installed_text.trim().is_empty() {
-                tl!("Fonts you install from Browse go here, for every Craft app.")
+                tl!("Fonts you install from Browse go here, for every Bharat app.")
             } else {
                 tl!("Try another name.")
             };
@@ -481,7 +481,7 @@ impl FontsPanel {
 
     fn catalogue_card(&mut self, ui: &mut Ui, index: &Index, i: usize, rect: Rect) -> egui::Response {
         let s = self.skin.clone();
-        let Some(family) = index.families().get(i) else { return ui.interact(rect, Id::unique(("craft-fonts.card", i)), Sense::hover()) };
+        let Some(family) = index.families().get(i) else { return ui.interact(rect, Id::unique(("bharat-fonts.card", i)), Sense::hover()) };
         let key = family_key(&family.source, &family.family);
         let installed = self.installed_by_name.get(&family.family.to_lowercase()).and_then(|f| regular(f)).cloned();
         let previewed = self.previewed.get(&key).and_then(|f| regular(f)).cloned();
@@ -504,7 +504,7 @@ impl FontsPanel {
 
     fn installed_card(&mut self, ui: &mut Ui, i: usize, rect: Rect) -> egui::Response {
         let s = self.skin.clone();
-        let Some(family) = self.installed.get(i).cloned() else { return ui.interact(rect, Id::unique(("craft-fonts.installed", i)), Sense::hover()) };
+        let Some(family) = self.installed.get(i).cloned() else { return ui.interact(rect, Id::unique(("bharat-fonts.installed", i)), Sense::hover()) };
         let meta = [tn(family.faces.len() as u64, "{n} style", "{n} styles"), source_name(family.source).to_owned()].join(" · ");
         let state = match self.jobs.of("", &family.name) {
             Some(job) => CardState::Running(job.kind, job.fraction()),
@@ -536,7 +536,7 @@ impl FontsPanel {
         let Card { key, name, meta, sample, curated, index_position } = card;
         let p = s.p;
         let rtl = direction::is_rtl(ui);
-        let id = Id::unique(("craft-fonts.card", key));
+        let id = Id::unique(("bharat-fonts.card", key));
         // The whole card opens the details; added first, so the buttons on it keep their clicks.
         let resp = ui.interact(rect, id, Sense::click());
         resp.widget_info(|| WidgetInfo::labeled(Role::Button, true, name));
@@ -559,7 +559,7 @@ impl FontsPanel {
         self.card_state(&mut end, s, name, index_position, state);
         if !curated {
             widgets::badge(&mut end, s, tl!("Not curated"), s.p.warn, false)
-                .on_hover_text(tl!("This family comes from a source you added. Craft doesn't review it."));
+                .on_hover_text(tl!("This family comes from a source you added. Bharat doesn't review it."));
         }
         let end_w = end.min_rect().width();
 
@@ -668,7 +668,7 @@ impl FontsPanel {
         job.wrap = egui::text::TextWrapping::truncate_at_width(rect.width());
         let galley = ui.painter().layout_job(job);
         // Sample text keeps its own direction whatever the interface's.
-        let x = if craft_i18n::base_direction(text) == Some(craft_i18n::Direction::Rtl) { rect.right() - galley.size().x } else { rect.left() };
+        let x = if bharat_i18n::base_direction(text) == Some(bharat_i18n::Direction::Rtl) { rect.right() - galley.size().x } else { rect.left() };
         let y = rect.center().y - galley.size().y / 2.0;
         ui.painter().with_clip_rect(rect.expand2(vec2(0.0, 6.0))).galley(pos2(x, y), galley, color);
     }

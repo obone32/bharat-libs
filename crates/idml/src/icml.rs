@@ -8,7 +8,7 @@
 //! variables, then the `Story` (and the stories of text frames anchored in it) and the
 //! hyperlinks that point into it. The elements are IDML's, so [`crate::model`] reads them.
 
-use craft_xml::{DECL_STANDALONE, El};
+use bharat_xml::{DECL_STANDALONE, El};
 
 use crate::model::{Story, stories};
 use crate::part::parse_part;

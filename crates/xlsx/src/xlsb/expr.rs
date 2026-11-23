@@ -1,11 +1,11 @@
 //! The expression tree an XLSB formula decodes to, and its A1 formula text (without `=`), in the
-//! file's spelling (`_xlfn.` and `_xlpm.` names as written). A copy of craft-xls's: the two
+//! file's spelling (`_xlfn.` and `_xlpm.` names as written). A copy of bharat-xls's: the two
 //! readers follow separate specifications, and can share one tree when both settle.
 
 use std::fmt::Write;
 use std::sync::Arc;
 
-use craft_sheet::{CellError, push_col, quote_sheet, sheet_needs_quotes};
+use bharat_sheet::{CellError, push_col, quote_sheet, sheet_needs_quotes};
 
 /// One end of a reference, with `$` anchors.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

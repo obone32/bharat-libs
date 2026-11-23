@@ -2,7 +2,7 @@
 //! extension.
 //!
 //! A 3MF file is an OPC package (a ZIP archive with relationships): [`read`] and [`read_model`]
-//! open it with `craft-opc`, find the model part through the package's `3dmodel` relationship
+//! open it with `bharat-opc`, find the model part through the package's `3dmodel` relationship
 //! (or, without one, the first `.model` part) and read it. [`read_model_part`] reads a model
 //! part's XML on its own, for a caller that has the parts some other way.
 //!
@@ -33,7 +33,7 @@
 
 use std::collections::HashMap;
 
-use craft_xml::{Event, Options, to_utf8};
+use bharat_xml::{Event, Options, to_utf8};
 
 use crate::{
     AlphaMode, Corner, Error, IDENTITY, Image, Limits, Mat4, Material, Mesh, Node, Part, Resolver, Result, Scene, TextureRef, Wrap, count_warning,
@@ -86,14 +86,14 @@ pub fn read(bytes: &[u8], limits: &Limits) -> Result<Scene> {
     Ok(read_model(bytes, limits)?.scene)
 }
 
-fn package_error(e: craft_opc::Error) -> Error {
+fn package_error(e: bharat_opc::Error) -> Error {
     if e.is_limit() { too_large(KIND, e) } else { malformed(KIND, e) }
 }
 
 /// Read a 3MF file. The package may inflate to [`Limits::max_data_bytes`] in all.
 pub fn read_model(bytes: &[u8], limits: &Limits) -> Result<Model> {
     let most = limits.max_data_bytes as u64;
-    let mut package = craft_opc::LazyPackage::open(bytes, &craft_opc::Limits::new(MAX_ENTRIES, most, most)).map_err(package_error)?;
+    let mut package = bharat_opc::LazyPackage::open(bytes, &bharat_opc::Limits::new(MAX_ENTRIES, most, most)).map_err(package_error)?;
     let related = package.rels("").map_err(package_error)?.first("3dmodel").filter(|r| !r.external).map(|r| r.target.clone());
     let root = related
         .filter(|r| package.has(r))

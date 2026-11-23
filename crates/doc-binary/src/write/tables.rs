@@ -2,8 +2,8 @@
 //! edges and per-cell borders (`sprmTDefTable`), the table's borders, alignment and indent, row
 //! height and flags, and the cells' shading, widths, vertical merges and alignment.
 
-use craft_wordmodel::props::{Align, Border, Borders, HeightRule, VAlign, VMerge};
-use craft_wordmodel::table::Table;
+use bharat_wordmodel::props::{Align, Border, Borders, HeightRule, VAlign, VMerge};
+use bharat_wordmodel::table::Table;
 
 use super::grpprl::{Grpprl, brc, brc80, shd, twips};
 

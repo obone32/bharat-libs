@@ -11,7 +11,7 @@ use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant, SystemTime};
 
-use craft_zip::{Archive, Compression, Writer};
+use bharat_zip::{Archive, Compression, Writer};
 
 /// Default bounds for opening an untrusted `.pcraft` ZIP.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -30,7 +30,7 @@ pub struct Limits {
 
 impl Default for Limits {
     fn default() -> Self {
-        let limits = craft_pcraft_format::Limits::default();
+        let limits = bharat_pcraft_format::Limits::default();
         Self {
             max_entries: limits.max_items as u64 + 4,
             max_total_bytes: limits.max_total_bytes,
@@ -58,7 +58,7 @@ pub enum Error {
     HashMismatch(String),
     /// ZIP container error.
     #[error(transparent)]
-    Zip(#[from] craft_zip::Error),
+    Zip(#[from] bharat_zip::Error),
     /// I/O or zstd decoding error.
     #[error("{0}")]
     Io(String),
@@ -72,21 +72,21 @@ pub fn is_pcraft_zip(bytes: &[u8]) -> bool {
         return false;
     }
     let limits = Limits { max_entries: 1_000_000, ..Limits::default() };
-    Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries, max_total_bytes: 0 })
-        .is_ok_and(|archive| !archive.has_duplicate_names() && archive.contains(craft_pcraft_format::MANIFEST))
+    Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries, max_total_bytes: 0 })
+        .is_ok_and(|archive| !archive.has_duplicate_names() && archive.contains(bharat_pcraft_format::MANIFEST))
 }
 
 /// Whether an entry path is a canonical manifest, preview, tile or blob path.
 pub fn valid_entry_path(path: &str) -> bool {
     if matches!(
         path,
-        craft_pcraft_format::MANIFEST | craft_pcraft_format::THUMB | craft_pcraft_format::COMPOSITE | craft_pcraft_format::FULL_COMPOSITE
+        bharat_pcraft_format::MANIFEST | bharat_pcraft_format::THUMB | bharat_pcraft_format::COMPOSITE | bharat_pcraft_format::FULL_COMPOSITE
     ) {
         return true;
     }
     let Some((kind, name)) = path.split_once('/') else { return false };
-    let Some(hash) = name.strip_suffix(craft_pcraft_format::OBJECT_SUFFIX) else { return false };
-    craft_pcraft_format::is_valid_hash(hash) && (kind == craft_pcraft_format::TILES_DIR || kind == craft_pcraft_format::BLOBS_DIR)
+    let Some(hash) = name.strip_suffix(bharat_pcraft_format::OBJECT_SUFFIX) else { return false };
+    bharat_pcraft_format::is_valid_hash(hash) && (kind == bharat_pcraft_format::TILES_DIR || kind == bharat_pcraft_format::BLOBS_DIR)
 }
 
 /// Content-addressed, compressed object bytes and their canonical bundle path.
@@ -113,8 +113,8 @@ pub enum ObjectKind {
 pub fn encode_object(kind: ObjectKind, bytes: &[u8]) -> StoredObject {
     let hash = hash_content(bytes);
     let path = match kind {
-        ObjectKind::Tile => craft_pcraft_format::tile_path(&hash),
-        ObjectKind::Blob => craft_pcraft_format::blob_path(&hash),
+        ObjectKind::Tile => bharat_pcraft_format::tile_path(&hash),
+        ObjectKind::Blob => bharat_pcraft_format::blob_path(&hash),
     }
     .unwrap_or_default();
     let compressed = encode_frame(bytes);
@@ -167,7 +167,7 @@ pub fn decode_object(path: &str, compressed: &[u8], max_decoded_bytes: u64) -> R
     if bytes.len() > max {
         return Err(Error::LimitExceeded { entry: path.to_owned(), limit: max_decoded_bytes });
     }
-    let expected = path.rsplit('/').next().unwrap_or_default().trim_end_matches(craft_pcraft_format::OBJECT_SUFFIX);
+    let expected = path.rsplit('/').next().unwrap_or_default().trim_end_matches(bharat_pcraft_format::OBJECT_SUFFIX);
     if hash_content(&bytes) != expected {
         return Err(Error::HashMismatch(path.to_owned()));
     }
@@ -176,7 +176,7 @@ pub fn decode_object(path: &str, compressed: &[u8], max_decoded_bytes: u64) -> R
 
 fn valid_object_path(path: &str) -> bool {
     let Some((kind, _)) = path.split_once('/') else { return false };
-    (kind == craft_pcraft_format::TILES_DIR || kind == craft_pcraft_format::BLOBS_DIR) && valid_entry_path(path)
+    (kind == bharat_pcraft_format::TILES_DIR || kind == bharat_pcraft_format::BLOBS_DIR) && valid_entry_path(path)
 }
 
 /// An in-memory `.pcraft` ZIP reader with bounded entry and total reads.
@@ -188,8 +188,8 @@ pub struct ZipBundle<'a> {
 impl<'a> ZipBundle<'a> {
     /// Opens a bundle, rejecting duplicate entry names and archives without a manifest.
     pub fn open(bytes: &'a [u8], limits: Limits) -> Result<Self> {
-        let archive = Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })?;
-        if archive.has_duplicate_names() || !archive.contains(craft_pcraft_format::MANIFEST) {
+        let archive = Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries, max_total_bytes: limits.max_total_bytes })?;
+        if archive.has_duplicate_names() || !archive.contains(bharat_pcraft_format::MANIFEST) {
             return Err(Error::InvalidBundle("missing manifest or duplicate entry names".into()));
         }
         Ok(Self { archive, limits })
@@ -197,7 +197,7 @@ impl<'a> ZipBundle<'a> {
 
     /// Reads the serialized document manifest.
     pub fn manifest(&mut self) -> Result<Vec<u8>> {
-        self.read(craft_pcraft_format::MANIFEST, self.limits.max_manifest_bytes)
+        self.read(bharat_pcraft_format::MANIFEST, self.limits.max_manifest_bytes)
     }
 
     /// Reads any canonical bundle entry, including the stored zstd bytes of an object.
@@ -210,7 +210,7 @@ impl<'a> ZipBundle<'a> {
 
     /// Reads an optional preview entry.
     pub fn preview(&mut self, path: &str) -> Result<Option<Vec<u8>>> {
-        if !matches!(path, craft_pcraft_format::THUMB | craft_pcraft_format::COMPOSITE | craft_pcraft_format::FULL_COMPOSITE) {
+        if !matches!(path, bharat_pcraft_format::THUMB | bharat_pcraft_format::COMPOSITE | bharat_pcraft_format::FULL_COMPOSITE) {
             return Err(Error::InvalidPath(path.to_owned()));
         }
         self.archive.read(path, self.limits.max_object_bytes).map_err(Into::into)
@@ -242,13 +242,13 @@ impl ZipBundleWriter {
         if manifest.is_empty() {
             return Err(Error::InvalidBundle("manifest is empty".into()));
         }
-        self.entries.insert(craft_pcraft_format::MANIFEST.into(), manifest);
+        self.entries.insert(bharat_pcraft_format::MANIFEST.into(), manifest);
         Ok(())
     }
 
     /// Adds an optional preview.
     pub fn set_preview(&mut self, path: &str, bytes: Vec<u8>) -> Result<()> {
-        if !matches!(path, craft_pcraft_format::THUMB | craft_pcraft_format::COMPOSITE | craft_pcraft_format::FULL_COMPOSITE) {
+        if !matches!(path, bharat_pcraft_format::THUMB | bharat_pcraft_format::COMPOSITE | bharat_pcraft_format::FULL_COMPOSITE) {
             return Err(Error::InvalidPath(path.to_owned()));
         }
         self.entries.insert(path.to_owned(), bytes);
@@ -284,13 +284,13 @@ impl ZipBundleWriter {
     /// Writes entries in canonical path order, with every ZIP member stored without another layer
     /// of compression (object payloads already use zstd).
     pub fn finish(self) -> Result<Vec<u8>> {
-        if !self.entries.contains_key(craft_pcraft_format::MANIFEST) {
+        if !self.entries.contains_key(bharat_pcraft_format::MANIFEST) {
             return Err(Error::InvalidBundle("manifest not set".into()));
         }
         let mut writer = Writer::new();
         let mut entries = self.entries;
-        let manifest = entries.remove(craft_pcraft_format::MANIFEST).ok_or_else(|| Error::InvalidBundle("manifest not set".into()))?;
-        writer.add(craft_pcraft_format::MANIFEST, &manifest, Compression::Stored)?;
+        let manifest = entries.remove(bharat_pcraft_format::MANIFEST).ok_or_else(|| Error::InvalidBundle("manifest not set".into()))?;
+        writer.add(bharat_pcraft_format::MANIFEST, &manifest, Compression::Stored)?;
         for (path, bytes) in entries {
             if !valid_entry_path(&path) {
                 return Err(Error::InvalidPath(path));
@@ -373,7 +373,7 @@ impl DirectoryBundleWriter {
     /// collected while the bundle lock is held. Collection is best-effort after publication:
     /// inaccessible or unsafe leftovers cannot turn a committed save into a reported failure.
     pub fn save_directory(&mut self, root: &Path, bundle: ZipBundleWriter) -> Result<DirectoryStats> {
-        if !bundle.entries.contains_key(craft_pcraft_format::MANIFEST) {
+        if !bundle.entries.contains_key(bharat_pcraft_format::MANIFEST) {
             return Err(Error::InvalidBundle("manifest not set".into()));
         }
         for path in bundle.entries.keys() {
@@ -388,7 +388,7 @@ impl DirectoryBundleWriter {
             self.verified.clear();
             self.generation = 0;
         }
-        let lock_path = root.join(craft_pcraft_format::SAVE_LOCK);
+        let lock_path = root.join(bharat_pcraft_format::SAVE_LOCK);
         refuse_symlink(&lock_path)?;
         let lock = OpenOptions::new().read(true).write(true).create(true).truncate(false).open(&lock_path).map_err(io_error)?;
         let start = Instant::now();
@@ -404,7 +404,7 @@ impl DirectoryBundleWriter {
         };
         // A known unsafe manifest cannot be published. Refuse it before writing objects or
         // previews, and still recheck immediately before publication below.
-        let manifest_path = root.join(craft_pcraft_format::MANIFEST);
+        let manifest_path = root.join(bharat_pcraft_format::MANIFEST);
         refuse_symlink(&manifest_path)?;
         self.generation = self.generation.saturating_add(1);
         let generation = self.generation;
@@ -435,7 +435,7 @@ impl DirectoryBundleWriter {
                 }
             }
             let _ = decode_object(path, bytes, 1 << 30)?;
-            craft_atomic::atomic_write(&target, bytes).map_err(io_error)?;
+            bharat_atomic::atomic_write(&target, bytes).map_err(io_error)?;
             if let Some(signature) = file_signature(&target)? {
                 self.verified.insert(path.clone(), CachedFile { signature, checked_at: generation });
             }
@@ -443,24 +443,24 @@ impl DirectoryBundleWriter {
             stats.written_objects.push(path.clone());
         }
 
-        for (path, bytes) in bundle.entries.iter().filter(|(path, _)| !is_object_path(path) && path.as_str() != craft_pcraft_format::MANIFEST) {
+        for (path, bytes) in bundle.entries.iter().filter(|(path, _)| !is_object_path(path) && path.as_str() != bharat_pcraft_format::MANIFEST) {
             let target = safe_target(&root, path)?;
             if let Some(parent) = target.parent() {
                 ensure_directory(parent)?;
             }
             refuse_symlink(&target)?;
-            craft_atomic::atomic_write(&target, bytes).map_err(io_error)?;
+            bharat_atomic::atomic_write(&target, bytes).map_err(io_error)?;
             stats.written = stats.written.saturating_add(1);
         }
 
-        let manifest = bundle.entries.get(craft_pcraft_format::MANIFEST).ok_or_else(|| Error::InvalidBundle("manifest not set".into()))?;
+        let manifest = bundle.entries.get(bharat_pcraft_format::MANIFEST).ok_or_else(|| Error::InvalidBundle("manifest not set".into()))?;
         refuse_symlink(&manifest_path)?;
-        craft_atomic::atomic_write(&manifest_path, manifest).map_err(io_error)?;
+        bharat_atomic::atomic_write(&manifest_path, manifest).map_err(io_error)?;
         stats.written = stats.written.saturating_add(1);
 
         // The durable manifest is the commit boundary. Cleanup owns only canonical regular
         // object files and previews; leave unsafe, inaccessible or locked leftovers for later.
-        for kind in [craft_pcraft_format::TILES_DIR, craft_pcraft_format::BLOBS_DIR] {
+        for kind in [bharat_pcraft_format::TILES_DIR, bharat_pcraft_format::BLOBS_DIR] {
             let dir = root.join(kind);
             if !cleanup_directory(&dir) {
                 continue;
@@ -475,7 +475,7 @@ impl DirectoryBundleWriter {
                 }
             }
         }
-        for path in [craft_pcraft_format::THUMB, craft_pcraft_format::COMPOSITE, craft_pcraft_format::FULL_COMPOSITE] {
+        for path in [bharat_pcraft_format::THUMB, bharat_pcraft_format::COMPOSITE, bharat_pcraft_format::FULL_COMPOSITE] {
             if !bundle.entries.contains_key(path) {
                 let _ = remove_cleanup_file(&root.join(path));
             }
@@ -617,18 +617,18 @@ impl DirectoryBundle {
     /// Opens a bundle directory containing a regular `manifest.json`.
     pub fn open(root: &Path, limits: Limits) -> Result<Self> {
         let root = fs::canonicalize(root).map_err(io_error)?;
-        let manifest = root.join(craft_pcraft_format::MANIFEST);
+        let manifest = root.join(bharat_pcraft_format::MANIFEST);
         refuse_symlink(&manifest)?;
         let metadata = fs::metadata(&manifest).map_err(io_error)?;
         if !metadata.is_file() || metadata.len() > limits.max_manifest_bytes {
-            return Err(Error::LimitExceeded { entry: craft_pcraft_format::MANIFEST.into(), limit: limits.max_manifest_bytes });
+            return Err(Error::LimitExceeded { entry: bharat_pcraft_format::MANIFEST.into(), limit: limits.max_manifest_bytes });
         }
         Ok(Self { root, limits })
     }
 
     /// Reads the serialized document manifest.
     pub fn manifest(&self) -> Result<Vec<u8>> {
-        self.read(craft_pcraft_format::MANIFEST, self.limits.max_manifest_bytes)
+        self.read(bharat_pcraft_format::MANIFEST, self.limits.max_manifest_bytes)
     }
 
     /// Reads any canonical bundle entry.
@@ -638,7 +638,7 @@ impl DirectoryBundle {
 
     /// Reads an optional preview entry.
     pub fn preview(&self, path: &str) -> Result<Option<Vec<u8>>> {
-        if !matches!(path, craft_pcraft_format::THUMB | craft_pcraft_format::COMPOSITE | craft_pcraft_format::FULL_COMPOSITE) {
+        if !matches!(path, bharat_pcraft_format::THUMB | bharat_pcraft_format::COMPOSITE | bharat_pcraft_format::FULL_COMPOSITE) {
             return Err(Error::InvalidPath(path.to_owned()));
         }
         self.read_optional(path, self.limits.max_object_bytes)

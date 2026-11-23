@@ -3,7 +3,7 @@ use super::*;
 
 /// A fresh, empty folder for one test.
 fn scratch(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("craft-format-build-{}-{name}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("bharat-format-build-{}-{name}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     dir

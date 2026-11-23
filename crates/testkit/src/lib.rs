@@ -1,10 +1,10 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 
-//! Source-level platform regression guards and verification utilities for the Craft application suite.
+//! Source-level platform regression guards and verification utilities for the Bharat application suite.
 //!
 //! This crate provides non-panicking source analysis guards that detect known platform hazards
-//! and lifecycle regressions across Craft applications:
+//! and lifecycle regressions across Bharat applications:
 //!
 //! * [`guards::predefined_quit`]: flags direct calls to `muda`'s predefined Quit item that bypass
 //!   dirty document save prompts and window teardown on macOS.
@@ -18,7 +18,7 @@
 //! On targets other than `wasm32`, [`deadline::with_deadline`] runs a test body on its own thread
 //! and fails the test when the body does not finish within its limit, and [`deadline::wait_until`]
 //! polls a condition until it holds and fails the test when the limit passes first. Both read an
-//! optional limit variable that the caller names, `CRAFT_TEST_TIMEOUT_SECS` by default.
+//! optional limit variable that the caller names, `BHARAT_TEST_TIMEOUT_SECS` by default.
 //!
 //! [`hostile::mutations`] yields a fixed sequence of damaged copies of a valid seed, on every
 //! target. On targets other than `wasm32`, [`hostile::hammer`] runs a parser on the seed, every

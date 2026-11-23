@@ -1500,7 +1500,7 @@ fn muda_crate_bindings<'a>(
 ///
 /// Using `PredefinedMenuItem::quit` connects the macOS menu directly to `NSApplication terminate:`,
 /// which bypasses dirty document checks, unsaved changes save prompts, and lifecycle cleanup.
-/// Applications should route Quit through custom menu items or interceptors connected to `craft-quit`.
+/// Applications should route Quit through custom menu items or interceptors connected to `bharat-quit`.
 ///
 /// The guard reads Rust tokens, so comments, strings and character literals are ignored, and whitespace
 /// or line breaks around `::` do not hide a call. A qualified path such as `<muda::PredefinedMenuItem>::quit`

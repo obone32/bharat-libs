@@ -1,6 +1,6 @@
 //! `parse_recovering`: what a damaged or truncated file still holds.
 
-use craft_dxf::{DxfError, parse, parse_recovering, section_slices, write_binary};
+use bharat_dxf::{DxfError, parse, parse_recovering, section_slices, write_binary};
 
 const WHOLE: &str = "0\nSECTION\n2\nENTITIES\n0\nLINE\n8\nA\n0\nENDSEC\n0\nEOF\n";
 

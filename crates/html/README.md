@@ -1,12 +1,12 @@
-# craft-html
+# bharat-html
 
 The bottom layer of reading and writing HTML: a tolerant tokenizer, character references,
 escaping and the character set a page declares. It replaces the tokenizer and entity table each
-Craft app carried. There is no tree builder, no CSS and no rendering: what the tags mean stays
+Bharat app carried. There is no tree builder, no CSS and no rendering: what the tags mean stays
 with the caller (a document importer, a mail reader, a clipboard reader).
 
 ```rust
-use craft_html::{Lexer, Options, Token, escape, unescape};
+use bharat_html::{Lexer, Options, Token, escape, unescape};
 
 let opts = Options { drop: &["script", "title"], raw_text: &["textarea"], ..Options::default() };
 let mut lexer = Lexer::with("<title>t</title><style>p{}</style>caf&eacute <b class='x'>&lt;3</b>", opts);
@@ -54,25 +54,25 @@ values in double quotes.
 
 ## HTML documents (feature `flow`)
 
-`craft_html::doc` reads a page or a pasted fragment into the [craft-flow](../flow/README.md)
-model and a craft-wordmodel `Document`, and writes one as clean HTML. The reader is a tolerant
+`bharat_html::doc` reads a page or a pasted fragment into the [bharat-flow](../flow/README.md)
+model and a bharat-wordmodel `Document`, and writes one as clean HTML. The reader is a tolerant
 tag-soup builder on this crate's tokenizer (a stack of open elements with HTML's implicit closes),
 with a CSS subset from `style` attributes and `<style>` rules with simple selectors in cascade
 order, tables with spans, lists, pictures (`data:` URIs, others through the caller's
-`ImageLoader`), ruby and MathML equations ([craft-math](../math/README.md)). `import_page` opens a
+`ImageLoader`), ruby and MathML equations ([bharat-math](../math/README.md)). `import_page` opens a
 web page as Word does (Times New Roman 12 pt, HTML's default spacing); `import` reads a fragment in
 the document's own formatting. `decode` / `decode_as` turn a page's bytes into text (BOM, declared
 charset, else detection). The writer gives semantic HTML with inline CSS, pictures as `data:`
 URIs, equations as MathML and ruby as `<ruby>`.
 
-The feature brings in craft-flow, craft-wordmodel, craft-math, craft-mime and craft-codepage; a
+The feature brings in bharat-flow, bharat-wordmodel, bharat-math, bharat-mime and bharat-codepage; a
 reader that only needs tokens (mail, clipboard tables) leaves it off.
 
 ## Not here
 
 - The full HTML5 named reference table (about 2,200 names): only the names above.
 - Decoding bytes to text. `declared_charset` gives the label a page names; a decoder for it is
-  the caller's (`craft-mime::charset` for the WHATWG labels).
+  the caller's (`bharat-mime::charset` for the WHATWG labels).
 - A DOM, and CSS beyond the subset the document reader applies.
 
 ## Provenance

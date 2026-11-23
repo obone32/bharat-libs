@@ -1,8 +1,8 @@
-//! craft-media's oracle-test helpers: the generic ones from `craft-media-testkit`, and the MP4
+//! bharat-media's oracle-test helpers: the generic ones from `bharat-media-testkit`, and the MP4
 //! fixtures and ffprobe queries the container tests share.
 #![allow(dead_code)]
 
-pub use craft_media_testkit::*;
+pub use bharat_media_testkit::*;
 use serde_json::Value;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -163,7 +163,7 @@ fn run_ffmpeg(ff: &Path, args: &[&str], out: &Path) -> Option<PathBuf> {
 }
 
 /// Path to a fixture, generating it with ffmpeg if needed. `None` after printing `SKIPPED` if
-/// ffmpeg is missing or the encoder isn't available (a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// ffmpeg is missing or the encoder isn't available (a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 pub fn fixture(name: &str) -> Option<PathBuf> {
     let ff = ffmpeg()?;
     let path = fixture_dir().join(name);
@@ -186,7 +186,7 @@ pub fn all_fixture_names() -> Vec<&'static str> {
 }
 
 /// ffprobe's JSON for `path`, or `None` after printing `SKIPPED` (a failure with
-/// `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 pub fn probe_json(path: &Path, what: &[&str]) -> Option<Value> {
     let fp = ffprobe()?;
     let o = match Command::new(fp).args(["-v", "error", "-of", "json"]).args(what).arg(path).output() {

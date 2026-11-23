@@ -1,7 +1,7 @@
 //! PivotTables: caches, records and tables read, written back, and made new.
 
-use craft_xlsx::testing::zip;
-use craft_xlsx::{
+use bharat_xlsx::testing::zip;
+use bharat_xlsx::{
     CacheItem, CacheValue, DataField, Document, Error, Limits, Location, Package, PivotCacheDefinition, PivotCachePart, PivotField, PivotItem,
     PivotTableDefinition, PivotTablePart, Range, SharedItems, records_xml,
 };
@@ -161,16 +161,16 @@ fn pivots_round_trip() {
 
 #[test]
 fn a_new_pivot_table() {
-    let mut doc = read(&craft_xlsx::testing::workbook(&[("Data", r#"<row r="1"><c r="A1"><v>1</v></c></row>"#), ("Report", "")], &[]).unwrap());
+    let mut doc = read(&bharat_xlsx::testing::workbook(&[("Data", r#"<row r="1"><c r="A1"><v>1</v></c></row>"#), ("Report", "")], &[]).unwrap());
     let values = [CacheValue::Number(1.0), CacheValue::Number(2.0)];
     let definition = PivotCacheDefinition {
         refresh_on_load: Some(true),
-        source: craft_xlsx::CacheSource {
+        source: bharat_xlsx::CacheSource {
             source_type: Some("worksheet".into()),
-            worksheet: Some(craft_xlsx::WorksheetSource { reference: Some("A1:A3".into()), sheet: Some("Data".into()), ..Default::default() }),
+            worksheet: Some(bharat_xlsx::WorksheetSource { reference: Some("A1:A3".into()), sheet: Some("Data".into()), ..Default::default() }),
             ..Default::default()
         },
-        fields: vec![craft_xlsx::CacheField {
+        fields: vec![bharat_xlsx::CacheField {
             name: Some("N".into()),
             num_fmt_id: Some(0),
             shared_items: Some(SharedItems { items: values.iter().cloned().map(CacheItem::new).collect(), ..SharedItems::describe(&values) }),

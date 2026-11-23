@@ -1,6 +1,6 @@
 //! Slice encoding: macroblock analysis, mode decision, residual coding, reconstruction and entropy coding.
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use crate::h264::encode::cabac::{BinSink, CabacEncoder, CabacEstimator, Contexts, CostTable};
 use crate::h264::encode::dsp::{sad, sad8, sad16, satd, ssd};

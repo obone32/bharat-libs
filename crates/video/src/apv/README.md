@@ -1,18 +1,18 @@
-# APV decoder and encoder (`craft_video::apv`, feature `apv`)
+# APV decoder and encoder (`bharat_video::apv`, feature `apv`)
 
 Clean-room Advanced Professional Video (APV) decoder and encoder in pure Rust, implemented strictly
 from the public **IETF RFC 9924** specification (*Advanced Professional Video*, February 2026,
 ISSN 2070-1721).
 
-Depends only on `craft_media::bitstream`, `thiserror`, and (optional, feature `threads`) `rayon`.
+Depends only on `bharat_media::bitstream`, `thiserror`, and (optional, feature `threads`) `rayon`.
 Builds for `wasm32-unknown-unknown`; no `unsafe`. Feature `apv-decode` builds the decoder alone
-(`craft_video::apv::decode`), `apv-encode` the encoder alone (`craft_video::apv::encode`); both
-are re-exported at `craft_video::apv`.
+(`bharat_video::apv::decode`), `apv-encode` the encoder alone (`bharat_video::apv::encode`); both
+are re-exported at `bharat_video::apv`.
 
 ## API
 
 ```rust
-use craft_video::apv::*;
+use bharat_video::apv::*;
 
 // Decode one APV Access Unit (or raw bitstream AU prefixed with a 32-bit au_size).
 let frame: Frame = decode_frame(&au)?;
@@ -60,7 +60,7 @@ let apvc: Vec<u8> = enc.decoder_config_record();  // APVDecoderConfigurationReco
   across thousands of mutated and random inputs.
 - **Memory budget**: the samples of one access unit (the decoded tiles and the frame assembled
   from them, plus the same for an auxiliary alpha frame) must fit `DecodeOptions::memory_budget`
-  (`craft_video::budget::DECODE_MEMORY_BUDGET` by default: 4 GiB, 1 GiB on 32-bit targets), or the
+  (`bharat_video::budget::DECODE_MEMORY_BUDGET` by default: 4 GiB, 1 GiB on 32-bit targets), or the
   frame is refused with `Error::MemoryBudget` before anything is allocated. The largest frame the
   format allows here (16384×16384 4:4:4:4) needs exactly 4 GiB.
 
@@ -76,6 +76,6 @@ let apvc: Vec<u8> = enc.decoder_config_record();  // APVDecoderConfigurationReco
 
 `tests/apv/oracle.rs` encodes synthetic test patterns across all 7 profiles, odd dimensions, multiple
 tiles, custom asymmetric quantization matrices, and HDR metadata PBUs, then decodes the resulting
-`.apv` streams with `ffmpeg -v error -xerror -f apv` and compares against `craft_video::apv::decode_frame`.
+`.apv` streams with `ffmpeg -v error -xerror -f apv` and compares against `bharat_video::apv::decode_frame`.
 Because APV specifies an exact integer inverse transform, **the decoder is 100% bit-exact
 (`max_diff = 0`) with FFmpeg's APV decoder across every profile and test case.**

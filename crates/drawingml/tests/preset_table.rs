@@ -1,7 +1,7 @@
 //! Every preset against ECMA-376's presetShapeDefinitions.xml, evaluated by
 //! `fixtures/make_preset_table.py`: default adjust values and the text rectangle at three sizes.
 
-use craft_drawingml::preset::{adjust_defaults as defaults, build, info};
+use bharat_drawingml::preset::{adjust_defaults as defaults, build, info};
 
 #[test]
 fn presets_follow_preset_shape_definitions() {

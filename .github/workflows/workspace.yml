@@ -25,32 +25,32 @@ concurrency:
 jobs:
   native:
     name: Workspace
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/gate.yml@main
     with:
       os: '["ubuntu-latest","windows-latest","macos-latest"]'
       # On a pull request, macOS and Windows run only when it can change platform behaviour: a
       # crate with platform cfg code or one that depends on it, the build setup, or a file outside
-      # the crates (craft-common-actions' select-platforms). The full-ci label runs them anyway
+      # the crates (bharat-common-actions' select-platforms). The full-ci label runs them anyway
       # from the next push or manual run; pushes to main always run every leg.
       select-os: '["windows-latest","macos-latest"]'
       timeout-minutes: 120
       # Every leg runs its tests with nextest, and its doctests with cargo test (.config/nextest.toml).
       tools: cargo-nextest@0.9.150
       packages: mesa-vulkan-drivers libvulkan1
-      craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
+      bharat-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
       linux-env: WGPU_BACKEND=vulkan
       # No debuginfo on Windows: writing PDBs for every test binary is a large part of its link
       # time. A panic still names its file and line; only backtrace frames lose theirs, and the
       # Linux and macOS legs keep line tables.
       windows-env: |
-        CRAFT_PRINT_REQUIRE_QUEUE=1
+        BHARAT_PRINT_REQUIRE_QUEUE=1
         CARGO_PROFILE_DEV_DEBUG=0
       # The fuzz-style tests run a fraction of their cases here: every hostile-input hammer and
-      # sweep 1/8 (craft-testkit's CRAFT_HOSTILE_DIVISOR), every proptest without its own case
+      # sweep 1/8 (bharat-testkit's BHARAT_HOSTILE_DIVISOR), every proptest without its own case
       # count 64 cases instead of 256. nightly.yml runs them all in full.
       env: |
-        CRAFT_PRINT_REQUIRE_QUEUE=0
-        CRAFT_HOSTILE_DIVISOR=8
+        BHARAT_PRINT_REQUIRE_QUEUE=0
+        BHARAT_HOSTILE_DIVISOR=8
         PROPTEST_CASES=64
       setup-command: bash scripts/ci-test-inputs.sh
       # The PhotoCraft corpora, keyed on the script that pins them: a hit skips the PhotoCraft
@@ -79,22 +79,22 @@ jobs:
         # feature off, which an all-features build cannot reach.
         cargo nextest run --workspace --all-features --locked --profile ci
         cargo test --workspace --doc --all-features --locked
-        cargo nextest run -p craft-image-codecs -p craft-text --locked --profile ci
+        cargo nextest run -p bharat-image-codecs -p bharat-text --locked --profile ci
       windows-command: |
         powershell.exe -NoProfile -Command '$ErrorActionPreference = "Stop"; Start-Service Spooler; Add-PrinterDriver -Name "Generic / Text Only"'
         cargo nextest run --workspace --all-features --locked --profile ci
         cargo test --workspace --doc --all-features --locked
-        cargo nextest run -p craft-image-codecs -p craft-text --locked --profile ci
+        cargo nextest run -p bharat-image-codecs -p bharat-text --locked --profile ci
 
   msrv:
     name: Rust 1.95
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/gate.yml@main
     with:
       os: '["ubuntu-latest"]'
       toolchain: 1.95.0
       targets: ""
       tools: ""
-      craft-fonts-ref: ""
+      bharat-fonts-ref: ""
       require-craft-fonts: false
       timeout-minutes: 15
       dev-debug: ""
@@ -102,12 +102,12 @@ jobs:
 
   wasm:
     name: UI and settings WASM
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/bharat-common-actions/.github/workflows/gate.yml@main
     with:
       os: '["ubuntu-latest"]'
       targets: wasm32-unknown-unknown
       tools: ""
-      craft-fonts-ref: ""
+      bharat-fonts-ref: ""
       require-craft-fonts: false
       timeout-minutes: 15
-      command: cargo check -p craft-ui -p craft-settings --all-features --locked --target wasm32-unknown-unknown
+      command: cargo check -p bharat-ui -p bharat-settings --all-features --locked --target wasm32-unknown-unknown

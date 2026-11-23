@@ -1,8 +1,8 @@
-// Synthetic DEX fixture and deterministic mutations retained from Craft Anything.
-pub use craft_testkit::sample_damage::{mutations, noise};
+// Synthetic DEX fixture and deterministic mutations retained from Bharat Anything.
+pub use bharat_testkit::sample_damage::{mutations, noise};
 
 pub mod android {
-    pub const HELLO: &str = "Hello, Craft!";
+    pub const HELLO: &str = "Hello, Bharat!";
     fn u16le(v: &mut Vec<u8>, x: u16) {
         v.extend_from_slice(&x.to_le_bytes());
     }

@@ -8,7 +8,7 @@ use hmac::Mac;
 use sha2::Digest;
 use zeroize::Zeroizing;
 
-use craft_xml::El;
+use bharat_xml::El;
 
 use crate::Error;
 
@@ -53,15 +53,15 @@ const NS_ENCRYPTION: &str = "http://schemas.microsoft.com/office/2006/encryption
 const NS_PASSWORD: &str = "http://schemas.microsoft.com/office/2006/keyEncryptor/password";
 
 /// The root-level stream called `name`.
-fn root_stream(cf: &craft_cfb::CompoundFile<'_>, name: &str) -> Option<usize> {
-    cf.child(0, name).filter(|&id| cf.entry(id).is_some_and(|e| e.kind == craft_cfb::EntryKind::Stream))
+fn root_stream(cf: &bharat_cfb::CompoundFile<'_>, name: &str) -> Option<usize> {
+    cf.child(0, name).filter(|&id| cf.entry(id).is_some_and(|e| e.kind == bharat_cfb::EntryKind::Stream))
 }
 
 /// Is this an encrypted Office package (a compound file with an `EncryptedPackage` stream)
 /// rather than a zip? A rights-managed file counts: it has the stream but no `EncryptionInfo`,
 /// and [`decrypt`] names it as unsupported.
 pub fn is_encrypted(bytes: &[u8]) -> bool {
-    craft_cfb::CompoundFile::open(bytes).is_ok_and(|cf| root_stream(&cf, "EncryptedPackage").is_some())
+    bharat_cfb::CompoundFile::open(bytes).is_ok_and(|cf| root_stream(&cf, "EncryptedPackage").is_some())
 }
 
 /// Whether the right password could decrypt this file, checked without one: an error names a
@@ -78,7 +78,7 @@ pub fn check(bytes: &[u8]) -> Result<(), Error> {
 /// [`Error::PasswordRequired`] once it knows the file is one it can decrypt; a password that
 /// doesn't fit gives [`Error::WrongPassword`].
 pub fn decrypt(bytes: &[u8], password: Option<&str>) -> Result<Vec<u8>, Error> {
-    let cf = craft_cfb::CompoundFile::open(bytes).map_err(|e| bad(format!("not a readable compound file ({e})")))?;
+    let cf = bharat_cfb::CompoundFile::open(bytes).map_err(|e| bad(format!("not a readable compound file ({e})")))?;
     let package = root_stream(&cf, "EncryptedPackage").ok_or_else(|| bad("no EncryptedPackage stream"))?;
     // Rights management (IRM) keeps the package but describes its encryption elsewhere.
     let info = root_stream(&cf, "EncryptionInfo").ok_or_else(|| Error::Unsupported("rights-management".into()))?;
@@ -311,7 +311,7 @@ pub fn encrypt_with_spin_count(package: &[u8], password: &str, spin_count: u32) 
 /// A version 3 compound file of streams at `/`-separated paths.
 fn compound(streams: &[(&str, Vec<u8>)]) -> Result<Vec<u8>, Error> {
     let refs: Vec<(&str, &[u8])> = streams.iter().map(|(path, data)| (*path, data.as_slice())).collect();
-    craft_cfb::write_streams(craft_cfb::Version::V3, &refs).map_err(|e| bad(format!("couldn't write the compound file ({e})")))
+    bharat_cfb::write_streams(bharat_cfb::Version::V3, &refs).map_err(|e| bad(format!("couldn't write the compound file ({e})")))
 }
 
 /// A package encrypted with the *Standard* method (§2.3.4.5–§2.3.4.9: AES-ECB, SHA-1, 50,000
@@ -366,9 +366,9 @@ pub(crate) fn bad(msg: impl Into<String>) -> Error {
 }
 
 /// A stream's contents, at most `cap` bytes.
-fn stream(cf: &craft_cfb::CompoundFile<'_>, id: usize, name: &str, cap: u64) -> Result<Vec<u8>, Error> {
+fn stream(cf: &bharat_cfb::CompoundFile<'_>, id: usize, name: &str, cap: u64) -> Result<Vec<u8>, Error> {
     cf.read_capped(id, cap).map_err(|e| match e {
-        craft_cfb::Error::LimitExceeded(_) => Error::TooLarge(format!("{name} is too large")),
+        bharat_cfb::Error::LimitExceeded(_) => Error::TooLarge(format!("{name} is too large")),
         e => bad(format!("can't read {name} ({e})")),
     })
 }
@@ -650,9 +650,9 @@ fn parse_info(info: &[u8]) -> Result<Info, Error> {
         (3 | 4, 3) => return Err(Error::Unsupported("Extensible".into())),
         _ => return Err(Error::Unsupported(format!("version {major}.{minor}"))),
     }
-    let options = craft_xml::Options {
-        limits: craft_xml::Limits { max_input: MAX_INFO as usize, ..craft_xml::Limits::default() },
-        ..craft_xml::Options::default()
+    let options = bharat_xml::Options {
+        limits: bharat_xml::Limits { max_input: MAX_INFO as usize, ..bharat_xml::Limits::default() },
+        ..bharat_xml::Options::default()
     };
     let root = options.parse(info.get(8..).unwrap_or(&[])).map_err(|e| bad(format!("EncryptionInfo isn't readable XML ({e})")))?;
     if root.local() != "encryption" {

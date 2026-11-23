@@ -1252,6 +1252,6 @@ pub fn makepattern(ip: &mut Interp) -> R {
     for (k, v) in d.entries() {
         inst.put(k, v);
     }
-    inst.put_name(b"CraftPsMatrix", matrix_obj(&m.then(&ip.gs.ctm)));
+    inst.put_name(b"BharatPsMatrix", matrix_obj(&m.then(&ip.gs.ctm)));
     ip.push(Obj::Dict(inst))
 }

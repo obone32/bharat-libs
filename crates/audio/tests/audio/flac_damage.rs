@@ -1,6 +1,6 @@
 //! A damaged FLAC keeps its length and timing: the frames that were lost are silence.
 
-use craft_audio::{AudioBuffer, BitDepth, DecodeOptions, Decoder, EncodeFormat, EncodeOptions, decode, encode};
+use bharat_audio::{AudioBuffer, BitDepth, DecodeOptions, Decoder, EncodeFormat, EncodeOptions, decode, encode};
 
 const FRAMES: usize = 48_000;
 /// The encoder's block size: the frames one FLAC frame holds.

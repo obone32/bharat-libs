@@ -20,8 +20,8 @@ use crate::shared::{black_from_columns, cfa_from_exif, white_from_data};
 
 use crate::tiffraw::{Packing, read_image_in};
 use crate::{BlackLevel, Camera, Cfa, ColorData, Limits, Mode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result};
-use craft_tiff::image::{ImageInfo, chunk_bytes};
-use craft_tiff::{ByteOrder, Tiff, makernote, tags as t};
+use bharat_tiff::image::{ImageInfo, chunk_bytes};
+use bharat_tiff::{ByteOrder, Tiff, makernote, tags as t};
 
 const CROP_ORIGIN: u16 = 0x0038;
 const CROP_SIZE: u16 = 0x0039;
@@ -129,7 +129,7 @@ fn dark_trimmed(d: &[u16], w: usize, h: usize, black: Option<f64>, white: f32) -
 /// entry is the daylight white (5205 K) and the rest run from 2500 K up. `None` unless they make a curve.
 fn kelvin_presets(mn: Option<&makernote::MakerNote>) -> Option<crate::kelvin::KelvinPresets> {
     let mn = mn?;
-    let craft_tiff::Value::Undefined(b) = mn.ifd.value(KELVIN_WB)? else { return None };
+    let bharat_tiff::Value::Undefined(b) = mn.ifd.value(KELVIN_WB)? else { return None };
     let words: Vec<u16> = b.as_chunks::<2>().0.iter().map(|c| mn.order.u16(*c)).collect();
     let points = words
         .get(1..)?
@@ -276,7 +276,7 @@ mod tests {
 
     #[test]
     fn kelvin_presets_from_maker_note_0221() {
-        use craft_tiff::{IfdBuilder, TiffWriter, Value};
+        use bharat_tiff::{IfdBuilder, TiffWriter, Value};
         // a u16, then entries of (53190 - K, 0, red * 8192, blue * 8192): daylight first, then 2500 K upward
         let entry = |k: u32, r: f64, b: f64| [(53190 - k) as u16, 0, (r * 8192.0) as u16, (b * 8192.0) as u16];
         let mut words = vec![0u16];
@@ -475,7 +475,7 @@ mod tests {
     /// `CFAPattern` `pattern` and an AOC maker note with the area tags (and, for 65535, a Huffman table). The samples
     /// are plain 16-bit words (1), packed 12-bit (32773) or Huffman coded (65535).
     fn pef_with_pattern(compression: u16, pattern: [u8; 4]) -> Vec<u8> {
-        use craft_tiff::{IfdBuilder, ImageData, TiffWriter, Value};
+        use bharat_tiff::{IfdBuilder, ImageData, TiffWriter, Value};
         let (w, h) = (16usize, 8usize);
         let px: Vec<u16> = (0..w * h).map(|i| ((i * 37) % 900 + 100) as u16).collect();
         let (tb, codes) = test_table();
@@ -540,7 +540,7 @@ mod tests {
 
     #[test]
     fn fixed_cfa_fallback_is_noticed_but_either_usable_metadata_form_is_not_assumed() {
-        use craft_tiff::{IfdBuilder, ImageData, TiffWriter, Value};
+        use bharat_tiff::{IfdBuilder, ImageData, TiffWriter, Value};
         let expected: Vec<u16> = (0..16).map(|i| 100 + i * 7).collect();
         let valid_exif = &[2, 0, 2, 0, 1, 0, 2, 1][..];
         let invalid_exif = &[2, 0, 2, 0, 1, 0][..];
@@ -582,7 +582,7 @@ mod tests {
     /// A `w x h` big-endian 14-bit PEF of plain 16-bit words without area tags, whose maker note has only a
     /// BlackPoint of `black`, with `px(x, y)` as the samples.
     fn pef_with_black_point(w: usize, h: usize, black: u16, px: impl Fn(usize, usize) -> u16) -> Vec<u8> {
-        use craft_tiff::{IfdBuilder, ImageData, TiffWriter, Value};
+        use bharat_tiff::{IfdBuilder, ImageData, TiffWriter, Value};
         let strip: Vec<u8> = (0..w * h).flat_map(|i| px(i % w, i / w).to_be_bytes()).collect();
         let build = |levels_at: u32| {
             let mut ifd = IfdBuilder::new();

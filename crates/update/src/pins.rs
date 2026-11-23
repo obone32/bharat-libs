@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 
 /// Names a file to use in place of the default (absolute paths only). The launcher sets it for an
 /// app whose home it redirects (tarball installs on Linux), so the app still finds the real file.
-pub const PATH_ENV: &str = "CRAFT_VERSIONS_FILE";
+pub const PATH_ENV: &str = "BHARAT_VERSIONS_FILE";
 
 /// The line a Flatpak app's manifest adds to its `finish-args` so it can read the file. It names
 /// the folder [`Pins::default_path`] uses; the two change together or Flatpak apps lose the file.

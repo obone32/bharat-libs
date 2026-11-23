@@ -3,23 +3,23 @@
 //! [`VideoFrame`] is a picture the compositor, monitors and export share: planar Y'CbCr (8 or
 //! 16-bit) from a decoder, sRGB-encoded RGBA8 from stills, or linear premultiplied RGBA f32 in the
 //! compositor. Pixel data is `Arc`-shared so caches can hold frames for free. Colour is explicit
-//! ([`craft_color::ColorInfo`]); time is a [`craft_time::Tick`].
+//! ([`bharat_color::ColorInfo`]); time is a [`bharat_time::Tick`].
 //!
-//! This is **not** the decoder-output picture type in `craft-video` (`craft_video::frame::VideoFrame`
+//! This is **not** the decoder-output picture type in `bharat-video` (`bharat_video::frame::VideoFrame`
 //! in #1231 / #1768), which is a planar codec frame (per-plane bit depth, field order, colour
 //! tags as H.273 codes). This type is the one `MediaSource::video_frame` returns.
 //!
 //! Came from FilmCraft's `filmcraft-frame` (the picture type and display conversions; the frame
-//! pool and audio buffer stay out — audio is [`craft_audio::AudioBuffer`]).
+//! pool and audio buffer stay out — audio is [`bharat_audio::AudioBuffer`]).
 
 #![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable))]
 
 use std::sync::Arc;
 
-use craft_color::{
+use bharat_color::{
     ColorInfo, Matrix, Range, Transfer, linear_to_srgb_u8, normalize_c, normalize_y, srgb_u8_to_linear_table, to_linear, ycbcr_to_rgb,
 };
-use craft_time::Tick;
+use bharat_time::Tick;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -47,8 +47,8 @@ impl std::fmt::Display for FrameError {
     }
 }
 impl std::error::Error for FrameError {}
-impl From<craft_color::InvalidBitDepth> for FrameError {
-    fn from(_: craft_color::InvalidBitDepth) -> Self {
+impl From<bharat_color::InvalidBitDepth> for FrameError {
+    fn from(_: bharat_color::InvalidBitDepth) -> Self {
         Self::InvalidBitDepth
     }
 }

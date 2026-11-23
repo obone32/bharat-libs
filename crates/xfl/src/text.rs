@@ -203,8 +203,8 @@ fn boolean(element: &impl XflElement, name: &str) -> Option<bool> {
 mod tests {
     use super::*;
 
-    fn parse(source: &[u8]) -> craft_xml::El {
-        craft_xml::parse(source).expect("well-formed test XML")
+    fn parse(source: &[u8]) -> bharat_xml::El {
+        bharat_xml::parse(source).expect("well-formed test XML")
     }
 
     #[test]
@@ -255,7 +255,7 @@ mod tests {
             [("DOMStaticText", TextFieldKind::Static), ("DOMDynamicText", TextFieldKind::Dynamic), ("DOMInputText", TextFieldKind::Input)]
         {
             let xml = format!("<{name}/>");
-            let root = craft_xml::parse(xml.as_bytes()).expect("test XML");
+            let root = bharat_xml::parse(xml.as_bytes()).expect("test XML");
             assert_eq!(TextField::new(&root).map(|field| field.kind()), Some(expected));
         }
         let root = parse(b"<DOMShape/>");

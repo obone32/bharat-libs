@@ -1,5 +1,5 @@
 [package]
-name = "craft-vectordrawable"
+name = "bharat-vectordrawable"
 description = "Android Vector Drawable writer: a model of paths, groups, clips and gradients, the XML Android Studio formats, and the gradient mapping a drawable needs"
 version.workspace = true
 edition.workspace = true
@@ -14,4 +14,4 @@ workspace = true
 kurbo = { workspace = true }
 
 [dev-dependencies]
-craft-xml = { workspace = true }
+bharat-xml = { workspace = true }

@@ -1,7 +1,7 @@
 //! The `\u{5}SummaryInformation` stream ([MS-OLEPS] §2.21): title, subject, author, keywords,
 //! comments, last author, revision and the creation and save times.
 
-use craft_wordmodel::CoreProps;
+use bharat_wordmodel::CoreProps;
 
 /// `FMTID_SummaryInformation` as stored (little-endian GUID fields).
 const SUMMARY_FMTID: [u8; 16] = [0xe0, 0x85, 0x9f, 0xf2, 0xf9, 0x4f, 0x68, 0x10, 0xab, 0x91, 0x08, 0x00, 0x2b, 0x27, 0xb3, 0xd9];
@@ -13,7 +13,7 @@ const MAX_CHARS: usize = 32 << 10;
 
 /// The text of `s` in code page 1252, when every character has a byte there.
 fn cp1252(s: &str) -> Option<Vec<u8>> {
-    s.chars().map(|c| (0u8..=255).find(|&b| craft_codepage::cp1252(b) == c && (b >= 0x20 || c == '\t' || c == '\n' || c == '\r'))).collect()
+    s.chars().map(|c| (0u8..=255).find(|&b| bharat_codepage::cp1252(b) == c && (b >= 0x20 || c == '\t' || c == '\n' || c == '\r'))).collect()
 }
 
 /// The stream's bytes. Strings are Windows-1252 when they all fit it, else UTF-16 (code page
@@ -92,7 +92,7 @@ fn filetime(iso: &str) -> Option<u64> {
 mod tests {
     #[test]
     fn summary_reads_back() {
-        let core = craft_wordmodel::CoreProps {
+        let core = bharat_wordmodel::CoreProps {
             title: "Annual Report".into(),
             creator: "Zoë Writer".into(),
             keywords: "a, b".into(),
@@ -106,7 +106,7 @@ mod tests {
         assert_eq!(read.keywords, "a, b");
         assert_eq!(read.revision, 3);
         assert_eq!(read.created, "2024-05-06T07:08:09Z");
-        let unicode = craft_wordmodel::CoreProps { title: "Отчёт 报告".into(), ..Default::default() };
+        let unicode = bharat_wordmodel::CoreProps { title: "Отчёт 报告".into(), ..Default::default() };
         assert_eq!(crate::metadata::parse_for_tests(&super::stream(&unicode)).unwrap().title, "Отчёт 报告");
     }
 }

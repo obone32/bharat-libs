@@ -21,7 +21,7 @@ struct Parsed {
     flow: Flow,
     page: PageGeom,
     /// The last section's properties (the others are on the paragraphs that end them).
-    last_section: craft_wordmodel::SectionProps,
+    last_section: bharat_wordmodel::SectionProps,
     default_font: Option<String>,
     /// Each section's headers and footers, in order, the last section's last.
     headers_footers: Vec<Vec<(HeaderFooter, Vec<FBlock>)>>,
@@ -407,10 +407,10 @@ pub fn import(bytes: &[u8]) -> Result<Document, String> {
     // Each section's own headers and footers; those it leaves out stay linked to the previous.
     let mut sets = Vec::with_capacity(headers_footers.len());
     for parts in &headers_footers {
-        let (mut headers, mut footers) = (craft_wordmodel::section::HeaderSet::default(), craft_wordmodel::section::HeaderSet::default());
+        let (mut headers, mut footers) = (bharat_wordmodel::section::HeaderSet::default(), bharat_wordmodel::section::HeaderSet::default());
         for (which, blocks) in parts {
             let blocks = model::part_blocks(&mut doc, blocks);
-            let id = doc.add_part(if which.footer { craft_wordmodel::PartKind::Footer } else { craft_wordmodel::PartKind::Header }, blocks);
+            let id = doc.add_part(if which.footer { bharat_wordmodel::PartKind::Footer } else { bharat_wordmodel::PartKind::Header }, blocks);
             let set = if which.footer { &mut footers } else { &mut headers };
             match which.pages {
                 HfPages::Default => set.default = Some(id),
@@ -422,9 +422,9 @@ pub fn import(bytes: &[u8]) -> Result<Document, String> {
     }
     let mut sets = sets.into_iter();
     for b in &mut doc.body {
-        if let craft_wordmodel::Block::Para(p) = &**b
+        if let bharat_wordmodel::Block::Para(p) = &**b
             && p.section.is_some()
-            && let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b)
+            && let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b)
             && let Some(s) = p.section.as_deref_mut()
             && let Some((h, f)) = sets.next()
         {
@@ -440,7 +440,7 @@ pub fn import(bytes: &[u8]) -> Result<Document, String> {
     let dp = &mut Arc::make_mut(&mut doc.styles).default_para;
     dp.space_before = Some(0.0);
     dp.space_after = Some(0.0);
-    dp.line_spacing = Some(craft_wordmodel::props::LineSpacing::Multiple(1.0));
+    dp.line_spacing = Some(bharat_wordmodel::props::LineSpacing::Multiple(1.0));
     if default_font.is_some() {
         Arc::make_mut(&mut doc.styles).default_chr.font = default_font;
     }
@@ -450,8 +450,8 @@ pub fn import(bytes: &[u8]) -> Result<Document, String> {
 /// Turn the place markers the reader left in the text into note references and comment ranges,
 /// and add the notes' and comments' stories to `doc`.
 fn place_notes_and_comments(doc: &mut Document, notes: Vec<NoteData>, comments: Vec<CommentData>) {
-    use craft_wordmodel::para::NoteKind;
-    use craft_wordmodel::{Comment, PartKind};
+    use bharat_wordmodel::para::NoteKind;
+    use bharat_wordmodel::{Comment, PartKind};
     if notes.is_empty() && comments.is_empty() {
         return;
     }
@@ -504,17 +504,17 @@ fn place_notes_and_comments(doc: &mut Document, notes: Vec<NoteData>, comments: 
 }
 
 struct Placer {
-    note_parts: Vec<(craft_wordmodel::para::NoteKind, u32)>,
+    note_parts: Vec<(bharat_wordmodel::para::NoteKind, u32)>,
     by_rtf: HashMap<i64, u32>,
 }
 
 impl Placer {
-    fn ref_props(kind: craft_wordmodel::para::NoteKind) -> craft_wordmodel::CharProps {
-        let style = if kind == craft_wordmodel::para::NoteKind::Endnote { "EndnoteReference" } else { "FootnoteReference" };
-        craft_wordmodel::CharProps { style: Some(style.into()), ..Default::default() }
+    fn ref_props(kind: bharat_wordmodel::para::NoteKind) -> bharat_wordmodel::CharProps {
+        let style = if kind == bharat_wordmodel::para::NoteKind::Endnote { "EndnoteReference" } else { "FootnoteReference" };
+        bharat_wordmodel::CharProps { style: Some(style.into()), ..Default::default() }
     }
 
-    fn blocks(&self, bl: &mut Blocks, own: Option<(craft_wordmodel::para::NoteKind, u32)>, depth: usize) {
+    fn blocks(&self, bl: &mut Blocks, own: Option<(bharat_wordmodel::para::NoteKind, u32)>, depth: usize) {
         for b in bl.iter_mut() {
             let needs = match &**b {
                 Block::Para(p) => p.text.contains(MARK_OPEN),
@@ -536,7 +536,7 @@ impl Placer {
         }
     }
 
-    fn para(&self, p: &mut Paragraph, own: Option<(craft_wordmodel::para::NoteKind, u32)>) {
+    fn para(&self, p: &mut Paragraph, own: Option<(bharat_wordmodel::para::NoteKind, u32)>) {
         // Every pass removes one marker, so this ends; the bound is only a seat belt.
         for _ in 0..100_000 {
             let Some(a) = p.text.find(MARK_OPEN) else { return };

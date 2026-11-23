@@ -282,7 +282,7 @@ impl Watcher {
         let thread = {
             let shared = Arc::clone(&shared);
             let ticker = Arc::clone(&ticker);
-            std::thread::Builder::new().name("craft-ipc-watch".into()).spawn(move || run(&shared, ticker.as_ref(), intervals))?
+            std::thread::Builder::new().name("bharat-ipc-watch".into()).spawn(move || run(&shared, ticker.as_ref(), intervals))?
         };
         Ok(Self { shared, ticker, thread: Some(thread) })
     }

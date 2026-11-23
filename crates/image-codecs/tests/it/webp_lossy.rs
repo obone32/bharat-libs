@@ -5,7 +5,7 @@
 
 use crate::common;
 use common::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 fn lossy(q: u8) -> EncodeOptions {
     EncodeOptions { webp_lossless: false, webp_quality: q, ..Default::default() }
@@ -206,7 +206,7 @@ fn encoder_output_bytes_are_unchanged() {
 /// Encode timings for squares of growing size. Ignored by default; run in release:
 ///
 /// ```sh
-/// cargo test --release -p craft-image-codecs --test it -- webp_lossy::encode_time_by_size --ignored --nocapture
+/// cargo test --release -p bharat-image-codecs --test it -- webp_lossy::encode_time_by_size --ignored --nocapture
 /// ```
 #[test]
 #[ignore]

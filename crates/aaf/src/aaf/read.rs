@@ -2,7 +2,7 @@
 
 use std::collections::{HashMap, HashSet};
 
-use craft_timeline::time::{FrameRate, Tick};
+use bharat_timeline::time::{FrameRate, Tick};
 
 use super::ids::{cls, ddef, def, pid};
 use super::store::{self, Auid, Obj, Value, rational_of, utf16_of};
@@ -562,7 +562,7 @@ impl R<'_> {
             .objs(pid::LOCATOR)
             .iter()
             .find_map(|l| l.string(pid::URL_STRING))
-            .map(|u| if self.options.decode_relative_locator { locator_path(&u) } else { craft_timeline::path::file_url_to_path(&u) });
+            .map(|u| if self.options.decode_relative_locator { locator_path(&u) } else { bharat_timeline::path::file_url_to_path(&u) });
         let file_rate = rate_of(d, pid::SAMPLE_RATE).unwrap_or(rate);
         let length = d
             .i64(pid::FILE_LENGTH)
@@ -621,7 +621,7 @@ impl R<'_> {
             if let Some(data) = self.essence.get(&id) {
                 s.embedded = Some(data.to_vec());
                 // embedded essence may be a whole WAVE / AIFF file
-                let pcm = if self.options.permissive_pcm { craft_audio::essence_pcm::parse_wav(data) } else { crate::pcm::parse_wav(data) };
+                let pcm = if self.options.permissive_pcm { bharat_audio::essence_pcm::parse_wav(data) } else { crate::pcm::parse_wav(data) };
                 if let Some((pcm, ch, sr, bits)) = pcm {
                     s.embedded = Some(pcm);
                     s.file_channels = ch as u32;
@@ -760,7 +760,7 @@ fn hex(b: &[u8]) -> String {
 }
 
 fn locator_path(url: &str) -> String {
-    if url.contains("://") { craft_timeline::path::file_url_to_path(url) } else { craft_timeline::path::decode_uri_path(url) }
+    if url.contains("://") { bharat_timeline::path::file_url_to_path(url) } else { bharat_timeline::path::decode_uri_path(url) }
 }
 
 #[cfg(test)]

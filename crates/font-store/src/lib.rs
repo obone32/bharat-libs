@@ -6,8 +6,8 @@
 //!
 //! ```no_run
 //! # #[cfg(not(target_arch = "wasm32"))] {
-//! use craft_font_store::{Cancel, FontStore, Index, PINNED_INDEX};
-//! use craft_font_catalog::{Catalog, FontEnv};
+//! use bharat_font_store::{Cancel, FontStore, Index, PINNED_INDEX};
+//! use bharat_font_catalog::{Catalog, FontEnv};
 //!
 //! let store = FontStore::for_user(&FontEnv::from_process()).unwrap().with_catalog(Catalog::global().clone());
 //! let index = store.cached_indexes(&PINNED_INDEX).unwrap();

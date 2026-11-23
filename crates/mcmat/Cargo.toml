@@ -1,6 +1,6 @@
 [package]
-name = "craft-mcmat"
-description = "Bounded portable material archive interchange for Craft applications"
+name = "bharat-mcmat"
+description = "Bounded portable material archive interchange for Bharat applications"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,7 +11,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-zip = { workspace = true }
+bharat-zip = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

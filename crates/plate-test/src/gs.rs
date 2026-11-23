@@ -13,7 +13,7 @@ use crate::Error;
 use crate::tiff::{self, Plate};
 
 /// Overrides the Ghostscript program (default `gs` on `PATH`).
-pub const GS_ENV: &str = "CRAFT_PLATE_TEST_GS";
+pub const GS_ENV: &str = "BHARAT_PLATE_TEST_GS";
 
 /// Plate resolution in dpi; at 72 dpi one pixel is one scene point.
 pub const RESOLUTION: f32 = 72.0;
@@ -81,7 +81,7 @@ fn gs_error(path: &Path, e: std::io::Error) -> Error {
 /// permissions, so another local user can't plant files or symlinks in it beforehand.
 fn work_dir(label: &str) -> Result<tempfile::TempDir, Error> {
     let safe: String = label.chars().map(|c| if c.is_ascii_alphanumeric() { c } else { '_' }).collect();
-    let prefix = format!("craft-plate-test-{safe}-");
+    let prefix = format!("bharat-plate-test-{safe}-");
     let mut builder = tempfile::Builder::new();
     builder.prefix(&prefix);
     #[cfg(unix)]

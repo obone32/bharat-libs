@@ -15,14 +15,14 @@
 //! built on the first two layers.
 //!
 //! ```
-//! use craft_rtf::{Block, read, write};
+//! use bharat_rtf::{Block, read, write};
 //!
 //! let doc = read(br"{\rtf1\ansi\pard\outlinelevel0 Caf\'e9 {\b \u8364?5}\par}")?;
 //! let Some(Block::Para(p)) = doc.blocks.first() else { return Ok(()) };
 //! assert_eq!((p.text().as_str(), p.outline_level), ("Café €5", Some(0)));
 //! assert!(p.runs[1].fmt.bold);
 //! assert_eq!(read(write(&doc, "Helvetica").as_bytes())?, doc);
-//! # Ok::<(), craft_rtf::NotRtf>(())
+//! # Ok::<(), bharat_rtf::NotRtf>(())
 //! ```
 
 #[cfg(doctest)]
