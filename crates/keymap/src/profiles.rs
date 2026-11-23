@@ -1,13 +1,13 @@
 //! Named sets of overrides: the app's built-in sets (read only) and the user's own.
 //!
 //! ```
-//! use craft_keymap::{Overrides, Profiles};
+//! use bharat_keymap::{Overrides, Profiles};
 //!
 //! let mut classic = Overrides::new();
 //! classic.insert("edit.copy", vec!["Cmd+Shift+C".into()]);
-//! let builtins = [("Craft", Overrides::new()), ("Classic", classic)];
+//! let builtins = [("Bharat", Overrides::new()), ("Classic", classic)];
 //! let mut sets = Profiles::default();
-//! assert_eq!(sets.active_name(&builtins), "Craft");
+//! assert_eq!(sets.active_name(&builtins), "Bharat");
 //!
 //! sets.duplicate("Classic", "Mine", &builtins).unwrap();
 //! let text = sets.export("Mine", &builtins).unwrap();
@@ -33,7 +33,7 @@ pub const MAX_SET_NAME: usize = 64;
 /// Largest export document [`Profiles::import`] reads, in bytes.
 pub const MAX_EXPORT_BYTES: usize = 4 << 20;
 
-const FORMAT: &str = "craft-keymap";
+const FORMAT: &str = "bharat-keymap";
 const VERSION: u64 = 1;
 /// The version stored [`Profiles`] carry; stored profiles without one read as version 1.
 const STORE_VERSION: u64 = 1;
@@ -59,7 +59,7 @@ pub enum ProfileError {
     TooMany,
     /// Not a JSON export document.
     BadFile,
-    /// A `format` other than `craft-keymap`.
+    /// A `format` other than `bharat-keymap`.
     WrongFormat,
     /// A `version` newer than this crate reads.
     NewerVersion(u64),
@@ -76,7 +76,7 @@ impl fmt::Display for ProfileError {
             ProfileError::BuiltIn => "built-in sets are read only",
             ProfileError::TooMany => "too many sets",
             ProfileError::BadFile => "not a shortcut set file",
-            ProfileError::WrongFormat => "not a craft-keymap file",
+            ProfileError::WrongFormat => "not a bharat-keymap file",
             ProfileError::NewerVersion(v) => return write!(f, "shortcut set file version {v} is newer than this app reads"),
             ProfileError::TooLarge => "shortcut set file too large",
         };
@@ -101,7 +101,7 @@ pub enum SetProblem {
     BadOverrides { name: String },
     /// Sets past [`MAX_SETS`].
     TooMany { ignored: usize },
-    /// Stored by a newer craft-keymap; what this version reads is loaded.
+    /// Stored by a newer bharat-keymap; what this version reads is loaded.
     NewerVersion(u64),
 }
 
@@ -296,7 +296,7 @@ impl Profiles {
         self.add(&base, overrides, builtins)
     }
 
-    /// A set as a JSON document: `{"format":"craft-keymap","version":1,"name":…,"overrides":…}`,
+    /// A set as a JSON document: `{"format":"bharat-keymap","version":1,"name":…,"overrides":…}`,
     /// overrides as [`Overrides`] serializes them.
     pub fn export(&self, name: &str, builtins: &Builtins) -> Result<String, ProfileError> {
         let overrides = self.get(name, builtins).ok_or(ProfileError::NotFound)?;
@@ -436,7 +436,7 @@ fn lenient_version<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Option<
 }
 
 // An array of `{ name, overrides }` rather than a table, and each set's overrides in their array
-// form, so that craft-settings (which replaces arrays whole) drops a deleted set or entry from the
+// form, so that bharat-settings (which replaces arrays whole) drops a deleted set or entry from the
 // file.
 struct SetList<'a>(&'a BTreeMap<String, Overrides>);
 

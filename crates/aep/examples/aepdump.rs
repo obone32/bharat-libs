@@ -1,6 +1,6 @@
 //! Developer tool: prints the chunk tree of an .aep (ids, sizes, short data), match names inline.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
-use craft_aep::{Body, Chunk};
+use bharat_aep::{Body, Chunk};
 
 /// Ends this developer tool with a message instead of a panic.
 trait OrExit<T> {
@@ -67,7 +67,7 @@ fn main() {
     let bytes = std::fs::read(a.get(1).or_exit("usage: see the comment at the top of this file")).or_exit("read");
     let max: usize = a.get(2).and_then(|s| s.parse().ok()).unwrap_or(4);
     let hex: usize = a.get(3).and_then(|s| s.parse().ok()).unwrap_or(32);
-    let f = craft_aep::parse(&bytes).or_exit("parse");
+    let f = bharat_aep::parse(&bytes).or_exit("parse");
     for c in &f.chunks {
         show(c, 0, max, hex);
     }

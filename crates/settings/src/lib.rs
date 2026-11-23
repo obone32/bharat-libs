@@ -1,6 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! Shared settings storage for the Craft suite.
+//! Shared settings storage for the Bharat suite.
 //!
 //! Each application keeps its own settings type and defaults. This crate decides where the
 //! `config.toml` lives, loads it without ever failing, saves it atomically while the
@@ -10,7 +10,7 @@
 //! merge values into it, so comments and keys the application does not know stay in place.
 //!
 //! ```no_run
-//! use craft_settings::{Location, Settings, SettingsStore};
+//! use bharat_settings::{Location, Settings, SettingsStore};
 //! use serde::{Deserialize, Serialize};
 //!
 //! #[derive(Serialize, Deserialize, Default, Clone, PartialEq)]

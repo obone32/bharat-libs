@@ -2,7 +2,7 @@
 //! reconstruction a decoder makes, and the macroblock syntax (ISO/IEC 14496-2 §6.2.6–6.2.8,
 //! §7.4–7.6).
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use super::dct::{fdct, idct};
 use super::tables::{self, CBPY, DC_SIZE_CHROMA, DC_SIZE_LUMA, ESCAPE, MCBPC_INTER, MCBPC_INTRA, MVD, Tcoef, ZIGZAG};

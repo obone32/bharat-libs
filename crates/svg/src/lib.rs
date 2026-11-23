@@ -1,4 +1,4 @@
-//! SVG: the one place the Craft apps' SVG format code lives.
+//! SVG: the one place the Bharat apps' SVG format code lives.
 //!
 //! - [`sniff`]: is this an SVG, or a gzip-compressed one (SVGZ)?
 //! - [`svgz`]: SVG text from the bytes of a file: SVGZ unpacked within a byte limit, UTF-8,
@@ -9,7 +9,7 @@
 //!   and CAD import.
 //! - [`color`]: CSS colours.
 //! - [`write`]: a writer for SVG documents, their path data and numbers.
-//! - `tree` (feature `tree`): the full parser. usvg at the one version the Craft apps share,
+//! - `tree` (feature `tree`): the full parser. usvg at the one version the Bharat apps share,
 //!   re-exported, behind an entry point that runs the checks above before it parses.
 //!
 //! Input is treated as hostile throughout: every size, count and depth is bounded, and a file

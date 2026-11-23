@@ -5,8 +5,8 @@
 
 use crate::text::tests::{NS_T, content_of, package, zip_of};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::para::{Float, InlineObject, Wrap};
+use bharat_wordmodel::Document;
+use bharat_wordmodel::para::{Float, InlineObject, Wrap};
 
 const NS_D: &str = r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink""#;
 

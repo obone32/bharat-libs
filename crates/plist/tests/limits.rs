@@ -1,4 +1,4 @@
-use craft_plist::{Limits, Value, parse_binary, parse_binary_with_limits};
+use bharat_plist::{Limits, Value, parse_binary, parse_binary_with_limits};
 fn plist(objects: &[&[u8]]) -> Vec<u8> {
     let mut b = b"bplist00".to_vec();
     let mut offsets = Vec::new();
@@ -58,7 +58,7 @@ fn utf16_and_lossy_expansion_spend_budget() {
 
 #[test]
 fn selective_lookup_ignores_unrelated_graphs_and_preserves_first_match() {
-    use craft_plist::first_string_in_array;
+    use bharat_plist::first_string_in_array;
     let b = plist(&[&[0xd2, 1, 2, 3, 4], b"\x55Other", b"\x5eAppleLanguages", &[0xaf], &[0xa2, 5, 6], b"\x55ja-JP", &[0xff]]);
     assert!(parse_binary(&b).is_err());
     assert_eq!(first_string_in_array(&b, "AppleLanguages", Limits::default()).unwrap().as_deref(), Some("ja-JP"));
@@ -69,7 +69,7 @@ fn selective_lookup_ignores_unrelated_graphs_and_preserves_first_match() {
 
 #[test]
 fn selective_lookup_requires_an_array_not_a_set() {
-    use craft_plist::first_string_in_array;
+    use bharat_plist::first_string_in_array;
     let b = plist(&[&[0xd1, 1, 2], b"\x5eAppleLanguages", &[0xc1, 3], b"\x55ja-JP"]);
     assert_eq!(first_string_in_array(&b, "AppleLanguages", Limits::default()).unwrap(), None);
 }

@@ -146,7 +146,7 @@ fn text_doc_with(main: &[Piece], extra: &[Piece], spec: FibSpec, table_data: &[(
     cfb_file(&[("WordDocument", &word), ("0Table", &table)])
 }
 
-fn body_texts(doc: &craft_wordmodel::Document) -> Vec<String> {
+fn body_texts(doc: &bharat_wordmodel::Document) -> Vec<String> {
     doc.body.iter().filter_map(|b| b.as_para().map(|p| p.text.clone())).collect()
 }
 
@@ -250,7 +250,7 @@ fn special_characters_mapped() {
     assert_eq!(body_texts(&doc), ["a\tb\nc\u{C}d\u{E}e\u{2011}f\u{AD}g", "\u{FFFC}"]);
     let p1 = doc.body.get(1).and_then(|b| b.as_para()).expect("field para");
     assert!(
-        matches!(p1.objects.first(), Some(craft_wordmodel::para::InlineObject::Field { instr, result, .. }) if instr == "field" && result == "result"),
+        matches!(p1.objects.first(), Some(bharat_wordmodel::para::InlineObject::Field { instr, result, .. }) if instr == "field" && result == "result"),
         "objects: {:?}",
         p1.objects
     );
@@ -717,7 +717,7 @@ fn rich_doc_with(spec: &RichSpec, extra: &RichExtra) -> Vec<u8> {
     cfb_file(&[("WordDocument", &word), ("0Table", &table)])
 }
 
-fn para0(doc: &craft_wordmodel::Document) -> craft_wordmodel::Paragraph {
+fn para0(doc: &bharat_wordmodel::Document) -> bharat_wordmodel::Paragraph {
     doc.body.first().and_then(|b| b.as_para().cloned()).unwrap_or_default()
 }
 
@@ -740,7 +740,7 @@ fn character_formatting_applied() {
     // runs: plain(0..6) bold(6..11) bold+red(11..16)
     assert!(p.runs.get(1).is_some_and(|r| r.props.bold == Some(true)), "run 1 bold: {:?}", p.runs);
     assert!(p.runs.get(2).is_some_and(|r| r.props.bold == Some(true)), "run 2 bold+red: {:?}", p.runs);
-    assert!(p.runs.get(2).is_some_and(|r| matches!(r.props.color, Some(craft_wordmodel::props::TextColor::Rgb(_)))), "run 2 red");
+    assert!(p.runs.get(2).is_some_and(|r| matches!(r.props.color, Some(bharat_wordmodel::props::TextColor::Rgb(_)))), "run 2 red");
     assert!(p.runs.first().is_some_and(|r| r.props.bold.is_none()));
 }
 
@@ -837,7 +837,7 @@ fn paragraph_props_and_heading_style() {
     };
     let doc = read(&rich_doc(&spec)).expect("opens");
     let heading = doc.styles.styles.iter().find(|s| s.name == "Heading 1").expect("style");
-    assert_eq!(heading.para.align, Some(craft_wordmodel::props::Align::Center));
+    assert_eq!(heading.para.align, Some(bharat_wordmodel::props::Align::Center));
     let p0 = doc.body.first().and_then(|b| b.as_para()).expect("para");
     assert_eq!(p0.props.style.as_deref(), Some("Heading 1"));
     assert_eq!(heading.para.outline_level, Some(0));
@@ -869,8 +869,8 @@ fn first_line_indent_chars_and_exact_line_spacing() {
     let para = |i: usize| doc.body.get(i).and_then(|b| b.as_para()).expect("para").props.clone();
     let p0 = para(0);
     assert_eq!((p0.indent_first, p0.indent_first_chars), (Some(24.0), Some(2.0)));
-    assert_eq!(p0.line_spacing, Some(craft_wordmodel::props::LineSpacing::Multiple(1.5)));
-    assert_eq!(para(1).line_spacing, Some(craft_wordmodel::props::LineSpacing::Exactly(20.0)));
+    assert_eq!(p0.line_spacing, Some(bharat_wordmodel::props::LineSpacing::Multiple(1.5)));
+    assert_eq!(para(1).line_spacing, Some(bharat_wordmodel::props::LineSpacing::Exactly(20.0)));
     assert_eq!(para(2).indent_first, Some(-18.0)); // sprmPDxaLeft1_80: a hanging indent
 }
 
@@ -889,7 +889,7 @@ fn corpus_files_open() {
                     Err(e) => panic!("{}: {e}", p.display()),
                 };
                 assert!(!doc.styles.styles.is_empty(), "{}: no styles", p.display());
-                let text = doc.plain_text(craft_wordmodel::StoryRef::Body);
+                let text = doc.plain_text(bharat_wordmodel::StoryRef::Body);
                 assert!(text.chars().count() > 3, "{}: no text", p.display());
                 checked += 1;
             }
@@ -1345,20 +1345,20 @@ fn table_merges_borders_shading() {
     let r0 = tbl.rows[0].cells[0].blocks.iter().filter_map(|b| b.as_para()).map(|p| p.text.clone()).collect::<String>();
     assert_eq!(r0, "ab");
     // Row 2: shading, vertical-merge restart, exact height 20pt.
-    assert_eq!(tbl.rows[1].cells[0].props.shading, Some(craft_wordmodel::Rgb(255, 255, 0)));
-    assert_eq!(tbl.rows[1].cells[0].props.vmerge, craft_wordmodel::props::VMerge::Restart);
+    assert_eq!(tbl.rows[1].cells[0].props.shading, Some(bharat_wordmodel::Rgb(255, 255, 0)));
+    assert_eq!(tbl.rows[1].cells[0].props.vmerge, bharat_wordmodel::props::VMerge::Restart);
     assert_eq!(tbl.rows[1].props.height, Some(20.0));
     // Table borders from the first row that carries them: single 0.5pt black.
     let b = tbl.props.borders.expect("borders");
     let top = b.top.expect("top border");
-    assert_eq!(top.style, craft_wordmodel::props::BorderStyle::Single);
+    assert_eq!(top.style, bharat_wordmodel::props::BorderStyle::Single);
     assert_eq!(top.width, 0.5);
 }
 
 /// Table borders read the BrcType byte as paragraph borders do; a nil Brc80 is no border.
 #[test]
 fn table_borders_read_border_types_as_paragraphs_do() {
-    use craft_wordmodel::props::BorderStyle as S;
+    use bharat_wordmodel::props::BorderStyle as S;
     let text = "a\u{7}\u{7}tail\r";
     let in_tbl = grpprl(&[(0x2416, &[0x01]), (0x6649, &[1, 0, 0, 0])]);
     let row_end = {
@@ -1478,18 +1478,18 @@ fn list_numbering_parsed() {
     assert_eq!(doc.numbering.abstracts.len(), 1);
     assert_eq!(doc.numbering.nums.len(), 1);
     let l0 = doc.numbering.level(1, 0).expect("level 0");
-    assert_eq!(l0.format, craft_wordmodel::section::NumFormat::Decimal);
+    assert_eq!(l0.format, bharat_wordmodel::section::NumFormat::Decimal);
     assert_eq!(l0.text, "%1.");
     assert_eq!(l0.indent, 36.0);
     assert_eq!(l0.hanging, 18.0);
-    assert_eq!(l0.suffix, craft_wordmodel::numbering::LevelSuffix::Space);
+    assert_eq!(l0.suffix, bharat_wordmodel::numbering::LevelSuffix::Space);
     // Paragraphs 1-2 are in the list, paragraph 3 is not.
     let n = |i: usize| doc.body.get(i).and_then(|b| b.as_para()).and_then(|p| p.props.numbering);
-    assert_eq!(n(0), Some(craft_wordmodel::props::NumRef { num: 1, level: 0 }));
-    assert_eq!(n(1), Some(craft_wordmodel::props::NumRef { num: 1, level: 0 }));
+    assert_eq!(n(0), Some(bharat_wordmodel::props::NumRef { num: 1, level: 0 }));
+    assert_eq!(n(1), Some(bharat_wordmodel::props::NumRef { num: 1, level: 0 }));
     assert_eq!(n(2), None);
     // The numbering produces labels through the shared counter.
-    let mut c = craft_wordmodel::numbering::Counters::default();
+    let mut c = bharat_wordmodel::numbering::Counters::default();
     assert_eq!(c.next_label(&doc.numbering, 1, 0).unwrap().0, "1.");
     assert_eq!(c.next_label(&doc.numbering, 1, 0).unwrap().0, "2.");
 }
@@ -1537,7 +1537,7 @@ fn combined_structure_document() {
     let tbl = doc.body.iter().find_map(|b| b.as_table()).expect("table");
     assert_eq!(tbl.rows.len(), 1);
     assert_eq!(tbl.rows[0].cells.len(), 2);
-    let texts: Vec<String> = doc.plain_text(craft_wordmodel::StoryRef::Body).split('\n').map(str::to_string).collect();
+    let texts: Vec<String> = doc.plain_text(bharat_wordmodel::StoryRef::Body).split('\n').map(str::to_string).collect();
     assert!(texts.contains(&"first".to_string()) && texts.contains(&"second".to_string()), "list text present: {texts:?}");
     // Section 1 is attached to the intro paragraph and owns the header story; the final
     // section is landscape.
@@ -1596,11 +1596,11 @@ fn footnote_reference_links_story_part() {
     let doc = read(&struct_doc(&spec)).expect("opens");
     let p0 = doc.body.first().and_then(|b| b.as_para()).expect("para");
     let note = p0.objects.first().expect("note ref object");
-    let craft_wordmodel::para::InlineObject::NoteRef { kind, id, .. } = note else { panic!("not a note: {note:?}") };
-    assert_eq!(*kind, craft_wordmodel::para::NoteKind::Footnote);
+    let bharat_wordmodel::para::InlineObject::NoteRef { kind, id, .. } = note else { panic!("not a note: {note:?}") };
+    assert_eq!(*kind, bharat_wordmodel::para::NoteKind::Footnote);
     let part = doc.parts.get(id).expect("note part");
     assert!(part.blocks.iter().any(|b| b.as_para().is_some_and(|p| p.text.contains("Note body"))), "note text: {:?}", part.blocks);
-    assert_eq!(part.kind, craft_wordmodel::PartKind::Footnote);
+    assert_eq!(part.kind, bharat_wordmodel::PartKind::Footnote);
 }
 
 #[test]
@@ -1620,8 +1620,8 @@ fn endnote_reference_links_story_part() {
     };
     let doc = read(&struct_doc(&spec)).expect("opens");
     let p0 = doc.body.first().and_then(|b| b.as_para()).expect("para");
-    let craft_wordmodel::para::InlineObject::NoteRef { kind, id, .. } = p0.objects.first().expect("note ref object") else { panic!("no note ref") };
-    assert_eq!(*kind, craft_wordmodel::para::NoteKind::Endnote);
+    let bharat_wordmodel::para::InlineObject::NoteRef { kind, id, .. } = p0.objects.first().expect("note ref object") else { panic!("no note ref") };
+    assert_eq!(*kind, bharat_wordmodel::para::NoteKind::Endnote);
     let part = doc.parts.get(id).expect("endnote part");
     assert!(part.blocks.iter().any(|b| b.as_para().is_some_and(|p| p.text.contains("Endnote body"))));
 }
@@ -1639,7 +1639,7 @@ fn fields_and_hyperlinks() {
     let linked = p0.runs.iter().find(|r| r.props.link.is_some()).expect("linked run");
     assert_eq!(linked.props.link.as_deref(), Some("http://x"));
     // The PAGE field became one object with its cached result.
-    let craft_wordmodel::para::InlineObject::Field { instr, result, .. } = p0.objects.first().expect("field object") else {
+    let bharat_wordmodel::para::InlineObject::Field { instr, result, .. } = p0.objects.first().expect("field object") else {
         panic!("no field: {:?}", p0.objects)
     };
     assert_eq!(instr, "PAGE");
@@ -1685,12 +1685,12 @@ fn bookmarks_become_objects() {
     let p0 = doc.body.first().and_then(|b| b.as_para()).expect("para");
     // The start anchor sits before the text, the end after "Hello".
     assert!(
-        matches!(p0.objects.first(), Some(craft_wordmodel::para::InlineObject::BookmarkStart { name }) if name == "bm1"),
+        matches!(p0.objects.first(), Some(bharat_wordmodel::para::InlineObject::BookmarkStart { name }) if name == "bm1"),
         "objects: {:?}",
         p0.objects
     );
     assert!(
-        matches!(p0.objects.get(1), Some(craft_wordmodel::para::InlineObject::BookmarkEnd { name }) if name == "bm1"),
+        matches!(p0.objects.get(1), Some(bharat_wordmodel::para::InlineObject::BookmarkEnd { name }) if name == "bm1"),
         "objects: {:?}",
         p0.objects
     );
@@ -1716,7 +1716,7 @@ fn inline_png_picture() {
     let doc = read(&struct_doc(&spec)).expect("opens");
     let p0 = doc.body.first().and_then(|b| b.as_para()).expect("para");
     assert_eq!(p0.text, "Pic\u{FFFC}!");
-    let craft_wordmodel::para::InlineObject::Image { media, w, h, .. } = p0.objects.first().expect("image object") else {
+    let bharat_wordmodel::para::InlineObject::Image { media, w, h, .. } = p0.objects.first().expect("image object") else {
         panic!("no image: {:?}", p0.objects)
     };
     assert_eq!((*w, *h), (72.0, 36.0)); // 1440 × 720 twips
@@ -1776,7 +1776,7 @@ fn structured_spec(text: &'static str, ccp: u32) -> StructSpec {
 // Hardening regressions: hostile CP ranges, piece lookups, picture fan-out, overflows.
 
 /// All the paragraph text of a document: body plus every part.
-fn all_text(doc: &craft_wordmodel::Document) -> String {
+fn all_text(doc: &bharat_wordmodel::Document) -> String {
     let mut s: String = body_texts(doc).join("\n");
     for part in doc.parts.values() {
         for b in &part.blocks {
@@ -1818,18 +1818,18 @@ fn huge_story_ranges_are_clamped_to_their_subdocument() {
     assert!(all.len() < 200, "text grew to {} bytes", all.len());
     let header = doc.last_section.headers.default.and_then(|id| doc.parts.get(&id)).expect("header part");
     assert!(header.blocks.iter().any(|b| b.as_para().is_some_and(|p| p.text == "Head")), "header: {:?}", header.blocks);
-    let footnote = doc.parts.values().find(|p| p.kind == craft_wordmodel::PartKind::Footnote).expect("footnote part");
+    let footnote = doc.parts.values().find(|p| p.kind == bharat_wordmodel::PartKind::Footnote).expect("footnote part");
     assert!(footnote.blocks.iter().any(|b| b.as_para().is_some_and(|p| p.text == "Note body")));
     // The endnote story starts past the endnote subdocument: nothing to read.
-    assert!(!doc.parts.values().any(|p| p.kind == craft_wordmodel::PartKind::Endnote));
+    assert!(!doc.parts.values().any(|p| p.kind == bharat_wordmodel::PartKind::Endnote));
 }
 
 /// The text of each note a paragraph references, in order.
-fn note_texts(doc: &craft_wordmodel::Document, p: &craft_wordmodel::Paragraph) -> Vec<String> {
+fn note_texts(doc: &bharat_wordmodel::Document, p: &bharat_wordmodel::Paragraph) -> Vec<String> {
     p.objects
         .iter()
         .filter_map(|o| match o {
-            craft_wordmodel::para::InlineObject::NoteRef { id, .. } => doc.parts.get(id),
+            bharat_wordmodel::para::InlineObject::NoteRef { id, .. } => doc.parts.get(id),
             _ => None,
         })
         .map(|part| part.blocks.iter().filter_map(|b| b.as_para()).map(|para| para.text.as_str()).collect::<Vec<_>>().join("\n"))
@@ -1853,7 +1853,7 @@ fn note_stories_pointing_at_the_same_text_are_read_once() {
         ..structured_spec(text, ccp)
     };
     let doc = read(&struct_doc(&spec)).expect("opens");
-    assert_eq!(doc.parts.values().filter(|p| p.kind == craft_wordmodel::PartKind::Footnote).count(), 1);
+    assert_eq!(doc.parts.values().filter(|p| p.kind == bharat_wordmodel::PartKind::Footnote).count(), 1);
     let p0 = doc.body.first().and_then(|b| b.as_para()).expect("para");
     assert_eq!(note_texts(&doc, p0), vec!["Note body".to_string()]);
 }
@@ -1903,7 +1903,7 @@ fn header_stories_pointing_at_the_same_text_are_read_once() {
         ..structured_spec(text, ccp)
     };
     let doc = read(&struct_doc(&spec)).expect("opens");
-    assert_eq!(doc.parts.values().filter(|p| p.kind == craft_wordmodel::PartKind::Header).count(), 1);
+    assert_eq!(doc.parts.values().filter(|p| p.kind == bharat_wordmodel::PartKind::Header).count(), 1);
     let first = doc.body.first().and_then(|b| b.as_para()).and_then(|p| p.section.as_ref()).expect("first section");
     let header = first.headers.default.and_then(|id| doc.parts.get(&id)).expect("first section's header");
     assert!(header.blocks.iter().any(|b| b.as_para().is_some_and(|p| p.text == "Head")), "header: {:?}", header.blocks);
@@ -2028,7 +2028,7 @@ fn anchors_sharing_one_picture_share_one_media_entry() {
     assert_eq!(doc.media.len(), 1);
     let p0 = doc.body.first().and_then(|b| b.as_para()).expect("para");
     assert_eq!(p0.objects.len(), 5000);
-    assert!(p0.objects.iter().all(|o| matches!(o, craft_wordmodel::para::InlineObject::Image { media, .. } if media == "image1.png")));
+    assert!(p0.objects.iter().all(|o| matches!(o, bharat_wordmodel::para::InlineObject::Image { media, .. } if media == "image1.png")));
 }
 
 #[test]
@@ -2127,8 +2127,8 @@ fn piece_prm_paragraph_formatting_applies_to_the_marks_paragraph() {
         (p.props.indent_left, p.props.align)
     };
     assert_eq!(para(0x0000), (Some(18.0), None), "no Prm: the PAPX's indent");
-    assert_eq!(para(0x0001), (Some(72.0), Some(craft_wordmodel::props::Align::Center)), "Prm1: the Prc's sprms override the PAPX's");
-    assert_eq!(para(0x020A), (Some(18.0), Some(craft_wordmodel::props::Align::Right)), "Prm0: sprmPJc right");
+    assert_eq!(para(0x0001), (Some(72.0), Some(bharat_wordmodel::props::Align::Center)), "Prm1: the Prc's sprms override the PAPX's");
+    assert_eq!(para(0x020A), (Some(18.0), Some(bharat_wordmodel::props::Align::Right)), "Prm0: sprmPJc right");
 }
 
 #[test]
@@ -2162,7 +2162,7 @@ fn piece_prm_character_formatting_applied() {
 #[test]
 fn section_break_kinds_imported() {
     // #459. SBkcOperand: 0 continuous, 1 new column, 2 new page, 3 even page, 4 odd page.
-    use craft_wordmodel::section::SectionStart;
+    use bharat_wordmodel::section::SectionStart;
     let kinds = [SectionStart::Continuous, SectionStart::NextColumn, SectionStart::NextPage, SectionStart::EvenPage, SectionStart::OddPage];
     for (bkc, want) in kinds.into_iter().enumerate() {
         let spec = one_section("Text\r", grpprl(&[(0x3009, &[bkc as u8])]), vec![(0, 0, Vec::new())]);
@@ -2204,7 +2204,7 @@ fn negative_list_reference_keeps_list_membership() {
     spec.plf_lfo = plf_lfo(0x1000);
     let doc = read(&struct_doc(&spec)).expect("opens");
     let para = |i: usize| doc.body.get(i).and_then(|b| b.as_para()).map(|p| (p.props.numbering, p.props.indent_left)).unwrap_or_default();
-    let one = Some(craft_wordmodel::props::NumRef { num: 1, level: 0 });
+    let one = Some(bharat_wordmodel::props::NumRef { num: 1, level: 0 });
     assert_eq!(para(0), (one, Some(36.0)), "0x0001");
     assert_eq!(para(1), (one, Some(36.0)), "0xFFFF = -1");
     assert_eq!(para(2).0, None, "0");
@@ -2282,7 +2282,7 @@ fn tabs_papx(del: &[i16], add: &[(i16, u8)]) -> Vec<u8> {
 /// a style and by the paragraph, stops it removes, and the TBD's alignment and leader are read.
 #[test]
 fn tab_stops_read_from_styles_and_paragraphs() {
-    use craft_wordmodel::props::{TabAlign, TabLeader};
+    use bharat_wordmodel::props::{TabAlign, TabLeader};
     // Normal: centre at 3.25" (4680 tw), right at 6.5" (9360 tw) with a dot leader (tlc 1).
     let normal = grpprl(&[(0xC60D, &tabs_papx(&[], &[(4680, 1), (9360, 2 | 1 << 3)]))]);
     // The paragraph drops the centre stop and adds a left stop at 0.5" and a bar at 1".
@@ -2341,7 +2341,7 @@ fn hostile_tab_operands_are_safe() {
 /// Before, every section of such a file was lost and each section mark became a page break.
 #[test]
 fn section_marks_end_paragraphs() {
-    use craft_wordmodel::section::SectionStart;
+    use bharat_wordmodel::section::SectionStart;
     let spec = StructSpec {
         text: "first\u{C}second\r",
         header_stories: vec![],
@@ -2399,7 +2399,7 @@ fn shd_clear(back: [u8; 3], n: usize) -> Vec<u8> {
 }
 
 /// Word-shaped 5-column table: header row, a shaded body row, a one-cell legend row.
-fn word_table_doc(row1: Vec<u8>, row2: Vec<u8>, row3: Vec<u8>) -> craft_wordmodel::Document {
+fn word_table_doc(row1: Vec<u8>, row2: Vec<u8>, row3: Vec<u8>) -> bharat_wordmodel::Document {
     let text = "a\u{7}b\u{7}c\u{7}d\u{7}e\u{7}\u{7}f\u{7}g\u{7}h\u{7}i\u{7}j\u{7}\u{7}legend\u{7}\u{7}tail\r";
     let in_tbl = grpprl(&[(0x2416, &[0x01]), (0x6649, &[1, 0, 0, 0])]);
     let ttp = |extra: Vec<u8>| [grpprl(&[(0x2416, &[0x01]), (0x2417, &[0x01]), (0x6649, &[1, 0, 0, 0])]), extra].concat();
@@ -2455,10 +2455,10 @@ fn word_table_row_end_mark_and_cell_shading() {
     let counts: Vec<usize> = tbl.rows.iter().map(|r| r.cells.len()).collect();
     assert_eq!(counts, [5, 5, 1], "cells per row (the row-end mark is not a cell)");
     let shd = |r: usize| tbl.rows[r].cells.iter().map(|c| c.props.shading).collect::<Vec<_>>();
-    assert_eq!(shd(0), vec![Some(craft_wordmodel::Rgb(0x1C, 0x3A, 0x70)); 5], "exact fill beats the Shd80 palette colour");
-    let light = Some(craft_wordmodel::Rgb(0xE8, 0xF0, 0xFA));
+    assert_eq!(shd(0), vec![Some(bharat_wordmodel::Rgb(0x1C, 0x3A, 0x70)); 5], "exact fill beats the Shd80 palette colour");
+    let light = Some(bharat_wordmodel::Rgb(0xE8, 0xF0, 0xFA));
     assert_eq!(shd(1), vec![light, light, light, light, None], "automatic Shd clears the Shd80 fill");
-    assert_eq!(shd(2), vec![Some(craft_wordmodel::Rgb(0xFF, 0xF2, 0xCC))], "legend fill");
+    assert_eq!(shd(2), vec![Some(bharat_wordmodel::Rgb(0xFF, 0xF2, 0xCC))], "legend fill");
     let legend = tbl.rows[2].cells[0].blocks.iter().filter_map(|b| b.as_para()).map(|p| p.text.clone()).collect::<String>();
     assert_eq!(legend, "legend");
     let tail = doc.body.last().and_then(|b| b.as_para()).expect("tail para");
@@ -2473,10 +2473,10 @@ fn word97_shd80_clear_fill_shows_its_background() {
     let shd80: Vec<u8> = [0xE0u16, 16 << 5, 0, (1 << 10) | 2].iter().flat_map(|v| v.to_le_bytes()).collect();
     let papx = sprm_cb(0xD609, &shd80);
     let row = crate::table::decode(&papx);
-    assert_eq!(row.shading_of(0), Some(craft_wordmodel::Rgb(255, 255, 0)));
-    assert_eq!(row.shading_of(1), Some(craft_wordmodel::Rgb(192, 192, 192)));
+    assert_eq!(row.shading_of(0), Some(bharat_wordmodel::Rgb(255, 255, 0)));
+    assert_eq!(row.shading_of(1), Some(bharat_wordmodel::Rgb(192, 192, 192)));
     assert_eq!(row.shading_of(2), None);
-    assert_eq!(row.shading_of(3), Some(craft_wordmodel::Rgb(0, 0, 255)));
+    assert_eq!(row.shading_of(3), Some(bharat_wordmodel::Rgb(0, 0, 255)));
 }
 
 #[test]
@@ -2490,11 +2490,11 @@ fn shd_arrays_keep_to_their_cell_ranges() {
     for (first, second, third) in [(0xD612u16, 0xD616u16, 0xD60Cu16), (0xD670, 0xD671, 0xD672)] {
         let papx = [sprm_cb(second, &green), sprm_cb(third, &blue), sprm_cb(first, &over_long)].concat();
         let row = crate::table::decode(&papx);
-        assert_eq!(row.shading_of(21), Some(craft_wordmodel::Rgb(0x11, 0x22, 0x33)), "{first:04X}");
-        assert_eq!(row.shading_of(22), Some(craft_wordmodel::Rgb(0, 0xFF, 0)), "{second:04X} keeps cell 22");
-        assert_eq!(row.shading_of(44), Some(craft_wordmodel::Rgb(0, 0, 0xFF)), "{third:04X} starts at cell 44");
+        assert_eq!(row.shading_of(21), Some(bharat_wordmodel::Rgb(0x11, 0x22, 0x33)), "{first:04X}");
+        assert_eq!(row.shading_of(22), Some(bharat_wordmodel::Rgb(0, 0xFF, 0)), "{second:04X} keeps cell 22");
+        assert_eq!(row.shading_of(44), Some(bharat_wordmodel::Rgb(0, 0, 0xFF)), "{third:04X} starts at cell 44");
         let papx = sprm_cb(first, &red);
-        assert_eq!(crate::table::decode(&papx).shading_of(0), Some(craft_wordmodel::Rgb(0xFF, 0, 0)));
+        assert_eq!(crate::table::decode(&papx).shading_of(0), Some(bharat_wordmodel::Rgb(0xFF, 0, 0)));
     }
 }
 
@@ -2522,7 +2522,7 @@ fn hostile_table_shading_and_spans_are_safe() {
     ];
     for (r1, r2, r3) in rows {
         let doc = word_table_doc(r1, r2, r3);
-        let text = doc.plain_text(craft_wordmodel::StoryRef::Body);
+        let text = doc.plain_text(bharat_wordmodel::StoryRef::Body);
         assert!(text.contains("legend") && text.contains("tail"), "{text:?}");
         if let Some(t) = doc.body.iter().find_map(|b| b.as_table()) {
             assert!(t.grid.len() <= 63);
@@ -2555,7 +2555,7 @@ fn hostile_table_shading_and_spans_are_safe() {
             ],
         );
         let doc = read(&struct_doc(&spec)).expect("opens");
-        let text = doc.plain_text(craft_wordmodel::StoryRef::Body);
+        let text = doc.plain_text(bharat_wordmodel::StoryRef::Body);
         assert!(text.contains('a') && text.contains("tail"), "{text:?}");
         for t in doc.body.iter().filter_map(|b| b.as_table()) {
             assert!(t.rows.iter().all(|r| !r.cells.is_empty()), "no zero-cell rows");
@@ -2573,13 +2573,13 @@ fn nil_raw_shading_keeps_the_earlier_colour() {
     let auto = vec![0, 0, 0, 0xFF, 0, 0, 0, 0xFF, 0, 0];
     let papx = [sprm_cb(0xD612, &[blue.clone(), blue.clone(), blue.clone()].concat()), sprm_cb(0xD670, &[nil.clone(), red, auto].concat())].concat();
     let row = crate::table::decode(&papx);
-    assert_eq!(row.shading_of(0), Some(craft_wordmodel::Rgb(0, 0, 0xFF)), "nil keeps blue");
-    assert_eq!(row.shading_of(1), Some(craft_wordmodel::Rgb(0xFF, 0, 0)));
+    assert_eq!(row.shading_of(0), Some(bharat_wordmodel::Rgb(0, 0, 0xFF)), "nil keeps blue");
+    assert_eq!(row.shading_of(1), Some(bharat_wordmodel::Rgb(0xFF, 0, 0)));
     assert_eq!(row.shading_of(2), None, "automatic clears");
     for (first, raw) in [(0xD616u16, 0xD671u16), (0xD60C, 0xD672)] {
         let papx = [sprm_cb(first, &blue), sprm_cb(raw, &nil)].concat();
         let cell = if first == 0xD616 { 22 } else { 44 };
-        assert_eq!(crate::table::decode(&papx).shading_of(cell), Some(craft_wordmodel::Rgb(0, 0, 0xFF)), "{raw:04X}");
+        assert_eq!(crate::table::decode(&papx).shading_of(cell), Some(bharat_wordmodel::Rgb(0, 0, 0xFF)), "{raw:04X}");
     }
 }
 
@@ -2716,7 +2716,7 @@ fn symbol_runs_read_the_character_and_font_from_sprm_c_symbol() {
 /// border (type 0x02) stays thick in both, as tables read it too.
 #[test]
 fn paragraph_borders_read_from_both_forms() {
-    use craft_wordmodel::props::BorderStyle as S;
+    use bharat_wordmodel::props::BorderStyle as S;
     let b80 = [8u8, 0x01, 0x06, 0x01]; // 1 pt single line, palette red (6), 1 pt from the text
     let thick80 = [8u8, 0x02, 0x06, 0x01];
     let brc = [8u8, 0xFF, 0x00, 0x00, 0x00, 8, 0x01, 0x02, 0x00]; // cb 8, red COLORREF, 1 pt single, space 2
@@ -2735,14 +2735,14 @@ fn paragraph_borders_read_from_both_forms() {
     let b = p0.props.borders.expect("borders");
     let top = b.top.expect("top border");
     assert_eq!((top.style, top.width, top.space), (S::Single, 1.0, 1.0));
-    assert_eq!(top.color, Some(craft_wordmodel::Rgb(0xFF, 0, 0)));
+    assert_eq!(top.color, Some(bharat_wordmodel::Rgb(0xFF, 0, 0)));
     assert_eq!(b.left.map(|l| (l.style, l.width)), Some((S::Thick, 1.0)), "Brc80 thick");
     assert!(b.bottom.is_some() && b.right.is_some() && b.between.is_some());
     let p1 = doc.body.get(1).and_then(|b| b.as_para()).expect("second paragraph");
     let b = p1.props.borders.expect("borders");
     let top = b.top.expect("top border");
     assert_eq!((top.style, top.width, top.space), (S::Single, 1.0, 2.0));
-    assert_eq!(top.color, Some(craft_wordmodel::Rgb(0xFF, 0, 0)));
+    assert_eq!(top.color, Some(bharat_wordmodel::Rgb(0xFF, 0, 0)));
     assert_eq!(b.left.map(|l| (l.style, l.width)), Some((S::Thick, 1.0)), "BrcOperand thick");
 }
 
@@ -2760,7 +2760,7 @@ fn cfb_file_in(version: cfb::Version, streams: &[(&str, &[u8])], extra: &[(&str,
     comp.into_inner().into_inner()
 }
 
-/// #3642 review: valid compound files open, so craft-cfb's checks refuse only the hostile
+/// #3642 review: valid compound files open, so bharat-cfb's checks refuse only the hostile
 /// ones. The repository keeps no files Word made, so these are written by the `cfb` crate in
 /// the shape of Word 97–2003 files: the WordDocument and table streams of a .doc these tests
 /// build, with the summary, Data and embedded-object streams Word adds, in 512-byte sectors
@@ -2821,7 +2821,7 @@ fn a_long_hyperlink_over_a_long_result_is_one_linked_run() {
     // One copy of the target for the one run, not one per character (~2.5 s here): counted by
     // what the copies charge to the work budget, which a busy machine can't skew.
     let mut result = super::FieldResult::default();
-    (0..n).for_each(|_| result.push('y', craft_wordmodel::props::CharProps::default()));
+    (0..n).for_each(|_| result.push('y', bharat_wordmodel::props::CharProps::default()));
     let f = super::FieldBuild { depth: 1, instr: format!("HYPERLINK \"http://{target}\""), sep: Some(result) };
     let work = super::Work::new(u64::MAX);
     super::finish_field(&mut super::ParaBuild::default(), f, &work);
@@ -2832,7 +2832,7 @@ fn a_long_hyperlink_over_a_long_result_is_one_linked_run() {
 /// out of the work budget; past it the text stays, unlinked.
 #[test]
 fn hyperlink_target_copies_are_charged_to_the_work_budget() {
-    use craft_wordmodel::props::CharProps;
+    use bharat_wordmodel::props::CharProps;
     let bold = CharProps { bold: Some(true), ..Default::default() };
     let mut result = super::FieldResult::default();
     (0..1000).for_each(|i| result.push('a', if i % 2 == 0 { bold.clone() } else { CharProps::default() }));
@@ -2896,7 +2896,7 @@ fn a_large_prc_is_interpreted_once_per_formatting_change() {
 /// is skipped (the text keeps its CHPX formatting).
 #[test]
 fn prm_grpprls_past_the_work_budget_are_skipped() {
-    use craft_wordmodel::props::CharProps;
+    use bharat_wordmodel::props::CharProps;
     let g = grpprl(&[(0x0835, &[0x01])]);
     let work = super::Work::new(g.len() as u64 + 1);
     let base = CharProps::default();
@@ -2914,7 +2914,7 @@ fn prm_grpprls_past_the_work_budget_are_skipped() {
 /// (365 bytes each: 4 million result characters took 1.4 GB).
 #[test]
 fn a_field_result_stores_one_props_per_run() {
-    use craft_wordmodel::props::CharProps;
+    use bharat_wordmodel::props::CharProps;
     let bold = CharProps { bold: Some(true), ..Default::default() };
     let mut r = super::FieldResult::default();
     for _ in 0..200_000 {
@@ -2933,7 +2933,7 @@ fn a_field_result_stores_one_props_per_run() {
 /// links all of it; a plain field keeps its result text whole.
 #[test]
 fn field_results_keep_their_text_and_runs() {
-    use craft_wordmodel::props::CharProps;
+    use bharat_wordmodel::props::CharProps;
     let bold = CharProps { bold: Some(true), ..Default::default() };
     let mut result = super::FieldResult::default();
     for (c, p) in
@@ -2952,7 +2952,7 @@ fn field_results_keep_their_text_and_runs() {
     assert!(
         p.objects
             .iter()
-            .any(|o| matches!(o, craft_wordmodel::para::InlineObject::Field { instr, result, .. } if instr == "PAGE" && result == "1\u{e9}2")),
+            .any(|o| matches!(o, bharat_wordmodel::para::InlineObject::Field { instr, result, .. } if instr == "PAGE" && result == "1\u{e9}2")),
         "{:?}",
         p.objects
     );
@@ -3034,7 +3034,7 @@ fn a_piece_span_matches_the_per_cp_lookups() {
 /// even compared while the formatting stays the same.
 #[test]
 fn shared_props_start_one_run_per_formatting() {
-    use craft_wordmodel::props::CharProps;
+    use bharat_wordmodel::props::CharProps;
     let bold = CharProps { bold: Some(true), ..Default::default() };
     let mut pb = super::ParaBuild::default();
     for _ in 0..100_000 {

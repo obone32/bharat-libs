@@ -1,14 +1,14 @@
-//! A rename dialog in the six test languages: the example of `craft_ui::testing` for app tests.
+//! A rename dialog in the six test languages: the example of `bharat_ui::testing` for app tests.
 //!
 //! The snapshots are in `tests/snapshots/rename-*.png`; `UPDATE_SNAPSHOTS=1` rewrites them.
 
-use craft_ui::fonts::CraftFace;
-use craft_ui::testing::{JAPANESE, KOREAN, Locale, Screens, compose};
+use bharat_ui::fonts::BharatFace;
+use bharat_ui::testing::{JAPANESE, KOREAN, Locale, Screens, compose};
 use egui::accesskit::Role;
 use egui::{FontData, FontFamily, Ui};
 use egui_kittest::kittest::Queryable as _;
 
-const ARABIC: CraftFace = CraftFace {
+const ARABIC: BharatFace = BharatFace {
     family: "Noto Sans Arabic",
     style: "Regular",
     scripts: &["Arab"],
@@ -17,15 +17,15 @@ const ARABIC: CraftFace = CraftFace {
 };
 // The subset has the dialog's kana, Han and Hangul, so it stands in for every CJK face. Its Latin
 // glyphs, Vietnamese included, are the app's UI face: egui's default face has no Vietnamese.
-const CJK: CraftFace = CraftFace {
+const CJK: BharatFace = BharatFace {
     family: "Noto Sans CJK SC",
     style: "Regular",
     scripts: &["Jpan", "Kore", "Hans", "Hant"],
     bytes: include_bytes!("fonts/NotoSansCJKsc-screens.otf"),
     index: 0,
 };
-const THAI: CraftFace =
-    CraftFace { family: "Noto Sans Thai", style: "Regular", scripts: &["Thai"], bytes: include_bytes!("fonts/NotoSansThai-screens.ttf"), index: 0 };
+const THAI: BharatFace =
+    BharatFace { family: "Noto Sans Thai", style: "Regular", scripts: &["Thai"], bytes: include_bytes!("fonts/NotoSansThai-screens.ttf"), index: 0 };
 
 struct Strings {
     title: &'static str,
@@ -77,7 +77,7 @@ impl Dialog {
 fn screens() -> Screens {
     Screens::new("rename")
         .size([320.0, 150.0])
-        .fonts(|fonts| fonts.app_face("ui", FontData::from_static(CJK.bytes), &[FontFamily::Proportional]).craft_faces(&[ARABIC, CJK, THAI]))
+        .fonts(|fonts| fonts.app_face("ui", FontData::from_static(CJK.bytes), &[FontFamily::Proportional]).bharat_faces(&[ARABIC, CJK, THAI]))
 }
 
 #[test]

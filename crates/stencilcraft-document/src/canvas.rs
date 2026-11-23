@@ -502,9 +502,9 @@ impl Document {
         let mut remaining = max_bytes - empty_len;
         'layers: for layer in self.layers.iter().filter(|l| l.is_output()) {
             for shape in layer.shapes.iter().filter(|s| !s.hidden) {
-                let mut element = craft_svg::write::SvgWriter::fragment();
+                let mut element = bharat_svg::write::SvgWriter::fragment();
                 element.line(2);
-                element.tag("path").attr("d", craft_svg::write::path_data_fixed(&shape.path, 2)).empty();
+                element.tag("path").attr("d", bharat_svg::write::path_data_fixed(&shape.path, 2)).empty();
                 let element = element.finish();
                 if element.len() > remaining {
                     break 'layers;
@@ -521,8 +521,8 @@ impl Document {
     }
 }
 
-fn thumbnail_writer(width_mm: f64, height_mm: f64) -> craft_svg::write::SvgWriter {
-    use craft_svg::write::{SvgWriter, num};
+fn thumbnail_writer(width_mm: f64, height_mm: f64) -> bharat_svg::write::SvgWriter {
+    use bharat_svg::write::{SvgWriter, num};
 
     let mut writer = SvgWriter::fragment();
     writer.root().attr("viewBox", format!("0 0 {} {}", num(width_mm, 2), num(height_mm, 2))).open();

@@ -16,14 +16,14 @@ holds `upstream_revision`. `local_patches` describes each local patch.
 
 | File | Change |
 |---|---|
-| `src/sweep/sweep_line.rs` | The doc comment of `SweepLine::line_segment` says it can return a segment that has exited, which `segment_range` leaves out. Code comments label the change `Craft patch (exited slots)`. |
+| `src/sweep/sweep_line.rs` | The doc comment of `SweepLine::line_segment` says it can return a segment that has exited, which `segment_range` leaves out. Code comments label the change `Bharat patch (exited slots)`. |
 | `docs/sweep.typ` | The intersection scan to the left compares each segment with `alpha^(i+1)` instead of `alpha^i`. With `alpha^i`, its first pass compared `alpha^i` with itself, and the lemma after it is stated for `alpha^(i+1)`. |
 | `docs/sweep.typ` | Two typos are corrected. "condi0.2tions" reads "conditions", and `q(i+i)` reads `q(i+1)`, the first index for which `q` is false. |
 | `docs/sweep.typ` | The lemma for the intersection scan to the left asks for the ordering invariant on `(alpha^1, ..., alpha^(i+1))` and the crossing invariant on `(alpha^1, ..., alpha^i)`, which is how the bidirectional lemma uses it. The argument for the order invariant cites the crossing invariant instead of a "third invariant"; the document defines two. |
 
 `omitted_files` lists the 43 files of the package left out here, with their hashes:
 
-- `tests/fonts/Inconsolata-Regular.ttf`: font files live in craft-fonts.
+- `tests/fonts/Inconsolata-Regular.ttf`: font files live in bharat-fonts.
 - `docs/assets/logo.svg` and `examples/linebender.svg`: the package gives no license for this artwork
   apart from its `license` field.
 - `tests/snapshots/`: 12 SVG and 20 PNG files.
@@ -36,17 +36,17 @@ do not compile from the published package.
 ## Using it
 
 The directory is excluded from the workspace. With the root manifest's `[patch.crates-io]` entry,
-`craft-prepress` builds its `flatten` feature against this copy. Cargo ignores a dependency's patches,
+`bharat-prepress` builds its `flatten` feature against this copy. Cargo ignores a dependency's patches,
 so a consuming workspace adds its own entry:
 
 ```toml
 [patch.crates-io]
-linesweeper = { git = "https://github.com/storytold/craft-libs", rev = "<rev>" }
+linesweeper = { git = "https://github.com/obone32/bharat-libs", rev = "<rev>" }
 ```
 
 ## Tests
 
-`scripts/test-pdf-backends.sh` runs the package's unit, regression and doc tests. The `craft-prepress`
+`scripts/test-pdf-backends.sh` runs the package's unit, regression and doc tests. The `bharat-prepress`
 tests with the `flatten` feature run against this copy. `pdf.yml`'s path filter does not list this
 directory, so a pull request that changes only files here does not start `pdf.yml`. Run the tests from
 this directory:

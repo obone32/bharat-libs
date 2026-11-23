@@ -1,5 +1,5 @@
 [package]
-name = "craft-texture"
+name = "bharat-texture"
 description = "Bounded linear float image planes and texture sampling"
 version.workspace = true
 edition.workspace = true

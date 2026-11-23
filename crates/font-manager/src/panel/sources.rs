@@ -2,7 +2,7 @@
 //! added (never curated, and flagged when their file changed since it was added), adding one,
 //! and downloading them all again.
 
-use craft_ui::direction;
+use bharat_ui::direction;
 use egui::{RichText, Ui, vec2};
 
 use crate::panel::app::FontsPanel;

@@ -29,7 +29,7 @@
 use crate::{
     BlackLevel, Camera, Cfa, ColorData, Limits, Mode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result, unpack,
 };
-use craft_tiff::{Tiff, tags as t};
+use bharat_tiff::{Tiff, tags as t};
 
 /// Storage method codes in `PRD`.
 const PACKED_12: u8 = 0x59;
@@ -136,7 +136,7 @@ pub(crate) fn decode(bytes: &[u8], mode: Mode, limits: &Limits) -> Result<RawIma
         if p.packed {
             unpack::unpack_msb(src, 12, &mut d);
         } else {
-            unpack::read_u16s(src, craft_tiff::ByteOrder::Big, &mut d);
+            unpack::read_u16s(src, bharat_tiff::ByteOrder::Big, &mut d);
             for v in &mut d {
                 *v = (*v).min(4095);
             }
@@ -210,10 +210,10 @@ pub(crate) mod tests {
         for v in wbg {
             wb.extend_from_slice(&v.to_be_bytes());
         }
-        let mut ifd0 = craft_tiff::IfdBuilder::new();
-        ifd0.set(t::MAKE, craft_tiff::Value::Ascii("Minolta Co., Ltd.".into()));
-        ifd0.set(t::ORIENTATION, craft_tiff::Value::Short(vec![6]));
-        let ttw = craft_tiff::TiffWriter::default().write(&[ifd0]).unwrap();
+        let mut ifd0 = bharat_tiff::IfdBuilder::new();
+        ifd0.set(t::MAKE, bharat_tiff::Value::Ascii("Minolta Co., Ltd.".into()));
+        ifd0.set(t::ORIENTATION, bharat_tiff::Value::Short(vec![6]));
+        let ttw = bharat_tiff::TiffWriter::default().write(&[ifd0]).unwrap();
         let mut body = Vec::new();
         for (name, data) in [(b"PRD", &prd), (b"WBG", &wb), (b"TTW", &ttw)] {
             body.push(0);

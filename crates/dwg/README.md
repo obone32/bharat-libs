@@ -1,4 +1,4 @@
-# craft-dwg
+# bharat-dwg
 
 A byte-level bridge between DWG and DXF. It does not expose `acadrust` types: callers pass bytes,
 choose limits, and receive converted bytes plus notes about data the conversion could not preserve.

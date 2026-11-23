@@ -129,7 +129,7 @@ fn coverage_report() {
     for f in common::FIXTURES {
         let Some((hevc, _)) = common::ensure(f) else { continue };
         let data = std::fs::read(hevc).unwrap();
-        let mut dec = craft_video::hevc::decode::Decoder::new();
+        let mut dec = bharat_video::hevc::decode::Decoder::new();
         for au in common::split_access_units(&data) {
             let _ = dec.decode(au, 0);
         }
@@ -159,6 +159,6 @@ fn generate_fixtures() {
     let dir = common::fixtures_dir();
     for f in common::FIXTURES {
         let outs = [dir.join(format!("{}.hevc", f.name)), dir.join(format!("{}.yuv", f.name))];
-        craft_media_testkit::generate_and_report(&format!("hevc/{}", f.name), &outs, || common::ensure(f));
+        bharat_media_testkit::generate_and_report(&format!("hevc/{}", f.name), &outs, || common::ensure(f));
     }
 }

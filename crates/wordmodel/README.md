@@ -1,4 +1,4 @@
-# craft-wordmodel
+# bharat-wordmodel
 
 A word-processing document model: stories, paragraphs, runs, tables, sections, styles, numbering,
 fields, content controls, notes, comments, revisions, floating objects, drawings and math. It is
@@ -9,7 +9,7 @@ type names and serde attributes are as they were, so an app that re-exports the 
 native file format.
 
 ```rust
-use craft_wordmodel::{Block, Document};
+use bharat_wordmodel::{Block, Document};
 
 let doc = Document::from_text("One\nTwo");
 assert_eq!(doc.body.len(), 2);
@@ -28,7 +28,7 @@ assert!(matches!(&*doc.body[0], Block::Para(p) if p.text == "One"));
   linear and LaTeX forms.
 - `chart`, `smart_art`, `graphic`, `fill`, `connector`, `freeform`, `wordart`, `effects`,
   `picfx`, `line_dash`: drawing objects as the model holds them. Reading and writing their
-  DrawingML is `craft-drawingml`'s job, in the format crates.
+  DrawingML is `bharat-drawingml`'s job, in the format crates.
 - `kept`: markup kept from the file a document was read from, so what is not edited is written
   back as it was.
 - `walk`, `work`, `geom`, `bidi`, `cluster`, `collate`, `locale_number`, `symbol_fonts`.
@@ -36,7 +36,7 @@ assert!(matches!(&*doc.body[0], Block::Para(p) if p.text == "One"));
 ## Not here
 
 Range editing, copy and paste, IME text and equation editing stay with the app that edits.
-Code pages are `craft-rtf`'s `codepage`, the ZIP entry-count check is `craft-opc`'s.
+Code pages are `bharat-rtf`'s `codepage`, the ZIP entry-count check is `bharat-opc`'s.
 
 ## Limits
 

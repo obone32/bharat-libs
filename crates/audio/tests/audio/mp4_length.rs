@@ -1,6 +1,6 @@
 //! The length `probe` reports for AAC in MP4 is the length `decode` produces.
 
-use craft_audio::{decode, probe};
+use bharat_audio::{decode, probe};
 
 fn atom(kind: &[u8; 4], body: &[u8]) -> Vec<u8> {
     [&(8 + body.len() as u32).to_be_bytes()[..], kind, body].concat()

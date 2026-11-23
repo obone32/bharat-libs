@@ -1,5 +1,5 @@
 //! Our supplement of Russian words older Hunspell dictionaries lack (`маркетплейс`, `промокод`,
-//! `интеграция`, `бонусный`…), from craft-i18n's `language-data/ru/ru-extra.txt`: each base form with its
+//! `интеграция`, `бонусный`…), from bharat-i18n's `language-data/ru/ru-extra.txt`: each base form with its
 //! declension, expanded here into every form.
 
 use std::collections::HashSet;
@@ -163,7 +163,7 @@ fn forms(base: &str, class: &str) -> Vec<String> {
 mod tests {
     use super::*;
 
-    /// craft-libs#495 review: `-ой` adjectives after a velar or hushing letter take `и`.
+    /// bharat-libs#495 review: `-ой` adjectives after a velar or hushing letter take `и`.
     #[test]
     fn oi_adjectives_spell_i_after_velars_and_hushers() {
         let f = forms("дорогой", "adj");
@@ -174,8 +174,8 @@ mod tests {
     }
 
     #[cfg_attr(
-        not(craft_proof_embed = "ru"),
-        ignore = "needs the ru Language data (CRAFT_I18N_DIR; ru-extra.txt is embedded in every build that has it)"
+        not(bharat_proof_embed = "ru"),
+        ignore = "needs the ru Language data (BHARAT_I18N_DIR; ru-extra.txt is embedded in every build that has it)"
     )]
     #[test]
     fn supplement_words_decline() {

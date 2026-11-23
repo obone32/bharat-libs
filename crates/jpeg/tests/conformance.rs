@@ -1,6 +1,6 @@
 //! Decodes of the libjpeg-turbo test images (tests/data, see SOURCE.md there).
 
-use craft_jpeg::{Decoded, Limits, Samples, decode};
+use bharat_jpeg::{Decoded, Limits, Samples, decode};
 
 fn fixture(name: &str) -> Vec<u8> {
     let path = format!("{}/tests/data/{name}", env!("CARGO_MANIFEST_DIR"));
@@ -109,7 +109,7 @@ fn ppm16(bytes: &[u8]) -> (u32, u32, u32, Vec<u16>) {
 }
 
 /// testorig12.jpg against libjpeg-turbo's decode (testorig12.ppm, 12-bit RGB; SOURCE.md says how
-/// it was made). libjpeg-turbo uses an integer IDCT and integer color conversion, craft-jpeg
+/// it was made). libjpeg-turbo uses an integer IDCT and integer color conversion, bharat-jpeg
 /// floats; the comparison is on the 12-bit scale.
 #[test]
 fn twelve_bit_image_matches_libjpeg_turbo() {
@@ -129,7 +129,7 @@ const MAX_ABS_12: f64 = 4.0;
 
 /// Every band of each Huffman-coded 8-bit test image, read in order, joined.
 fn bands_of(bytes: &[u8]) -> (Vec<u8>, bool) {
-    let bands = craft_jpeg::Bands::new(bytes, &Limits::default(), None).unwrap_or_else(|e| panic!("bands: {e}"));
+    let bands = bharat_jpeg::Bands::new(bytes, &Limits::default(), None).unwrap_or_else(|e| panic!("bands: {e}"));
     let mut reader = bands.reader();
     let mut out = Vec::new();
     while let Some(band) = reader.next_band().unwrap_or_else(|e| panic!("band: {e}")) {

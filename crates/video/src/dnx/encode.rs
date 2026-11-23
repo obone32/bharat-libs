@@ -6,7 +6,7 @@
 //! whose frame fits the CBR payload, then macroblocks get one finer step in scan order while the
 //! budget allows.
 
-use craft_media::{CodecId, CodecParams};
+use bharat_media::{CodecId, CodecParams};
 
 use crate::dnx::bits::Writer;
 use crate::dnx::dct::fdct8x8;

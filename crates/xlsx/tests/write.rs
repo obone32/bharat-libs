@@ -1,12 +1,12 @@
 //! Writing: a workbook read, written and read again is the same workbook, and every part this
 //! crate does not read comes back byte for byte.
 
-use craft_xlsx::testing::zip;
-use craft_xlsx::{
+use bharat_xlsx::testing::zip;
+use bharat_xlsx::{
     Cell, CellRef, CellValue, DefinedName, Document, Error, Font, KeptPart, Limits, Package, Range, Row, SheetEntry, SheetKind, StringItem, Styles,
     Value, Visibility, Workbook, Worksheet, XlsxKind,
 };
-use craft_xlsx::{Marker, ObjectKind, Placement};
+use bharat_xlsx::{Marker, ObjectKind, Placement};
 
 const MAIN: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 const RT: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
@@ -96,7 +96,7 @@ fn read(bytes: &[u8]) -> Document {
 fn assert_same(a: &Document, b: &Document) {
     let written = |d: &Document| {
         let mut root = d.workbook.to_el();
-        craft_xlsx::ns::declare(&mut root);
+        bharat_xlsx::ns::declare(&mut root);
         root
     };
     assert_eq!(a.kind, b.kind);
@@ -202,7 +202,7 @@ fn features_are_read() {
     let dv = &f.validations.as_ref().unwrap().items[0];
     assert_eq!((dv.kind.as_deref(), dv.formula1.as_deref(), dv.sqref.len()), (Some("list"), Some("\"a,b\""), 2));
     assert_eq!(dv.attrs, [("xr:uid".to_string(), "{00000000-0002-0000-0000-000000000000}".to_string())]);
-    assert_eq!(craft_xlsx::range_ref(&dv.sqref[1]), "C:C");
+    assert_eq!(bharat_xlsx::range_ref(&dv.sqref[1]), "C:C");
     assert_eq!(f.conditional_formats[0].rules[0].formulas, ["0.25"]);
     assert_eq!(f.hyperlinks[0].url.as_deref(), Some("https://example.com/a?b&c"));
     assert_eq!((f.hyperlinks[1].location.as_deref(), f.hyperlinks[1].url.as_deref()), (Some("Data!A1"), None));
@@ -217,7 +217,7 @@ fn features_are_read() {
     assert_eq!((comments.author(&comments.comments[0]), &*comments.comments[0].text.text), (Some("Ann"), "Ann:\nnote"));
     assert_eq!(
         ws.notes,
-        [craft_xlsx::NoteShape { at: CellRef::new(1, 1), visible: true, anchor: Some([2, 15, 0, 2, 4, 15, 4, 16]), size_pt: Some((120.0, 60.0)) }]
+        [bharat_xlsx::NoteShape { at: CellRef::new(1, 1), visible: true, anchor: Some([2, 15, 0, 2, 4, 15, 4, 16]), size_pt: Some((120.0, 60.0)) }]
     );
     assert!(doc.parts.iter().any(|p| p.name == "xl/drawings/vmlDrawing1.vml") && !doc.parts.iter().any(|p| p.name == "xl/comments1.xml"));
 }
@@ -255,17 +255,17 @@ fn features_are_edited() {
     let ws = doc.worksheets[0].as_mut().unwrap();
     let f = &mut ws.part.features;
     f.hyperlinks[0].url = Some("https://example.org/".into());
-    f.conditional_formats.push(craft_xlsx::ConditionalFormatting {
+    f.conditional_formats.push(bharat_xlsx::ConditionalFormatting {
         sqref: vec![Range::parse("A1:A9").unwrap()],
-        rules: vec![craft_xlsx::CfRule { kind: Some("expression".into()), priority: Some(2), formulas: vec!["A1>1".into()], ..Default::default() }],
+        rules: vec![bharat_xlsx::CfRule { kind: Some("expression".into()), priority: Some(2), formulas: vec!["A1>1".into()], ..Default::default() }],
         ..Default::default()
     });
     f.print.setup = None;
     // A comment on a sheet without a VML drawing gets one, in a shape block no other drawing uses.
     let empty = doc.worksheets[2].as_mut().unwrap();
-    empty.comments = Some(craft_xlsx::Comments {
+    empty.comments = Some(bharat_xlsx::Comments {
         authors: vec!["Bo".into()],
-        comments: vec![craft_xlsx::Comment { at: CellRef::new(0, 0), author_id: Some(0), text: StringItem::plain("hi"), ..Default::default() }],
+        comments: vec![bharat_xlsx::Comment { at: CellRef::new(0, 0), author_id: Some(0), text: StringItem::plain("hi"), ..Default::default() }],
         ..Default::default()
     });
     let bytes = doc.write().unwrap();
@@ -337,7 +337,7 @@ fn charts_and_pictures() {
     let mut fresh = chart.clone();
     fresh.raw = None;
     doc.add_chart(2, at.clone(), &fresh, "Chart 9").unwrap();
-    let waterfall = craft_xlsx::craft_drawingml::chart::Chart { kind: craft_xlsx::craft_drawingml::chart::ChartType::Waterfall, ..fresh.clone() };
+    let waterfall = bharat_xlsx::bharat_drawingml::chart::Chart { kind: bharat_xlsx::bharat_drawingml::chart::ChartType::Waterfall, ..fresh.clone() };
     doc.add_chart(2, at.clone(), &waterfall, "Waterfall").unwrap();
     doc.add_picture(2, at, b"GIF89a".to_vec(), "gif", "small").unwrap();
     assert!(
@@ -351,14 +351,14 @@ fn charts_and_pictures() {
     assert_eq!(d2.part, "xl/drawings/drawing2.xml");
     let kinds: Vec<_> = d2.drawing.anchors().iter().map(|a| (a.kind(), a.props().and_then(|p| p.attr_u32("id")))).collect();
     assert_eq!(kinds, [(ObjectKind::Chart, Some(2)), (ObjectKind::Picture, Some(4))]);
-    let alternate: Vec<_> = d2.drawing.items.iter().filter_map(|i| if let craft_xlsx::Item::Other(e) = i { Some(e) } else { None }).collect();
-    let ex = craft_xlsx::Drawing::alternate_anchors(alternate[0]);
+    let alternate: Vec<_> = d2.drawing.items.iter().filter_map(|i| if let bharat_xlsx::Item::Other(e) = i { Some(e) } else { None }).collect();
+    let ex = bharat_xlsx::Drawing::alternate_anchors(alternate[0]);
     assert_eq!((ex[0].kind(), ex[0].name()), (ObjectKind::Chart, Some("Waterfall")));
     let targets: Vec<&str> = d2.rels.iter().map(|r| r.target.as_str()).collect();
     assert_eq!(targets, ["xl/charts/chart2.xml", "xl/charts/chartEx1.xml", "xl/media/image1.gif"]);
     let mut p = Package::open(&out, &Limits::default()).unwrap();
     assert_eq!(p.chart("xl/charts/chart2.xml").unwrap().map(|c| c.series.len()), Some(1));
-    assert_eq!(p.chart("xl/charts/chartEx1.xml").unwrap().map(|c| c.kind), Some(craft_xlsx::craft_drawingml::chart::ChartType::Waterfall));
+    assert_eq!(p.chart("xl/charts/chartEx1.xml").unwrap().map(|c| c.kind), Some(bharat_xlsx::bharat_drawingml::chart::ChartType::Waterfall));
     let drawing = String::from_utf8(p.opc().read("xl/drawings/drawing2.xml").unwrap().unwrap()).unwrap();
     assert!(drawing.contains(r#"Requires="cx1""#) && drawing.contains("xmlns:cx1=") && drawing.contains("<cx:chart r:id="), "{drawing}");
     let types = String::from_utf8(p.opc().read("[Content_Types].xml").unwrap().unwrap()).unwrap();
@@ -402,7 +402,7 @@ fn tables() {
     new.id = Some(2);
     new.name = Some("Other".into());
     new.display_name = Some("Other".into());
-    doc.worksheets[2].as_mut().unwrap().tables.push(craft_xlsx::TablePart { part: String::new(), table: new });
+    doc.worksheets[2].as_mut().unwrap().tables.push(bharat_xlsx::TablePart { part: String::new(), table: new });
     let again = read(&doc.write().unwrap());
     assert_same(&doc_after(&doc), &again);
     let t2 = again.worksheets[2].clone().unwrap().tables.remove(0);
@@ -423,7 +423,7 @@ fn tables() {
     let mut doc = read(&excel_like());
     let kept = doc.worksheets[0].as_mut().unwrap().tables.remove(0);
     doc.worksheets[2].as_mut().unwrap().tables.push(kept);
-    doc.worksheets[0].as_mut().unwrap().tables.push(craft_xlsx::TablePart { part: String::new(), table: t2.table.clone() });
+    doc.worksheets[0].as_mut().unwrap().tables.push(bharat_xlsx::TablePart { part: String::new(), table: t2.table.clone() });
     let again = read(&doc.write().unwrap());
     let names = |i: usize| again.worksheets[i].as_ref().unwrap().tables.iter().map(|t| t.part.clone()).collect::<Vec<_>>();
     assert_eq!((names(0), names(2)), (vec!["xl/tables/table2.xml".to_string()], vec!["xl/tables/table1.xml".to_string()]));

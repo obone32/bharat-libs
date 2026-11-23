@@ -1,12 +1,12 @@
-# craft-raster-codecs
+# bharat-raster-codecs
 
-Compatibility facade for the small raster-format modules in older Craft app versions. The
-format readers and writers are implemented once in [`craft-image-codecs`](../image-codecs/README.md);
+Compatibility facade for the small raster-format modules in older Bharat app versions. The
+format readers and writers are implemented once in [`bharat-image-codecs`](../image-codecs/README.md);
 these modules forward calls and adapt the older `Image` and `Limits` types. The `common` RGBA
 image facade also delegates to that crate.
 
 ```toml
-craft-raster-codecs = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-raster-codecs = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 | Module | Format | Read | Write |
@@ -27,7 +27,7 @@ samples, top row first. It also carries what these formats state beside the pixe
 `text` (FITS header cards) and `warnings` (a FITS cube opened as its first plane).
 
 ```rust
-use craft_raster_codecs::{Limits, pnm};
+use bharat_raster_codecs::{Limits, pnm};
 
 let image = pnm::decode(b"P2\n2 1\n255\n0 255\n", &Limits::default())?;
 assert_eq!(image.data(), &[0, 255]);
@@ -35,7 +35,7 @@ let bytes = pnm::encode(&image)?;
 ```
 
 The module sniffers and the `dds`/`fits` additional-image queries forward to shared detection and
-metadata inspection in `craft-image-codecs`.
+metadata inspection in `bharat-image-codecs`.
 
 `xpm::x11_color_rgb` also looks up exact normalized X11 names as RGB channels in `0..=1`.
 It accepts only 1–64 lowercase ASCII letters or digits, without normalization, XPM-only aliases,
@@ -55,7 +55,7 @@ formats (plain PNM, XPM) reserve from the bytes present, not from the header.
 
 ## Tests
 
-`cargo test -p craft-raster-codecs`. `tests/roundtrip.rs` writes every layout and depth each
+`cargo test -p bharat-raster-codecs`. `tests/roundtrip.rs` writes every layout and depth each
 writer stores and reads it back exactly, then truncates, bit-flips and overwrites header bytes of
 a valid file of every format: a reader may refuse, never panic. Two tests are ignored by default:
 a DDS encode timing, and a PNM peak-memory check that reads the process's RSS.

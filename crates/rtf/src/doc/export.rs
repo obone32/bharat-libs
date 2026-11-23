@@ -65,7 +65,7 @@ pub(super) struct Writer {
     /// size, code font…): what a run's formatting without a direct value resolves to.
     pub(super) base: Fmt,
     /// The body's sections in order (the last is the document's); empty when it has just one.
-    pub(super) sections: Vec<craft_wordmodel::SectionProps>,
+    pub(super) sections: Vec<bharat_wordmodel::SectionProps>,
     /// The section being written.
     pub(super) sect_i: usize,
 }
@@ -154,7 +154,7 @@ impl Marker<'_> {
                 InlineObject::NoteRef { id, kind, .. } => self.doc.parts.get(&id).map(|part| {
                     let mut blocks = Vec::new();
                     self.story(&part.blocks, id, 0, &mut blocks);
-                    self.token(Mark::Note { endnote: kind == craft_wordmodel::para::NoteKind::Endnote, blocks })
+                    self.token(Mark::Note { endnote: kind == bharat_wordmodel::para::NoteKind::Endnote, blocks })
                 }),
                 InlineObject::CommentStart { id } if note.is_none() => Some(self.token(Mark::RangeStart(id))),
                 InlineObject::CommentEnd { id } if note.is_none() => {
@@ -164,7 +164,7 @@ impl Marker<'_> {
                 _ => None,
             };
             let Some(tok) = tok else { continue };
-            let end = off + craft_wordmodel::para::OBJ.len_utf8();
+            let end = off + bharat_wordmodel::para::OBJ.len_utf8();
             let text = if tok.is_empty() { tok } else { format!("{MARK_OPEN}{tok}{MARK_CLOSE}") };
             if q.delete(off, end).is_err() {
                 continue;
@@ -186,8 +186,8 @@ impl Marker<'_> {
 }
 
 /// `\sectd` and a section's formatting, in the words the reader reads back.
-fn sect_words(s: &craft_wordmodel::SectionProps) -> String {
-    use craft_wordmodel::section::{NumFormat, SectionStart};
+fn sect_words(s: &bharat_wordmodel::SectionProps) -> String {
+    use bharat_wordmodel::section::{NumFormat, SectionStart};
     let tw = |v: f32| if v.is_finite() { ((v * 20.0).round() as i64).max(0) } else { 0 };
     let mut o = String::from("\\sectd");
     o.push_str(match s.start {
@@ -245,8 +245,8 @@ fn style_num(k: Kind) -> Option<u32> {
     }
 }
 
-fn rtf_border_style(s: craft_wordmodel::props::BorderStyle) -> &'static str {
-    use craft_wordmodel::props::BorderStyle;
+fn rtf_border_style(s: bharat_wordmodel::props::BorderStyle) -> &'static str {
+    use bharat_wordmodel::props::BorderStyle;
     match s {
         BorderStyle::None => "\\brdrnone",
         BorderStyle::Single => "\\brdrs",
@@ -270,7 +270,7 @@ fn rtf_border_style(s: craft_wordmodel::props::BorderStyle) -> &'static str {
 }
 
 impl Writer {
-    fn write_border(&mut self, prefix: &str, side: char, b: craft_wordmodel::props::Border, out: &mut String) {
+    fn write_border(&mut self, prefix: &str, side: char, b: bharat_wordmodel::props::Border, out: &mut String) {
         out.push_str(&format!("\\{prefix}{side}"));
         out.push_str(rtf_border_style(b.style));
         let w = ((b.width * 20.0).round() as i64).clamp(1, 150);
@@ -287,7 +287,7 @@ impl Writer {
         }
     }
 
-    fn cell_borders(&mut self, borders: Option<&craft_wordmodel::props::Borders>, borderless: bool, out: &mut String) {
+    fn cell_borders(&mut self, borders: Option<&bharat_wordmodel::props::Borders>, borderless: bool, out: &mut String) {
         if let Some(b) = borders {
             for (side, opt) in [('t', &b.top), ('l', &b.left), ('b', &b.bottom), ('r', &b.right)] {
                 if let Some(border) = opt.filter(|x| x.is_visible()) {
@@ -413,7 +413,7 @@ impl Writer {
         // A script, `file:`, UNC or other non-web target is written as plain text, as the HTML and
         // Markdown exporters do: Word follows a HYPERLINK field's target on click, and a UNC one
         // leaks the reader's NTLM credentials.
-        match f.link.as_deref().filter(|l| craft_wordmodel::link::is_safe_href(l)) {
+        match f.link.as_deref().filter(|l| bharat_wordmodel::link::is_safe_href(l)) {
             Some(l) => {
                 // In a field's quotes `\\` is one backslash; a quote is stored as `%22`.
                 let target = l.replace('\\', "\\\\").replace('"', "%22");
@@ -852,11 +852,11 @@ pub fn export(doc: &Document) -> String {
     };
     let doc = marked.as_ref().unwrap_or(doc);
     let flow = model::from_doc_tracked(doc);
-    let base_font = doc.styles.default_chr.font.clone().unwrap_or_else(|| craft_wordmodel::styles::BODY_FONT.to_string());
+    let base_font = doc.styles.default_chr.font.clone().unwrap_or_else(|| bharat_wordmodel::styles::BODY_FONT.to_string());
     let mut w = Writer { marks, t: Tables::new(base_font), lists: Vec::new(), authors: None, base: Fmt::default(), sections: Vec::new(), sect_i: 0 };
     let mut body = String::new();
     // Every section starts with its own `\sectd`; `\sect` breaks only where there are several.
-    let secs: Vec<craft_wordmodel::SectionProps> = doc.sections().into_iter().map(|(_, s)| s.clone()).collect();
+    let secs: Vec<bharat_wordmodel::SectionProps> = doc.sections().into_iter().map(|(_, s)| s.clone()).collect();
     if let Some(first) = secs.first() {
         body.push_str(&sect_words(first));
     }
@@ -867,7 +867,7 @@ pub fn export(doc: &Document) -> String {
     export_with(&flow.meta, &w, &body, &doc.last_section)
 }
 
-fn export_with(m: &Meta, w: &Writer, body: &str, sec: &craft_wordmodel::SectionProps) -> String {
+fn export_with(m: &Meta, w: &Writer, body: &str, sec: &bharat_wordmodel::SectionProps) -> String {
     let mut out = String::from("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1033\\uc1\n{\\fonttbl");
     for (i, f) in w.t.fonts.items.iter().enumerate() {
         let fam = if model::is_mono(f) { "\\fmodern" } else { "\\fswiss" };

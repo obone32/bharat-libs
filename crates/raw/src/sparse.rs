@@ -20,8 +20,8 @@
 use std::collections::HashSet;
 
 #[cfg(feature = "cr3")]
-use craft_metadata::cr3::{Cr3TrackKind, XMP_UUID, is_cr3, parse_cr3};
-use craft_tiff::{ByteOrder, FieldType, Tiff, tags as t};
+use bharat_metadata::cr3::{Cr3TrackKind, XMP_UUID, is_cr3, parse_cr3};
+use bharat_tiff::{ByteOrder, FieldType, Tiff, tags as t};
 
 use crate::RawFormat;
 
@@ -30,7 +30,7 @@ use crate::RawFormat;
 const HEAD: u64 = 64 * 1024;
 /// An image whose chunks hold fewer bytes than this is read (thumbnails, small previews).
 const BULK: u64 = 256 * 1024;
-/// The same bounds as `craft_tiff`'s reader.
+/// The same bounds as `bharat_tiff`'s reader.
 const MAX_IFDS: usize = 1024;
 const MAX_ENTRIES: u64 = 8192;
 #[cfg(feature = "cr3")]
@@ -314,7 +314,7 @@ fn tiff_plan(bytes: &[u8], loaded: &Ranges, preview: bool) -> HeaderPlan {
     })
 }
 
-/// Walk the IFDs of the TIFF in `data` (which starts at `origin` in the file) as `craft_tiff`'s
+/// Walk the IFDs of the TIFF in `data` (which starts at `origin` in the file) as `bharat_tiff`'s
 /// reader does — the chain, `SubIFDs`, Exif, GPS and Interop, plus the `extra` pointer tags —
 /// asking for every IFD table and for the values that locate IFDs and image chunks. Returns the IFD
 /// tables and out-of-line values found (absolute ranges); incomplete while `w` needs more.
@@ -438,7 +438,7 @@ fn be64(bytes: &[u8], at: u64) -> Option<u64> {
 }
 
 #[cfg(feature = "cr3")]
-/// A CR3 is read where `craft_metadata::cr3::parse_cr3` and the CR3 decoder look: the file type,
+/// A CR3 is read where `bharat_metadata::cr3::parse_cr3` and the CR3 decoder look: the file type,
 /// `moov` and the XMP `uuid` box, the first sample of each timed-metadata (`CTMD`) track, and the
 /// main raw track's coding headers and quantization maps. Previews and image tracks are skipped,
 /// unless `preview`: then every top-level box but `mdat` and the JPEG tracks are read too.

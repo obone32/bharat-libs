@@ -1,6 +1,6 @@
 # Canon CR3 decoding
 
-> Moved from LightCraft (`docs/cr3.md`) with the decoder (`src/cr3.rs`, `src/crx.rs`, `src/crx_wavelet.rs`; the container parser is craft-metadata's `cr3` module). Mentions of LightCraft's app describe that app.
+> Moved from LightCraft (`docs/cr3.md`) with the decoder (`src/cr3.rs`, `src/crx.rs`, `src/crx_wavelet.rs`; the container parser is bharat-metadata's `cr3` module). Mentions of LightCraft's app describe that app.
 
 The CR3 adapter reads the CRX Bayer track, `CMP1` compression descriptor,
 `CDI1`/`IAD1` sensor geometry and timed `CTMD` maker notes. White balance,

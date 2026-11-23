@@ -2,7 +2,7 @@
 
 use crate::common;
 use common::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 use proptest::prelude::*;
 
 fn tight() -> DecodeOptions {

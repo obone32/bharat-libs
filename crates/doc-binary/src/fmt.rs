@@ -1,10 +1,10 @@
 //! Sprms → model properties, and style-chain resolution.
 
-use craft_wordmodel::Rgb;
-use craft_wordmodel::props::{
+use bharat_wordmodel::Rgb;
+use bharat_wordmodel::props::{
     Align, Border, BorderStyle, Borders, CharProps, Highlight, LineSpacing, ParaProps, TabAlign, TabLeader, TabStop, TextColor, Underline, VertAlign,
 };
-use craft_wordmodel::styles::{Style, StyleKind, StyleSheet};
+use bharat_wordmodel::styles::{Style, StyleKind, StyleSheet};
 
 use crate::sprm::{self, Prl, Toggle};
 

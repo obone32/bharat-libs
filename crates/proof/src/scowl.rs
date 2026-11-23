@@ -1,5 +1,5 @@
 //! English spelling from SCOWL (Spell Checker Oriented Word Lists, Kevin Atkinson): the Hunspell
-//! dictionaries of craft-i18n's `language-data/en-us`, `en-gb` (British `-ise`) and `en-ca`,
+//! dictionaries of bharat-i18n's `language-data/en-us`, `en-gb` (British `-ise`) and `en-ca`,
 //! embedded unmodified at build time and read by the affix engine ([`crate::affix`]) on first use.
 //!
 //! Each English has its own: American English reads en-US, Australian English en-AU (SCOWL's
@@ -46,7 +46,7 @@ pub(crate) fn dict(lang: ProofLang) -> Option<&'static AffixDict> {
         return None;
     }
     let loaded = DICTS.get(i)?.get_or_init(|| {
-        let d = AffixDict::from_hunspell(aff, dic, &["SCOWL (wordlist.aspell.net), embedded from craft-i18n"])
+        let d = AffixDict::from_hunspell(aff, dic, &["SCOWL (wordlist.aspell.net), embedded from bharat-i18n"])
             .and_then(|d| if d.is_empty() { Err("no words".to_string()) } else { Ok(d) });
         if let Err(e) = &d {
             log::error!("embedded SCOWL dictionary for {lang:?}: {e}; English spelling falls back to the next source");

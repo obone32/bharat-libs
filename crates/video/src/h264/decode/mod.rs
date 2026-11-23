@@ -5,7 +5,7 @@
 //! multiple slices, long-term references and all MMCOs, deblocking.
 //!
 //! ```no_run
-//! let mut dec = craft_video::h264::decode::Decoder::new();
+//! let mut dec = bharat_video::h264::decode::Decoder::new();
 //! let stream = std::fs::read("video.h264").unwrap();
 //! for pic in dec.decode(&stream, 0).unwrap() {
 //!     println!("{}x{} poc {}", pic.width, pic.height, pic.poc);

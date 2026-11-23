@@ -1,14 +1,14 @@
-# craft-opc
+# bharat-opc
 
 Open Packaging Conventions (ECMA-376 Part 2): the ZIP container that DOCX, XLSX and PPTX files
-share. It replaces the package layer each Craft app carried for its own format (WordCraft's
+share. It replaces the package layer each Bharat app carried for its own format (WordCraft's
 `docx::package`, GridCraft's `xlsx::package`, DeckCraft's `pptx::opc`).
 
 What the parts hold stays with each format's crate. Parts are read with `zip` and XML with
-`craft-xml`.
+`bharat-xml`.
 
 ```rust
-use craft_opc::{Limits, Package, PackageOut, RelsOut};
+use bharat_opc::{Limits, Package, PackageOut, RelsOut};
 
 let mut out = PackageOut::default();
 out.xml_part("xl/workbook.xml", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml", b"<workbook/>".to_vec());

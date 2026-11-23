@@ -1,7 +1,7 @@
 {
   "id": "S17",
   "title": "Mesh gradient with a spot, process and DeviceN corner",
-  "source": "storytold/craft-libs#184 (mesh gradients), CodeRabbit review",
+  "source": "obone32/bharat-libs#184 (mesh gradients), CodeRabbit review",
   "page": [240, 160],
   "inks": [{"name": "Gold", "cmyk": [0, 20, 60, 20]}],
   "objects": [

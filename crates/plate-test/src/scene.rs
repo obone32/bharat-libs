@@ -62,7 +62,7 @@ pub struct Ink {
     pub lab: Option<[f32; 3]>,
 }
 
-/// Output intents a scene can name: `fogra39` is craft-cms's `COATED_FOGRA39_ICC`.
+/// Output intents a scene can name: `fogra39` is bharat-cms's `COATED_FOGRA39_ICC`.
 pub const OUTPUT_INTENTS: &[&str] = &["fogra39"];
 
 #[derive(Debug, Clone, Default, Deserialize)]
@@ -72,7 +72,7 @@ pub struct Settings {
     #[serde(default)]
     pub group_cs: Option<GroupCs>,
     /// Name of the print output intent, one of [`OUTPUT_INTENTS`]; the scene is then written
-    /// with craft-pdf's print settings. Absent means the writer's defaults.
+    /// with bharat-pdf's print settings. Absent means the writer's defaults.
     #[serde(default)]
     pub output_intent: Option<String>,
 }

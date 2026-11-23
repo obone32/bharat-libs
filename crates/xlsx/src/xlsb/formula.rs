@@ -2,7 +2,7 @@
 //! expression tree, for cell formulas. The tokens are BIFF8's, but nearly every operand differs
 //! (32-bit rows, 14-bit columns, UTF-16 strings, its own array-constant codes, newer functions
 //! called through hidden names), so this is its own decoder, with its own function table
-//! ([`super::ftab`]) and its own copies of craft-xls's depth guards and limits. Anything outside the
+//! ([`super::ftab`]) and its own copies of bharat-xls's depth guards and limits. Anything outside the
 //! token set it knows is reported as unsupported, and the caller keeps the cell's cached value.
 //! So is a formula that needs something the reader doesn't read: a user's defined name (XLSB
 //! names are not read yet) or Python code stored outside the cell.
@@ -11,7 +11,7 @@
 
 use std::sync::Arc;
 
-use craft_sheet::{CellError, CellRef, MAX_COLS, MAX_ROWS};
+use bharat_sheet::{CellError, CellRef, MAX_COLS, MAX_ROWS};
 
 use super::expr::{Anchor, BinOp, Expr, RefKind, Reference, SheetSel, UnOp};
 use super::ftab::function;

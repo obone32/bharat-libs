@@ -3,7 +3,7 @@
 
 use std::collections::HashSet;
 
-use craft_wordmodel::Source;
+use bharat_wordmodel::Source;
 
 use crate::DocxError;
 use crate::xml::El;

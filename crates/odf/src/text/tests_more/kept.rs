@@ -1,5 +1,5 @@
 //! What WordCraft doesn't model survives a save that doesn't change it: a paragraph nothing
-//! edited is written back as it was read, with the definitions it names (`craft_wordmodel::kept`,
+//! edited is written back as it was read, with the definitions it names (`bharat_wordmodel::kept`,
 //! `odt::kept`).
 //!
 //! Every sample here (and any sample file added for the no-edit loss gate) is written by us for
@@ -8,14 +8,14 @@
 
 use crate::text::tests::{NS_T, content_of, package, styles_of};
 use crate::text::{export, import};
-use craft_wordmodel::Pos;
+use bharat_wordmodel::Pos;
 
 /// A paragraph with an element and an attribute WordCraft doesn't read, in automatic styles
 /// naming a common style WordCraft doesn't model either, and a font face.
 const CONTENT: &str = r#"<office:font-face-decls><style:font-face style:name="Odd Font" svg:font-family="'Odd Font'"/></office:font-face-decls><office:automatic-styles><style:style style:name="P1" style:family="paragraph" style:parent-style-name="Plaque"><style:paragraph-properties fo:margin-left="1in" loext:odd="yes"/></style:style><style:style style:name="T1" style:family="text"><style:text-properties style:font-name="Odd Font" fo:font-weight="bold"/></style:style></office:automatic-styles>"#;
 const PARA: &str = r#"<text:p text:style-name="P1" x:unknown="1">Keep <text:span text:style-name="T1">this</text:span><text:hidden-text text:condition="ooow:1" text:string-value="secret"/> as it is.</text:p>"#;
 
-fn doc() -> craft_wordmodel::Document {
+fn doc() -> bharat_wordmodel::Document {
     let styles = format!(
         r#"<office:document-styles {NS_T}><office:styles><style:style style:name="Plaque" style:family="paragraph" style:class="odd"><style:text-properties fo:font-size="14pt"/></style:style></office:styles></office:document-styles>"#
     );
@@ -181,7 +181,7 @@ fn the_files_font_declarations_are_kept() {
     let mut d = import(&package(&content, Some(&styles))).unwrap();
     check(&export(&d).unwrap(), "no edits");
     // Text edited, written from the model: still the file's declaration.
-    if let Some(craft_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
         p.text.push('!');
         if let Some(r) = p.runs.last_mut() {
             r.len += 1;
@@ -204,7 +204,7 @@ fn a_fonts_name_spelled_another_way_is_declared_once_as_the_file_has_it() {
         );
         let mut d = import(&package(&content, Some(&styles))).unwrap();
         // Text edited, written from the model.
-        if let Some(craft_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
+        if let Some(bharat_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
             p.text.push('!');
             if let Some(r) = p.runs.last_mut() {
                 r.len += 1;
@@ -235,7 +235,7 @@ fn a_face_named_other_than_its_family_gives_the_family_the_files_declaration() {
         r#"<office:document-content {NS_T}><office:font-face-decls>{face}</office:font-face-decls><office:automatic-styles><style:style style:name="T1" style:family="text"><style:text-properties style:font-name="F1"/></style:style></office:automatic-styles><office:body><office:text><text:p><text:span text:style-name="T1">One</text:span></text:p></office:text></office:body></office:document-content>"#
     );
     let mut d = import(&package(&content, Some(&styles))).unwrap();
-    if let Some(craft_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
         p.text.push('!');
         if let Some(r) = p.runs.last_mut() {
             r.len += 1;
@@ -263,7 +263,7 @@ fn a_face_is_found_and_named_by_its_own_markup() {
         r#"<office:document-content {NS_T}>{script}<office:font-face-decls>{face}</office:font-face-decls><office:automatic-styles><style:style style:name="T1" style:family="text"><style:text-properties style:font-name="F1"/></style:style></office:automatic-styles><office:body><office:text><text:p><text:span text:style-name="T1">One</text:span></text:p></office:text></office:body></office:document-content>"#
     );
     let mut d = import(&package(&content, Some(&styles))).unwrap();
-    if let Some(craft_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
         p.text.push('!');
         if let Some(r) = p.runs.last_mut() {
             r.len += 1;

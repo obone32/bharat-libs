@@ -1,4 +1,4 @@
-//! PDF/X-1a:2003: the PDF/X-4 print file flattened by craft-prepress (no transparency left; RGB
+//! PDF/X-1a:2003: the PDF/X-4 print file flattened by bharat-prepress (no transparency left; RGB
 //! and ICC color converted into the output intent's CMYK; inks, overprint and live text kept),
 //! written by krilla as PDF 1.4, given the PDF/X-1a identification and output intent, then
 //! checked. Apps use [`flatten_x1a`] to flatten and finalize in one step, and [`check_pdfx1a`]
@@ -8,10 +8,10 @@ use std::collections::{HashMap, HashSet};
 
 use crate::flatten::pdf::ReadOptions;
 use crate::flatten::{FlattenDocumentOptions, FlattenOptions, FlattenTotals, flatten_document};
-use craft_pdf::syntax::content::UntypedIter;
-use craft_pdf::syntax::object::{Array, Dict, Name, Object, ObjectIdentifier, Stream};
-use craft_pdf::syntax::page::Resources;
-use craft_pdf::write::backend::configure::PdfVersion;
+use bharat_pdf::syntax::content::UntypedIter;
+use bharat_pdf::syntax::object::{Array, Dict, Name, Object, ObjectIdentifier, Stream};
+use bharat_pdf::syntax::page::Resources;
+use bharat_pdf::write::backend::configure::PdfVersion;
 
 const MAX_DEPTH: usize = 16;
 
@@ -118,7 +118,7 @@ pub fn check_pdfx1a(pdf: &[u8]) -> Vec<String> {
 /// [`check_pdfx1a`]'s findings: transparency and color spaces first, then the rest.
 fn checks(pdf: &[u8]) -> (Vec<String>, Vec<String>) {
     let mut issues = Vec::new();
-    let file = craft_pdf::syntax::Pdf::new(pdf.to_vec()).ok();
+    let file = bharat_pdf::syntax::Pdf::new(pdf.to_vec()).ok();
     if !pdf.starts_with(b"%PDF-1.") || pdf.get(7).is_none_or(|v| *v > b'4') {
         issues.push("the PDF version must be 1.4 or lower".into());
     }
@@ -157,7 +157,7 @@ fn checks(pdf: &[u8]) -> (Vec<String>, Vec<String>) {
 
 /// Transparency and color spaces, then the output intent and fonts, walked through every page's
 /// content and what it uses.
-fn content(file: Option<&craft_pdf::syntax::Pdf>) -> (Vec<String>, Vec<String>, Vec<String>) {
+fn content(file: Option<&bharat_pdf::syntax::Pdf>) -> (Vec<String>, Vec<String>, Vec<String>) {
     let Some(file) = file else {
         return (vec!["the file couldn't be read to check its transparency and color spaces".into()], Vec::new(), Vec::new());
     };
@@ -222,13 +222,13 @@ impl Intent {
 }
 
 /// The catalog's `GTS_PDFX` output intents.
-fn pdfx_intents(file: &craft_pdf::syntax::Pdf) -> Vec<Intent> {
+fn pdfx_intents(file: &bharat_pdf::syntax::Pdf) -> Vec<Intent> {
     let number = |n: i32| usize::try_from(n).ok();
     raw_pdfx_intents(file)
         .into_iter()
         .map(|oi| {
             let text = |key: &[u8]| {
-                oi.get::<craft_pdf::syntax::object::String<'_>>(key)
+                oi.get::<bharat_pdf::syntax::object::String<'_>>(key)
                     .map(|s| String::from_utf8_lossy(s.as_bytes()).trim().to_string())
                     .filter(|s| !s.is_empty())
             };
@@ -249,20 +249,20 @@ fn pdfx_intents(file: &craft_pdf::syntax::Pdf) -> Vec<Intent> {
         .collect()
 }
 
-fn raw_pdfx_intents<'a>(file: &'a craft_pdf::syntax::Pdf) -> Vec<Dict<'a>> {
+fn raw_pdfx_intents<'a>(file: &'a bharat_pdf::syntax::Pdf) -> Vec<Dict<'a>> {
     let xref = file.xref();
     let Some(catalog) = xref.get::<Dict<'_>>(xref.root_id()) else { return Vec::new() };
     let Some(intents) = catalog.get::<Array<'_>>(b"OutputIntents") else { return Vec::new() };
     intents.iter::<Dict<'_>>().filter(|oi| oi.get::<Name<'_>>(b"S").is_some_and(|s| s.as_ref() == b"GTS_PDFX")).collect()
 }
 
-fn info_text(file: &craft_pdf::syntax::Pdf, key: &[u8]) -> Option<String> {
-    file.info()?.get::<craft_pdf::syntax::object::String<'_>>(key).map(|s| String::from_utf8_lossy(s.as_bytes()).trim().to_string())
+fn info_text(file: &bharat_pdf::syntax::Pdf, key: &[u8]) -> Option<String> {
+    file.info()?.get::<bharat_pdf::syntax::object::String<'_>>(key).map(|s| String::from_utf8_lossy(s.as_bytes()).trim().to_string())
 }
 
 /// What PDF/X-1a finds wrong with the file's output intent: a CMYK profile, ICC v2 (PDF 1.4
 /// allows no later version), or none for a registered printing condition.
-fn intent_issues(file: &craft_pdf::syntax::Pdf) -> Vec<String> {
+fn intent_issues(file: &bharat_pdf::syntax::Pdf) -> Vec<String> {
     let Some(oi) = pdfx_intents(file).into_iter().next() else { return Vec::new() };
     let mut issues = Vec::new();
     if oi.has_profile {
@@ -286,7 +286,7 @@ fn intent_issues(file: &craft_pdf::syntax::Pdf) -> Vec<String> {
 pub fn finish_x1a(pdf: &[u8]) -> Result<Vec<u8>, String> {
     let unreadable = || "the flattened file couldn't be read to add the PDF/X-1a identification".to_string();
     let layout = Layout::read(pdf).ok_or_else(unreadable)?;
-    let file = craft_pdf::syntax::Pdf::new(pdf.to_vec()).map_err(|_| unreadable())?;
+    let file = bharat_pdf::syntax::Pdf::new(pdf.to_vec()).map_err(|_| unreadable())?;
     let mut bodies: HashMap<usize, Vec<u8>> = HashMap::new();
     let info = file.info().and_then(|info| info.obj_id()).and_then(|id| usize::try_from(id.obj_number).ok()).ok_or_else(unreadable)?;
     let body = layout.body(pdf, info).ok_or_else(unreadable)?;

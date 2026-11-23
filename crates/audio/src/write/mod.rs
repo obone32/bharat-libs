@@ -42,7 +42,7 @@ use std::io::{Seek, Write};
 ///
 /// ```
 /// # #[cfg(feature = "pcm-encode")] {
-/// use craft_audio::{AudioBuffer, BitDepth, EncodeFormat, EncodeOptions, encode};
+/// use bharat_audio::{AudioBuffer, BitDepth, EncodeFormat, EncodeOptions, encode};
 ///
 /// let buf = AudioBuffer::new(48_000, 2, 48_000); // one second of stereo silence
 /// let opts = EncodeOptions::new(EncodeFormat::Wav).with_bit_depth(BitDepth::Int24).with_dither(true);
@@ -122,7 +122,7 @@ pub const ENCODE_EXTENSIONS: &[&str] = EXTENSIONS.0.split_at(EXTENSIONS.1).0;
 ///
 /// ```
 /// # #[cfg(feature = "pcm-encode")] {
-/// use craft_audio::{EncodeFormat, encode_format_for};
+/// use bharat_audio::{EncodeFormat, encode_format_for};
 ///
 /// assert_eq!(encode_format_for(".AIFF"), Some(EncodeFormat::Aiff));
 /// assert_eq!(encode_format_for("unknown"), None);
@@ -187,7 +187,7 @@ fn failed_write_error() -> AudioError {
 ///
 /// ```
 /// # #[cfg(feature = "flac-encode")] {
-/// use craft_audio::{EncodeFormat, EncodeOptions, FileEncoder};
+/// use bharat_audio::{EncodeFormat, EncodeOptions, FileEncoder};
 /// use std::io::Cursor;
 ///
 /// let opts = EncodeOptions::new(EncodeFormat::Flac);
@@ -375,7 +375,7 @@ impl EncodeOptions {
     ///
     /// ```
     /// # #[cfg(feature = "mp3-encode")] {
-    /// use craft_audio::{EncodeFormat, EncodeOptions};
+    /// use bharat_audio::{EncodeFormat, EncodeOptions};
     ///
     /// let mp3 = EncodeOptions::new(EncodeFormat::Mp3).with_bitrate(200_000);
     /// assert!(mp3.check(48_000, 2).is_ok());
@@ -431,7 +431,7 @@ impl EncodeOptions {
 /// switches to RF64 above 4 GiB.
 ///
 /// ```
-/// use craft_audio::wav_float_header;
+/// use bharat_audio::wav_float_header;
 ///
 /// // A recorder writes the header, appends interleaved f32 samples, then rewrites the header.
 /// let mut file = wav_float_header(48_000, 2, 0).unwrap();

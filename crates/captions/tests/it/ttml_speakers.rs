@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
-use craft_captions::FrameRate;
-use craft_captions::{Cue, Document, Format, WriteOptions, parse, write};
+use bharat_captions::FrameRate;
+use bharat_captions::{Cue, Document, Format, WriteOptions, parse, write};
 
 const TT: &str = "http://www.w3.org/ns/ttml";
 const META: &str = "http://www.w3.org/ns/ttml#metadata";
@@ -64,8 +64,8 @@ fn exported_speakers_have_unique_resolvable_ids_and_exact_names() {
         assert_eq!(bytes, write(&doc, format, WriteOptions { rate: Some(rate), ..Default::default() }), "stable output");
         let text = std::str::from_utf8(&bytes).unwrap();
         // names by namespace: tt, ttm and xml prefixes whatever the writer used
-        let canonical = craft_xml::Canonical::new(&[("tt", TT), ("ttm", META)]);
-        let xml = craft_xml::Options::canonical(&canonical).strict().parse(text.as_bytes()).unwrap();
+        let canonical = bharat_xml::Canonical::new(&[("tt", TT), ("ttm", META)]);
+        let xml = bharat_xml::Options::canonical(&canonical).strict().parse(text.as_bytes()).unwrap();
         let mut all_ids = HashSet::new();
         for id in xml.descendants().filter_map(|n| n.attr("xml:id")) {
             assert!(all_ids.insert(id), "duplicate xml:id {id}");

@@ -347,7 +347,7 @@ fn a_server_that_answers_is_reachable_and_silence_is_not() {
     assert!(ipp::reachable(&fake.server), "a unix socket that accepts connections is reachable");
     let fake = FakeCups::on_tcp(vec![]).unwrap();
     assert!(ipp::reachable(&fake.server), "a loopback port that accepts connections is reachable");
-    let absent = Server::Unix("/nonexistent/craft-print-test.sock".into());
+    let absent = Server::Unix("/nonexistent/bharat-print-test.sock".into());
     assert!(!ipp::reachable(&absent), "a socket nothing listens on is not reachable");
     let addr = {
         let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();

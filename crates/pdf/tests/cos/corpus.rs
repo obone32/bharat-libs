@@ -14,7 +14,7 @@
 
 use std::sync::Arc;
 
-use craft_pdf::cos::{Document, Object, SaveOptions, write_full, write_incremental};
+use bharat_pdf::cos::{Document, Object, SaveOptions, write_full, write_incremental};
 
 /// `corpus/pdfjs`, or `None` when nothing has been fetched.
 ///
@@ -84,7 +84,7 @@ fn corpus_parity() {
         let result = std::panic::catch_unwind(|| -> Result<(), String> {
             let mut doc = match Document::open(bytes.clone()) {
                 Ok(d) => d,
-                Err(craft_pdf::cos::CosError::NeedsPassword) => return Err("encrypted".into()),
+                Err(bharat_pdf::cos::CosError::NeedsPassword) => return Err("encrypted".into()),
                 Err(e) => return Err(format!("open: {e}")),
             };
             // hayro may repair a broken /Count; compare against the leaf walk count loosely.
@@ -148,10 +148,10 @@ fn corpus_passwords() {
     for (file, pw) in &cases {
         let Ok(bytes) = std::fs::read(dir.join(file)) else { continue };
         let bytes = Arc::new(bytes);
-        if !matches!(Document::open(bytes.clone()), Err(craft_pdf::cos::CosError::NeedsPassword)) {
+        if !matches!(Document::open(bytes.clone()), Err(bharat_pdf::cos::CosError::NeedsPassword)) {
             failures.push(format!("{file}: opened without a password"));
         }
-        if !matches!(Document::open_with_password(bytes.clone(), Some("definitely wrong")), Err(craft_pdf::cos::CosError::WrongPassword)) {
+        if !matches!(Document::open_with_password(bytes.clone(), Some("definitely wrong")), Err(bharat_pdf::cos::CosError::WrongPassword)) {
             failures.push(format!("{file}: wrong password not rejected"));
         }
         match Document::open_with_password(bytes.clone(), Some(pw)) {

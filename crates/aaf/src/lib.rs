@@ -4,13 +4,13 @@
 //!
 //! - [`model`]: a [`model::Document`] of compositions (tracks of fillers, source clips and
 //!   overlapping transitions, with clip gain and markers) and the media sources they reference,
-//!   with exact times ([`craft_timeline::time::Tick`]).
-//! - [`aaf`]: Advanced Authoring Format, Edit Protocol, in structured storage (`craft-cfb`).
+//!   with exact times ([`bharat_timeline::time::Tick`]).
+//! - [`aaf`]: Advanced Authoring Format, Edit Protocol, in structured storage (`bharat-cfb`).
 //! - [`omf`]: OMF Interchange 2.0 in a Bento container; sound only.
 //!
 //! Both read into and write from the same model, so an application maps its timeline onto the
 //! model once. Audio essence can be embedded: the model carries it as PCM, and the WAVE / AIFF
-//! wrappers the formats use are craft-audio's.
+//! wrappers the formats use are bharat-audio's.
 //!
 //! Clean-room: written from the public specifications only (AMWA *AAF Object Specification* v1.1,
 //! *AAF Low-Level Container Specification* v1.0.1, *AAF Edit Protocol* v1.0, SMPTE RP 224 / RP 210
@@ -29,7 +29,7 @@ mod roundtrip_tests;
 #[cfg(test)]
 mod testdoc;
 
-pub use craft_timeline::report::Report;
+pub use bharat_timeline::report::Report;
 
 /// Error from a reader or writer. Unsupported *features* never error; they go in the [`Report`].
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

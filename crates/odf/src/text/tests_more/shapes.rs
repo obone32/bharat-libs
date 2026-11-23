@@ -4,9 +4,9 @@
 
 use crate::text::tests::{NS_T, content_of, package};
 use crate::text::{export, import};
-use craft_wordmodel::para::{InlineObject, OBJ, ShapeKind, Wrap};
-use craft_wordmodel::props::Rgb;
-use craft_wordmodel::{Document, Paragraph, para_block};
+use bharat_wordmodel::para::{InlineObject, OBJ, ShapeKind, Wrap};
+use bharat_wordmodel::props::Rgb;
+use bharat_wordmodel::{Document, Paragraph, para_block};
 
 const NS_D: &str =
     r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0""#;
@@ -129,7 +129,7 @@ fn every_wordcraft_shape_kind_is_written_and_read_back() {
             kind: k,
             w: 50.0,
             h: 40.0,
-            fill: Some(craft_wordmodel::fill::Fill::solid(Rgb(1, 2, 3))),
+            fill: Some(bharat_wordmodel::fill::Fill::solid(Rgb(1, 2, 3))),
             stroke: Some(Rgb(4, 5, 6)),
             stroke_width: 1.5,
             float: Default::default(),
@@ -139,7 +139,7 @@ fn every_wordcraft_shape_kind_is_written_and_read_back() {
             extra: Default::default(),
         });
     }
-    p.runs = vec![craft_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
     let mut d = Document::new();
     d.body = vec![para_block(p)];
     let back = import(&export(&d).unwrap()).unwrap();

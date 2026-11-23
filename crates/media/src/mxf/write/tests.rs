@@ -82,7 +82,7 @@ fn assert_op1a_metadata(m: &crate::mxf::MxfFile) {
     assert!(m.warnings.is_empty(), "{:?}", m.warnings);
     assert_eq!(m.operational_pattern, OperationalPattern::Generalized { item: 1, package: 1 });
     assert_eq!(m.material_package_name.as_deref(), Some("Test Clip"));
-    assert_eq!((m.product_name.as_deref(), m.company_name.as_deref()), (Some("craft-media"), Some("craft-media")));
+    assert_eq!((m.product_name.as_deref(), m.company_name.as_deref()), (Some("bharat-media"), Some("bharat-media")));
     let tc = m.timecode.unwrap();
     assert_eq!(tc.format(), "01:00:00:00");
     // header rewritten closed and complete; body and footer partitions; footer metadata used

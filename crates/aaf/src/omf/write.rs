@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use craft_timeline::time::Tick;
+use bharat_timeline::time::Tick;
 
 use super::bento;
 use crate::model::{CItem, CKind, Document, Gain, Source, ticks_to_units};
@@ -247,7 +247,7 @@ pub(crate) fn write(doc: &Document, identity: &Identity<'_>, report: &mut Report
                     md,
                     "OMFI:WAVE:Data",
                     "omfi:DataValue",
-                    &craft_audio::pcm_wav_file(pcm, u16::try_from(s.file_channels.max(1)).unwrap_or(u16::MAX), s.sample_rate, s.bits),
+                    &bharat_audio::pcm_wav_file(pcm, u16::try_from(s.file_channels.max(1)).unwrap_or(u16::MAX), s.sample_rate, s.bits),
                 );
                 media_data.push(md);
             }
@@ -262,7 +262,7 @@ pub(crate) fn write(doc: &Document, identity: &Identity<'_>, report: &mut Report
         mobs.push(w.mob(b"MMOB", master, &first.name, &master_slots));
         if tc.is_some() {
             let d = w.obj(b"MDTP");
-            let reel = first.path.as_deref().map(craft_timeline::path::file_stem).unwrap_or(&first.name).to_string();
+            let reel = first.path.as_deref().map(bharat_timeline::path::file_stem).unwrap_or(&first.name).to_string();
             let tm = w.mob(b"SMOB", tape, &reel, &tape_slots);
             w.r#ref(tm, "OMFI:SMOB:MediaDescription", d);
             mobs.push(tm);
@@ -382,7 +382,7 @@ pub(crate) fn write(doc: &Document, identity: &Identity<'_>, report: &mut Report
 
 fn descriptor(w: &mut W, s: &Source, len: i64) -> u32 {
     let aiff =
-        s.embedded.is_none() && s.path.as_deref().is_some_and(|p| matches!(craft_timeline::path::extension(p).as_str(), "aif" | "aiff" | "aifc"));
+        s.embedded.is_none() && s.path.as_deref().is_some_and(|p| matches!(bharat_timeline::path::extension(p).as_str(), "aif" | "aiff" | "aifc"));
     let d = w.obj(if aiff { b"AIFD" } else { b"WAVD" });
     w.b.set(d, "OMFI:MDFL:IsOMFI", "omfi:Boolean", &[s.embedded.is_some() as u8]);
     let r = rate_of(s);
@@ -393,13 +393,13 @@ fn descriptor(w: &mut W, s: &Source, len: i64) -> u32 {
     let bytes_per_frame = s.file_channels.max(1).saturating_mul((s.bits as u32).div_ceil(8));
     let channels = u16::try_from(s.file_channels.max(1)).unwrap_or(u16::MAX);
     if aiff {
-        w.b.set(d, "OMFI:AIFD:Summary", "omfi:DataValue", &craft_audio::pcm_aiff_header(frames, channels, s.sample_rate, s.bits));
+        w.b.set(d, "OMFI:AIFD:Summary", "omfi:DataValue", &bharat_audio::pcm_aiff_header(frames, channels, s.sample_rate, s.bits));
     } else {
         w.b.set(
             d,
             "OMFI:WAVD:Summary",
             "omfi:DataValue",
-            &craft_audio::pcm_wav_header(frames.saturating_mul(bytes_per_frame), channels, s.sample_rate, s.bits),
+            &bharat_audio::pcm_wav_header(frames.saturating_mul(bytes_per_frame), channels, s.sample_rate, s.bits),
         );
     }
     if let Some(p) = &s.path {
@@ -408,9 +408,9 @@ fn descriptor(w: &mut W, s: &Source, len: i64) -> u32 {
         let l = w.obj(if dos { b"DOSL" } else { b"UNXL" });
         w.str(l, if dos { "OMFI:DOSL:PathName" } else { "OMFI:UNXL:PathName" }, p);
         locs.push(l);
-        if craft_timeline::path::is_absolute(p) {
+        if bharat_timeline::path::is_absolute(p) {
             let n = w.obj(b"NETL");
-            w.str(n, "OMFI:NETL:URLString", &craft_timeline::path::path_to_file_url(p, false));
+            w.str(n, "OMFI:NETL:URLString", &bharat_timeline::path::path_to_file_url(p, false));
             locs.push(n);
         }
         w.refs(d, "OMFI:MDES:Locator", &locs);

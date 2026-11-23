@@ -2,7 +2,7 @@
 
 use crate::common;
 use common::*;
-use craft_video::dnx::{ChromaFormat, Encoder, EncoderConfig, Profile, decode_frame};
+use bharat_video::dnx::{ChromaFormat, Encoder, EncoderConfig, Profile, decode_frame};
 
 struct Case {
     name: &'static str,
@@ -43,7 +43,7 @@ fn encode_decodes_in_ffmpeg() {
                 let _ = std::fs::remove_file(&self.0);
             }
         }
-        let mov = craft_media_testkit::temp_path(&fixture_dir().join(format!("{}.out.mov", c.name)));
+        let mov = bharat_media_testkit::temp_path(&fixture_dir().join(format!("{}.out.mov", c.name)));
         let _guard = TempFile(mov.clone());
         write_mov(&mov, b"AVdh", w as u16, h as u16, 24, &coded);
         let pix = match (chroma, c.depth) {

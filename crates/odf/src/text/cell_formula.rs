@@ -6,7 +6,7 @@
 //! as Word, holds a formula as a field (`=SUM(A1:A3)`, `ABOVE`, `LEFT`). Formulas are turned one
 //! into the other where both can say them; others are left as their value.
 
-use craft_flow::{FBlock, Inline};
+use bharat_flow::{FBlock, Inline};
 
 /// Longest formula turned, in bytes; most tokens.
 const MAX_LEN: usize = 4096;

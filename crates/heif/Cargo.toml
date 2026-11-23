@@ -1,5 +1,5 @@
 [package]
-name = "craft-heif"
+name = "bharat-heif"
 description = "Optional HEIF/HEIC still-image decoder: heic-rs for the container and HEVC, libheif-matching colour conversion, panic-guarded."
 version.workspace = true
 edition.workspace = true
@@ -26,7 +26,7 @@ decode = ["dep:heic-rs", "dep:rayon"]
 # `items`: the Exif and XMP items from the box structure alone, without heic-rs. Without `decode`,
 # `read_metadata` is this reader.
 metadata = []
-# `craft_heif::testdata`: lossless synthetic HEIF files, for the tests of the crates above.
+# `bharat_heif::testdata`: lossless synthetic HEIF files, for the tests of the crates above.
 testdata = []
 
 [lints]

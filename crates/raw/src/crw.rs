@@ -1,4 +1,4 @@
-//! Canon CRW (CIFF heap) through the `craft-crw` crate (`crates/crw`): the bodies before the CR2 era
+//! Canon CRW (CIFF heap) through the `bharat-crw` crate (`crates/crw`): the bodies before the CR2 era
 //! (EOS D30/D60/10D/300D, PowerShot G-series).
 //!
 //! The decoder, its frozen code tables and its clean-room record live there (`crates/crw/clean-room/`). This
@@ -12,31 +12,31 @@
 
 use crate::{BlackLevel, Camera, Cfa, ColorData, Limits, Mode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result};
 
-fn map_err(e: craft_crw::Error) -> RawError {
+fn map_err(e: bharat_crw::Error) -> RawError {
     match e {
-        craft_crw::Error::NotCrw => RawError::NotRaw,
-        craft_crw::Error::Corrupt(why) => RawError::Corrupt(format!("CRW: {why}")),
-        craft_crw::Error::Unsupported(why) => RawError::Unsupported(format!("CRW: {why}")),
-        craft_crw::Error::LimitExceeded(what) => RawError::Limit(what),
+        bharat_crw::Error::NotCrw => RawError::NotRaw,
+        bharat_crw::Error::Corrupt(why) => RawError::Corrupt(format!("CRW: {why}")),
+        bharat_crw::Error::Unsupported(why) => RawError::Unsupported(format!("CRW: {why}")),
+        bharat_crw::Error::LimitExceeded(what) => RawError::Limit(what),
     }
 }
 
 pub(crate) fn decode(bytes: &[u8], mode: Mode, caller: &Limits) -> Result<RawImage> {
-    // craft-crw's own cap (2²³ samples; the largest CRW frame is 7.4 million), or the caller's when that is
+    // bharat-crw's own cap (2²³ samples; the largest CRW frame is 7.4 million), or the caller's when that is
     // lower: its decode holds about three `u16` buffers of the declared size, so this crate's general default
     // (2³⁰) would let a malformed file ask for gigabytes. No sample may be filled after the
     // entropy stream ends (the crate allows one 64-sample block by default): every corpus file
     // ends exactly on its frame, so a shorter stream is a truncated file and is `Corrupt`.
-    let mut limits = craft_crw::Limits::default();
+    let mut limits = bharat_crw::Limits::default();
     limits.max_stream_end_fill = 0;
     limits.max_samples = limits.max_samples.min(caller.samples());
     let full = mode == Mode::Full;
     let (h, samples, black, white) = if full {
-        let img = craft_crw::decode(bytes, &limits).map_err(map_err)?;
+        let img = bharat_crw::decode(bytes, &limits).map_err(map_err)?;
         let black = BlackLevel { repeat_rows: 2, repeat_cols: 2, values: img.black.values.to_vec(), delta_h: vec![], delta_v: vec![] };
         (img.header, img.samples, black, img.white)
     } else {
-        let h = craft_crw::header(bytes, &limits).map_err(map_err)?;
+        let h = bharat_crw::header(bytes, &limits).map_err(map_err)?;
         let white = ((1u32 << h.bits.clamp(1, 16)) - 1) as f32;
         (h, Vec::new(), BlackLevel::uniform(0.0), white)
     };
@@ -176,7 +176,7 @@ mod tests {
             panic!("expected Unsupported")
         };
         assert!(why.contains("PowerShot G5"), "{why}");
-        assert_eq!(map_err(craft_crw::Error::LimitExceeded("image too large")), RawError::Limit("image too large"));
+        assert_eq!(map_err(bharat_crw::Error::LimitExceeded("image too large")), RawError::Limit("image too large"));
     }
 
     /// A file declaring more samples than any CRW camera has is refused before anything is
@@ -215,7 +215,7 @@ mod tests {
         assert!(decode(&whole, Mode::Full, &Limits::default()).is_ok());
         // six bytes fewer leave 10 samples unread, within the crate's default of 64
         let short = synthetic_crw_with_payload("Canon EOS D60", W, H, payload(836));
-        let filled = craft_crw::decode(&short, &craft_crw::Limits::default()).map(|i| i.stream_end_fill);
+        let filled = bharat_crw::decode(&short, &bharat_crw::Limits::default()).map(|i| i.stream_end_fill);
         assert_eq!(filled, Ok(10));
         let Err(RawError::Corrupt(why)) = decode(&short, Mode::Full, &Limits::default()) else { panic!("a stream 10 samples short must be refused") };
         assert!(why.contains("10 samples before the frame does"), "{why}");
@@ -230,7 +230,7 @@ mod tests {
         assert!(!plausible_capture_time(i64::MAX));
     }
 
-    /// The caller's sample limit applies when it is lower than craft-crw's own.
+    /// The caller's sample limit applies when it is lower than bharat-crw's own.
     #[test]
     fn the_callers_sample_limit_applies() {
         let f = synthetic_crw("Canon EOS D60");

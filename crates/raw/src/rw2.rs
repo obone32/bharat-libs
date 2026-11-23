@@ -107,7 +107,7 @@ use crate::shared::{active_rows, white_from_data_sourced};
 use crate::{
     BlackLevel, Camera, Cfa, ColorData, Limits, Mode, Opcode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result,
 };
-use craft_tiff::{ByteOrder, Ifd, Tiff, Value, tags as t};
+use bharat_tiff::{ByteOrder, Ifd, Tiff, Value, tags as t};
 use rayon::prelude::*;
 
 const SENSOR_WIDTH: u16 = 0x0002;
@@ -720,7 +720,7 @@ fn distortion(ifd: &Ifd, active: Rect) -> Option<Opcode> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use craft_tiff::{IfdBuilder, TiffWriter};
+    use bharat_tiff::{IfdBuilder, TiffWriter};
 
     /// Writes bit fields into a 16-byte block from bit 127 down (the inverse of [`Fields`]).
     struct FieldWriter {

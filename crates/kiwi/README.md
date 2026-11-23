@@ -1,4 +1,4 @@
-# craft-kiwi
+# bharat-kiwi
 
 A clean-room decoder and encoder for the kiwi binary schema format: an open, MIT-licensed message
 format with a public specification. No dependencies beyond `std`, no `unsafe`.
@@ -20,11 +20,11 @@ implementation or of any other product was copied. Moved here from
 ## Reading
 
 ```rust
-let schema = craft_kiwi::Schema::decode(&schema_bytes)?;
+let schema = bharat_kiwi::Schema::decode(&schema_bytes)?;
 let root = schema.find("Message").ok_or("no Message definition")?;
 let message = schema.decode_message(root, &message_bytes)?;
-for node in message.get("nodeChanges").map(craft_kiwi::Kv::list).unwrap_or_default() {
-    let name = node.get("name").and_then(craft_kiwi::Kv::str);
+for node in message.get("nodeChanges").map(bharat_kiwi::Kv::list).unwrap_or_default() {
+    let name = node.get("name").and_then(bharat_kiwi::Kv::str);
 }
 ```
 
@@ -35,9 +35,9 @@ the order read). Field and enum names borrow from the schema.
 ## Writing
 
 ```rust
-let schema = craft_kiwi::Schema::parse("struct Point float x, float y\nmessage Message Point[] points, string name")?;
-let bytes = craft_kiwi::encode::message(&schema, root, &value)?;
-let schema_bytes = craft_kiwi::encode::schema(&schema);
+let schema = bharat_kiwi::Schema::parse("struct Point float x, float y\nmessage Message Point[] points, string name")?;
+let bytes = bharat_kiwi::encode::message(&schema, root, &value)?;
+let schema_bytes = bharat_kiwi::encode::schema(&schema);
 ```
 
 `Schema::parse` reads a compact text form, one definition per line: `enum Name A B …` (values

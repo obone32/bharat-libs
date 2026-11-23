@@ -1,4 +1,4 @@
-//! # craft-texture
+//! # bharat-texture
 //!
 //! Linear float image planes and texture sampling. An [`Image`] is a grayscale (1 channel) or
 //! color (RGBA) plane of `f32`, row-major with the top row first, shared copy-on-write through an

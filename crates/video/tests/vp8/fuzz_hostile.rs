@@ -7,7 +7,7 @@ use std::process::{Command, Stdio};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use craft_video::vp8::Decoder;
+use bharat_video::vp8::Decoder;
 
 struct Rng(u64);
 impl Rng {
@@ -43,8 +43,8 @@ fn ivf_frames(data: &[u8]) -> Vec<Vec<u8>> {
 }
 
 fn make(ff: &std::path::Path, name: &str, args: &str, pix: &str) -> Option<Vec<Vec<u8>>> {
-    let out = craft_media_testkit::fixtures_dir("vp8").join(format!("{name}.ivf"));
-    let p = craft_media_testkit::fixtures::generate(&out, |tmp| {
+    let out = bharat_media_testkit::fixtures_dir("vp8").join(format!("{name}.ivf"));
+    let p = bharat_media_testkit::fixtures::generate(&out, |tmp| {
         let a: Vec<&str> = args.split_whitespace().collect();
         matches!(
             Command::new(ff)
@@ -95,7 +95,7 @@ fn assert_no_fuzz_panics(res: std::thread::Result<()>, before: usize, label: &st
 }
 
 fn run_all(frames: &[Vec<u8>], label: &str) {
-    craft_media_testkit::set_progress(label);
+    bharat_media_testkit::set_progress(label);
     let before = PANICS.load(Ordering::SeqCst);
     let res = count_fuzz_run_panics(|| {
         let mut dec = Decoder::new();
@@ -111,26 +111,26 @@ fn iters() -> usize {
     std::env::var("FILMCRAFT_FUZZ_ITERS").ok().and_then(|s| s.parse().ok()).unwrap_or(300)
 }
 
-/// Seconds the whole sweep may take before it counts as a hang (override: CRAFT_TEST_TIMEOUT_SECS).
+/// Seconds the whole sweep may take before it counts as a hang (override: BHARAT_TEST_TIMEOUT_SECS).
 const DEADLINE_SECS: u64 = 600;
 
 #[test]
 fn hostile_streams_never_panic() {
-    with_panic_accounting(|| craft_media_testkit::with_deadline(DEADLINE_SECS, sweep));
+    with_panic_accounting(|| bharat_media_testkit::with_deadline(DEADLINE_SECS, sweep));
 }
 
 fn sweep() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("VP8 fuzz") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("VP8 fuzz") else { return };
     for &(name, args, pix) in SEEDS {
-        if !craft_media_testkit::ffmpeg_has_encoder(&ff, "libvpx") {
-            craft_media_testkit::skip_test("VP8 fuzz", &format!("this ffmpeg has no libvpx encoder (seed {name})"));
+        if !bharat_media_testkit::ffmpeg_has_encoder(&ff, "libvpx") {
+            bharat_media_testkit::skip_test("VP8 fuzz", &format!("this ffmpeg has no libvpx encoder (seed {name})"));
             continue;
         }
         let Some(seed) = make(&ff, name, args, pix) else {
             panic!("ffmpeg has libvpx but could not encode the {name} seed");
         };
         if seed.is_empty() {
-            craft_media_testkit::skip_test("VP8 fuzz", &format!("the {name} seed has no frames"));
+            bharat_media_testkit::skip_test("VP8 fuzz", &format!("the {name} seed has no frames"));
             continue;
         }
         // truncate each of the first frames at every length

@@ -1,12 +1,12 @@
-//! Interface strings through craft-i18n: the English text is the lookup key.
+//! Interface strings through bharat-i18n: the English text is the lookup key.
 
 use std::cell::Cell;
 use std::sync::LazyLock;
 
-use craft_i18n::{Embedded, FileSize, I18n, Lang};
+use bharat_i18n::{Embedded, FileSize, I18n, Lang};
 
 /// The embedded translation catalogs: the panel's own Japanese and Arabic rows, until its rows
-/// are part of craft-i18n.
+/// are part of bharat-i18n.
 static CATALOGS: &Embedded = &[("ja", "", include_str!("catalogs/ja.tsv")), ("ar", "", include_str!("catalogs/ar.tsv"))];
 
 /// The interface languages offered, in menu order.
@@ -43,7 +43,7 @@ pub(crate) use tl;
 
 /// Translates `template` and fills its `{name}` placeholders.
 pub fn fmt(template: &str, args: &[(&str, &str)]) -> String {
-    craft_i18n::fmt(I18N.t(current(), template), args)
+    bharat_i18n::fmt(I18N.t(current(), template), args)
 }
 
 /// A count with its noun, `{n}` in the English forms.

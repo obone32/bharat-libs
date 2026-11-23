@@ -1,4 +1,4 @@
-//! PostScript and EPS for the Craft apps.
+//! PostScript and EPS for the Bharat apps.
 //!
 //! - [`read`] (feature `read`): runs an EPS and gives what it paints as a one-page vector PDF,
 //!   for apps that place EPS files as graphics.

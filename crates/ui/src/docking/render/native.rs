@@ -233,10 +233,10 @@ fn system_command_held() -> Option<bool> {
 }
 
 /// Whether native windows outline their ×'s hit area, and on macOS AppKit's resize areas:
-/// `CRAFT_DOCK_DEBUG_CLOSE=1`, read once.
+/// `BHARAT_DOCK_DEBUG_CLOSE=1`, read once.
 fn debug_close() -> bool {
     static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
-    *ON.get_or_init(|| std::env::var("CRAFT_DOCK_DEBUG_CLOSE").is_ok_and(|v| v == "1"))
+    *ON.get_or_init(|| std::env::var("BHARAT_DOCK_DEBUG_CLOSE").is_ok_and(|v| v == "1"))
 }
 
 /// A drag of a native window's bar, in the context's data under the area's `"window-drag"`.
@@ -404,7 +404,7 @@ impl<P: Clone + Eq + Hash + Debug + Send + Sync + 'static> Renderer<'_, P> {
         let runs = if rebuilt(&previous, &current) { runs + 1 } else { 0 };
         if runs >= REBUILT_FRAMES && !ctx.data(|d| d.get_temp::<bool>(warned).unwrap_or(false)) {
             log::warn!(
-                "craft-ui docking: the native floating windows get new ids every frame, so each frame opens new OS windows. \
+                "bharat-ui docking: the native floating windows get new ids every frame, so each frame opens new OS windows. \
                  Keep the layout across frames, or give its windows ids with Floating::with_id."
             );
             ctx.data_mut(|d| d.insert_temp(warned, true));
@@ -1080,15 +1080,15 @@ pub(super) fn body_input(ctx: &Context) -> Arc<egui::mutex::Mutex<NativeBodyInpu
 /// dock-area `Id`, and queued, held and key events by target viewport. The key is unique only so
 /// this state does not collide with unrelated temporary data.
 fn body_input_key() -> Id {
-    Id::unique("craft-ui docking native body input")
+    Id::unique("bharat-ui docking native body input")
 }
 
 pub(in crate::docking) type InputHook = Box<dyn FnMut(&Context, &mut RawInput) + Send>;
 
 impl egui::Plugin for NativeInput {
-    /// The egui plugin's diagnostic name, `craft-ui docking native input`.
+    /// The egui plugin's diagnostic name, `bharat-ui docking native input`.
     fn debug_name(&self) -> &'static str {
-        "craft-ui docking native input"
+        "bharat-ui docking native input"
     }
 
     /// Route this viewport's input without deadlocking.
@@ -1304,7 +1304,7 @@ pub(in crate::docking) fn wayland(ctx: &Context, session: Session) -> bool {
         Session::Unknown if !root(|v| v.native_pixels_per_point.is_some()) => return false,
         Session::Wayland | Session::Unknown => {}
     }
-    let key = Id::unique("craft-ui-dock-window-positions");
+    let key = Id::unique("bharat-ui-dock-window-positions");
     if ctx.data(|d| d.get_temp::<bool>(key).unwrap_or(false)) {
         return false;
     }

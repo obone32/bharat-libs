@@ -11,12 +11,12 @@ fn fixture() -> Vec<u8> {
 
 #[test]
 fn partial_margin_stays_partial() {
-    let doc = craft_docx::read(&fixture()).unwrap();
+    let doc = bharat_docx::read(&fixture()).unwrap();
     let table = doc.body[0].as_table().unwrap();
     assert_eq!(table.rows[0].cells[0].props.margins, None, "a left-only margin is not a complete override");
     assert_eq!(table.rows[0].cells[0].props.resolved_margins([6.0, 7.0, 8.0, 9.0]), [6.0, 0.0, 8.0, 9.0]);
-    let bytes = craft_docx::write(&doc).unwrap();
-    let reopened = craft_docx::read(&bytes).unwrap();
+    let bytes = bharat_docx::write(&doc).unwrap();
+    let reopened = bharat_docx::read(&bytes).unwrap();
     let cell = &reopened.body[0].as_table().unwrap().rows[0].cells[0];
     assert_eq!(cell.props.resolved_margins([6.0, 7.0, 8.0, 9.0]), [6.0, 0.0, 8.0, 9.0]);
     let mut zip = zip::ZipArchive::new(Cursor::new(bytes)).unwrap();
@@ -55,7 +55,7 @@ fn no_default_table_style_means_no_cell_margins() {
     let body = r#"<w:tbl><w:tblPr><w:tblW w:w="6000" w:type="dxa"/></w:tblPr><w:tblGrid><w:gridCol w:w="3000"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcMar><w:right w:w="108" w:type="dxa"/></w:tcMar></w:tcPr><w:p/></w:tc></w:tr></w:tbl>"#;
     let normal_table = r#"<w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:tblPr><w:tblCellMar><w:left w:w="108" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style>"#;
     let margins = |styles: Option<&str>| {
-        let doc = craft_docx::read(&package(body, styles)).unwrap();
+        let doc = bharat_docx::read(&package(body, styles)).unwrap();
         let table = doc.body[0].as_table().unwrap();
         (table.props.cell_margins, table.rows[0].cells[0].props.resolved_margins(table.props.cell_margins.unwrap_or([0.0, 5.4, 0.0, 5.4])))
     };
@@ -68,33 +68,33 @@ fn no_default_table_style_means_no_cell_margins() {
     assert_eq!(margins(Some(&redefined)).0, Some([0.0; 4]));
     // A custom default table style marked `on` is a default too, also after saving and reopening.
     let plain = r#"<w:style w:type="table" w:default="on" w:customStyle="1" w:styleId="Plain"><w:name w:val="Plain"/></w:style>"#;
-    let doc = craft_docx::read(&package(body, Some(plain))).unwrap();
+    let doc = bharat_docx::read(&package(body, Some(plain))).unwrap();
     assert_eq!(doc.body[0].as_table().unwrap().props.cell_margins, None);
-    let reopened = craft_docx::read(&craft_docx::write(&doc).unwrap()).unwrap();
+    let reopened = bharat_docx::read(&bharat_docx::write(&doc).unwrap()).unwrap();
     assert_eq!(reopened.body[0].as_table().unwrap().props.cell_margins, None);
     // A table that sets only some sides keeps them; the sides it omits are 0.
     let partial = body.replace("<w:tblPr>", r#"<w:tblPr><w:tblCellMar><w:left w:w="144" w:type="dxa"/></w:tblCellMar>"#);
-    let doc = craft_docx::read(&package(&partial, None)).unwrap();
+    let doc = bharat_docx::read(&package(&partial, None)).unwrap();
     assert_eq!(doc.body[0].as_table().unwrap().props.cell_margins, Some([0.0, 7.2, 0.0, 0.0]));
     // Rejecting a tracked change to the table's properties brings back the same zero margins.
     let tracked = body.replace(
         "</w:tblPr>",
         r#"<w:tblPrChange w:id="1" w:author="A" w:date="2026-11-13T00:00:00Z"><w:tblPr><w:tblW w:w="5000" w:type="dxa"/></w:tblPr></w:tblPrChange></w:tblPr>"#,
     );
-    let doc = craft_docx::read(&package(&tracked, None)).unwrap();
+    let doc = bharat_docx::read(&package(&tracked, None)).unwrap();
     let change = doc.body[0].as_table().unwrap().props.fmt_change.as_deref().expect("a tracked table change");
     assert_eq!(change.old.cell_margins, Some([0.0; 4]));
     // A table whose own style gives margins keeps them.
     let styled = body.replace("<w:tblPr>", r#"<w:tblPr><w:tblStyle w:val="Boxed"/>"#);
     let boxed = r#"<w:style w:type="table" w:styleId="Boxed"><w:name w:val="Boxed"/><w:tblPr><w:tblCellMar><w:left w:w="144" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style>"#;
-    let doc = craft_docx::read(&package(&styled, Some(boxed))).unwrap();
+    let doc = bharat_docx::read(&package(&styled, Some(boxed))).unwrap();
     assert_eq!(doc.body[0].as_table().unwrap().props.cell_margins, None);
     // The zeros survive saving, which writes a default Normal Table.
-    let doc = craft_docx::read(&package(body, None)).unwrap();
-    let bytes = craft_docx::write(&doc).unwrap();
+    let doc = bharat_docx::read(&package(body, None)).unwrap();
+    let bytes = bharat_docx::write(&doc).unwrap();
     let mut xml = String::new();
     zip::ZipArchive::new(Cursor::new(bytes.clone())).unwrap().by_name("word/document.xml").unwrap().read_to_string(&mut xml).unwrap();
     assert!(xml.contains("<w:tblCellMar>"), "{xml}");
-    let reopened = craft_docx::read(&bytes).unwrap();
+    let reopened = bharat_docx::read(&bytes).unwrap();
     assert_eq!(reopened.body[0].as_table().unwrap().props.cell_margins, Some([0.0; 4]));
 }

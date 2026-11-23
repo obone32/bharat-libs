@@ -2,7 +2,7 @@
 
 use std::collections::{HashMap, HashSet};
 
-use craft_timeline::time::{FrameRate, Tick};
+use bharat_timeline::time::{FrameRate, Tick};
 
 use super::ids::{cls, ddef, def, pid};
 use super::store::{self, Auid, Obj, Value, rational_of, utf16_of};
@@ -742,7 +742,7 @@ fn hex(b: &[u8]) -> String {
 }
 
 fn locator_path(url: &str) -> String {
-    if url.contains("://") { craft_timeline::path::file_url_to_path(url) } else { craft_timeline::path::decode_uri_path(url) }
+    if url.contains("://") { bharat_timeline::path::file_url_to_path(url) } else { bharat_timeline::path::decode_uri_path(url) }
 }
 
 #[cfg(test)]

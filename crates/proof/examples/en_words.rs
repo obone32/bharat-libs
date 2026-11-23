@@ -2,16 +2,16 @@
 //! README): every word of the public-domain Moby Hyphenator II list, without its break points.
 //!
 //! ```sh
-//! cargo run -p craft-proof --example en_words -- <craft-i18n>/language-data/en-us/en-us.dic crates/proof/data/en-words.dic
+//! cargo run -p bharat-proof --example en_words -- <bharat-i18n>/language-data/en-us/en-us.dic crates/proof/data/en-words.dic
 //! ```
 //!
-//! The input is craft-i18n's `en-us.dic`: the Moby Hyphenator II list by Grady Ward (Project
+//! The input is bharat-i18n's `en-us.dic`: the Moby Hyphenator II list by Grady Ward (Project
 //! Gutenberg eBook #3204, `mhyph.txt`), already stripped of the Project Gutenberg header and
 //! licence, with its break points. The output keeps the words only (in [`Dictionary`]'s format,
 //! every break mask zero), so it is smaller and carries no hyphenation, and leaves out
 //! [`EXCLUDED`]. No other word list or dictionary is read.
 
-use craft_proof::dict::Dictionary;
+use bharat_proof::dict::Dictionary;
 
 /// Entries of the Moby list that are far more often typing errors than words (`teh` for `the`,
 /// `abd` and `nad` for `and`, `ur` for `your`, the letters `u` and `r` for `you` and `are`), so the

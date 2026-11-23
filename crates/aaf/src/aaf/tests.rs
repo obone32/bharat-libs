@@ -3,7 +3,7 @@
 
 use std::collections::HashSet;
 
-use craft_timeline::time::FrameRate;
+use bharat_timeline::time::FrameRate;
 
 use super::ids::{self, cls, ddef, def, path, pid};
 use super::store::{self, Obj, Value};
@@ -52,7 +52,7 @@ fn keys(dict: &Obj, p: u16) -> HashSet<Vec<u8>> {
 fn the_meta_dictionary_has_its_class_and_type_definition_sets() {
     for small in [false, true] {
         let bytes = written(&document(), small);
-        let cf = craft_cfb::CompoundFile::open(&bytes).unwrap();
+        let cf = bharat_cfb::CompoundFile::open(&bytes).unwrap();
         assert_eq!(cf.entries[cf.find("MetaDictionary-1").unwrap()].clsid, ids::META_DICTIONARY);
         for name in ["ClassDefinitions-3", "TypeDefinitions-4"] {
             // u32 count, u32 first free key, u32 last free key, u16 key pid, u8 key size
@@ -103,7 +103,7 @@ fn files_with_the_old_usage_code_still_import() {
     for mob in objs_mut(content, pid::MOBS).iter_mut().filter(|m| m.class == cls::COMPOSITION_MOB) {
         mob.set(pid::USAGE_CODE, Value::Data(def::USAGE_TOP_LEVEL_OLD.to_vec()));
     }
-    let old_file = store::write(&root, craft_cfb::Version::V4).unwrap();
+    let old_file = store::write(&root, bharat_cfb::Version::V4).unwrap();
     let got = read_clean(&old_file);
     assert_eq!(got.compositions.len(), 1);
     assert_eq!(got, read_clean(&bytes));
@@ -124,7 +124,7 @@ fn edits_tagged_with_either_usage_code_both_import() {
     old.set(pid::MOB_NAME, Value::Data(store::utf16z("Old")));
     old.set(pid::USAGE_CODE, Value::Data(def::USAGE_TOP_LEVEL_OLD.to_vec()));
     mobs.push(old);
-    let mixed = store::write(&root, craft_cfb::Version::V4).unwrap();
+    let mixed = store::write(&root, bharat_cfb::Version::V4).unwrap();
     let document = read_clean(&mixed);
     let mut ids: Vec<_> = document.compositions.iter().map(|c| c.aaf_mob_id.as_deref().unwrap()).collect();
     assert_eq!(ids.len(), 2);
@@ -160,7 +160,7 @@ fn assert_written_file(bytes: &[u8], small: bool) {
 }
 
 fn assert_compound_file(bytes: &[u8], small: bool) {
-    let cf = craft_cfb::CompoundFile::open(bytes).unwrap();
+    let cf = bharat_cfb::CompoundFile::open(bytes).unwrap();
     assert_eq!(cf.version, if small { 3 } else { 4 });
     assert_eq!(cf.root().clsid, ids::ROOT);
     let references = cf.read_path("referenced properties").unwrap();
@@ -349,12 +349,12 @@ fn store_round_trips_every_stored_form() {
         .with(0x0006, Value::Weak(path::DATA_DEFS.to_vec(), 0x1B01, vec![5; 16]))
         .with(0x0007, Value::WeakVec(path::DATA_DEFS.to_vec(), 0x1B01, vec![vec![4; 16], vec![5; 16]]))
         .with(0x0008, Value::Stream((0..10_000u32).map(|i| i as u8).collect()));
-    for v in [craft_cfb::Version::V3, craft_cfb::Version::V4] {
+    for v in [bharat_cfb::Version::V3, bharat_cfb::Version::V4] {
         let bytes = store::write(&root, v).unwrap();
         assert_eq!(store::read(&bytes).unwrap(), root);
     }
     // a data value longer than a property can hold is an error, not a panic
-    assert!(store::write(&Obj::new(ids::ROOT).data_prop(1, vec![0; 70_000]), craft_cfb::Version::V4).is_err());
+    assert!(store::write(&Obj::new(ids::ROOT).data_prop(1, vec![0; 70_000]), bharat_cfb::Version::V4).is_err());
 }
 
 /// The property `p` of `o` as a list of objects, to change.
@@ -427,7 +427,7 @@ fn premiere_style_layers_and_nested_compositions_are_read() {
         }
     }
     assert_eq!(compositions, 2);
-    let theirs = store::write(&root, craft_cfb::Version::V4).unwrap();
+    let theirs = store::write(&root, bharat_cfb::Version::V4).unwrap();
     assert_ne!(theirs, ours);
 
     let want = read_clean(&ours);
@@ -486,7 +486,7 @@ fn unnamed_source_clip_uses_the_referenced_master_name() {
     let content = strong_mut(strong_mut(&mut root, pid::ROOT_HEADER), pid::CONTENT);
     let master = objs_mut(content, pid::MOBS).iter_mut().find(|m| m.class == cls::MASTER_MOB).unwrap();
     master.set(pid::MOB_NAME, Value::Data(store::utf16z("Master edit")));
-    let bytes = store::write(&root, craft_cfb::Version::V4).unwrap();
+    let bytes = store::write(&root, bharat_cfb::Version::V4).unwrap();
     let back = read_clean(&bytes);
     let clip = back.compositions[0].tracks[0]
         .items
@@ -517,7 +517,7 @@ fn sound_source_offsets_use_audio_sample_rate_on_disk() {
             _ => None,
         })
         .unwrap();
-    assert_eq!(clip.start, craft_timeline::time::FrameRate::FPS_25.tick_of(10));
+    assert_eq!(clip.start, bharat_timeline::time::FrameRate::FPS_25.tick_of(10));
 }
 
 #[test]
@@ -542,7 +542,7 @@ fn flattened_selectors_and_nested_scopes_are_reported() {
         let value = if class == cls::SELECTOR { Value::Strong(Box::new(child)) } else { Value::StrongVec(vec![child]) };
         wrapper.set(property, value);
         *segment = wrapper;
-        let bytes = store::write(&root, craft_cfb::Version::V4).unwrap();
+        let bytes = store::write(&root, bharat_cfb::Version::V4).unwrap();
         let mut report = Report::default();
         read(&bytes, &mut report).unwrap();
         assert!(report.mentions(message), "{report}");

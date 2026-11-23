@@ -1,12 +1,12 @@
 //! PhotoCraft `.pcraft` bundles: a ZIP archive holding `manifest.json` (the document tree, with
 //! `format_version`), tiles and blobs, and optionally the previews the manifest names
 //! (`thumbnail`, `composite`, `full_composite`). Only the ZIP form is read; a bundle saved as a folder is not. The
-//! manifest's envelope is [`craft_pcraft_format::Manifest`]'s.
+//! manifest's envelope is [`bharat_pcraft_format::Manifest`]'s.
 
 use std::fmt;
 use std::marker::PhantomData;
 
-use craft_pcraft_format::{self as format, COMPOSITE, FORMAT_VERSION, FULL_COMPOSITE, MANIFEST, MAX_GROUP_DEPTH, THUMB, manifest_depth};
+use bharat_pcraft_format::{self as format, COMPOSITE, FORMAT_VERSION, FULL_COMPOSITE, MANIFEST, MAX_GROUP_DEPTH, THUMB, manifest_depth};
 use serde::Deserialize;
 use serde::de::value::MapAccessDeserializer;
 use serde::de::{DeserializeOwned, Deserializer, IgnoredAny, MapAccess, Visitor};
@@ -41,7 +41,7 @@ fn manifest<'a>(bytes: &'a [u8], budget: &mut Budget) -> Result<(Zip<'a>, Vec<u8
     Ok((zip, json))
 }
 
-/// A `T` read only from a JSON object, as [`craft_pcraft_format::read_manifest`] reads the
+/// A `T` read only from a JSON object, as [`bharat_pcraft_format::read_manifest`] reads the
 /// manifest. serde's derived `Deserialize` also reads a struct from a JSON array.
 struct Object<T>(T);
 
@@ -65,7 +65,7 @@ impl<'de, T: Deserialize<'de>> Deserialize<'de> for Object<T> {
 
 /// The version and the writer, read without the rest of the manifest, so that a manifest of a
 /// newer format still reports them. A `generator` that is not a string reads as `None`, as
-/// [`craft_pcraft_format::migrate`] reads it.
+/// [`bharat_pcraft_format::migrate`] reads it.
 #[derive(Deserialize)]
 struct Stamp {
     /// `None` only when the member is missing; a `null` is not a version.
@@ -91,7 +91,7 @@ fn stamp(json: &[u8], budget: &Budget) -> Result<(u32, Option<String>), Error> {
     Ok((version, stamp.generator))
 }
 
-/// The members of [`craft_pcraft_format::Manifest`] after `format_version`, with the document as
+/// The members of [`bharat_pcraft_format::Manifest`] after `format_version`, with the document as
 /// `D`, read without building the manifest as a `serde_json::Value` first.
 #[derive(Deserialize)]
 struct Envelope<D> {
@@ -107,8 +107,8 @@ struct Envelope<D> {
     full_composite: Option<String>,
 }
 
-/// The manifest's envelope, checked as [`craft_pcraft_format::read_manifest`] checks it: the
-/// size, nesting and item count with [`craft_pcraft_format::check_manifest`] and PhotoCraft's
+/// The manifest's envelope, checked as [`bharat_pcraft_format::read_manifest`] checks it: the
+/// size, nesting and item count with [`bharat_pcraft_format::check_manifest`] and PhotoCraft's
 /// own nesting limit, a manifest that is not a JSON object refused, the version read first (0 or
 /// newer than [`FORMAT_VERSION`] refused), and a preview that names an entry other than [`THUMB`]
 /// or [`COMPOSITE`] refused. `full_composite` may name only [`FULL_COMPOSITE`]. A member that

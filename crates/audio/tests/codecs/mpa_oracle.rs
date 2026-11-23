@@ -11,8 +11,8 @@
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
-use craft_audio::mpa::{Decoder, Mode, parse_header};
-use craft_media::bitstream::BitWriter;
+use bharat_audio::mpa::{Decoder, Mode, parse_header};
+use bharat_media::bitstream::BitWriter;
 
 /// A stream from an encoder.
 struct Encoded {

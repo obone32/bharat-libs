@@ -34,7 +34,7 @@
 //! filter set leaves all three tests green, so those are held to review rather than to a test. The
 //! rows come from PdfCraft, which uses qpdf as an oracle (its `crates/oracle/README.md`).
 
-use craft_pdf::crypt::{Auth, EncryptDict, Method, SecurityHandler, aes_cbc_decrypt};
+use bharat_pdf::crypt::{Auth, EncryptDict, Method, SecurityHandler, aes_cbc_decrypt};
 
 const USER: &str = "open pw";
 const OWNER: &str = "owner pw";

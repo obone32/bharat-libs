@@ -34,7 +34,7 @@ fn legacy_read_keeps_queued_signals_and_drop_cancels_idle_subscription() -> Resu
     let mut daemon = Daemon(
         Command::new("dbus-daemon")
             .args(["--session", "--nofork", "--print-address=1"])
-            .arg(format!("--address=unix:abstract=craft-appearance-test-{}", std::process::id()))
+            .arg(format!("--address=unix:abstract=bharat-appearance-test-{}", std::process::id()))
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
             .spawn()?,

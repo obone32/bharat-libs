@@ -1,6 +1,6 @@
-# craft-codepage
+# bharat-codepage
 
-Legacy 8-bit code pages, one table each, for every reader of old text in the Craft libraries:
+Legacy 8-bit code pages, one table each, for every reader of old text in the Bharat libraries:
 
 - the single-byte Windows code pages (874, 1250–1258) and Mac OS Roman (10000), byte by byte
   (`windows_byte`, `cp1252`);
@@ -12,11 +12,11 @@ Legacy 8-bit code pages, one table each, for every reader of old text in the Cra
   `encoding_rs` (`multibyte_encoding_name`).
 
 Everything is keyed by Windows code page number. Readers that name code pages another way map
-their names onto these: craft-dxf (`$DWGCODEPAGE` names such as `DOS850`), craft-mime (charset
-labels such as `IBM850`), craft-rtf (`\ansicpg`, `\fcharset`).
+their names onto these: bharat-dxf (`$DWGCODEPAGE` names such as `DOS850`), bharat-mime (charset
+labels such as `IBM850`), bharat-rtf (`\ansicpg`, `\fcharset`).
 
 ```rust
-use craft_codepage::{code_page_byte, dos_upper, windows_byte};
+use bharat_codepage::{code_page_byte, dos_upper, windows_byte};
 
 assert_eq!(windows_byte(1251, 0xC4), 'Д');
 assert_eq!(code_page_byte(850, 0x9B), 'ø');

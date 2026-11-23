@@ -2,7 +2,7 @@
 //! Hand-built (no ffmpeg): a reduced still-picture sequence header plus a lossless key frame whose
 //! tiles are one zero byte each.
 
-use craft_video::av1::decode::{Decoder, Error};
+use bharat_video::av1::decode::{Decoder, Error};
 
 #[derive(Default)]
 struct Bits {

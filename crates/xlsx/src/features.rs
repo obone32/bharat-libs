@@ -6,8 +6,8 @@
 //! default applies), so a feature reads and writes back as it was. Attributes a type does not
 //! name are kept in its `attrs` (`xr:uid` and the like).
 
-use craft_sheet::{CellRef, MAX_COLS, MAX_ROWS, Range, col_letters};
-use craft_xml::{El, Node};
+use bharat_sheet::{CellRef, MAX_COLS, MAX_ROWS, Range, col_letters};
+use bharat_xml::{El, Node};
 
 use crate::strings::StringItem;
 use crate::styles::Color;
@@ -21,7 +21,7 @@ pub(crate) trait Attr: Sized {
 
 impl Attr for bool {
     fn parse(s: &str) -> Option<bool> {
-        craft_xml::value::to_bool(s)
+        bharat_xml::value::to_bool(s)
     }
     fn spell(&self) -> String {
         if *self { "1" } else { "0" }.into()
@@ -29,7 +29,7 @@ impl Attr for bool {
 }
 impl Attr for u32 {
     fn parse(s: &str) -> Option<u32> {
-        craft_xml::value::to_u32(s)
+        bharat_xml::value::to_u32(s)
     }
     fn spell(&self) -> String {
         self.to_string()
@@ -37,7 +37,7 @@ impl Attr for u32 {
 }
 impl Attr for i32 {
     fn parse(s: &str) -> Option<i32> {
-        craft_xml::value::to_i32(s)
+        bharat_xml::value::to_i32(s)
     }
     fn spell(&self) -> String {
         self.to_string()
@@ -45,7 +45,7 @@ impl Attr for i32 {
 }
 impl Attr for f64 {
     fn parse(s: &str) -> Option<f64> {
-        craft_xml::value::to_f64(s)
+        bharat_xml::value::to_f64(s)
     }
     fn spell(&self) -> String {
         num(*self)
@@ -622,7 +622,7 @@ element! {
 }
 
 impl Hyperlink {
-    fn read(e: &El, rels: &craft_opc::Rels) -> Option<Hyperlink> {
+    fn read(e: &El, rels: &bharat_opc::Rels) -> Option<Hyperlink> {
         let range = Range::parse(e.attr("ref")?)?;
         let h = Hyperlink::read_attrs(e);
         let url = h.rel_id.as_deref().and_then(|id| rels.by_id(id)).filter(|r| r.external).map(|r| r.target.clone());
@@ -656,7 +656,7 @@ pub struct Features {
 }
 
 impl Features {
-    pub(crate) fn read(root: &El, rels: &craft_opc::Rels) -> Features {
+    pub(crate) fn read(root: &El, rels: &bharat_opc::Rels) -> Features {
         let attrs_of = |n: &str| root.child(n);
         Features {
             views: root.child("sheetViews").map(|v| v.children("sheetView").map(SheetView::read).collect()).unwrap_or_default(),
@@ -801,7 +801,7 @@ impl Comments {
         let mut out =
             crate::write::assemble(&root, &["authors", "commentList", "extLst"], vec![("authors", Some(authors)), ("commentList", Some(list))]);
         crate::ns::declare(&mut out);
-        let mut w = craft_xml::Writer::document();
+        let mut w = bharat_xml::Writer::document();
         w.tree(&out);
         w.into_bytes()
     }
@@ -890,7 +890,7 @@ mod tests {
     use super::*;
 
     fn read(xml: &str) -> El {
-        craft_xml::Options::canonical(&crate::ns::CANONICAL).parse(xml.as_bytes()).unwrap_or_default()
+        bharat_xml::Options::canonical(&crate::ns::CANONICAL).parse(xml.as_bytes()).unwrap_or_default()
     }
 
     #[test]
@@ -1080,7 +1080,7 @@ impl Table {
             e.push(x.clone());
         }
         crate::ns::declare(&mut e);
-        let mut w = craft_xml::Writer::document();
+        let mut w = bharat_xml::Writer::document();
         w.tree(&e);
         w.into_bytes()
     }

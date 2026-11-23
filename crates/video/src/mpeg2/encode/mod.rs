@@ -1,12 +1,12 @@
 //! MPEG-2 video encoder (ITU-T H.262 | ISO/IEC 13818-2), feature `mpeg2-encode`.
 //!
-//! MPEG-2 encoding in this crate is built in steps (storytold/craft-libs#1133). So far: I, P and B
+//! MPEG-2 encoding in this crate is built in steps (obone32/bharat-libs#1133). So far: I, P and B
 //! pictures, progressive frame pictures, 4:2:0 (Main Profile) and 4:2:2 (4:2:2 Profile), closed or
 //! open GOPs, constant quantiser or single-pass average bitrate. A VBV guarantee, interlaced
 //! coding and DVD / broadcast presets come later.
 //!
 //! ```no_run
-//! use craft_video::mpeg2::encode::{Encoder, EncoderConfig, RateControl, YuvFrame};
+//! use bharat_video::mpeg2::encode::{Encoder, EncoderConfig, RateControl, YuvFrame};
 //!
 //! let mut cfg = EncoderConfig::new(720, 576, 25, 1);
 //! cfg.rate = RateControl::Abr { kbps: 6000 };
@@ -23,7 +23,7 @@
 //!     es.extend_from_slice(&p.data);
 //! }
 //! es.extend_from_slice(enc.end_of_sequence());
-//! # Ok::<(), craft_video::mpeg2::encode::EncodeError>(())
+//! # Ok::<(), bharat_video::mpeg2::encode::EncodeError>(())
 //! ```
 
 mod bitwriter;

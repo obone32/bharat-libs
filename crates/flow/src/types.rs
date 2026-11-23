@@ -82,8 +82,8 @@ impl Dropped {
             }
             Dropped::TableCells => format!(
                 "import: Markdown tables keep {} columns and {} rows at most, and {} cells in all; the rest are left out",
-                craft_wordmodel::table::MAX_COLS,
-                craft_wordmodel::table::MAX_ROWS,
+                bharat_wordmodel::table::MAX_COLS,
+                bharat_wordmodel::table::MAX_ROWS,
                 MAX_TABLE_CELLS
             ),
         }
@@ -139,7 +139,7 @@ pub struct Fmt {
     /// colour, double strike, caps, small caps, hidden, spacing, scale, position, outline,
     /// shadow, emboss, engrave and language, as character properties. Only flows asked for it
     /// ([`FlowOpts::chars`]) hold it.
-    pub extra: Option<Box<craft_wordmodel::props::CharProps>>,
+    pub extra: Option<Box<bharat_wordmodel::props::CharProps>>,
 }
 
 /// A tracked formatting change in a flow: who made it, and the formatting before it.
@@ -172,7 +172,7 @@ pub struct Img {
     pub alt: String,
     /// How a floating picture is placed and wrapped, for formats that keep it (ODT); `None`: in
     /// line with the text.
-    pub float: Option<Box<craft_wordmodel::para::Float>>,
+    pub float: Option<Box<bharat_wordmodel::para::Float>>,
     /// The embedded object this picture shows, kept whole (ODT only; see [`OdfObject`]).
     pub object: Option<Arc<OdfObject>>,
     /// How much is cut off its left, top, right and bottom, fractions of its size (0..1), for
@@ -198,13 +198,13 @@ pub struct OdfObject {
 /// An editable chart in a flow ([`Inline::Chart`]).
 #[derive(Clone, Debug, PartialEq)]
 pub struct Chart {
-    pub spec: Arc<craft_wordmodel::chart::ChartSpec>,
+    pub spec: Arc<bharat_wordmodel::chart::ChartSpec>,
     /// Display size, points.
     pub w: f32,
     pub h: f32,
     pub alt: String,
     /// How a floating chart is placed and wrapped; `None`: in line with the text.
-    pub float: Option<Box<craft_wordmodel::para::Float>>,
+    pub float: Option<Box<bharat_wordmodel::para::Float>>,
     /// The chart object as read (ODT), written back whole while the chart is unchanged, so it
     /// keeps the look WordCraft doesn't model (its fonts, lines and colours).
     pub source: Option<Arc<OdfObject>>,
@@ -229,7 +229,7 @@ pub enum Inline {
     /// A content control holding plain `text` (a form control in ODT): only in flows asked for
     /// boxes ([`FlowOpts::boxes`]); others get its text.
     Control {
-        control: Box<craft_wordmodel::control::ContentControl>,
+        control: Box<bharat_wordmodel::control::ContentControl>,
         text: String,
         fmt: Fmt,
     },
@@ -281,14 +281,14 @@ pub enum Inline {
     /// its text (none for a shape without), and its look. Only flows asked for them
     /// ([`FlowOpts::boxes`]) hold them.
     Shape {
-        kind: craft_wordmodel::para::ShapeKind,
+        kind: bharat_wordmodel::para::ShapeKind,
         w: f32,
         h: f32,
-        float: Option<Box<craft_wordmodel::para::Float>>,
+        float: Option<Box<bharat_wordmodel::para::Float>>,
         blocks: Vec<FBlock>,
         look: BoxLook,
-        /// A freeform's paths ([`craft_wordmodel::para::ShapeKind::Freeform`]).
-        path: Option<std::sync::Arc<craft_wordmodel::freeform::Freeform>>,
+        /// A freeform's paths ([`bharat_wordmodel::para::ShapeKind::Freeform`]).
+        path: Option<std::sync::Arc<bharat_wordmodel::freeform::Freeform>>,
     },
     /// The start of a field whose result is the content after it, up to the matching
     /// [`Inline::FieldEnd`] (a table of contents around its entries); its field code. Only flows
@@ -302,7 +302,7 @@ pub enum Inline {
     Group {
         w: f32,
         h: f32,
-        float: Option<Box<craft_wordmodel::para::Float>>,
+        float: Option<Box<bharat_wordmodel::para::Float>>,
         members: Vec<Member>,
     },
 }
@@ -322,11 +322,11 @@ pub struct Member {
 #[derive(Clone, Debug, PartialEq)]
 pub struct BoxLook {
     /// Fill: a colour or a gradient; `None` is no fill.
-    pub fill: Option<craft_wordmodel::fill::Fill>,
+    pub fill: Option<bharat_wordmodel::fill::Fill>,
     /// Outline colour and width in points; `None` is no line.
     pub line: Option<(Rgb, f32)>,
     /// The outline's dash pattern.
-    pub dash: craft_wordmodel::line_dash::LineDash,
+    pub dash: bharat_wordmodel::line_dash::LineDash,
     /// Arrowheads at a line's start and end.
     pub arrows: (bool, bool),
     /// Inner margins (left, top, right, bottom) in points; `None` is the default.
@@ -334,13 +334,13 @@ pub struct BoxLook {
     /// The box grows to its text; its height is the least it is.
     pub auto_fit: bool,
     /// The drawing id connectors glue to, and a connector's glued ends (see
-    /// [`craft_wordmodel::connector`]).
+    /// [`bharat_wordmodel::connector`]).
     pub conn: Option<Box<Conn>>,
     /// A text box's name and the box its text continues in when it doesn't fit (linked text
     /// boxes), by name.
     pub chain: Option<Box<Chain>>,
     /// Which way a text box's text runs (turned down or up).
-    pub vert: craft_wordmodel::props::TextVert,
+    pub vert: bharat_wordmodel::props::TextVert,
     /// A custom shape's geometry as read (ODT; see `ShapeExtra::odf_geometry`).
     pub geometry: Option<std::sync::Arc<String>>,
 }
@@ -356,15 +356,15 @@ pub struct Chain {
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Conn {
     pub id: u32,
-    pub start: Option<craft_wordmodel::connector::ConnEnd>,
-    pub end: Option<craft_wordmodel::connector::ConnEnd>,
+    pub start: Option<bharat_wordmodel::connector::ConnEnd>,
+    pub end: Option<bharat_wordmodel::connector::ConnEnd>,
 }
 
 impl Default for BoxLook {
     /// A new text box's: white, with a thin black line.
     fn default() -> BoxLook {
         BoxLook {
-            fill: Some(craft_wordmodel::fill::Fill::solid(Rgb::WHITE)),
+            fill: Some(bharat_wordmodel::fill::Fill::solid(Rgb::WHITE)),
             line: Some((Rgb::BLACK, 0.75)),
             dash: Default::default(),
             arrows: (false, false),
@@ -572,7 +572,7 @@ impl Affix {
 /// shown (`1.2.`), or, for a bulleted level, its bullet (as the prefix).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Label {
-    pub format: craft_wordmodel::section::NumFormat,
+    pub format: bharat_wordmodel::section::NumFormat,
     pub prefix: Affix,
     pub suffix: Affix,
     /// Levels shown, this one and those above it (1: only its own number).
@@ -590,7 +590,7 @@ impl Label {
         let mut b = [0u8; 4];
         let prefix = bullet.map(|c| Affix::new(c.encode_utf8(&mut b))).unwrap_or_default();
         Label {
-            format: craft_wordmodel::section::NumFormat::Bullet,
+            format: bharat_wordmodel::section::NumFormat::Bullet,
             prefix,
             suffix: Affix::default(),
             shown: 1,
@@ -619,13 +619,13 @@ impl Label {
 
     /// The bullet of a bulleted level, when it names one.
     pub fn bullet(&self) -> Option<char> {
-        (self.format == craft_wordmodel::section::NumFormat::Bullet).then(|| self.prefix.as_str().chars().next()).flatten()
+        (self.format == bharat_wordmodel::section::NumFormat::Bullet).then(|| self.prefix.as_str().chars().next()).flatten()
     }
 
     /// Word's level text for 0-based `level`: `%1.`, `(%1)`, `%1.%2.`, or the bullet.
     pub fn text(&self, level: u8) -> String {
         let level = level.min(8);
-        if self.format == craft_wordmodel::section::NumFormat::Bullet {
+        if self.format == bharat_wordmodel::section::NumFormat::Bullet {
             return self.bullet().unwrap_or('•').to_string();
         }
         let shown = self.shown.clamp(1, level + 1);
@@ -634,8 +634,8 @@ impl Label {
     }
 
     /// The label a Word level text (`%1.`, `(%1)`, `%1.%2.`, a bullet) shows.
-    pub fn of_level(format: craft_wordmodel::section::NumFormat, text: &str) -> Label {
-        if format == craft_wordmodel::section::NumFormat::Bullet {
+    pub fn of_level(format: bharat_wordmodel::section::NumFormat, text: &str) -> Label {
+        if format == bharat_wordmodel::section::NumFormat::Bullet {
             return Label::bulleted(text.chars().next());
         }
         let first = text.find('%').unwrap_or(text.len());
@@ -661,7 +661,7 @@ impl Label {
 pub struct Spacing {
     pub before: Option<f32>,
     pub after: Option<f32>,
-    pub line: Option<craft_wordmodel::props::LineSpacing>,
+    pub line: Option<bharat_wordmodel::props::LineSpacing>,
     pub left: Option<f32>,
     pub right: Option<f32>,
     /// First-line indent; negative = hanging.
@@ -682,9 +682,9 @@ pub struct Para {
     pub inlines: Vec<Inline>,
     pub spacing: Spacing,
     /// Borders the source puts on the paragraph itself (RTF `\brdrb`…).
-    pub borders: Option<craft_wordmodel::props::Borders>,
+    pub borders: Option<bharat_wordmodel::props::Borders>,
     /// The section this paragraph ends (RTF `\sect`), as the document's last paragraph of it.
-    pub section: Option<Box<craft_wordmodel::SectionProps>>,
+    pub section: Option<Box<bharat_wordmodel::SectionProps>>,
     /// Tracked insertion of the paragraph mark.
     pub mark_ins: Option<Box<RevMark>>,
     /// Tracked deletion of the paragraph mark (only [`from_doc_tracked`] and formats that keep
@@ -695,21 +695,21 @@ pub struct Para {
     pub fmt_change: Option<Box<FmtChange<Para>>>,
     /// Paragraph formatting beyond the fields above, for formats that keep it (ODT): its own
     /// tab stops. Only flows asked for it ([`FlowOpts::paras`]) hold it.
-    pub extra: Option<Box<craft_wordmodel::props::ParaProps>>,
+    pub extra: Option<Box<bharat_wordmodel::props::ParaProps>>,
     /// The paragraph mark's direct formatting (its size sets an empty paragraph's height), for
     /// formats that keep it (ODT): only flows asked for paragraph formatting
     /// ([`FlowOpts::paras`]) hold it, and only for paragraphs without text ([`Para::textless`]),
     /// whose drawings' runs take it too. A reader whose source gives it sets it too (HTML's
     /// `<p>&nbsp;</p>`).
-    pub mark: Option<Box<craft_wordmodel::props::CharProps>>,
+    pub mark: Option<Box<bharat_wordmodel::props::CharProps>>,
     /// The paragraph's markup in the file it came from, while it still is what was read
-    /// ([`craft_wordmodel::kept`]): a format that keeps it (ODT) writes it as it was.
+    /// ([`bharat_wordmodel::kept`]): a format that keeps it (ODT) writes it as it was.
     pub kept: Option<std::sync::Arc<str>>,
-    /// Sections kept as read around paragraphs ([`craft_wordmodel::kept`]): the start tags of
+    /// Sections kept as read around paragraphs ([`bharat_wordmodel::kept`]): the start tags of
     /// those opening before this paragraph (outermost first), and how many close after it.
     pub wrap: Option<Box<(Vec<std::sync::Arc<str>>, u32)>>,
     /// An index (a table of contents…) kept as read that starts with this paragraph
-    /// ([`craft_wordmodel::kept`]): its markup, and how many blocks of the flow it takes.
+    /// ([`bharat_wordmodel::kept`]): its markup, and how many blocks of the flow it takes.
     pub index: Option<Box<(std::sync::Arc<str>, usize)>>,
     /// The group of paragraphs its markup kept as read belongs to (see [`Group`]).
     pub group: Option<Box<Group>>,
@@ -791,14 +791,14 @@ impl Para {
         s
     }
     /// [`Self::text`] as it reads on screen: text set in a symbol font (Symbol, Wingdings…) as
-    /// its Unicode equivalents ([`craft_wordmodel::symbol_fonts`]), for plain-text export.
+    /// its Unicode equivalents ([`bharat_wordmodel::symbol_fonts`]), for plain-text export.
     pub fn shown_text(&self) -> String {
         let mut s = String::new();
         for i in &self.inlines {
             match i {
                 Inline::Text(t, f) => match f.font.as_deref() {
-                    Some(font) if craft_wordmodel::symbol_fonts::is_symbol_font(font) => {
-                        s.push_str(&craft_wordmodel::symbol_fonts::map_text(font, t))
+                    Some(font) if bharat_wordmodel::symbol_fonts::is_symbol_font(font) => {
+                        s.push_str(&bharat_wordmodel::symbol_fonts::map_text(font, t))
                     }
                     _ => s.push_str(t),
                 },
@@ -867,12 +867,12 @@ pub struct Cell {
     pub header: bool,
     pub shading: Option<Rgb>,
     /// The cell's own borders (RTF `\clbrdr…`), drawn whatever the table's style.
-    pub borders: Option<craft_wordmodel::props::Borders>,
+    pub borders: Option<bharat_wordmodel::props::Borders>,
     pub valign: Option<VAlign>,
     /// The cell's padding (top, left, bottom, right), points, when the source gives it.
     pub margins: Option<[f32; 4]>,
     /// Which way its text runs (turned down or up).
-    pub direction: craft_wordmodel::props::TextDirection,
+    pub direction: bharat_wordmodel::props::TextDirection,
     /// A picture behind its content (ODT).
     pub picture: Option<Box<CellPic>>,
     /// The width, points, the source gives a cell spanning one column (HTML): see
@@ -881,11 +881,11 @@ pub struct Cell {
 }
 
 /// A cell's background picture: the picture at its own size, how it fills the cell, and where an
-/// unrepeated one sits (see [`craft_wordmodel::props::CellPicture`]).
+/// unrepeated one sits (see [`bharat_wordmodel::props::CellPicture`]).
 #[derive(Clone, Debug, PartialEq)]
 pub struct CellPic {
     pub img: Img,
-    pub repeat: craft_wordmodel::props::PictureRepeat,
+    pub repeat: bharat_wordmodel::props::PictureRepeat,
     pub align: [f32; 2],
 }
 
@@ -932,7 +932,7 @@ pub struct FTable {
     /// Its alignment, width and row heights, for formats that keep them (ODT).
     pub extra: Option<Box<TableExtra>>,
     /// The table's markup in the file it came from, while it still is what was read
-    /// ([`craft_wordmodel::kept`]): a format that keeps it (ODT) writes it as it was.
+    /// ([`bharat_wordmodel::kept`]): a format that keeps it (ODT) writes it as it was.
     pub kept: Option<std::sync::Arc<str>>,
     /// Wrappers kept as read around it (sections): the start tags opening before it and how
     /// many close after it, as a paragraph's (`Para::wrap`).
@@ -942,7 +942,7 @@ pub struct FTable {
 /// A table's placement and row heights ([`FTable::extra`]).
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct TableExtra {
-    pub align: Option<craft_wordmodel::Align>,
+    pub align: Option<bharat_wordmodel::Align>,
     /// Width, points.
     pub width: Option<f32>,
     /// Width, percent of the text width.

@@ -1,4 +1,4 @@
-# craft-jxl
+# bharat-jxl
 
 JPEG XL decoding and encoding for still raster images.
 

@@ -1,4 +1,4 @@
-# craft-zip
+# bharat-zip
 
 ZIP archives from untrusted files, read within limits and written. No `unsafe`.
 
@@ -12,7 +12,7 @@ are safe, which spellings are one part) stay with the format that knows them.
 ## Reading
 
 ```rust
-use craft_zip::{Archive, Compression, Limits, Writer};
+use bharat_zip::{Archive, Compression, Limits, Writer};
 
 # let mut w = Writer::new();
 # w.add("mimetype", b"application/epub+zip", Compression::Stored)?;
@@ -25,7 +25,7 @@ if zip.has_duplicate_names() {
 let part = zip.read("content.xml", 64 << 20)?;       // Ok(None) when there is no such entry
 assert_eq!(part.as_deref(), Some(&b"<a/>"[..]));
 assert_eq!(zip.budget().used(), 4);
-# Ok::<(), craft_zip::Error>(())
+# Ok::<(), bharat_zip::Error>(())
 ```
 
 - `Archive::open` runs `check_entry_count` first. `zip` reserves room for, and parses, as many
@@ -67,9 +67,9 @@ calls it first.
 
 ## Where it came from
 
-`preflight`, `read_entry` and `Budget`: the ZIP half of the craft-archive proposal (#126, #129).
-`check_entry_count`: craft-opc's `guard`. Duplicate detection: craft-penpot's rule, made exact
-by walking the directory. The writer: craft-opc's `ZipOut`.
+`preflight`, `read_entry` and `Budget`: the ZIP half of the bharat-archive proposal (#126, #129).
+`check_entry_count`: bharat-opc's `guard`. Duplicate detection: bharat-penpot's rule, made exact
+by walking the directory. The writer: bharat-opc's `ZipOut`.
 
 ## Seekable indexing
 

@@ -14,11 +14,11 @@ mod roundtrip;
 mod swatch_malformed;
 mod tree;
 
-/// A directory of the real-file corpus (feature `corpus`): under `CRAFT_PSD_CORPUS` when set (a
+/// A directory of the real-file corpus (feature `corpus`): under `BHARAT_PSD_CORPUS` when set (a
 /// PhotoCraft checkout's `corpus` directory), else `corpus/` at the workspace root.
 #[cfg(feature = "corpus")]
 fn corpus_dir(sub: &str) -> std::path::PathBuf {
-    let root = std::env::var_os("CRAFT_PSD_CORPUS")
+    let root = std::env::var_os("BHARAT_PSD_CORPUS")
         .map_or_else(|| std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../corpus"), std::path::PathBuf::from);
     root.join(sub)
 }

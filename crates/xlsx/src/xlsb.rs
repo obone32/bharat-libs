@@ -10,8 +10,8 @@ mod ftab;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use craft_opc::{ContentTypes, Rels};
-use craft_sheet::{CellError, CellRef, MAX_COLS, MAX_ROWS, Range, Visibility};
+use bharat_opc::{ContentTypes, Rels};
+use bharat_sheet::{CellError, CellRef, MAX_COLS, MAX_ROWS, Range, Visibility};
 
 use crate::sheet::{Cell, CellFormula, CellValue, FormulaKind, Row, SheetPart};
 use crate::strings::StringItem;

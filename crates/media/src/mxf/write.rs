@@ -353,7 +353,7 @@ pub struct WriterConfig {
 }
 
 impl WriterConfig {
-    /// A configuration with no essence tracks yet. `company` and `product` are `craft-media` and
+    /// A configuration with no essence tracks yet. `company` and `product` are `bharat-media` and
     /// `version` is this crate's: an app sets its own. The identification set's product UID is
     /// derived from `product`.
     pub fn new(pattern: Pattern, edit_rate: Rational, ids: PackageIds) -> Self {
@@ -365,8 +365,8 @@ impl WriterConfig {
             timecode: None,
             ids,
             first_track_id: 2,
-            company: "craft-media".into(),
-            product: "craft-media".into(),
+            company: "bharat-media".into(),
+            product: "bharat-media".into(),
             version: env!("CARGO_PKG_VERSION").into(),
             modified: Timestamp::default(),
         }
@@ -1325,7 +1325,7 @@ pub struct OpAtomPcm {
 }
 
 /// A complete OP-Atom PCM file in memory. `samples` are interleaved integer sample values in the
-/// range of `bits` (e.g. -32768..=32767 for 16 bits). The identification names `craft-media`;
+/// range of `bits` (e.g. -32768..=32767 for 16 bits). The identification names `bharat-media`;
 /// [`write_opatom_pcm_as`] takes the app's own.
 pub fn write_opatom_pcm(opts: &OpAtomPcm, samples: &[i32]) -> io::Result<Vec<u8>> {
     let d = WriterConfig::new(Pattern::OpAtom, Rational::new(1, 1), opts.ids.clone());

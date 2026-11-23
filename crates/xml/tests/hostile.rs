@@ -1,7 +1,7 @@
 //! Hostile input: every limit, entity expansion, truncation, wrong encodings, wrong nesting.
 //! Nothing here may panic, and nothing may grow beyond a small multiple of its input.
 
-use craft_xml::{Canonical, Doctype, El, Error, Limits, Options, UnknownEntity, parse, to_utf8};
+use bharat_xml::{Canonical, Doctype, El, Error, Limits, Options, UnknownEntity, parse, to_utf8};
 
 const CANON: Canonical<'static> = Canonical::new(&[("w", "urn:w"), ("r", "urn:r")]);
 
@@ -252,7 +252,7 @@ fn damaged_input_never_panics() {
                     // not written at all: the reader does not check names, the writer does.)
                     let written = root.to_xml();
                     if !written.is_empty() {
-                        let again = Options { names: craft_xml::Names::AsWritten, strict: false, ns_decls: true, ..opts }.parse(written.as_bytes());
+                        let again = Options { names: bharat_xml::Names::AsWritten, strict: false, ns_decls: true, ..opts }.parse(written.as_bytes());
                         assert!(again.is_ok(), "{written:?}");
                         assert_eq!(again.map(|e| e.to_xml()), Ok(written));
                     }

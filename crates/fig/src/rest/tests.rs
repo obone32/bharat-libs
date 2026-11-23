@@ -1,10 +1,10 @@
 //! The mapping on a message built in code: a small schema in the compact text form (FigCraft's
-//! `.fig` fixture), mapped onto the REST shape and read back with craft-figma-rest.
+//! `.fig` fixture), mapped onto the REST shape and read back with bharat-figma-rest.
 #![allow(clippy::unwrap_used, clippy::panic)]
 
 use std::cell::RefCell;
 
-use craft_figma_rest::{File, NodeType};
+use bharat_figma_rest::{File, NodeType};
 use serde_json::Value;
 
 use super::*;
@@ -615,7 +615,7 @@ fn mangled_messages_never_panic() {
         }
         if let Ok(kv) = sc.decode_message(root, &m) {
             let out = mapped(&kv);
-            assert!(craft_figma_rest::check(&out.json, usize::MAX).is_ok());
+            assert!(bharat_figma_rest::check(&out.json, usize::MAX).is_ok());
         }
     }
 }
@@ -785,7 +785,7 @@ fn deep_nesting_stops_at_the_limit_within_a_small_stack() {
                 "{:?}",
                 out.warnings
             );
-            assert!(craft_figma_rest::check(&out.json, usize::MAX).is_ok());
+            assert!(bharat_figma_rest::check(&out.json, usize::MAX).is_ok());
         }
     };
     std::thread::Builder::new().stack_size(1 << 20).spawn(run).unwrap().join().unwrap();

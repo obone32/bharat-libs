@@ -1,5 +1,5 @@
 [package]
-name = "craft-raster-codecs"
+name = "bharat-raster-codecs"
 description = "Small raster image formats, one module each: DDS (with BC1-BC3), DICOM, FITS, IFF/ILBM, PCX, PNM/PAM/PFM and XPM, with bounded decoding."
 version.workspace = true
 edition.workspace = true
@@ -12,6 +12,6 @@ workspace = true
 
 [dependencies]
 base64 = "0.23"
-craft-image-codecs = { workspace = true }
+bharat-image-codecs = { workspace = true }
 thiserror = { workspace = true }
 image = { version = "0.25", default-features = false }

@@ -5,9 +5,9 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::props::{BorderStyle, Rgb};
-use craft_wordmodel::section::{LineNumberRestart, NoteRestart, NumFormat};
+use bharat_wordmodel::Document;
+use bharat_wordmodel::props::{BorderStyle, Rgb};
+use bharat_wordmodel::section::{LineNumberRestart, NoteRestart, NumFormat};
 
 fn open() -> Document {
     let styles = format!(
@@ -99,7 +99,7 @@ fn hostile_page_settings_do_not_panic() {
     );
     let d = import(&package(&content, Some(&styles))).unwrap();
     let s = settings(&d);
-    assert!(s.4.is_none_or(|n| n <= craft_wordmodel::section::MAX_NOTE_START), "{s:?}");
+    assert!(s.4.is_none_or(|n| n <= bharat_wordmodel::section::MAX_NOTE_START), "{s:?}");
     assert!(s.7.as_ref().is_none_or(|l| l.0 >= 1 && l.1.is_finite() && l.1 <= 1584.0), "{s:?}");
     let _ = export(&d).unwrap();
 }
@@ -132,7 +132,7 @@ fn a_page_layout_without_a_size_is_the_default_pages_size() {
         crate::text::tests::NS_T
     );
     let bytes = crate::text::tests::package(&content, Some(&styles));
-    let a4 = craft_wordmodel::SectionProps { page_w: 595.3, page_h: 841.9, ..Default::default() };
+    let a4 = bharat_wordmodel::SectionProps { page_w: 595.3, page_h: 841.9, ..Default::default() };
     let d = crate::text::tests::import_on_ext("odt", &bytes, &a4).unwrap().unwrap();
     assert_eq!((d.last_section.page_w, d.last_section.page_h), (595.3, 841.9));
     assert_eq!((d.last_section.margin_top, d.last_section.margin_left), (72.0, 90.0));
@@ -151,7 +151,7 @@ fn a_document_without_a_page_layout_has_the_default_paper_and_no_margins() {
         "<office:document-content {}><office:body><office:text><text:p>x</text:p></office:text></office:body></office:document-content>",
         crate::text::tests::NS_T
     );
-    let a4 = craft_wordmodel::SectionProps { page_w: 595.3, page_h: 841.9, ..Default::default() };
+    let a4 = bharat_wordmodel::SectionProps { page_w: 595.3, page_h: 841.9, ..Default::default() };
     let d = crate::text::tests::import_on_ext("odt", &crate::text::tests::package(&content, None), &a4).unwrap().unwrap();
     let s = &d.last_section;
     assert_eq!((s.page_w, s.page_h), (595.3, 841.9));
@@ -222,10 +222,10 @@ fn a_page_borders_padding_keeps_the_text_where_it_was() {
     // 45 pt of padding inside it (more than Word's 31 pt border spacing, which is measured
     // differently): the text stays 72 pt from the edge, written and read back.
     let mut d = Document::new();
-    d.body = vec![craft_wordmodel::para_block(craft_wordmodel::Paragraph::with_text("x", Default::default()))];
-    let edge = craft_wordmodel::props::Border { style: BorderStyle::Single, width: 3.0, color: Some(Rgb(0x2f, 0x55, 0x97)), space: 24.0 };
+    d.body = vec![bharat_wordmodel::para_block(bharat_wordmodel::Paragraph::with_text("x", Default::default()))];
+    let edge = bharat_wordmodel::props::Border { style: BorderStyle::Single, width: 3.0, color: Some(Rgb(0x2f, 0x55, 0x97)), space: 24.0 };
     d.last_section.page_borders =
-        Some(craft_wordmodel::props::Borders { top: Some(edge), bottom: Some(edge), left: Some(edge), right: Some(edge), ..Default::default() });
+        Some(bharat_wordmodel::props::Borders { top: Some(edge), bottom: Some(edge), left: Some(edge), right: Some(edge), ..Default::default() });
     let back = crate::text::import(&crate::text::export(&d).unwrap()).unwrap();
     let s = &back.last_section;
     for m in [s.margin_top, s.margin_bottom, s.margin_left, s.margin_right] {

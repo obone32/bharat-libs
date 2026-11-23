@@ -1,4 +1,4 @@
-craft-dialogs
+bharat-dialogs
 =============
 
 Native file and message dialogs that never block the event loop. A request is queued, shown at the

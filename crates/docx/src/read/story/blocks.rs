@@ -127,9 +127,9 @@ impl Reader<'_> {
         if let Some(p) = last_para_mut(out, 0) {
             for o in sc.pending.drain(..) {
                 let props = p.runs.last().map(|r| r.props.clone()).unwrap_or_default();
-                p.text.push(craft_wordmodel::para::OBJ);
+                p.text.push(bharat_wordmodel::para::OBJ);
                 p.objects.push(o);
-                p.runs.push(Run { len: craft_wordmodel::para::OBJ.len_utf8(), props });
+                p.runs.push(Run { len: bharat_wordmodel::para::OBJ.len_utf8(), props });
             }
             p.normalize();
         }
@@ -292,7 +292,7 @@ impl Reader<'_> {
         PropChange::boxed(self.revision(RevisionKind::Format, ch), old)
     }
 
-    pub fn read_section(&mut self, s: &El, rels: &Rels) -> craft_wordmodel::SectionProps {
+    pub fn read_section(&mut self, s: &El, rels: &Rels) -> bharat_wordmodel::SectionProps {
         let (mut sp, refs) = sectpr(&self.pc, s);
         // §17.13.5.32: the section's properties before a tracked change (no header references).
         if let Some(ch) = s.child("w:sectPrChange") {
@@ -323,7 +323,7 @@ impl Reader<'_> {
     /// kept as the table's own. shortcut: they stay direct formatting (a table style applied later
     /// keeps them), until the model knows the file's default table style. A `w:tblCellMar` that sets
     /// only some sides keeps them: only the sides it omits become 0.
-    fn no_default_margins(&self, props: &mut craft_wordmodel::props::TableProps) {
+    fn no_default_margins(&self, props: &mut bharat_wordmodel::props::TableProps) {
         if self.no_default_table_style
             && props.cell_margins.is_none()
             && props.style.as_deref().and_then(|id| self.doc.styles.table_style(id)).is_none_or(|s| s.parts.cell_margins.is_none())
@@ -366,7 +366,7 @@ impl Reader<'_> {
                 let (mut props, hcont) = tc
                     .child("w:tcPr")
                     .map(|p| tcpr(&self.pc, p))
-                    .unwrap_or_else(|| (craft_wordmodel::props::CellProps { span: 1, ..Default::default() }, false));
+                    .unwrap_or_else(|| (bharat_wordmodel::props::CellProps { span: 1, ..Default::default() }, false));
                 if let Some(ch) = tc.child("w:tcPr").and_then(|p| p.child("w:tcPrChange")) {
                     let old = ch.child("w:tcPr").map(|o| tcpr(&self.pc, o).0).unwrap_or_default();
                     props.fmt_change = PropChange::boxed(self.revision(RevisionKind::Format, ch), old);

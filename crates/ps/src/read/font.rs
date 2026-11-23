@@ -32,7 +32,7 @@ fn substitute(ip: &mut Interp, font_name: &[u8]) -> R<PDict> {
     }
     d.put_name(b"CharStrings", Obj::Dict(PDict::new(1)));
     d.put_name(b"Private", Obj::Dict(PDict::new(1)));
-    d.put_name(b"CraftPsSubstitute", Obj::Bool(true));
+    d.put_name(b"BharatPsSubstitute", Obj::Bool(true));
     add_fid(ip, &d);
     Ok(d)
 }
@@ -329,7 +329,7 @@ fn estimated_width(font: &PDict, code: u8) -> (f64, f64) {
 
 /// A Type 1 glyph of `font` (cached), None for fonts without charstrings.
 fn outline(ip: &mut Interp, font: &PDict, code: u8) -> Option<std::rc::Rc<crate::read::type1::Glyph>> {
-    if font.get_name(b"CraftPsSubstitute").is_some() {
+    if font.get_name(b"BharatPsSubstitute").is_some() {
         return None;
     }
     let fid = match font.get_name(b"FID") {

@@ -828,7 +828,7 @@ where
 
             // Converting to triangles is lossy and can lead to gaps. To make this a bit better,
             // we slightly inflate the triangles.
-            // Craft patch: the inflated triangle is built anew, so its stored dot products
+            // Bharat patch: the inflated triangle is built anew, so its stored dot products
             // (and `kurbo_tri`) match its vertices; moving the points alone skewed the
             // barycentric coordinates by about 5 %.
             let inflate = |triangle: Triangle| {

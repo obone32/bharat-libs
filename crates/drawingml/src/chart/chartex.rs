@@ -2,7 +2,7 @@
 //! sunburst, histogram, Pareto and box & whisker. Their data sits in `cx:chartData` as levels of
 //! points, and each series names its layout (`layoutId`).
 
-use craft_xml::{El, Local, value};
+use bharat_xml::{El, Local, value};
 
 use super::read::rich_text;
 use crate::chart::{Chart, ChartType, Series};

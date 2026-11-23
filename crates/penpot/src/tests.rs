@@ -78,14 +78,14 @@ fn an_archive_opens_and_hands_out_its_members() {
 #[test]
 fn a_written_archive_reads_back() {
     let all = members();
-    let manifest = serde_json::to_vec(&manifest("craft-penpot/test", &[(FILE, "Advanced", json!(["components/v2"]))])).unwrap();
+    let manifest = serde_json::to_vec(&manifest("bharat-penpot/test", &[(FILE, "Advanced", json!(["components/v2"]))])).unwrap();
     let mut list: Vec<(&str, &[u8])> = vec![("manifest.json", &manifest)];
     list.extend(all.iter().skip(1).map(|(n, b)| (n.as_str(), b.as_slice())));
     let bytes = write_archive(list).unwrap();
     let mut a = Archive::open(&bytes).unwrap();
     assert_eq!(
         a.manifest,
-        json!({"type": "penpot/export-files", "version": 1, "generatedBy": "craft-penpot/test", "refer": "penpot",
+        json!({"type": "penpot/export-files", "version": 1, "generatedBy": "bharat-penpot/test", "refer": "penpot",
         "files": [{"id": FILE, "name": "Advanced", "features": ["components/v2"]}], "relations": []})
     );
     assert_eq!(a.page_shapes(FILE, PAGE).unwrap().len(), 2);
@@ -435,6 +435,6 @@ fn mangled_archives_never_panic() {
 /// before the archive is indexed.
 #[test]
 fn an_archive_declaring_too_many_members_is_refused_before_it_is_indexed() {
-    let bomb = craft_zip::zip64_entry_count_sample(MAX_ENTRIES as u64 + 1);
+    let bomb = bharat_zip::zip64_entry_count_sample(MAX_ENTRIES as u64 + 1);
     assert_eq!(Archive::open(&bomb).err(), Some(Error::Corrupt("too many ZIP members".into())));
 }

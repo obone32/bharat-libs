@@ -1,4 +1,4 @@
-//! The native decode path: craft-media's demuxers (ISO BMFF / QuickTime, Matroska / WebM), raw
+//! The native decode path: bharat-media's demuxers (ISO BMFF / QuickTime, Matroska / WebM), raw
 //! ADTS, AC-3 and MPEG audio streams, and WAV / AIFF PCM, feeding [`TrackDecoder`].
 //! [`Native::open`] answers `None` for a stream with no native codec (FLAC, Vorbis, ...) or a
 //! container these demuxers do not read; the caller then uses symphonia.
@@ -15,7 +15,7 @@ use super::source::{Src, io_error};
 use super::wav::{self, WavParse};
 use crate::track::{TrackDecoder, adts_format_of, adts_frame_count, adts_stream_header};
 use crate::{AudioBuffer, AudioError, AudioInfo, CodecId, CodecParams, Container, PcmFormat, Result, aac, ac3, mpa};
-use craft_media::{isobmff, matroska, ogg};
+use bharat_media::{isobmff, matroska, ogg};
 
 /// Corrupt packets tolerated before a stream that has produced nothing is an error.
 const MAX_ERRORS: usize = 1000;
@@ -1086,7 +1086,7 @@ pub(crate) fn damage(src: &Src<'_>, detected: Option<Container>) -> Option<Strin
     }
 }
 
-/// Why a craft-media demuxer could not read a file.
+/// Why a bharat-media demuxer could not read a file.
 enum Failure {
     /// The source failed to read.
     Io(std::io::Error),
@@ -1096,7 +1096,7 @@ enum Failure {
     Other,
 }
 
-/// A craft-media demuxer's result for the native path: the source's failure to read as
+/// A bharat-media demuxer's result for the native path: the source's failure to read as
 /// [`AudioError::Io`], and `None` when the demuxer does not read the file, so the other path
 /// tries it. Without symphonia there is no other path, so a damaged file is
 /// [`AudioError::Malformed`]; with it, the file is malformed when symphonia cannot read it either
@@ -1179,7 +1179,7 @@ mod tag_tests {
 #[cfg(test)]
 mod adts_tests {
     use crate::{AudioError, Container, DecodeOptions, Decoder, decode};
-    use craft_media::ByteSource;
+    use bharat_media::ByteSource;
 
     /// A frame of mono silence at sampling frequency index `sf_index`.
     fn frame(sf_index: u8) -> Vec<u8> {
@@ -1288,8 +1288,8 @@ mod adts_tests {
     /// half length.
     #[test]
     fn adts_framed_he_aac_in_mp4_with_core_durations_keeps_its_length() {
-        use craft_media::bitstream::BitWriter;
-        use craft_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
+        use bharat_media::bitstream::BitWriter;
+        use bharat_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
         // mono silence with SBR data in a fill element (implicit HE-AAC), at 22.05 kHz
         let mut bw = BitWriter::new();
         for (value, bits) in [(0, 7), (0, 22), (6, 3), (1, 4), (13, 4), (0, 4), (7, 3)] {
@@ -1313,8 +1313,8 @@ mod adts_tests {
     /// output frame per sample, and the frames in the samples read ahead show they fall short.
     #[test]
     fn adts_framed_he_aac_in_mp4_with_several_frames_per_sample_keeps_its_length() {
-        use craft_media::bitstream::BitWriter;
-        use craft_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
+        use bharat_media::bitstream::BitWriter;
+        use bharat_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
         let mut bw = BitWriter::new();
         for (value, bits) in [(0, 7), (0, 22), (6, 3), (1, 4), (13, 4), (0, 4), (7, 3)] {
             bw.write_bits(value, bits);
@@ -1336,7 +1336,7 @@ mod adts_tests {
     /// A short track's last sample, read ahead, can trim more than one of its frames.
     #[test]
     fn a_short_adts_framed_mp4_track_keeps_a_last_sample_trim_of_over_a_frame() {
-        use craft_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
+        use bharat_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
         let asc = crate::aac::AudioSpecificConfig::lc(3, 1).to_bytes().unwrap();
         let mut w = Mp4Writer::new(std::io::Cursor::new(Vec::new()), WriterOptions::new(Brand::Mp4)).unwrap();
         let track = w.add_track(TrackConfig::new(SampleEntry::aac(asc, 1, 48_000), 48_000)).unwrap();
@@ -1353,7 +1353,7 @@ mod adts_tests {
     /// AAC-LC samples of two ADTS frames each, timed correctly, still end at their durations.
     #[test]
     fn adts_framed_lc_in_mp4_with_several_frames_per_sample_keeps_its_trim() {
-        use craft_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
+        use bharat_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
         let asc = crate::aac::AudioSpecificConfig::lc(3, 1).to_bytes().unwrap();
         let mut w = Mp4Writer::new(std::io::Cursor::new(Vec::new()), WriterOptions::new(Brand::Mp4)).unwrap();
         let track = w.add_track(TrackConfig::new(SampleEntry::aac(asc, 1, 48_000), 48_000)).unwrap();
@@ -1370,7 +1370,7 @@ mod adts_tests {
     /// A sample of several ADTS frames past the lookahead still counts them all.
     #[test]
     fn a_later_mp4_sample_of_several_adts_frames_keeps_its_length() {
-        use craft_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
+        use bharat_media::isobmff::{Brand, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
         let asc = crate::aac::AudioSpecificConfig::lc(3, 1).to_bytes().unwrap();
         let mut w = Mp4Writer::new(std::io::Cursor::new(Vec::new()), WriterOptions::new(Brand::Mp4)).unwrap();
         let track = w.add_track(TrackConfig::new(SampleEntry::aac(asc, 1, 48_000), 48_000)).unwrap();
@@ -1394,7 +1394,7 @@ mod adts_tests {
     /// An escaped (uncompressed) stereo 16-bit ALAC packet of `chunk`, partial when shorter than
     /// `frame_length`.
     fn alac_escaped_stereo(chunk: &[[i16; 2]], frame_length: usize) -> Vec<u8> {
-        let mut w = craft_media::bitstream::BitWriter::new();
+        let mut w = bharat_media::bitstream::BitWriter::new();
         let partial = chunk.len() != frame_length;
         for (value, bits) in [(1, 3), (0, 4), (0, 12), (u32::from(partial) << 3 | 1, 4)] {
             w.write_bits(value, bits);
@@ -1414,7 +1414,7 @@ mod adts_tests {
     /// the short last packet included, and a seek lands on the exact frame.
     #[test]
     fn alac_in_mp4_decodes_and_seeks_natively() {
-        use craft_media::isobmff::{Brand, CodecConfig, FourCc, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
+        use bharat_media::isobmff::{Brand, CodecConfig, FourCc, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
         // Escaped (uncompressed) stereo 16-bit packets of 4 frames, the last one of 2.
         let frames: Vec<[i16; 2]> = (0..10).map(|i| [i * 100 - 300, -(i * 77)]).collect();
         let packet = |chunk: &[[i16; 2]]| alac_escaped_stereo(chunk, 4);
@@ -1440,7 +1440,7 @@ mod adts_tests {
     /// from the millisecond timestamps (packet 1 starts at frame 4096, stored as 85 ms = 4080).
     #[test]
     fn alac_in_matroska_seeks_to_the_exact_frame() {
-        use craft_media::matroska::{MkvWriter, MuxOptions, TrackKind, TrackSpec};
+        use bharat_media::matroska::{MkvWriter, MuxOptions, TrackKind, TrackSpec};
         let frames: Vec<[i16; 2]> = (0..10_000).map(|i| [i as i16, -(i as i16)]).collect();
         let mut spec = TrackSpec::new(TrackKind::Audio, "A_ALAC");
         spec.codec_private = crate::alac::SpecificConfig::new(48_000, 2, 16, 4096).to_bytes();
@@ -1466,7 +1466,7 @@ mod adts_tests {
     /// the exact frame.
     #[test]
     fn alac_in_matroska_seeks_past_a_short_packet() {
-        use craft_media::matroska::{MkvWriter, MuxOptions, TrackKind, TrackSpec};
+        use bharat_media::matroska::{MkvWriter, MuxOptions, TrackKind, TrackSpec};
         let frames: Vec<[i16; 2]> = (0..12_000).map(|i| [i as i16, -(i as i16)]).collect();
         let mut spec = TrackSpec::new(TrackKind::Audio, "A_ALAC");
         spec.codec_private = crate::alac::SpecificConfig::new(48_000, 2, 16, 4096).to_bytes();

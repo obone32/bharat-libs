@@ -3,8 +3,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::para::InlineObject;
-use craft_wordmodel::{Document, Paragraph, para_block};
+use bharat_wordmodel::para::InlineObject;
+use bharat_wordmodel::{Document, Paragraph, para_block};
 
 /// Every field in the body: (code, cached result).
 pub(super) fn fields(d: &Document) -> Vec<(String, String)> {
@@ -53,7 +53,7 @@ fn fields_open_as_fields_with_their_shown_text() {
     assert_eq!(got.iter().map(|(a, b)| (a.as_str(), b.as_str())).collect::<Vec<_>>(), want);
     // The text around the fields stays where it was.
     let p0 = d.body[0].as_para().unwrap();
-    assert_eq!(p0.text.replace(craft_wordmodel::para::OBJ, "#"), "Page # of #.");
+    assert_eq!(p0.text.replace(bharat_wordmodel::para::OBJ, "#"), "Page # of #.");
 }
 
 #[test]
@@ -86,13 +86,13 @@ fn a_fixed_date_is_a_locked_field_and_unknown_fields_are_plain_text() {
     assert_eq!(fields(&d).len(), 1);
 }
 
-fn field_para(parts: &[(&str, Option<&str>)]) -> std::sync::Arc<craft_wordmodel::Block> {
+fn field_para(parts: &[(&str, Option<&str>)]) -> std::sync::Arc<bharat_wordmodel::Block> {
     // Text pieces, and fields given as (code, Some(result)).
     let mut p = Paragraph::new();
     for (s, field) in parts {
         match field {
             Some(result) => {
-                p.text.push(craft_wordmodel::para::OBJ);
+                p.text.push(bharat_wordmodel::para::OBJ);
                 p.objects.push(InlineObject::Field {
                     instr: s.to_string(),
                     result: result.to_string(),
@@ -105,7 +105,7 @@ fn field_para(parts: &[(&str, Option<&str>)]) -> std::sync::Arc<craft_wordmodel:
             None => p.text.push_str(s),
         }
     }
-    p.runs = vec![craft_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: p.text.len(), props: Default::default() }];
     para_block(p)
 }
 
@@ -129,7 +129,7 @@ fn fields_round_trip() {
     let got: Vec<String> = fields(&back).into_iter().map(|(c, _)| c).collect();
     // The date keeps its picture (as a date style).
     assert_eq!(got, ["PAGE", "NUMPAGES", "DATE \\@ \"d MMMM yyyy\"", "TITLE", "PAGEREF intro \\h"]);
-    assert_eq!(back.body[0].as_para().unwrap().text.matches(craft_wordmodel::para::OBJ).count(), 5);
+    assert_eq!(back.body[0].as_para().unwrap().text.matches(bharat_wordmodel::para::OBJ).count(), 5);
 }
 
 #[test]
@@ -172,7 +172,7 @@ fn an_element_inside_a_field_leaves_the_formatting_after_it_alone() {
 #[test]
 fn a_paragraph_ending_inside_a_field_still_ends() {
     let d = import(&body("<text:p>a<text:page-number>1</text:p><text:p>b</text:p>")).unwrap();
-    let texts: Vec<String> = d.body.iter().filter_map(|b| b.as_para()).map(|p| p.text.replace(craft_wordmodel::para::OBJ, "#")).collect();
+    let texts: Vec<String> = d.body.iter().filter_map(|b| b.as_para()).map(|p| p.text.replace(bharat_wordmodel::para::OBJ, "#")).collect();
     assert_eq!(texts, ["a#", "b"]);
 }
 
@@ -201,7 +201,7 @@ fn custom_properties_and_user_fields_are_docproperty_fields() {
         .iter()
         .filter_map(|b| b.as_para())
         .flat_map(|p| p.objects.iter())
-        .filter_map(|o| if let craft_wordmodel::para::InlineObject::Field { instr, .. } = o { Some(instr.clone()) } else { None })
+        .filter_map(|o| if let bharat_wordmodel::para::InlineObject::Field { instr, .. } = o { Some(instr.clone()) } else { None })
         .collect();
     assert_eq!(instrs, [r#"DOCPROPERTY "Project""#, r#"DOCPROPERTY "Owner""#]);
     // Saved: the properties in `meta.xml` with `text:user-defined` fields, the user field as one.
@@ -274,7 +274,7 @@ fn variables_open_as_set_and_ref_fields() {
     .collect();
     assert_eq!(fields(&d), want);
     // The text around them, as LibreOffice shows it.
-    assert_eq!(d.body[0].as_para().unwrap().text.replace(craft_wordmodel::para::OBJ, ""), "Set: . Hidden: . Get: . Number: .");
+    assert_eq!(d.body[0].as_para().unwrap().text.replace(bharat_wordmodel::para::OBJ, ""), "Set: . Hidden: . Get: . Number: .");
 }
 
 #[test]

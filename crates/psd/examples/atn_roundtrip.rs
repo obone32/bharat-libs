@@ -1,9 +1,9 @@
 //! Check `.atn` files for byte-exact round trips: parse, write, compare, and show the first
-//! difference with its context: `cargo run -p craft-psd --example atn_roundtrip -- set.atn…`
+//! difference with its context: `cargo run -p bharat-psd --example atn_roundtrip -- set.atn…`
 //!
 //! Exit status 1 when any file differs or fails to parse.
 
-use craft_psd::atn;
+use bharat_psd::atn;
 
 fn hex(b: &[u8]) -> String {
     b.iter().map(|x| format!("{x:02x}")).collect::<Vec<_>>().join(" ")

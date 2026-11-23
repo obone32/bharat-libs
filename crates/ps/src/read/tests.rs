@@ -27,7 +27,7 @@ fn run(body: &str) -> (String, Converted) {
 #[test]
 fn eps_sections_and_deferred_bounding_boxes_use_craft_eps() {
     let ps = b"%!PS-Adobe-3.0 EPSF-3.0\n%%HiResBoundingBox: (atend)\n%%BoundingBox: (atend)\n%%EndComments\n%%Trailer\n%%BoundingBox: 0 0 100 50\n%%HiResBoundingBox: 0.5 1.5 90.5 40.5\n";
-    let wrapped = craft_eps::wrap(ps, Some(b"tiff"), None).unwrap();
+    let wrapped = bharat_eps::wrap(ps, Some(b"tiff"), None).unwrap();
     assert!(is_eps(&wrapped));
     assert_eq!(postscript_section(&wrapped), ps);
     assert_eq!(bounding_box(ps), Some([0.5, 1.5, 90.5, 40.5]));
@@ -38,18 +38,18 @@ fn bounding_box_keeps_the_historical_256k_header_scan() {
     let mut ps = b"%!PS-Adobe-3.0 EPSF-3.0\n".to_vec();
     ps.resize(ps.len() + (70 << 10), b' ');
     ps.extend_from_slice(b"\n%%BoundingBox: 0 0 20 10\n%%EndComments\n");
-    assert_eq!(craft_eps::Comments::read(&ps).page_box(), None);
+    assert_eq!(bharat_eps::Comments::read(&ps).page_box(), None);
     assert_eq!(bounding_box(&ps), Some([0.0, 0.0, 20.0, 10.0]));
 }
 
 #[test]
 fn damaged_dos_preview_does_not_hide_the_executable_postscript() {
     let ps = b"%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 0 10 10\n%%EndComments\n0 0 10 10 rectfill\n";
-    let mut wrapped = craft_eps::wrap(ps, Some(b"tiff"), None).unwrap();
+    let mut wrapped = bharat_eps::wrap(ps, Some(b"tiff"), None).unwrap();
     wrapped[20..24].copy_from_slice(&u32::MAX.to_le_bytes());
     wrapped[24..28].copy_from_slice(&1u32.to_le_bytes());
     assert_eq!(postscript_section(&wrapped), ps);
-    assert!(craft_eps::sections(&wrapped).is_err());
+    assert!(bharat_eps::sections(&wrapped).is_err());
     assert!(eps_to_pdf(&wrapped, Limits::default()).is_ok());
 }
 

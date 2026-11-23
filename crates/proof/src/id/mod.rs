@@ -141,7 +141,7 @@ mod tests {
         }
     }
 
-    /// Review follow-up (craft-libs#485's cased-letter rule): a part in a caseless script is no
+    /// Review follow-up (bharat-libs#485's cased-letter rule): a part in a caseless script is no
     /// abbreviation, so `buku-日本` is checked part by part; a part in capitals or without letters
     /// still is one (`KTP-nya`, `COVID-19` with numbers checked).
     #[test]

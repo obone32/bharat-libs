@@ -1,11 +1,11 @@
 # Panel docking
 
-`craft_ui::docking` lets the user arrange an app's panels: tab groups, docks with columns,
-splits, floating windows and iconic columns. craft-ui owns the layout model, the renderer and the
+`bharat_ui::docking` lets the user arrange an app's panels: tab groups, docks with columns,
+splits, floating windows and iconic columns. bharat-ui owns the layout model, the renderer and the
 gestures. The app owns panel contents, commands, document state and where layouts are saved.
 
 Office apps that draw their own document with a few task panes beside it use
-[`craft_ui::panes`](ui-panes.md) instead.
+[`bharat_ui::panes`](ui-panes.md) instead.
 
 ## Arrangements
 
@@ -56,7 +56,7 @@ heights.
 Change a layout only through `Action`s:
 
 ```rust
-use craft_ui::docking::{Action, Floating, Layout, Node, Placement};
+use bharat_ui::docking::{Action, Floating, Layout, Node, Placement};
 
 let mut layout = Layout {
     root: Some(Node::Tabs { panels: vec!["layers", "properties"], active: 0 }),
@@ -67,7 +67,7 @@ layout.apply(Action::Move {
     anchor: "layers",
     placement: Placement::Tab { before: Some("properties") },
 })?;
-# Ok::<(), craft_ui::docking::DockError>(())
+# Ok::<(), bharat_ui::docking::DockError>(())
 ```
 
 - `Move`, `MovePanel`, `Float` and `Close` act on one panel. `MoveGroup`, `MoveColumn` and
@@ -120,7 +120,7 @@ an optional saved arrangement for Reset, and `locked`.
 | `validate` | Check a loaded workspace before use. |
 
 With the `serde` feature, `Workspace`, `Layout` and `Action` serialize. Files without a version
-are v1 and load unchanged. craft-ui does not choose where files go; the app does.
+are v1 and load unchanged. bharat-ui does not choose where files go; the app does.
 
 ## Rendering
 
@@ -175,7 +175,7 @@ window's resize grip holds focus only while the pointer drags it, so the app's s
 canvas arrow keys work right after; one reached with Tab or F6 keeps its focus, and arrow keys
 resize it. Hovering focuses nothing. `begin_drag` hands a drag that started in the app's own chrome to the area.
 `docking::chrome` has the floating frame, the title bar and `drop_preview` (the drag ghost
-and region preview docking and `craft_ui::panes` both draw) for apps that draw their own windows.
+and region preview docking and `bharat_ui::panes` both draw) for apps that draw their own windows.
 
 ## Tab strips
 
@@ -391,7 +391,7 @@ A flyout fits its content the same way, without the title bar.
 ## Commands
 
 With the `serde` feature, `DockCommand<P>` is the shared control vocabulary. The app puts the
-command id under `"command"` in the params and deserializes them. craft-ui has no `serde_json`
+command id under `"command"` in the params and deserializes them. bharat-ui has no `serde_json`
 dependency.
 
 ```rust,ignore
@@ -523,7 +523,7 @@ windows from the first frame. `DockArea::native_windows(bool)` overrides the cho
   of its own windows: centered in the bar, its trailing side 8 pt in. AppKit's corner resize
   area covers the glyph's trailing half and takes presses there, so the hit area reaches 10 pt
   further toward the leading edge and down to the bar's bottom. Elsewhere the × is an 18 pt
-  square, its trailing side 7 pt in. With `CRAFT_DOCK_DEBUG_CLOSE=1` in the environment,
+  square, its trailing side 7 pt in. With `BHARAT_DOCK_DEBUG_CLOSE=1` in the environment,
   native windows outline the ×'s hit area in red and, on macOS, AppKit's resize areas in
   orange.
 - **Resize.** A movable window resizes from its edges and corners. On macOS AppKit does it,
@@ -576,7 +576,7 @@ windows from the first frame. `DockArea::native_windows(bool)` overrides the cho
   window. A window where any widget has keyboard focus forwards nothing, and an Escape that
   cancels a drag is not forwarded.
 - **Input methods.** egui's IME descriptor (`PlatformOutput::ime`) goes out from the pass of
-  the window whose editor has the keyboard. A `craft_ui::ime::Composer` in a panel body of a
+  the window whose editor has the keyboard. A `bharat_ui::ime::Composer` in a panel body of a
   native window records its descriptor while the window draws, and the dock area publishes it
   once per pass, after the window's last body. A body drawn after the editor's cannot clear it
   (egui-winit turns the IME off in a pass without one, ending the composition). A descriptor
@@ -789,21 +789,21 @@ button (`held`; a test sets it to `false` to report a release before egui does).
 over it (`hovered_files`) or dropped on it (`dropped_files`), and `with_native_input_hook`
 passes a hook to `DockArea::native_input_hook` every frame.
 
-`crates/ui/examples/docking_native.rs` (`cargo run -p craft-ui --example docking_native
+`crates/ui/examples/docking_native.rs` (`cargo run -p bharat-ui --example docking_native
 --features native-windows`) shows a dock with two native floating windows and prints every
 action and window place, for checking moves on a real window system.
 
-craft-ui's own tests in `crates/ui/tests/docking_workflows.rs`:
+bharat-ui's own tests in `crates/ui/tests/docking_workflows.rs`:
 
 - Load every app's v1 layout fixture, dock groups into a new dock, a bottom band and a seam,
   collapse and expand the column, float it by command and drag it back, then check the layout
   reads back as written.
 - Render Layers, Properties and Brushes panels with real content, and merge, detach and redock
-  Brushes by pointer at two widths, two scales and both themes. Set `CRAFT_UI_DOCK_VISUAL_DIR`
+  Brushes by pointer at two widths, two scales and both themes. Set `BHARAT_UI_DOCK_VISUAL_DIR`
   to keep the captures:
 
 ```sh
-CRAFT_UI_DOCK_VISUAL_DIR=/absolute/output/path cargo test -p craft-ui --test docking_workflows --all-features
+BHARAT_UI_DOCK_VISUAL_DIR=/absolute/output/path cargo test -p bharat-ui --test docking_workflows --all-features
 ```
 
 An adopting app still tests its own commands, contents, saved workspaces and themes.

@@ -1,4 +1,4 @@
-//! Decode an IVF AV1 file: `cargo run --release -p craft-video --features av1-decode,threads --example av1_av1dec -- in.ivf [out.yuv]`.
+//! Decode an IVF AV1 file: `cargo run --release -p bharat-video --features av1-decode,threads --example av1_av1dec -- in.ivf [out.yuv]`.
 //! Writes raw planar 16-bit little-endian output. `AV1_THREADS=n` sets the thread count,
 //! `AV1_LOOPS=k` decodes the file k times (benchmarking), `AV1_STATS=1` prints stage statistics.
 
@@ -17,10 +17,10 @@ fn main() {
     let hl = u16::from_le_bytes([data[6], data[7]]) as usize;
     let t0 = std::time::Instant::now();
     let mut n = 0;
-    let mut dec = if threads > 0 { craft_video::av1::decode::Decoder::with_threads(threads) } else { craft_video::av1::decode::Decoder::new() };
+    let mut dec = if threads > 0 { bharat_video::av1::decode::Decoder::with_threads(threads) } else { bharat_video::av1::decode::Decoder::new() };
     // AV1_DRAFT=1: draft mode (non-reference frames skip the in-loop filters).
     dec.set_draft(std::env::var_os("AV1_DRAFT").is_some());
-    let mut write = |pics: Vec<craft_video::av1::decode::Picture>| {
+    let mut write = |pics: Vec<bharat_video::av1::decode::Picture>| {
         for pic in pics {
             n += 1;
             if let Some(o) = out.as_mut() {

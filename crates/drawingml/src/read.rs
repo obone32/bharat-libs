@@ -11,7 +11,7 @@ use crate::text::{
 };
 use crate::{MediaId, Xfrm, emu_to_pt};
 
-use craft_xml::{El, Local, value};
+use bharat_xml::{El, Local, value};
 
 use crate::part::Source;
 

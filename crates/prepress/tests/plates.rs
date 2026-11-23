@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use craft_cms::{Intent, Profile, Transform, builtin};
-use craft_prepress::{Alternate, CmsConversion, Conversion, Error, Fallback, Ink, InkId, MAX_SPOT_INKS, Options, Process, plates};
+use bharat_cms::{Intent, Profile, Transform, builtin};
+use bharat_prepress::{Alternate, CmsConversion, Conversion, Error, Fallback, Ink, InkId, MAX_SPOT_INKS, Options, Process, plates};
 
 /// A 40 × 40 pt page with `content` and `resources`, `catalog` entries, and `objects`
 /// numbered from 5 (each a whole object body).
@@ -92,7 +92,7 @@ fn red_in(profile: &[u8]) -> [u8; 4] {
     cmyk.map(|v| (v * 255.0).round() as u8)
 }
 
-fn red_tints(p: &craft_prepress::Plates) -> [u8; 4] {
+fn red_tints(p: &bharat_prepress::Plates) -> [u8; 4] {
     Process::ALL.map(|c| p.tint(InkId::process(c), 20, 20).unwrap())
 }
 
@@ -107,7 +107,7 @@ fn process_color_converts_through_the_output_intent_else_the_fallback() {
     let red = |catalog: &str| page_pdf("1 0 0 rg 0 0 40 40 re f", "", catalog, &[stream("/N 4", synthetic)]);
 
     let p = plates(&red(intent), 0, 72.0, &Options::default()).unwrap();
-    let profile = craft_cms::synth::DESCRIPTION.to_string();
+    let profile = bharat_cms::synth::DESCRIPTION.to_string();
     assert_eq!(p.conversion, Conversion::OutputIntent { profile: profile.clone(), condition: Some("Synthetic press".into()) });
     let expected = red_in(synthetic);
     assert!(near(red_tints(&p), expected), "{:?}, the output intent prints {expected:?}", red_tints(&p));
@@ -175,7 +175,7 @@ fn lab_colors_convert_through_the_profile_and_lab_white_is_paper() {
     let p = plates(&pdf, 0, 72.0, &Options::default()).unwrap();
     let at = |x| Process::ALL.map(|c| p.tint(InkId::process(c), x, 20).unwrap());
     let fogra = Profile::parse(builtin::COATED_FOGRA39_ICC).unwrap();
-    let t = Transform::new(craft_cms::Builtin::LabD50.profile(), &fogra, Intent::RelativeColorimetric, false).unwrap();
+    let t = Transform::new(bharat_cms::Builtin::LabD50.profile(), &fogra, Intent::RelativeColorimetric, false).unwrap();
     let mut cmyk = [0.0_f32; 4];
     t.convert_f32(&[0.5, 148.0 / 255.0, 118.0 / 255.0], 3, &mut cmyk, 4, false).unwrap();
     let expected = cmyk.map(|v| (v * 255.0).round() as u8);
@@ -184,9 +184,9 @@ fn lab_colors_convert_through_the_profile_and_lab_white_is_paper() {
 }
 
 /// A 60 × 10 pt page written by the PDF writer, with a 10 pt wide fill of each color.
-fn written(colors: Vec<craft_pdf::write::backend::color::Color>) -> Vec<u8> {
-    use craft_pdf::write::backend::{geom, page::PageSettings, paint::Fill};
-    let mut writer = craft_pdf::write::Writer::new(Default::default(), Default::default());
+fn written(colors: Vec<bharat_pdf::write::backend::color::Color>) -> Vec<u8> {
+    use bharat_pdf::write::backend::{geom, page::PageSettings, paint::Fill};
+    let mut writer = bharat_pdf::write::Writer::new(Default::default(), Default::default());
     let mut page = writer.document_mut().start_page_with(PageSettings::new(geom::Size::from_wh(60.0, 10.0).unwrap()));
     let mut surface = page.surface();
     for (i, color) in colors.into_iter().enumerate() {
@@ -202,8 +202,8 @@ fn written(colors: Vec<craft_pdf::write::backend::color::Color>) -> Vec<u8> {
 
 /// The page's color space resources as (family, colorant names), sorted.
 fn color_spaces(pdf: &[u8]) -> Vec<(String, Vec<String>)> {
-    use craft_pdf::syntax::object::{Array, Name, Object};
-    let pdf = craft_pdf::syntax::Pdf::new(Arc::new(pdf.to_vec())).unwrap();
+    use bharat_pdf::syntax::object::{Array, Name, Object};
+    let pdf = bharat_pdf::syntax::Pdf::new(Arc::new(pdf.to_vec())).unwrap();
     let page = pdf.pages().iter().next().unwrap();
     let spaces = &page.resources().color_spaces;
     let mut out: Vec<(String, Vec<String>)> = spaces
@@ -226,7 +226,7 @@ fn color_spaces(pdf: &[u8]) -> Vec<(String, Vec<String>)> {
 
 #[test]
 fn ink_colors_write_as_cmyk_separation_or_device_n_and_separate_onto_their_plates() {
-    use craft_prepress::{InkColor, InkSet, Spot, to_pdf_color};
+    use bharat_prepress::{InkColor, InkSet, Spot, to_pdf_color};
     let mut inks = InkSet::new();
     let gold = inks.add(Ink::Spot(Spot { name: "Gold".into(), alternate: Alternate::Cmyk([0.0, 0.3, 1.0, 0.0]), solidity: None })).unwrap();
     let teal = inks.add(Ink::Spot(Spot { name: "Teal".into(), alternate: Alternate::Lab([55.0, -40.0, -10.0]), solidity: None })).unwrap();

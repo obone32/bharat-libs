@@ -3,7 +3,7 @@
 
 use crate::common;
 use common::*;
-use craft_image_codecs::*;
+use bharat_image_codecs::*;
 
 // ---------------------------------------------------------------------------
 // Symmetric guarantee
@@ -212,7 +212,7 @@ fn detect_magic_iff() {
     assert_eq!(from_extension("art.ilbm"), Some(Format::Iff));
     assert!(caps(Format::Iff).read && caps(Format::Iff).write, "IFF is read and written");
     assert!(caps(Format::Iff).alpha);
-    assert!(caps(Format::Iff).layouts.contains(&craft_image_codecs::ChannelLayout::Rgba));
+    assert!(caps(Format::Iff).layouts.contains(&bharat_image_codecs::ChannelLayout::Rgba));
     assert!(!ASYMMETRIC_EXCEPTIONS.iter().any(|(f, _)| *f == Format::Iff));
     assert_eq!(Format::Iff.max_dimensions(), Some((65535, 65535)));
     // A bare FORM without a bitmap type is not IFF.
@@ -221,7 +221,7 @@ fn detect_magic_iff() {
 }
 #[test]
 fn detect_magic_jpeg_ls() {
-    use craft_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
+    use bharat_image_codecs::{ChannelLayout, EncodeOptions, Image, encode};
     let img = Image::from_u8(5, 3, ChannelLayout::Gray, (0..15).collect()).unwrap();
     let bytes = encode(&img, Format::JpegLs, &EncodeOptions::default()).unwrap();
     assert_eq!(detect(&bytes), Some(Format::JpegLs));

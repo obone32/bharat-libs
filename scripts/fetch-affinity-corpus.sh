@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Fetch the public Affinity documents craft-affinity's corpus tests read into DIR (default
+# Fetch the public Affinity documents bharat-affinity's corpus tests read into DIR (default
 # target/fixtures/affinity), each from its upstream repository at a pinned commit and checked
 # against the SHA-256 in crates/affinity/tests/support/corpus.tsv. They are test data under
 # CC0, MIT or Apache-2.0 (the licence of each is in that file), never committed.
 #
-# Run the tests on them with AFFINITY_CORPUS=DIR cargo test -p craft-affinity --all-features.
+# Run the tests on them with AFFINITY_CORPUS=DIR cargo test -p bharat-affinity --all-features.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

@@ -2,7 +2,7 @@
 
 use std::collections::{HashMap, HashSet};
 
-use craft_xml::Writer;
+use bharat_xml::Writer;
 
 use crate::name::{normalize, rels_path};
 use crate::{CT_RELATIONSHIPS, Error, NS_CONTENT_TYPES, NS_RELATIONSHIPS, RT_BASE};
@@ -28,7 +28,7 @@ pub fn compression_for(name: &str) -> Compression {
 /// (1980) timestamp on every entry.
 #[derive(Default)]
 pub struct ZipOut {
-    zip: craft_zip::Writer,
+    zip: bharat_zip::Writer,
 }
 
 impl ZipOut {
@@ -39,8 +39,8 @@ impl ZipOut {
     /// Adds an entry. The caller keeps names unique.
     pub fn add(&mut self, name: &str, data: &[u8], compression: Compression) -> Result<(), Error> {
         let compression = match compression {
-            Compression::Deflate => craft_zip::Compression::Deflated,
-            Compression::Store => craft_zip::Compression::Stored,
+            Compression::Deflate => bharat_zip::Compression::Deflated,
+            Compression::Store => bharat_zip::Compression::Stored,
         };
         self.zip.add(name, data, compression).map_err(crate::zip_error)
     }

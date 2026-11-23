@@ -1,5 +1,5 @@
 [package]
-name = "craft-pcraft-format"
+name = "bharat-pcraft-format"
 description = "The envelope of PhotoCraft's .pcraft bundle: the manifest with the document as a type parameter, tile references, entry paths, decode limits and the migration runner."
 version.workspace = true
 edition.workspace = true

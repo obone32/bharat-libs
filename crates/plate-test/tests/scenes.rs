@@ -1,8 +1,8 @@
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_plate_test::reference::{self, Context};
-use craft_plate_test::scene::{self, Scene};
-use craft_plate_test::{Error, structure};
+use bharat_plate_test::reference::{self, Context};
+use bharat_plate_test::scene::{self, Scene};
+use bharat_plate_test::{Error, structure};
 
 fn scenes() -> Vec<Scene> {
     scene::load_dir(&scene::scenes_dir()).unwrap()

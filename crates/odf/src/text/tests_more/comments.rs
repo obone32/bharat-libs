@@ -3,8 +3,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::para::{InlineObject, OBJ};
-use craft_wordmodel::{Document, StoryRef};
+use bharat_wordmodel::para::{InlineObject, OBJ};
+use bharat_wordmodel::{Document, StoryRef};
 
 const NS_C: &str = r#"xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0""#;
 

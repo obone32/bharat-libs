@@ -1,12 +1,12 @@
-# craft-ps
+# bharat-ps
 
-PostScript and EPS for the Craft apps. No feature is enabled by default.
+PostScript and EPS for the Bharat apps. No feature is enabled by default.
 
 | Feature | Provides |
 | --- | --- |
 | `read` | An EPS interpreter: runs the program and returns what it paints as a one-page PDF |
 
-Writing PostScript and EPS (craft-libs #115) is planned as a separate feature next to `read`.
+Writing PostScript and EPS (bharat-libs #115) is planned as a separate feature next to `read`.
 
 ## Reading EPS
 
@@ -15,7 +15,7 @@ returns a one-page PDF 1.4 the size of its bounding box: vectors stay vectors, C
 colours stay as they are, so an app can draw and export the result as a placed PDF.
 `read::cached_pdf` converts with the default limits and remembers the result by content.
 `is_eps`, `bounding_box` and `postscript_section` read the file without running it.
-EPS binary sections and DSC comments are read by `craft-eps`.
+EPS binary sections and DSC comments are read by `bharat-eps`.
 
 It is written from the PostScript Language Reference (third edition), the EPS specification,
 the Type 1 Font Format and Adobe Technical Notes 5012 (Type 42), 5176 (CFF) and 5177 (Type 2
@@ -46,5 +46,5 @@ into the limits ends within seconds. By default a program that fails or exceeds 
 painting anything gives `Err`; setting `keep_unpainted` returns a blank page with the warning.
 One that fails later keeps what it painted (with a warning).
 
-`cargo run -p craft-ps --features read --example eps2pdf -- in.eps out.pdf` converts one file
+`cargo run -p bharat-ps --features read --example eps2pdf -- in.eps out.pdf` converts one file
 and prints the steps and memory it used.

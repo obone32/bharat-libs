@@ -1,6 +1,6 @@
-# craft-jsonrpc
+# bharat-jsonrpc
 
-`craft-jsonrpc` provides bounded JSON-RPC 2.0 server envelopes independently of a transport or an
+`bharat-jsonrpc` provides bounded JSON-RPC 2.0 server envelopes independently of a transport or an
 application's method router. It can read a bounded newline-delimited message, parse it from bytes,
 check request IDs and batch sizes, dispatch requests and notifications separately, and build
 response envelopes. It does not start a server, choose an MCP protocol version, or interpret tool

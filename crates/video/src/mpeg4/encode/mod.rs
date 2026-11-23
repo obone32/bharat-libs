@@ -11,7 +11,7 @@
 //! - Rate control: a constant quantiser, or a 1-pass average bitrate.
 //!
 //! ```no_run
-//! use craft_video::mpeg4::{Encoder, EncoderConfig, RateControl, YuvFrame};
+//! use bharat_video::mpeg4::{Encoder, EncoderConfig, RateControl, YuvFrame};
 //! let mut cfg = EncoderConfig::new(640, 360, 25, 1);
 //! cfg.rate = RateControl::Quant(5);
 //! let mut enc = Encoder::new(cfg).unwrap();
@@ -30,8 +30,8 @@ mod tables;
 #[cfg(test)]
 mod tests;
 
-use craft_media::bitstream::BitWriter;
-use craft_media::{CodecId, CodecParams};
+use bharat_media::bitstream::BitWriter;
+use bharat_media::{CodecId, CodecParams};
 
 use headers::{Sequence, Timing, VopHeader};
 use picture::{Frame, PictureCoder, Plane};

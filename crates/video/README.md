@@ -1,6 +1,6 @@
-# craft-video
+# bharat-video
 
-Clean-room pure-Rust video codecs for the Craft apps, one feature per codec: DNxHD/DNxHR, VP8,
+Clean-room pure-Rust video codecs for the Bharat apps, one feature per codec: DNxHD/DNxHR, VP8,
 ProRes and H.264.
 
 - Input and output are byte slices and planar sample buffers; the crate opens no files itself
@@ -9,8 +9,8 @@ ProRes and H.264.
   ITU-T H.264).
 - Tested against ffmpeg as an external oracle with roundtrips, hostile fuzzing, and conformance vectors.
   No `unsafe`, no panics on corrupt streams. Builds for `wasm32-unknown-unknown`.
-- Containers (MP4/MOV, Matroska/WebM), bit-level I/O (`craft_media::bitstream`) and shared
-  identifiers (`CodecId`, `CodecParams`) come from [`craft-media`](../media/README.md).
+- Containers (MP4/MOV, Matroska/WebM), bit-level I/O (`bharat_media::bitstream`) and shared
+  identifiers (`CodecId`, `CodecParams`) come from [`bharat-media`](../media/README.md).
 
 ## Cargo features
 

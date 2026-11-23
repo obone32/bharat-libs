@@ -1,6 +1,6 @@
 //! Limits and hostile input.
 
-use craft_captions::{Cue, Document, Error, Format, MAX_INPUT, TICKS_PER_SECOND, Tick, WriteOptions, parse, write};
+use bharat_captions::{Cue, Document, Error, Format, MAX_INPUT, TICKS_PER_SECOND, Tick, WriteOptions, parse, write};
 
 fn doc() -> Document {
     let cue = |s: i64, text: &str| Cue {
@@ -58,5 +58,5 @@ fn mcc_and_stl_name_the_given_program() {
     assert_eq!(stl.get(16..48), Some(&b"MyApp                           "[..]));
     assert_eq!(parse(&stl, Format::Stl).unwrap().cues.len(), 2);
     let default = String::from_utf8(write(&doc(), Format::Mcc, WriteOptions::default())).unwrap();
-    assert!(default.contains("Creation Program=craft-captions\n"));
+    assert!(default.contains("Creation Program=bharat-captions\n"));
 }

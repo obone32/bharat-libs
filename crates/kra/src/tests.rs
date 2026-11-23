@@ -379,7 +379,7 @@ fn the_mimetype_is_read_from_a_leading_stored_entry_only() {
 /// before the archive is indexed.
 #[test]
 fn an_archive_declaring_too_many_entries_is_refused_before_it_is_indexed() {
-    let bomb = craft_zip::zip64_entry_count_sample(MAX_ENTRIES + 1);
+    let bomb = bharat_zip::zip64_entry_count_sample(MAX_ENTRIES + 1);
     assert_eq!(
         Archive::open(&bomb).err(),
         Some(Error::Invalid(format!("the archive declares {} entries, more than {MAX_ENTRIES}", MAX_ENTRIES + 1)))
@@ -397,7 +397,7 @@ fn pixel_files_share_one_document_wide_budget() {
     let bytes = archive(&doc, &files);
     // The mimetype and maindoc reads are charged too: room for one 64-byte pixel file and 16 bytes.
     let total = doc.len() as u64 + MIMETYPE.len() as u64 + 64 + 16;
-    let limits = craft_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes: total };
+    let limits = bharat_zip::Limits { max_entries: MAX_ENTRIES, max_total_bytes: total };
     let mut archive = Archive::open_with(&bytes, limits).unwrap();
     assert_eq!(archive.layer_file("x").unwrap().unwrap(), vec![3; 64]);
     assert!(matches!(archive.layer_file("y"), Err(Error::Invalid(_))), "the second pixel file is past the total");

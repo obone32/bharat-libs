@@ -652,7 +652,7 @@ fn scan(col: &mut Collector, chars: &[char], map: &[Vec<char>]) {
 mod tests {
     use super::*;
 
-    /// craft-libs#487 review: MAP variants are made by number of changes, so when a long word has
+    /// bharat-libs#487 review: MAP variants are made by number of changes, so when a long word has
     /// more than [`MAX_MAP_VARIANTS`] of them the cap drops the most-changed ones, never a single
     /// slip (here the first letter's, which depth-first order reached last).
     #[test]
@@ -668,7 +668,7 @@ mod tests {
         assert!(out.windows(2).all(|w| changed(&w[0].0) <= changed(&w[1].0)), "fewest changes first");
     }
 
-    /// craft-libs#490 review: a suggestion recased to capitals keeps `ß` (`STRAßE`, right with or
+    /// bharat-libs#490 review: a suggestion recased to capitals keeps `ß` (`STRAßE`, right with or
     /// without CHECKSHARPS); under CHECKSHARPS the SS form comes first, and a KEEPCASE `ß` word may
     /// be capitalized or written in capitals with SS. Expected lists are the hunspell 1.7.5 CLI's
     /// on the same files; every suggestion is right.
@@ -693,7 +693,7 @@ mod tests {
         }
     }
 
-    /// craft-libs#489 review repros: OCONV applies to a suggestion after its case is set, case
+    /// bharat-libs#489 review repros: OCONV applies to a suggestion after its case is set, case
     /// sensitively, as the hunspell 1.7.5 CLI answers on the same files (`KBT` → `KAT`, not
     /// `K’T`), and every suggestion is right.
     #[test]
@@ -720,7 +720,7 @@ mod tests {
         }
     }
 
-    /// craft-libs#489 review: 65,536 ICONV pairs on one first character cost one hash lookup per
+    /// bharat-libs#489 review: 65,536 ICONV pairs on one first character cost one hash lookup per
     /// prefix, not a scan of the table, per position of a long word and per suggestion.
     #[test]
     fn a_huge_conversion_table_on_one_character_stays_fast() {
@@ -817,7 +817,7 @@ mod tests {
         PFX j' Y 1\nPFX j' 0 j' .\nPFX l' Y 1\nPFX l' 0 l' .\n";
     const FR_DIC: &str = "5\nadore/j'\nami/l'\njade\nj\nl\n";
 
-    /// Craft-proof bug: French `Jadore` was offered `Adore, J adore, Jade` but never `J’adore`. A
+    /// Bharat-proof bug: French `Jadore` was offered `Adore, J adore, Jade` but never `J’adore`. A
     /// missing apostrophe the dictionary accepts comes before the missing space, in the
     /// writer's case and with the dictionary's apostrophe.
     #[test]

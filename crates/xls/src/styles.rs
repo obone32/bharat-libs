@@ -9,7 +9,7 @@ use crate::model::{
     Alignment, BorderLine, BorderStyle, Borders, CellFormat, Color, Fill, Font, HAlign, Pattern, Script, Underline, VAlign, Workbook,
 };
 use crate::records::Cursor;
-use craft_sheet::{DEFAULT_PALETTE, builtin_format};
+use bharat_sheet::{DEFAULT_PALETTE, builtin_format};
 
 /// Font records kept at most ([MS-XLS] FontIndex allows indexes up to 1022).
 const MAX_FONTS: usize = 1024;

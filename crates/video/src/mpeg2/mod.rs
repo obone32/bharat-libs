@@ -13,7 +13,7 @@
 //!   field order, repeat-first-field, picture type and colour description.
 //!
 //! ```no_run
-//! let mut dec = craft_video::mpeg2::Decoder::new();
+//! let mut dec = bharat_video::mpeg2::Decoder::new();
 //! # let access_units: Vec<(Vec<u8>, i64)> = vec![];
 //! for (au, pts) in access_units {
 //!     for pic in dec.decode(&au, pts)? {
@@ -21,7 +21,7 @@
 //!     }
 //! }
 //! let rest = dec.flush();
-//! # Ok::<(), craft_video::mpeg2::Error>(())
+//! # Ok::<(), bharat_video::mpeg2::Error>(())
 //! ```
 
 #![allow(clippy::needless_range_loop, clippy::type_complexity)]

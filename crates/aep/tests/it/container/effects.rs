@@ -2,7 +2,7 @@
 //! against the values the corpus was made with (its MANIFEST).
 
 use crate::container::helpers::{base_layer, first_comp, open};
-use craft_aep::{Effect, ParamKind, ParamValue, Project};
+use bharat_aep::{Effect, ParamKind, ParamValue, Project};
 
 /// Runs `f` on the single effect of the solid `L` in a fixture.
 fn with_effect<R>(name: &str, f: impl FnOnce(&Effect<'_, '_>) -> R) -> Option<R> {
@@ -10,7 +10,7 @@ fn with_effect<R>(name: &str, f: impl FnOnce(&Effect<'_, '_>) -> R) -> Option<R>
 }
 
 /// Runs `f` on the project, the solid `L` and its single effect in a fixture.
-fn with_effect_in<R>(name: &str, f: impl FnOnce(&Project<'_, '_>, &craft_aep::Layer<'_, '_>, &Effect<'_, '_>) -> R) -> Option<R> {
+fn with_effect_in<R>(name: &str, f: impl FnOnce(&Project<'_, '_>, &bharat_aep::Layer<'_, '_>, &Effect<'_, '_>) -> R) -> Option<R> {
     Some({
         let bytes = crate::common::try_fixture(name)?;
         let file = open(&bytes);
@@ -123,7 +123,7 @@ fn drop_shadow_defaults_come_from_pard() {
 
 // ---------------------------------------------------------------------------- batch 2 (defaults and values)
 
-fn param<'f, 'a>(e: &Effect<'f, 'a>, name: &str) -> craft_aep::EffectParam<'f, 'a> {
+fn param<'f, 'a>(e: &Effect<'f, 'a>, name: &str) -> bharat_aep::EffectParam<'f, 'a> {
     e.params().into_iter().find(|p| p.name == name).unwrap_or_else(|| panic!("no parameter {name}"))
 }
 
@@ -245,13 +245,13 @@ fn curves_and_mesh_warp_data() {
     ] {
         let bytes = fixture!(name);
         let file = open(&bytes);
-        let project = craft_aep::Project::new(&file).expect("project");
+        let project = bharat_aep::Project::new(&file).expect("project");
         let comp = first_comp(&project);
         let fx = comp.layers().flat_map(|l| l.effects()).find(|e| e.match_name() == "ADBE CurvesCustom").expect("curves");
         let data = fx.arbitrary_data("ADBE CurvesCustom-0001").expect("data");
-        let d = craft_aep::CurvesData::parse(data).expect("parse");
+        let d = bharat_aep::CurvesData::parse(data).expect("parse");
         assert_eq!(d.curves[curve], points, "{name}");
-        assert!(d.curves.iter().enumerate().all(|(i, c)| i == curve || c.as_slice() == craft_aep::CURVE_IDENTITY), "{name}");
+        assert!(d.curves.iter().enumerate().all(|(i, c)| i == curve || c.as_slice() == bharat_aep::CURVE_IDENTITY), "{name}");
         // Rebuilt from the points, the data is the stored data byte for byte.
         assert_eq!(d.to_bytes().as_deref(), Some(data), "{name}");
     }
@@ -259,15 +259,15 @@ fn curves_and_mesh_warp_data() {
     // its handles; the others at their default.
     let bytes = fixture!("985-meshwarp-3x3-vertex-moved-on-S.aep");
     let file = open(&bytes);
-    let project = craft_aep::Project::new(&file).expect("project");
+    let project = bharat_aep::Project::new(&file).expect("project");
     let comp = first_comp(&project);
     let fx = comp.layers().flat_map(|l| l.effects()).find(|e| e.match_name() == "ADBE MESH WARP").expect("mesh");
     let data = fx.arbitrary_data("ADBE MESH WARP-0004").expect("data");
-    let m = craft_aep::MeshData::parse(data).expect("parse");
+    let m = bharat_aep::MeshData::parse(data).expect("parse");
     assert_eq!((m.columns, m.rows, m.vertices.len()), (3, 3, 16));
     for (k, v) in m.vertices.iter().enumerate() {
         let (i, j) = (k as u32 % 4, k as u32 / 4);
-        let d = craft_aep::MeshData::default_vertex(3, 3, i, j);
+        let d = bharat_aep::MeshData::default_vertex(3, 3, i, j);
         let (dx, dy) = if (i, j) == (2, 2) { (132.0 / 1920.0, -2.0 / 1080.0) } else { (0.0, 0.0) };
         for (a, b) in v.iter().zip(&d) {
             let moved = if *b == [0.0, 0.0] { [0.0, 0.0] } else { [b[0] + dx, b[1] + dy] };
