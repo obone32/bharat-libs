@@ -216,19 +216,19 @@ impl Limits {
     /// Validates declared dimensions for an output buffer of the given layout and sample type.
     pub fn check(&self, width: u32, height: u32, layout: ChannelLayout, sample: SampleType) -> Result<(), CodecError> {
         let layout = match layout {
-            ChannelLayout::Gray => craft_image_codecs::ChannelLayout::Gray,
-            ChannelLayout::GrayA => craft_image_codecs::ChannelLayout::GrayA,
-            ChannelLayout::Rgb => craft_image_codecs::ChannelLayout::Rgb,
-            ChannelLayout::Rgba => craft_image_codecs::ChannelLayout::Rgba,
-            ChannelLayout::Cmyk => craft_image_codecs::ChannelLayout::Cmyk,
-            ChannelLayout::CmykA => craft_image_codecs::ChannelLayout::CmykA,
+            ChannelLayout::Gray => bharat_image_codecs::ChannelLayout::Gray,
+            ChannelLayout::GrayA => bharat_image_codecs::ChannelLayout::GrayA,
+            ChannelLayout::Rgb => bharat_image_codecs::ChannelLayout::Rgb,
+            ChannelLayout::Rgba => bharat_image_codecs::ChannelLayout::Rgba,
+            ChannelLayout::Cmyk => bharat_image_codecs::ChannelLayout::Cmyk,
+            ChannelLayout::CmykA => bharat_image_codecs::ChannelLayout::CmykA,
         };
         let sample = match sample {
-            SampleType::U8 => craft_image_codecs::SampleType::U8,
-            SampleType::U16 => craft_image_codecs::SampleType::U16,
-            SampleType::F32 => craft_image_codecs::SampleType::F32,
+            SampleType::U8 => bharat_image_codecs::SampleType::U8,
+            SampleType::U16 => bharat_image_codecs::SampleType::U16,
+            SampleType::F32 => bharat_image_codecs::SampleType::F32,
         };
-        craft_image_codecs::Limits::new(self.max_width, self.max_height, self.max_pixels, self.max_alloc)
+        bharat_image_codecs::Limits::new(self.max_width, self.max_height, self.max_pixels, self.max_alloc)
             .check(width, height, layout, sample)
             .map_err(crate::bridge::from_shared_error)
     }
@@ -237,7 +237,7 @@ impl Limits {
     /// `declared_bytes` of stored image data when the compression never beats `max_ratio`:1.
     /// Called before the output buffer is allocated. 1 MiB of slack leaves tiny images alone.
     pub fn check_plausible(declared_bytes: u64, file_len: usize, max_ratio: u64) -> Result<(), CodecError> {
-        craft_image_codecs::Limits::check_plausible(declared_bytes, file_len, max_ratio).map_err(crate::bridge::from_shared_error)
+        bharat_image_codecs::Limits::check_plausible(declared_bytes, file_len, max_ratio).map_err(crate::bridge::from_shared_error)
     }
 }
 

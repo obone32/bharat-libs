@@ -1,5 +1,5 @@
 [package]
-name = "craft-gpu"
+name = "bharat-gpu"
 description = "Provider-neutral GPU traits, GpuJob envelope, and registry (no vendor IO)"
 version.workspace = true
 edition.workspace = true

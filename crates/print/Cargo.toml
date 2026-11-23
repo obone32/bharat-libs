@@ -1,21 +1,21 @@
 [package]
-name = "craft-print"
+name = "bharat-print"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-description = "System PDF print spooler for the Craft apps: CUPS and Windows"
+description = "System PDF print spooler for the Bharat apps: CUPS and Windows"
 
 [dependencies]
 # Safe API; Win32 calls are isolated in this maintained MIT OR Apache-2.0 dependency.
 # Keep the public rgb re-export at main's GDI revision: a different Git rev gives
 # downstream GDI values a different Rust type identity even when the code is unchanged.
 # PDF loader updates below are independent of this public transport API.
-craft-winprint-gdi = { git = "https://github.com/storytold/winprint.rs", rev = "64e7afd4d1483512385012c340ecaaaf0f3beb7f" }
+bharat-winprint-gdi = { git = "https://github.com/obone32/bharat-winprint", rev = "bbc2899849f4deb204a1fe7e8188843ea1059fd6" }
 # Says why the printer list is empty when lpstat can't run (e.g. a Flatpak without CUPS tools),
 # and why a job went on with the paper the request names while the driver reported only one side
-# of it (storytold/craft-libs#7230).
+# of it (obone32/bharat-libs#7230).
 log = "0.4"
 
 [lints]
@@ -37,7 +37,7 @@ workspace = true
 # review before bumping. The settings chosen in a driver's own dialog become a ticket through
 # `PrintTicket::from_dev_mode` (winprint.rs#24, pinned at its merge commit on winprint.rs's
 # `main`).
-winprint = { git = "https://github.com/storytold/winprint.rs", rev = "8ae097ef941b432b0e7671b1ec3a506800e65e57", default-features = false }
+winprint = { git = "https://github.com/obone32/bharat-winprint", rev = "8ae097ef941b432b0e7671b1ec3a506800e65e57", default-features = false }
 # GetDefaultPrinter (MIT).
 winsafe = { version = "0.0.29", default-features = false, features = ["winspool"] }
 # The job file's private folder.

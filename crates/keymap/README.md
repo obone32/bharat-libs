@@ -1,6 +1,6 @@
-# Craft Keymap
+# Bharat Keymap
 
-`craft-keymap` holds the data and logic for keyboard bindings in the Craft apps: chords and their
+`bharat-keymap` holds the data and logic for keyboard bindings in the Bharat apps: chords and their
 text forms, bindings from chords to commands, scopes, conflicts, user overrides, named sets, an
 import pipeline for other applications' shortcut sets, and an editor model. Each application
 supplies its command catalog, its file-format readers and its UI.
@@ -17,8 +17,8 @@ supplies its command catalog, its file-format readers and its UI.
 - Reserved chords are opt-in. A keymap reserves no chord unless the app passes a list to
   `Keymap::with_reserved`, e.g. `reserved::system(platform)` for the operating system's window
   switching and closing chords. A reserved chord cannot be assigned or bound.
-- Dependencies: `serde` and `serde_json`; `egui` with the `egui` feature; `craft-ui` and
-  `craft-i18n` with the `ui` feature.
+- Dependencies: `serde` and `serde_json`; `egui` with the `egui` feature; `bharat-ui` and
+  `bharat-i18n` with the `ui` feature.
 
 ## A catalog and dispatch
 
@@ -27,7 +27,7 @@ Tools of one group share a key and cycle. A binding can name a scope other than 
 home scope.
 
 ```rust
-use craft_keymap::{Active, Bindable, Binding, Chord, CommandRef, Keymap, Kind, Lookup, Platform, Scope, Scopes};
+use bharat_keymap::{Active, Bindable, Binding, Chord, CommandRef, Keymap, Kind, Lookup, Platform, Scope, Scopes};
 use serde_json::json;
 
 let key = |text: &str| Binding::parse(text).unwrap();
@@ -123,8 +123,8 @@ command has several bindings it is stored as an array of `{ command, keys }` tab
 (`[{ command = "file.save", keys = ["Cmd+Alt+S", "F12"] }]`). Both forms load, and in the map form
 a list of texts loads too.
 
-In a craft-settings type, put `#[serde(with = "craft_keymap::keymap::overrides_list")]` on the
-field, which always writes the array: craft-settings merges tables key by key with what the file
+In a bharat-settings type, put `#[serde(with = "bharat_keymap::keymap::overrides_list")]` on the
+field, which always writes the array: bharat-settings merges tables key by key with what the file
 holds but replaces an array whole, so only the array lets a reset command (an entry removed) stay
 removed after saving. Hand-written `[[shortcuts]]` blocks load as the array.
 
@@ -133,14 +133,14 @@ stay in the entry when the command is edited, unless the edit leaves it without 
 `Keymap::problems` lists them.
 
 ```rust
-use craft_keymap::{Binding, Keymap, Overrides, Platform, Policy, Scopes};
-use craft_settings::{Location, Settings, SettingsStore};
+use bharat_keymap::{Binding, Keymap, Overrides, Platform, Policy, Scopes};
+use bharat_settings::{Location, Settings, SettingsStore};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default, Clone, PartialEq)]
 #[serde(default)]
 struct Prefs {
-    #[serde(with = "craft_keymap::keymap::overrides_list")]
+    #[serde(with = "bharat_keymap::keymap::overrides_list")]
     shortcuts: Overrides,
 }
 
@@ -179,11 +179,11 @@ store.update(|p| p.shortcuts = keymap.overrides().clone());
 sets (`&[(&str, Overrides)]`, the first one the default) are passed to each call and never change.
 An app with sets stores only `Profiles`, in place of the `Overrides` field above: the keymap's
 overrides are the active set's, and the dialog's OK stores them there. The sets, and each set's
-overrides, are stored as arrays, so a deleted set or entry leaves a craft-settings file.
+overrides, are stored as arrays, so a deleted set or entry leaves a bharat-settings file.
 
 ```rust
-use craft_keymap::{Keymap, Platform, Profiles, Scopes};
-use craft_settings::{Location, SettingsStore};
+use bharat_keymap::{Keymap, Platform, Profiles, Scopes};
+use bharat_settings::{Location, SettingsStore};
 
 #[derive(Serialize, Deserialize, Default, Clone, PartialEq)]
 #[serde(default)]
@@ -210,7 +210,7 @@ store.update(|p| p.shortcut_sets = sets.clone());
 - New names are made unique (`Custom 2`, `Custom 3`) and compare without case. A user set named
   like a built-in added later is renamed by `reconcile`.
 - `export(name)` writes one set as JSON
-  (`{"format":"craft-keymap","version":1,"name":…,"overrides":…}`); `import(text)` reads it into
+  (`{"format":"bharat-keymap","version":1,"name":…,"overrides":…}`); `import(text)` reads it into
   a new set. A file from a newer version is refused (`ProfileError::NewerVersion`).
 - Loading never fails. `problems()` lists what loading dropped: sets with a bad or repeated name,
   overrides that are neither a list nor a map, sets past `MAX_SETS`, and a `version` newer than
@@ -221,13 +221,13 @@ store.update(|p| p.shortcut_sets = sets.clone());
   the user can switch to and away from.
 
 ```rust
-use craft_keymap::{Overrides, Profiles};
+use bharat_keymap::{Overrides, Profiles};
 
 let mut classic = Overrides::new();
 classic.insert("edit.copy", vec!["Cmd+Shift+C".into()]);
-let builtins = [("Craft", Overrides::new()), ("Classic", classic)];
+let builtins = [("Bharat", Overrides::new()), ("Classic", classic)];
 let mut sets = Profiles::default();
-assert_eq!(sets.active_name(&builtins), "Craft");
+assert_eq!(sets.active_name(&builtins), "Bharat");
 
 sets.duplicate("Classic", "Mine", &builtins).unwrap();
 let text = sets.export("Mine", &builtins).unwrap();
@@ -246,8 +246,8 @@ compile. `import::plan` matches each entry to one command and changes nothing;
 rows carry the entry's `item` (its path) and `line`.
 
 ```rust
-use craft_keymap::{Bindable, Binding, ContextRule, Flavor, ForeignEntry, ForeignKey, ForeignSet, ImportOptions, Keymap, Platform};
-use craft_keymap::{Scope, Scopes, plan};
+use bharat_keymap::{Bindable, Binding, ContextRule, Flavor, ForeignEntry, ForeignKey, ForeignSet, ImportOptions, Keymap, Platform};
+use bharat_keymap::{Scope, Scopes, plan};
 
 let save = Bindable::new("file.save", "Save", Scope::app())
     .with_path(vec!["File".into(), "Save".into()])
@@ -326,8 +326,8 @@ assert_eq!((report.unmatched[0].item.as_str(), report.unmatched[0].line), ("File
   command id and key text, canonical or as shown on `platform`.
 
 ```rust
-use craft_keymap::editor::holders;
-use craft_keymap::{AssignError, Binding, Chord, EditSession, Policy, Recorded, Recorder};
+use bharat_keymap::editor::holders;
+use bharat_keymap::{AssignError, Binding, Chord, EditSession, Policy, Recorded, Recorder};
 
 // `keymap` is the app's Keymap, `now` the input time in seconds.
 let mut session = EditSession::begin(&keymap);
@@ -364,7 +364,7 @@ Apps that import other applications' sets read each file into a `ForeignSet` bui
 `ForeignSet::new` ([Importing a shortcut set](#importing-a-shortcut-set)).
 
 ```rust,ignore
-use craft_keymap::ui::{DialogState, I18nText, Options, Outcome, ShortcutsDialog};
+use bharat_keymap::ui::{DialogState, I18nText, Options, Outcome, ShortcutsDialog};
 
 // "Keyboard Shortcuts…" opens it; "Edit Shortcut…" also calls `state.select(&command)`.
 self.shortcuts = Some(DialogState::new());
@@ -397,7 +397,7 @@ Outcomes:
 | `Ok` | Saves `Profiles` (with sets) or `keymap.overrides()`. |
 | `Cancel` | Nothing to save: the keymap and the sets are as they were at open. When Cancel undid edits, `Changed` follows. |
 | `Changed` | Updates its menus, or saves at once if it saves live. It comes after each edit and after a Cancel that undid edits. When a frame also has another outcome, `Changed` comes on the next frame; `is_open()` stays true until it has. |
-| `Import { formats }` | Opens a file of one of the formats, then calls `import_json` (craft-keymap JSON, `ui::JSON_FORMAT`) or reads it into a `ForeignSet` and calls `review_import`. |
+| `Import { formats }` | Opens a file of one of the formats, then calls `import_json` (bharat-keymap JSON, `ui::JSON_FORMAT`) or reads it into a `ForeignSet` and calls `review_import`. |
 | `Export { name, json }`, `ExportAs { format, name, keymap }` | Writes the set where the user chooses (a download on the web). |
 | `Summary { name, html, text }` | Shows, saves or prints the summary. |
 | `Remembered(answers)` | Keeps the user's import answers for the next import (`ImportOptions::remembered`). |
@@ -415,7 +415,7 @@ Key dispatch while the dialog is open:
   the other menu chords never reach the recorder. While `is_recording()` is true, pause them:
   feed them to egui as key presses, or rebuild the menu without accelerators.
 
-Words come from `ui::Text`. Apps on craft-i18n pass `I18nText`; others implement `ui` and
+Words come from `ui::Text`. Apps on bharat-i18n pass `I18nText`; others implement `ui` and
 `plural` over their own lookup, and `rtl` and `visual` (the app's bidi reordering) for
 right-to-left languages, which mirror the layout. Chord text is never reordered. `ui::STRINGS`
 and `ui::PLURALS` list every string the dialog looks up, for the translation catalog.
@@ -463,19 +463,19 @@ lists (hidden entries keep their keys and still count in conflicts).
 
 - `ui`: the Shortcuts dialog (see above). Implies `egui`.
 - `snapshot` (development): `tests/ui_snapshot.rs` writes PNGs of the dialog to
-  `CRAFT_KEYMAP_SNAPSHOT_DIR` for review, using the same font input as the dialog tests.
+  `BHARAT_KEYMAP_SNAPSHOT_DIR` for review, using the same font input as the dialog tests.
 
 ### Fonts for UI tests
 
 Apps own their runtime font setup, including coverage of the Mac key symbols displayed by the
 Shortcuts dialog. The library does not install or replace an app's fonts.
 
-UI tests need an absolute `CRAFT_FONTS_DIR` pointing to a checkout of
-[`craft-fonts`](https://github.com/storytold/craft-fonts) at
+UI tests need an absolute `BHARAT_FONTS_DIR` pointing to a checkout of
+[`bharat-fonts`](https://github.com/obone32/bharat-fonts) at
 `b076417b5880bd4154bd22f00695b1d28c6bea83`. For example, after preparing that checkout:
 
 ```sh
-CRAFT_FONTS_DIR=/absolute/path/to/craft-fonts cargo test -p craft-keymap --features ui --locked
+BHARAT_FONTS_DIR=/absolute/path/to/bharat-fonts cargo test -p bharat-keymap --features ui --locked
 ```
 
 Dialog tests and requested snapshots share a helper that verifies the SHA256 of

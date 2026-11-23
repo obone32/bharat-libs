@@ -3,7 +3,7 @@
 //! that breaks decoding, fails here. Only slice NAL units are hashed: the SEI names the version.
 
 use crate::common::{annexb_nals, synth};
-use craft_video::h264::*;
+use bharat_video::h264::*;
 
 /// FNV-1a over the slice NAL units of `n` frames of [`synth`] encoded with `c`.
 fn slices_hash(c: EncoderConfig, n: usize) -> u64 {

@@ -3,8 +3,8 @@
 
 use std::io::Write;
 
-use craft_docx::{AltChunk, ReadOptions, read, read_with};
-use craft_wordmodel::{Block, Document, InlineObject, StoryRef};
+use bharat_docx::{AltChunk, ReadOptions, read, read_with};
+use bharat_wordmodel::{Block, Document, InlineObject, StoryRef};
 
 const NS: &str = r#"xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships""#;
 const ROOT_RELS: &str = r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>"#;
@@ -110,7 +110,7 @@ fn a_bookmark_opened_between_a_table_and_a_chunk_starts_the_chunk() {
     let d = read_with(&bytes, &ReadOptions { chunks: Some(&import), ..Default::default() }).unwrap();
     let marks = d.bookmarks();
     assert_eq!(marks.len(), 1);
-    assert_eq!((marks[0].1.path.clone(), marks[0].1.off), (craft_wordmodel::Path::top(1), 0), "not in the table's cell");
+    assert_eq!((marks[0].1.path.clone(), marks[0].1.off), (bharat_wordmodel::Path::top(1), 0), "not in the table's cell");
 }
 
 #[test]
@@ -133,7 +133,7 @@ fn permission_ranges_of_chunks_and_their_host_stay_apart() {
         assert!(ranges.iter().filter(|r| r.editor == "them").all(|r| r.start.path == r.end.path));
     };
     check(&d);
-    check(&read(&craft_docx::write(&d).unwrap()).unwrap());
+    check(&read(&bharat_docx::write(&d).unwrap()).unwrap());
 }
 
 /// A package whose body is `body`, with story parts (relationship type, part name, XML) and the
@@ -272,7 +272,7 @@ fn match_src_gives_each_renamed_style_its_own_id() {
         assert_eq!((ten_size, fourteen_size), (10.0, 14.0));
     };
     check(&d);
-    check(&read(&craft_docx::write(&d).unwrap()).unwrap());
+    check(&read(&bharat_docx::write(&d).unwrap()).unwrap());
 }
 
 #[test]
@@ -329,7 +329,7 @@ fn a_chunks_pictures_come_with_it() {
     let import = |_: &AltChunk| {
         let mut d = Document::new();
         let key = d.add_media(vec![1, 2, 3], "png");
-        let mut para = craft_wordmodel::Paragraph::new();
+        let mut para = bharat_wordmodel::Paragraph::new();
         let image = InlineObject::Image {
             media: key,
             w: 10.0,
@@ -425,7 +425,7 @@ fn inner_with_dropped_pictures(n: usize, external: bool) -> Vec<u8> {
 #[test]
 fn a_picture_dropped_inside_a_chunk_is_recorded_against_the_chunk() {
     for (external, reason) in
-        [(false, craft_wordmodel::MissingPictureReason::MissingPart), (true, craft_wordmodel::MissingPictureReason::ExternalTarget)]
+        [(false, bharat_wordmodel::MissingPictureReason::MissingPart), (true, bharat_wordmodel::MissingPictureReason::ExternalTarget)]
     {
         let inner = inner_with_dropped_picture(external);
         let bytes = package(&format!("{}{CHUNK}", p("Before")), Some(("docx", DOCX_MAIN, &inner)));
@@ -440,10 +440,10 @@ fn a_picture_dropped_inside_a_chunk_is_recorded_against_the_chunk() {
 /// A chunk with more dropped pictures than the list holds still counts them all (#6005).
 #[test]
 fn a_chunks_total_of_dropped_pictures_counts_past_the_list() {
-    let n = craft_wordmodel::MAX_MISSING_PICTURES + 44;
+    let n = bharat_wordmodel::MAX_MISSING_PICTURES + 44;
     let inner = inner_with_dropped_pictures(n, false);
     let d = read(&package(&format!("{}{CHUNK}", p("Before")), Some(("docx", DOCX_MAIN, &inner)))).unwrap();
-    assert_eq!(d.missing_pictures.list.len(), craft_wordmodel::MAX_MISSING_PICTURES);
+    assert_eq!(d.missing_pictures.list.len(), bharat_wordmodel::MAX_MISSING_PICTURES);
     assert!(d.missing_pictures.truncated);
     assert_eq!(d.missing_pictures.total, n as u64);
 }
@@ -451,10 +451,10 @@ fn a_chunks_total_of_dropped_pictures_counts_past_the_list() {
 /// The same chunk imported twice counts its unlisted pictures once, as it dedupes its listed ones.
 #[test]
 fn a_chunk_imported_twice_counts_its_dropped_pictures_past_the_list_once() {
-    let n = craft_wordmodel::MAX_MISSING_PICTURES + 44;
+    let n = bharat_wordmodel::MAX_MISSING_PICTURES + 44;
     let inner = inner_with_dropped_pictures(n, false);
     let d = read(&package(&format!("{}{CHUNK}{CHUNK}", p("Before")), Some(("docx", DOCX_MAIN, &inner)))).unwrap();
-    assert_eq!(d.missing_pictures.list.len(), craft_wordmodel::MAX_MISSING_PICTURES);
+    assert_eq!(d.missing_pictures.list.len(), bharat_wordmodel::MAX_MISSING_PICTURES);
     assert_eq!(d.missing_pictures.total, n as u64);
 }
 

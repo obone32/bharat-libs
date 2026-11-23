@@ -23,8 +23,8 @@
 #[doc = include_str!("../README.md")]
 struct ReadmeExamples;
 
-use craft_flow::{self as model, Cell, FBlock, FTable, Flow, Fmt, Inline, Kind, ListInfo, Para};
-use craft_wordmodel::{Align, Document, Rgb};
+use bharat_flow::{self as model, Cell, FBlock, FTable, Flow, Fmt, Inline, Kind, ListInfo, Para};
+use bharat_wordmodel::{Align, Document, Rgb};
 
 mod export;
 mod lex;
@@ -33,7 +33,7 @@ mod parser;
 mod table;
 mod units;
 
-pub use craft_math::latex_text::{latex_to_linear, linear_to_latex};
+pub use bharat_math::latex_text::{latex_to_linear, linear_to_latex};
 #[cfg(test)]
 use export::Writer;
 pub use export::{escape_text, export};

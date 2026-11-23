@@ -1,7 +1,7 @@
 //! AV1 in MP4 (an `av1C` record whose config OBUs hold the sequence header).
 
 use crate::common;
-use craft_media::CodecId;
+use bharat_media::CodecId;
 
 /// libaom when ffmpeg has it, else SVT-AV1: a fixture name and the encoder arguments.
 fn encoder() -> Option<(&'static str, &'static [&'static str])> {
@@ -10,7 +10,7 @@ fn encoder() -> Option<(&'static str, &'static [&'static str])> {
     } else if common::has_encoder("libsvtav1") {
         Some(("av1_svt", &["-c:v", "libsvtav1", "-preset", "12", "-g", "12", "-pix_fmt", "yuv420p"]))
     } else {
-        craft_media_testkit::skip("ffmpeg has neither libaom-av1 nor libsvtav1")
+        bharat_media_testkit::skip("ffmpeg has neither libaom-av1 nor libsvtav1")
     }
 }
 
@@ -65,7 +65,7 @@ fn sequence_header_from_av1c() {
     }
     let mut bare = track.clone();
     bare.params.extradata.clear();
-    let mut dec = craft_video::TrackDecoder::new(&bare.params).unwrap();
+    let mut dec = bharat_video::TrackDecoder::new(&bare.params).unwrap();
     let decoded = bare.packets.iter().filter_map(|p| dec.decode(&p.data, p.pts).ok()).flatten().count();
     assert_eq!(decoded, 0, "the packets decode without a sequence header");
     common::check_track(&track, &f);

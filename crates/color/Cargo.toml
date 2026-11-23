@@ -1,5 +1,5 @@
 [package]
-name = "craft-color"
+name = "bharat-color"
 description = "Colour tags, Y'CbCr matrices, transfer functions and HDR static metadata for compositor and display frames"
 version.workspace = true
 edition.workspace = true

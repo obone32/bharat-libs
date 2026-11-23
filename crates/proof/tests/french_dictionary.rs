@@ -5,18 +5,18 @@
 #![cfg(not(target_arch = "wasm32"))]
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
-use craft_proof::{IssueKind, Options, ProofLang, fr};
+use bharat_proof::{IssueKind, Options, ProofLang, fr};
 
 #[test]
 #[ignore = "requires a real French dictionary in WORDCRAFT_DICTIONARIES"]
 fn real_french_dictionary_spelling_suggestions_and_dispatch() {
     let directory = std::env::var_os("WORDCRAFT_DICTIONARIES").expect("set WORDCRAFT_DICTIONARIES to the test dictionary folder");
-    craft_proof::set_dictionaries_folder(Some(std::path::PathBuf::from(&directory)));
+    bharat_proof::set_dictionaries_folder(Some(std::path::PathBuf::from(&directory)));
     let french = ProofLang::from_tag(Some("fr-FR"));
-    let installed = craft_proof::pack_dictionary_file(french).expect("the real French dictionary must be installed");
+    let installed = bharat_proof::pack_dictionary_file(french).expect("the real French dictionary must be installed");
     assert_eq!(installed.parent(), Some(std::path::Path::new(&directory)), "do not silently use another system dictionary");
     let aff = installed.with_extension("aff");
-    let dictionary = craft_proof::hunspell::load(&aff, &installed).expect("the real French dictionary loads");
+    let dictionary = bharat_proof::hunspell::load(&aff, &installed).expect("the real French dictionary loads");
     assert!(dictionary.len() > 50_000, "expected Dicollecte, not the synthetic fixture: {}", dictionary.len());
     for word in [
         "maison",
@@ -44,7 +44,7 @@ fn real_french_dictionary_spelling_suggestions_and_dispatch() {
     }
     let text = "Une maisonn près de l’école.";
     for lang in [ProofLang::from_tag(Some("fr-FR")), ProofLang::from_tag(Some("fr-CA"))] {
-        let issues = craft_proof::check_text(text, &[(0..text.len(), lang)]);
+        let issues = bharat_proof::check_text(text, &[(0..text.len(), lang)]);
         assert_eq!(issues.len(), 1, "{lang:?}: {issues:?}");
         let issue = &issues[0];
         assert_eq!(&text[issue.start..issue.end], "maisonn");
@@ -52,12 +52,12 @@ fn real_french_dictionary_spelling_suggestions_and_dispatch() {
         assert_eq!(issue.message, "Faute d’orthographe possible");
     }
     check_combining_marks_and_compounds(&dictionary);
-    assert!(craft_proof::dictionary_load_error(ProofLang::from_tag(Some("fr-FR"))).is_none());
+    assert!(bharat_proof::dictionary_load_error(ProofLang::from_tag(Some("fr-FR"))).is_none());
 }
 
-fn check_combining_marks_and_compounds(dictionary: &craft_proof::affix::AffixDict) {
+fn check_combining_marks_and_compounds(dictionary: &bharat_proof::affix::AffixDict) {
     let spelling = |text: &str, spans: &[(std::ops::Range<usize>, ProofLang)]| {
-        craft_proof::check_text_with(text, spans, &Options::default(), false, false)
+        bharat_proof::check_text_with(text, spans, &Options::default(), false, false)
             .into_iter()
             .filter(|i| i.kind == IssueKind::Spelling)
             .map(|i| (i.start, i.end, i.lang))

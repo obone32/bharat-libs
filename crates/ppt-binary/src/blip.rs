@@ -8,7 +8,7 @@ use crate::record::Rec;
 /// Largest picture inflated from a compressed metafile.
 const MAX_INFLATED: usize = 64 << 20;
 /// Most bytes all of a file's pictures may decode to together: 2 GiB, the total a `.pptx` package
-/// may inflate to (`craft_pptx::MAX_TOTAL`). Pictures are the only part of a `.ppt`
+/// may inflate to (`bharat_pptx::MAX_TOTAL`). Pictures are the only part of a `.ppt`
 /// that inflates, so a small hostile file can't make the import hold more than a `.pptx` could.
 /// It also fits a 32-bit `usize` (wasm32), where a 4 GiB constant wraps to 0.
 const MAX_TOTAL: usize = 2 << 30;

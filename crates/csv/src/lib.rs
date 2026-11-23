@@ -15,13 +15,13 @@
 //! belong to the caller.
 //!
 //! ```
-//! let text = craft_csv::decode_text(b"name;note\r\nAda;\"said \"\"hi\"\"\"\r\n");
-//! let delimiter = char::from(craft_csv::sniff_delimiter(&text, '"'));
-//! let rows = craft_csv::records(&text, delimiter, '"', 1000, 1000);
+//! let text = bharat_csv::decode_text(b"name;note\r\nAda;\"said \"\"hi\"\"\"\r\n");
+//! let delimiter = char::from(bharat_csv::sniff_delimiter(&text, '"'));
+//! let rows = bharat_csv::records(&text, delimiter, '"', 1000, 1000);
 //! assert_eq!(rows, [["name", "note"], ["Ada", "said \"hi\""]]);
 //!
 //! let mut line = String::new();
-//! craft_csv::push_field(&mut line, "a;b", ';');
+//! bharat_csv::push_field(&mut line, "a;b", ';');
 //! assert_eq!(line, "\"a;b\"");
 //! ```
 

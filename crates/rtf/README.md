@@ -1,12 +1,12 @@
-# craft-rtf
+# bharat-rtf
 
-Rich Text Format, read and written. It replaces the RTF code each Craft app carried: the
+Rich Text Format, read and written. It replaces the RTF code each Bharat app carried: the
 tokenizer, code pages, `\u` handling, dates and escaping come from WordCraft's reader and
 writer; the small model covers what DesignCraft's text import, DeckCraft's outline import and
 export and PdfCraft's export read and write.
 
 ```rust
-use craft_rtf::{Block, CharFmt, Document, Para, Run, read, write};
+use bharat_rtf::{Block, CharFmt, Document, Para, Run, read, write};
 
 let bold = CharFmt { bold: true, ..CharFmt::default() };
 let doc = Document {
@@ -84,7 +84,7 @@ file: each character of text costs the file at least one byte.
 `outlook::decompress_rtf` undoes the compression of `PidTagRtfCompressed` ([MS-OXRTFCP]: `LZFu`
 with its CRC checked, or `MELA` stored as is), never allocating past the caller's cap.
 `outlook::rtf_text` gives the text a mail body shows (font charsets and `\ansicpg` decoded through
-`craft_mime::charset`, `\uN` with its fallback skipped, destinations dropped), and
+`bharat_mime::charset`, `\uN` with its fallback skipped, destinations dropped), and
 `outlook::rtf_html` the HTML of an encapsulated-HTML body ([MS-OXRTFEX], `\fromhtml1`). Groups nest
 at most `MAX_RTF_DEPTH` (256) deep. From MailCraft `crates/pst/src/rtf.rs` at
 [a44a450](https://github.com/UCS-Care-Group/mailcraft/commit/a44a45013d1c6396229c40ab60172d1882b368d5),
@@ -92,8 +92,8 @@ by Martin Ball and the MailCraft contributors.
 
 ## The word model (`doc` feature)
 
-`craft_rtf::doc` reads RTF into the word model (`craft_wordmodel::Document`) and writes it
-back, through the text formats' flow (`craft_flow`): styles, lists, fields, bookmarks,
+`bharat_rtf::doc` reads RTF into the word model (`bharat_wordmodel::Document`) and writes it
+back, through the text formats' flow (`bharat_flow`): styles, lists, fields, bookmarks,
 pictures (PNG, JPEG, metafiles; other formats re-encoded as PNG within a bounded decode),
 tables, notes, comments, tracked changes, sections, headers and footers. It is WordCraft's RTF
 reader and writer, on this crate's code pages, dates and escaping.

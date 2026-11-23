@@ -5,11 +5,11 @@ use std::collections::{HashMap, HashSet};
 use crate::style::Fill;
 use crate::table::Table;
 use crate::{Geom, PhType, Shape, ShapeId, ShapeKind, ShapeStyle, walk};
-use craft_drawingml::Xfrm;
+use bharat_drawingml::Xfrm;
 
-use craft_drawingml::write::{self as dml, emu, emu_pos};
-use craft_drawingml::xmlx::{self, A, TagExt};
-use craft_xml::{Local, Writer};
+use bharat_drawingml::write::{self as dml, emu, emu_pos};
+use bharat_drawingml::xmlx::{self, A, TagExt};
+use bharat_xml::{Local, Writer};
 
 use super::{Exp, NS_MC, Out, Snk};
 
@@ -95,7 +95,7 @@ pub fn geometry(w: &mut Writer, g: &Geom) {
                 w.empty("a:avLst", &[]);
             } else {
                 // PowerPoint wants the complete guide list once any is given.
-                let defaults = craft_drawingml::preset::info(name).map(|i| i.defaults).unwrap_or(&[]);
+                let defaults = bharat_drawingml::preset::info(name).map(|i| i.defaults).unwrap_or(&[]);
                 let mut vals: Vec<f64> = adj.iter().take(16).copied().collect();
                 while vals.len() < defaults.len() {
                     vals.push(defaults.get(vals.len()).copied().unwrap_or(0.0));
@@ -123,9 +123,9 @@ pub fn geometry(w: &mut Writer, g: &Geom) {
                 w.empty("a:avLst", &[]);
                 w.close();
             } else {
-                // `craft-pptx` does not yet retain custom-geometry connection sites.
+                // `bharat-pptx` does not yet retain custom-geometry connection sites.
                 // Zero extent keeps the previous path-only output until the model carries them.
-                craft_drawingml::custgeom::write_cust_geom(w, paths, &[], (0, 0));
+                bharat_drawingml::custgeom::write_cust_geom(w, paths, &[], (0, 0));
             }
         }
     }
@@ -280,7 +280,7 @@ pub fn shape(w: &mut Writer, x: &mut Exp, o: &mut Out, cx: &mut Ctx, s: &Shape, 
             if s.text.as_ref().is_some_and(dml::has_math) {
                 // Equations: OMML for readers that know it, plain text otherwise.
                 w.tag("mc:AlternateContent").attr("xmlns:mc", NS_MC).open();
-                w.tag("mc:Choice").attr("xmlns:a14", craft_drawingml::ns::NS_A14).attr("Requires", "a14").open();
+                w.tag("mc:Choice").attr("xmlns:a14", bharat_drawingml::ns::NS_A14).attr("Requires", "a14").open();
                 let id = cx.id_for(s);
                 sp(w, x, o, id, s, true);
                 w.close();
@@ -407,15 +407,15 @@ pub fn shape(w: &mut Writer, x: &mut Exp, o: &mut Out, cx: &mut Ctx, s: &Shape, 
                 w.tag("mc:AlternateContent").attr("xmlns:mc", "http://schemas.openxmlformats.org/markup-compatibility/2006").open();
                 w.tag("mc:Choice").attr("xmlns:cx1", "http://schemas.microsoft.com/office/drawing/2015/9/8/chartex").attr("Requires", "cx1").open();
                 frame_open(w, x, o, id, s);
-                w.tag("a:graphicData").attr("uri", craft_drawingml::chart::write::NS_CX).open();
-                w.tag("cx:chart").attr("xmlns:cx", craft_drawingml::chart::write::NS_CX).attr("r:id", exid).empty();
+                w.tag("a:graphicData").attr("uri", bharat_drawingml::chart::write::NS_CX).open();
+                w.tag("cx:chart").attr("xmlns:cx", bharat_drawingml::chart::write::NS_CX).attr("r:id", exid).empty();
                 w.close();
                 frame_close(w);
                 w.close();
                 w.open("mc:Fallback", &[]);
             }
             let mut plain = (**c).clone();
-            plain.raw = plain.raw.filter(|r| !r.contains(craft_drawingml::chart::write::NS_CX));
+            plain.raw = plain.raw.filter(|r| !r.contains(bharat_drawingml::chart::write::NS_CX));
             if ex.is_some() {
                 // The kept workbook belongs to the `chartEx` part; the fallback has none.
                 plain.kept = Default::default();
@@ -423,7 +423,7 @@ pub fn shape(w: &mut Writer, x: &mut Exp, o: &mut Out, cx: &mut Ctx, s: &Shape, 
             let rid = x.chart_rel(o, &plain);
             frame_open(w, x, o, id, s);
             w.tag("a:graphicData").attr("uri", "http://schemas.openxmlformats.org/drawingml/2006/chart").open();
-            w.tag("c:chart").attr("xmlns:c", craft_drawingml::ns::NS_C).attr("r:id", rid).empty();
+            w.tag("c:chart").attr("xmlns:c", bharat_drawingml::ns::NS_C).attr("r:id", rid).empty();
             w.close();
             frame_close(w);
             if ex.is_some() {
@@ -514,7 +514,7 @@ fn write_model(w: &mut Writer, x: &mut Exp, o: &mut Out, cx: &mut Ctx, s: &Shape
 /// with the group's shapes as the cached drawing PowerPoint shows until it lays the diagram out.
 #[allow(clippy::too_many_arguments)]
 fn diagram(w: &mut Writer, x: &mut Exp, o: &mut Out, cx: &mut Ctx, s: &Shape, d: &crate::Diagram, children: &[Shape], child: &Xfrm) {
-    use craft_drawingml::diagram::parts as dgm;
+    use bharat_drawingml::diagram::parts as dgm;
     let id = cx.id_for(s);
     let n = x.next_diagram();
     let frame = s.xfrm.unwrap_or(*child);
@@ -578,7 +578,7 @@ fn diagram(w: &mut Writer, x: &mut Exp, o: &mut Out, cx: &mut Ctx, s: &Shape, d:
     dw.close();
     x.pkg.xml_part(&dname, dgm::CT_DRAWING, dw.into_bytes());
     x.pkg.rels(&dname, &dout.rels);
-    let rel = |o: &mut Out, kind: &str, part: &str| o.rels.add_new(kind, &craft_opc::relative(&o.name, part), false);
+    let rel = |o: &mut Out, kind: &str, part: &str| o.rels.add_new(kind, &bharat_opc::relative(&o.name, part), false);
     let drawing_rel = rel(o, dgm::RT_DRAWING, &dname);
     let data = name("data");
     // Node pictures: on the data model's presentation points, through the data part's rels.
@@ -631,13 +631,13 @@ fn ink_shape(st: &crate::InkStroke, i: usize) -> Option<Shape> {
     }
     let mut c = crate::style::ColorRef::rgb(st.color.with_alpha(255));
     if st.highlighter {
-        c = c.with(craft_drawingml::color::ColorTransform::Alpha(50_000));
+        c = c.with(bharat_drawingml::color::ColorTransform::Alpha(50_000));
     }
     Some(Shape {
         id: ShapeId(0),
         name: format!("Ink {}", i + 1),
         xfrm: Some(Xfrm::new(x0, y0, w, h)),
-        geom: Geom::Custom { paths: vec![crate::CustomPath { w, h, d, fill: craft_drawingml::preset::FillMode::None, stroke: true }] },
+        geom: Geom::Custom { paths: vec![crate::CustomPath { w, h, d, fill: bharat_drawingml::preset::FillMode::None, stroke: true }] },
         fill: Some(Fill::None),
         line: Some(crate::Line {
             cap: Some(crate::style::LineCap::Round),
@@ -725,7 +725,7 @@ fn table(w: &mut Writer, x: &mut Exp, o: &mut Out, t: &Table) {
     let mut t = t.clone();
     t.normalize();
     w.open("a:tbl", &[]);
-    let (guid, _) = craft_drawingml::table::styles::guid_for_style(&t.style);
+    let (guid, _) = bharat_drawingml::table::styles::guid_for_style(&t.style);
     if x.table_style_set.insert(t.style.clone()) {
         x.table_styles.push(t.style.clone());
     }
@@ -953,7 +953,7 @@ fn shape_with_id(w: &mut Writer, x: &mut Exp, o: &mut Out, cx: &mut Ctx, s: &Sha
 /// A legacy OLE object finds its preview in the slide's VML drawing through `spid`, and PowerPoint
 /// won't open the slide without it. We don't write that drawing, so write PowerPoint's own
 /// fallback form instead: no `spid`, and the preview as a `p:pic`.
-fn ole_fallback(root: &mut craft_xml::El, x: &mut Exp, o: &mut Out, preview: Option<crate::MediaId>) {
+fn ole_fallback(root: &mut bharat_xml::El, x: &mut Exp, o: &mut Out, preview: Option<crate::MediaId>) {
     let xfrm = root.child(Local("xfrm")).map(|t| {
         let at = |e: &str, a: &str| t.child(Local(e)).and_then(|c| c.attr_local(a)).unwrap_or("0").to_string();
         (at("off", "x"), at("off", "y"), at("ext", "cx"), at("ext", "cy"))
@@ -976,11 +976,11 @@ fn ole_fallback(root: &mut craft_xml::El, x: &mut Exp, o: &mut Out, preview: Opt
         r#"<p:pic><p:nvPicPr><p:cNvPr id="0" name=""/><p:cNvPicPr/><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="{rel}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="{ox}" y="{oy}"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>"#
     );
     if let Ok(d) = crate::package::parse(pic.as_bytes()) {
-        ole.children.push(craft_xml::Node::El(d.root));
+        ole.children.push(bharat_xml::Node::El(d.root));
     }
 }
 
-fn set_rel_ids(e: &mut craft_xml::El, ids: &std::collections::HashMap<String, String>, depth: usize) {
+fn set_rel_ids(e: &mut bharat_xml::El, ids: &std::collections::HashMap<String, String>, depth: usize) {
     if depth > xmlx::MAX_DEPTH {
         return;
     }
@@ -996,8 +996,8 @@ fn set_rel_ids(e: &mut craft_xml::El, ids: &std::collections::HashMap<String, St
     }
 }
 
-fn set_cnvpr_id(el: &mut craft_xml::El, id: u32) {
-    fn rec(e: &mut craft_xml::El, id: u32, depth: usize) -> bool {
+fn set_cnvpr_id(el: &mut bharat_xml::El, id: u32) {
+    fn rec(e: &mut bharat_xml::El, id: u32, depth: usize) -> bool {
         if depth > 8 {
             return false;
         }

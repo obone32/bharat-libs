@@ -1,6 +1,6 @@
 use std::io::{self, Read, Write};
 
-use craft_gzip::Gz;
+use bharat_gzip::Gz;
 use flate2::{Compression, read::GzDecoder, write::GzEncoder};
 
 fn decode(bytes: &[u8]) -> Vec<u8> {

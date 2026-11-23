@@ -9,7 +9,7 @@
 
 use std::collections::HashMap;
 
-use craft_mime::charset::{code_page_label, decode};
+use bharat_mime::charset::{code_page_label, decode};
 
 use crate::codepage;
 

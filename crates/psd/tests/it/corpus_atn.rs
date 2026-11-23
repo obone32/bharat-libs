@@ -1,11 +1,11 @@
 //! Corpus test (feature `corpus`): every `.atn` under
-//! `corpus/atn/` (or `$CRAFT_PSD_CORPUS/atn/`; PhotoCraft's `cargo xtask corpus --atn` fetches it) parses, and writing it back
+//! `corpus/atn/` (or `$BHARAT_PSD_CORPUS/atn/`; PhotoCraft's `cargo xtask corpus --atn` fetches it) parses, and writing it back
 //! reproduces the bytes exactly. A missing corpus fails.
 #![cfg(feature = "corpus")]
 
 use std::path::{Path, PathBuf};
 
-use craft_psd::atn;
+use bharat_psd::atn;
 
 fn collect(dir: &Path, out: &mut Vec<PathBuf>) {
     // An unreadable folder fails the test rather than shrinking the corpus.

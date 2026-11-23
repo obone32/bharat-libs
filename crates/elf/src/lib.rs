@@ -5,7 +5,7 @@
 //! byte order: [`program_headers`], [`dynamic_entries`], [`va_to_off`], and the segment type,
 //! permission and dynamic tag names.
 //!
-//! From Craft Anything (`crates/formats/src/elf.rs`), where the mitigations, dynamic symbols,
+//! From Bharat Anything (`crates/formats/src/elf.rs`), where the mitigations, dynamic symbols,
 //! symbol versions and core-file notes built on these stay. With the `serde` feature,
 //! [`ProgramHeader`] is `Serialize` with `vaddr` as a `0x…` string.
 

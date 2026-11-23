@@ -82,8 +82,8 @@ fn bind_pipe(app: &str, pid: u32) -> Result<Listener, LinkError> {
 #[cfg(windows)]
 fn pipe_name(app: &str, pid: u32) -> String {
     match windows_user() {
-        Some(user) => format!("craft-{user}-{app}-{pid}"),
-        None => format!("craft-{app}-{pid}"),
+        Some(user) => format!("bharat-{user}-{app}-{pid}"),
+        None => format!("bharat-{app}-{pid}"),
     }
 }
 
@@ -276,7 +276,7 @@ fn refuse(stream: &mut impl Write, refusal: &Refusal) {
 
 fn spawn(slot: Slot, hub: Arc<Hub>, reader: BufReader<Box<dyn Read + Send>>, writer: Arc<std::sync::Mutex<Box<dyn Write + Send>>>, auth: bool) {
     let thread_hub = Arc::clone(&hub);
-    let started = std::thread::Builder::new().name("craft-ipc-conn".into()).spawn(move || {
+    let started = std::thread::Builder::new().name("bharat-ipc-conn".into()).spawn(move || {
         let mut slot = slot;
         connection(thread_hub, reader, writer, auth, &mut slot);
     });
@@ -323,7 +323,7 @@ fn connection(
     let write_sub = Arc::clone(&sub);
     let write_io = Arc::clone(&writer);
     let write_stop = Arc::clone(&hub);
-    let writer_thread = std::thread::Builder::new().name("craft-ipc-write".into()).spawn(move || {
+    let writer_thread = std::thread::Builder::new().name("bharat-ipc-write".into()).spawn(move || {
         events::write_loop(write_sub, write_io, &write_stop.stop);
     });
     let Ok(writer_thread) = writer_thread else {

@@ -9,7 +9,7 @@
 //! rule (`windingRule` on the layer, 1 even-odd: inner paths are holes). Sketch fills an open path
 //! as if it were closed.
 
-use craft_figma_rest::ext::{Region, Segment, VectorNetwork, Vertex, Winding as WindingRule};
+use bharat_figma_rest::ext::{Region, Segment, VectorNetwork, Vertex, Winding as WindingRule};
 use kurbo::{Affine, Point};
 use serde_json::{Map as JsonMap, Value, json};
 

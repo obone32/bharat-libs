@@ -17,7 +17,7 @@
 //! over instead. No such file was at hand to settle it.
 //!
 //! A [`Decoder`] is made from the 816-byte file header. [`Decoder::decode`] takes a sound
-//! frame's flags (from its record in the file's table of contents; `craft_media::vmd` reads it)
+//! frame's flags (from its record in the file's table of contents; `bharat_media::vmd` reads it)
 //! and its data, and returns interleaved `i16` samples: one block of sound or silence, or, for a
 //! frame with a silence mask (the first sound frame of a file), several. 8-bit samples are widened to 16 bits. Blocks do not depend
 //! on each other, so decoding can start at any frame.
@@ -131,7 +131,7 @@ impl Decoder {
     /// of a block after the last whole one is left out, with flags 1 and 2.
     ///
     /// The sound of a file is its sound frames decoded in file order and played end to end from
-    /// the first picture on: see `craft_media::vmd` for how that lines up with the pictures.
+    /// the first picture on: see `bharat_media::vmd` for how that lines up with the pictures.
     pub fn decode(&self, flags: u8, data: &[u8]) -> Result<Vec<i16>, Error> {
         let mut out = Vec::new();
         match flags {

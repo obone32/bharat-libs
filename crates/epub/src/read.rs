@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use craft_xml::{El, Local, Options};
+use bharat_xml::{El, Local, Options};
 
 use crate::Error;
 
@@ -156,7 +156,7 @@ fn percent_decode(s: &str) -> String {
 /// Both required documents must be well formed: a lenient read would take a container or package
 /// document cut off after its useful content for a complete one, and give half a book.
 pub(crate) fn parse_xml(part: &str, xml: &[u8], limits: &Limits) -> Result<El, Error> {
-    let xml_limits = craft_xml::Limits { max_input: usize::try_from(limits.max_entry_bytes).unwrap_or(usize::MAX), ..craft_xml::Limits::DEFAULT };
+    let xml_limits = bharat_xml::Limits { max_input: usize::try_from(limits.max_entry_bytes).unwrap_or(usize::MAX), ..bharat_xml::Limits::DEFAULT };
     Options::local().strict().with_limits(xml_limits).parse(xml).map_err(|e| Error::Part { part: part.to_string(), msg: e.to_string() })
 }
 
@@ -223,7 +223,7 @@ pub fn parse_package(xml: &[u8], opf_dir: &str, limits: &Limits) -> Result<Packa
 /// An open EPUB package. Entries are decompressed only when asked for, within the byte budgets
 /// of its [`Limits`].
 pub struct Epub<'a> {
-    zip: craft_zip::Archive<'a>,
+    zip: bharat_zip::Archive<'a>,
     limits: Limits,
     /// The archive path of the package document.
     pub opf_path: String,
@@ -240,9 +240,9 @@ impl<'a> Epub<'a> {
     /// packages without one, or with it compressed, are common.
     pub fn open_with(bytes: &'a [u8], limits: Limits) -> Result<Self, Error> {
         let zip =
-            craft_zip::Archive::open(bytes, craft_zip::Limits { max_entries: limits.max_entries as u64, max_total_bytes: limits.max_total_bytes })
+            bharat_zip::Archive::open(bytes, bharat_zip::Limits { max_entries: limits.max_entries as u64, max_total_bytes: limits.max_total_bytes })
                 .map_err(|e| match e {
-                    craft_zip::Error::TooManyEntries { declared, limit } => Error::TooManyEntries {
+                    bharat_zip::Error::TooManyEntries { declared, limit } => Error::TooManyEntries {
                         found: usize::try_from(declared).unwrap_or(usize::MAX),
                         limit: usize::try_from(limit).unwrap_or(usize::MAX),
                     },
@@ -275,7 +275,7 @@ impl<'a> Epub<'a> {
         }
         let limit = self.limits.max_entry_bytes.min(self.zip.budget().remaining());
         self.zip.read(path, self.limits.max_entry_bytes).map_err(|e| match e {
-            craft_zip::Error::EntryTooLarge { .. } | craft_zip::Error::BudgetSpent { .. } => Error::TooLarge { part: path.to_string(), limit },
+            bharat_zip::Error::EntryTooLarge { .. } | bharat_zip::Error::BudgetSpent { .. } => Error::TooLarge { part: path.to_string(), limit },
             e => Error::Part { part: path.to_string(), msg: e.to_string() },
         })
     }

@@ -1,4 +1,4 @@
-//! container tests of craft-aep.
+//! container tests of bharat-aep.
 
 #[macro_use]
 mod helpers;

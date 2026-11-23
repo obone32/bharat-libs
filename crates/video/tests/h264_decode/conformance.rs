@@ -105,7 +105,7 @@ fn coverage_report() {
     for f in common::FIXTURES {
         let Some((h264, _)) = common::ensure(f) else { return };
         let data = std::fs::read(h264).unwrap();
-        let mut dec = craft_video::h264::decode::Decoder::new();
+        let mut dec = bharat_video::h264::decode::Decoder::new();
         for au in common::split_access_units(&data) {
             dec.decode(au, 0).unwrap();
         }
@@ -145,14 +145,14 @@ fn generate_fixtures() {
     let dir = common::fixtures_dir();
     for f in common::FIXTURES {
         let outs = [dir.join(format!("{}.h264", f.name)), dir.join(format!("{}.yuv", f.name))];
-        craft_media_testkit::generate_and_report(&format!("h264/{}", f.name), &outs, || common::ensure(f));
+        bharat_media_testkit::generate_and_report(&format!("h264/{}", f.name), &outs, || common::ensure(f));
     }
 }
 
 /// Concurrent consumers must publish one complete fixture without replacing an open file.
 #[test]
 fn concurrent_fixture_publication_is_safe() {
-    if craft_media_testkit::ffmpeg_or_skip("concurrent_fixture_publication").is_none() {
+    if bharat_media_testkit::ffmpeg_or_skip("concurrent_fixture_publication").is_none() {
         return;
     }
     let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();

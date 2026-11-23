@@ -1,4 +1,4 @@
-//! Generic GPU providers extracted from app crates over time (craft-libs#7).
+//! Generic GPU providers extracted from app crates over time (bharat-libs#7).
 
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
@@ -12,7 +12,7 @@ mod readback;
 #[cfg(test)]
 mod tests;
 
-use craft_gpu::{GpuProvider, ProviderRegistry};
+use bharat_gpu::{GpuProvider, ProviderRegistry};
 
 pub use composite::PremulCompositeProvider;
 pub use echo::EchoProvider;

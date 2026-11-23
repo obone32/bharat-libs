@@ -16,7 +16,7 @@ const MAX_NOTES: usize = 64;
 ///
 /// Stored in key order as a map of one text per command (`{ "<key>": "Cmd+K" }`, `""` for no
 /// shortcut) while no entry has more than one text, and otherwise as an array of
-/// `{ command, keys }` items. [`list`] always writes the array, for craft-settings files. Both
+/// `{ command, keys }` items. [`list`] always writes the array, for bharat-settings files. Both
 /// forms load, and in the map form a list of texts loads too. Loading never fails:
 /// entries for unknown commands and texts that do not parse are kept verbatim; values that are not
 /// text, overlong keys and texts, repeated keys (the first entry stays) and entries past the caps
@@ -117,8 +117,8 @@ fn single(keys: &[String]) -> Option<&str> {
 }
 
 /// Serializes [`Overrides`] always as an array of `{ command, keys }` items, for
-/// `#[serde(with = "craft_keymap::keymap::overrides_list")]`. craft-settings merges a table key
-/// by key with what the file holds but replaces an array whole, so in a craft-settings file only
+/// `#[serde(with = "bharat_keymap::keymap::overrides_list")]`. bharat-settings merges a table key
+/// by key with what the file holds but replaces an array whole, so in a bharat-settings file only
 /// this form lets a reset command (an entry removed) stay removed after saving.
 pub mod list {
     use serde::{Deserialize, Deserializer, Serializer};

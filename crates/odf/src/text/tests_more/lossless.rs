@@ -345,7 +345,7 @@ const SAMPLES: [Sample; 18] = [
 
 /// Whether `xml` is well-formed: every element closed, in order, once.
 fn well_formed(xml: &[u8]) -> bool {
-    let limits = craft_xml::Limits {
+    let limits = bharat_xml::Limits {
         max_input: usize::MAX,
         max_depth: usize::MAX,
         max_nodes: usize::MAX,
@@ -353,7 +353,7 @@ fn well_formed(xml: &[u8]) -> bool {
         max_attrs: usize::MAX,
         max_attrs_total: usize::MAX,
     };
-    craft_xml::Options::default().strict().with_limits(limits).parse(xml).is_ok()
+    bharat_xml::Options::default().strict().with_limits(limits).parse(xml).is_ok()
 }
 
 fn parts_well_formed(bytes: &[u8]) -> Result<(), String> {
@@ -371,10 +371,10 @@ fn parts_well_formed(bytes: &[u8]) -> Result<(), String> {
 fn edits_leave_kept_markup_well_formed() {
     // Whatever is edited (a paragraph that opens a section deleted, text typed into each
     // paragraph, a style changed), what is written stays well-formed and reads back.
-    use craft_wordmodel::Pos;
+    use bharat_wordmodel::Pos;
     for s in SAMPLES {
         let d = import(&package(&s)).unwrap();
-        let mut edits: Vec<craft_wordmodel::Document> = Vec::new();
+        let mut edits: Vec<bharat_wordmodel::Document> = Vec::new();
         for i in 0..d.body.len() {
             let mut e = d.clone();
             if e.body.get(i).is_some_and(|b| b.as_para().is_some()) {
@@ -406,7 +406,7 @@ fn edits_leave_kept_markup_well_formed() {
 #[test]
 fn an_edited_index_is_written_from_the_model() {
     // Unedited, the index keeps its templates; once an entry changes, the edit is what's saved.
-    use craft_wordmodel::Pos;
+    use bharat_wordmodel::Pos;
     let d = import(&package(&INDEXES)).unwrap();
     let c = content_of(&export(&d).unwrap());
     assert!(c.contains("text:combine-entries-with-pp=\"false\""), "{c}");
@@ -439,11 +439,11 @@ fn a_section_in_a_text_box_closes_in_it_whatever_is_edited() {
     // The paragraph closing the box's section edited (its wrapper gone): the section still
     // closes inside the box, before the box ends.
     let d = import(&package(&SECTIONS)).unwrap();
-    for (id, part) in d.parts.iter().filter(|(_, p)| p.kind == craft_wordmodel::PartKind::TextBox) {
+    for (id, part) in d.parts.iter().filter(|(_, p)| p.kind == bharat_wordmodel::PartKind::TextBox) {
         for i in 0..part.blocks.len() {
             let mut e = d.clone();
             let Some(b) = e.parts.get_mut(id).and_then(|p| p.blocks.get_mut(i)) else { continue };
-            let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) else { continue };
+            let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) else { continue };
             // Restyled: no longer what was read.
             p.props.style = Some("Edited".into());
             p.touch();
@@ -498,14 +498,14 @@ fn markup_kept_as_read_never_links_to_a_picture_that_could_not_be_read() {
 #[test]
 fn a_paragraph_with_comments_is_written_as_read_while_they_are() {
     let d = import(&package(&COMMENTS)).unwrap();
-    let as_read = |d: &craft_wordmodel::Document| content_of(&export(d).unwrap()).contains(r#"wcx:mark="kept""#);
+    let as_read = |d: &bharat_wordmodel::Document| content_of(&export(d).unwrap()).contains(r#"wcx:mark="kept""#);
     assert!(as_read(&d));
     // A comment's text edited, resolved, deleted with its reply, or answered: written from the
     // model, which has what changed.
-    let first = |d: &craft_wordmodel::Document| d.comments.iter().find(|(_, c)| c.author == "Ada Lovelace").map(|(id, c)| (*id, c.clone())).unwrap();
+    let first = |d: &bharat_wordmodel::Document| d.comments.iter().find(|(_, c)| c.author == "Ada Lovelace").map(|(id, c)| (*id, c.clone())).unwrap();
     let mut e = d.clone();
     let (_, c) = first(&e);
-    if let Some(craft_wordmodel::Block::Para(p)) = e.parts.get_mut(&c.part).and_then(|p| p.blocks.first_mut()).map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = e.parts.get_mut(&c.part).and_then(|p| p.blocks.first_mut()).map(std::sync::Arc::make_mut) {
         p.props.style = Some("Edited".into());
         p.touch();
     }
@@ -520,8 +520,8 @@ fn a_paragraph_with_comments_is_written_as_read_while_they_are() {
     let mut e = d.clone();
     let (id, c) = first(&e);
     let blocks = e.parts.get(&c.part).unwrap().blocks.clone();
-    let part = e.try_add_part(craft_wordmodel::PartKind::Comment, blocks).unwrap();
-    e.comments.insert(999, craft_wordmodel::Comment { author: "New".into(), parent: Some(id), part, ..Default::default() });
+    let part = e.try_add_part(bharat_wordmodel::PartKind::Comment, blocks).unwrap();
+    e.comments.insert(999, bharat_wordmodel::Comment { author: "New".into(), parent: Some(id), part, ..Default::default() });
     let c = content_of(&export(&e).unwrap());
     assert!(!c.contains(r#"wcx:mark="kept""#) && c.contains("<dc:creator>New</dc:creator>"), "{c}");
     // Every save stays well-formed and reads back with its comments.
@@ -556,7 +556,7 @@ fn a_change_accepted_is_written_from_the_model_the_others_as_read() {
     let d = import(&package(&CHANGES)).unwrap();
     let mut e = d.clone();
     let i = e.body.iter().position(|b| b.as_para().is_some_and(|p| p.text.starts_with("Some inserted"))).unwrap();
-    if let Some(craft_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
         for r in &mut p.runs {
             r.props.ins = None;
         }
@@ -573,7 +573,7 @@ fn a_change_accepted_is_written_from_the_model_the_others_as_read() {
     // A change made in WordCraft next to the file's: its own id.
     let mut e = d.clone();
     e.settings.track_changes = true;
-    if let Some(craft_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
         p.props.style = Some("Edited".into());
         p.touch();
     }
@@ -591,12 +591,12 @@ fn a_text_box_edited_is_written_from_the_model() {
         .parts
         .iter()
         .find(|(_, p)| {
-            p.kind == craft_wordmodel::PartKind::TextBox && p.blocks.iter().any(|b| b.as_para().is_some_and(|p| p.text.starts_with("Inside")))
+            p.kind == bharat_wordmodel::PartKind::TextBox && p.blocks.iter().any(|b| b.as_para().is_some_and(|p| p.text.starts_with("Inside")))
         })
         .map(|(id, _)| *id)
         .unwrap();
     let mut blocks = e.parts.get(&id).unwrap().blocks.clone();
-    if let Some(craft_wordmodel::Block::Para(p)) = blocks.get_mut(1).map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = blocks.get_mut(1).map(std::sync::Arc::make_mut) {
         p.props.style = Some("Edited".into());
         p.touch();
     }
@@ -627,7 +627,7 @@ fn a_bookmark_kept_at_one_end_is_written_once() {
     for start in ["From", "to there"] {
         let mut e = d.clone();
         let i = e.body.iter().position(|b| b.as_para().is_some_and(|p| p.text.starts_with(start))).unwrap();
-        if let Some(craft_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
+        if let Some(bharat_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
             p.props.style = Some("Edited".into());
             p.touch();
         }
@@ -653,9 +653,9 @@ fn a_note_or_formula_edited_is_written_from_the_model() {
     );
     // The note's text edited.
     let mut e = d.clone();
-    let id = e.parts.iter().find(|(_, p)| p.kind == craft_wordmodel::PartKind::Footnote).map(|(id, _)| *id).unwrap();
+    let id = e.parts.iter().find(|(_, p)| p.kind == bharat_wordmodel::PartKind::Footnote).map(|(id, _)| *id).unwrap();
     let mut blocks = e.parts.get(&id).unwrap().blocks.clone();
-    if let Some(craft_wordmodel::Block::Para(p)) = blocks.first_mut().map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = blocks.first_mut().map(std::sync::Arc::make_mut) {
         p.props.style = Some("Edited".into());
         p.touch();
     }
@@ -667,9 +667,9 @@ fn a_note_or_formula_edited_is_written_from_the_model() {
     // The formula edited: written anew, and the old one's files aren't.
     let mut e = d.clone();
     for b in e.body.iter_mut() {
-        if let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
+        if let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
             for o in &mut p.objects {
-                if let craft_wordmodel::para::InlineObject::Equation { linear, .. } = o {
+                if let bharat_wordmodel::para::InlineObject::Equation { linear, .. } = o {
                     *linear = "y^3".into();
                 }
             }
@@ -692,7 +692,7 @@ fn a_list_kept_as_read_is_gone_on_with_and_an_edited_one_written_anew() {
     // An item edited: the list written from the model, its numbering going on still.
     let mut e = d.clone();
     let i = e.body.iter().position(|b| b.as_para().is_some_and(|p| p.text.starts_with("Second"))).unwrap();
-    if let Some(craft_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
         p.props.style = Some("Edited".into());
         p.touch();
     }
@@ -711,7 +711,7 @@ fn a_hidden_section_stays_hidden_however_it_is_written() {
     // written around its blocks; they are hidden text themselves.
     let content = r##"<office:automatic-styles><text:list-style style:name="L5"><text:list-level-style-bullet text:level="1" text:bullet-char="-"/></text:list-style></office:automatic-styles><office:body><office:text><text:p>Shown.</text:p><text:section text:name="Notes" text:display="none"><text:p>Hidden words.</text:p><text:list xml:id="l5" text:style-name="L5"><text:list-item><text:p>Hidden item.</text:p></text:list-item></text:list></text:section><text:p>Shown again.</text:p></office:text></office:body>"##;
     let d = import(&package(&Sample { name: "hidden", content, styles: "", meta: "" })).unwrap();
-    let hidden = |d: &craft_wordmodel::Document, start: &str| {
+    let hidden = |d: &bharat_wordmodel::Document, start: &str| {
         let p = d.body.iter().filter_map(|b| b.as_para()).find(|p| p.text.starts_with(start)).unwrap();
         p.runs.iter().all(|r| r.props.hidden == Some(true))
     };
@@ -726,7 +726,7 @@ fn a_section_ending_in_a_list_closes_before_the_list_goes_on() {
     // section closes before it, so what follows isn't drawn into it (hidden with it).
     let content = r##"<office:automatic-styles><text:list-style style:name="L6"><text:list-level-style-number text:level="1" style:num-format="1"/></text:list-style></office:automatic-styles><office:body><office:text><text:section text:name="Hidden" text:display="none"><text:p>Hidden words.</text:p><text:list xml:id="l6" text:style-name="L6"><text:list-item><text:p>Hidden item.</text:p></text:list-item></text:list></text:section><text:list xml:id="l7" text:continue-list="l6" text:style-name="L6"><text:list-item><text:p>Shown item.</text:p></text:list-item></text:list><text:p>Shown after.</text:p></office:text></office:body>"##;
     let d = import(&package(&Sample { name: "list in section", content, styles: "", meta: "" })).unwrap();
-    let check = |d: &craft_wordmodel::Document, sectioned: bool| {
+    let check = |d: &bharat_wordmodel::Document, sectioned: bool| {
         let saved = export(d).unwrap();
         assert!(parts_well_formed(&saved).is_ok());
         let c = content_of(&saved);
@@ -747,7 +747,7 @@ fn a_section_ending_in_a_list_closes_before_the_list_goes_on() {
     // as read), its text hidden still.
     let mut e = d.clone();
     for b in e.body.iter_mut() {
-        if let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
+        if let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
             p.props.style = Some("Edited".into());
             p.touch();
         }
@@ -782,7 +782,7 @@ fn a_reference_mark_is_written_as_one_and_as_a_bookmark() {
     assert!(c.contains(r#"<text:reference-mark-start text:name="intro"/>the introduction<text:reference-mark-end text:name="intro"/>"#), "{c}");
     // Its paragraph edited, written from the model: both.
     let mut d = d;
-    if let Some(craft_wordmodel::Block::Para(p)) = d.body.first_mut().map(std::sync::Arc::make_mut) {
+    if let Some(bharat_wordmodel::Block::Para(p)) = d.body.first_mut().map(std::sync::Arc::make_mut) {
         p.props.style = Some("Edited".into());
         p.touch();
     }
@@ -801,14 +801,14 @@ fn a_section_in_a_table_cell_is_kept_in_it() {
     // the cell, whatever in the cell is edited.
     let content = r##"<office:body><office:text><table:table table:name="Spec"><table:table-column table:number-columns-repeated="2"/><table:table-row><table:table-cell office:value-type="string"><text:p>Status</text:p></table:table-cell><table:table-cell office:value-type="string"><text:section text:name="Status" text:display="none"><text:p>Preliminary words.</text:p><text:p>Standard words.</text:p></text:section></table:table-cell></table:table-row></table:table><text:p>After the table.</text:p></office:text></office:body>"##;
     let d = import(&package(&Sample { name: "cell section", content, styles: "", meta: "" })).unwrap();
-    let edit = |d: &craft_wordmodel::Document, which: &str| {
+    let edit = |d: &bharat_wordmodel::Document, which: &str| {
         let mut e = d.clone();
         for b in e.body.iter_mut() {
-            if let craft_wordmodel::Block::Table(t) = std::sync::Arc::make_mut(b) {
+            if let bharat_wordmodel::Block::Table(t) = std::sync::Arc::make_mut(b) {
                 for r in &mut t.rows {
                     for c in &mut r.cells {
                         for b in c.blocks.iter_mut() {
-                            if let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b)
+                            if let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b)
                                 && p.text.starts_with(which)
                             {
                                 p.props.style = Some("Edited".into());
@@ -876,7 +876,7 @@ fn a_group_edited_anywhere_is_written_from_the_model_whole() {
     ] {
         let mut e = d.clone();
         let i = e.body.iter().position(|b| b.as_para().is_some_and(|p| p.text.starts_with(start))).unwrap();
-        if let Some(craft_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
+        if let Some(bharat_wordmodel::Block::Para(p)) = e.body.get_mut(i).map(std::sync::Arc::make_mut) {
             p.props.style = Some("Edited".into());
             p.touch();
         }

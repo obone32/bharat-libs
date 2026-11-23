@@ -10,7 +10,7 @@
 
 use std::sync::Arc;
 
-use craft_wordmodel::Document;
+use bharat_wordmodel::Document;
 
 /// `Document::passthrough` key prefix of a kept part (its path follows), and the key of the list
 /// of kept paths with their media types (`path\tmedia type` lines; directories end in `/`).

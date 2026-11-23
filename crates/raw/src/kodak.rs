@@ -26,8 +26,8 @@
 use crate::{
     BlackLevel, Camera, Cfa, ColorData, Limits, Mode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result, ljpeg,
 };
-use craft_tiff::image::chunk_bytes;
-use craft_tiff::{Ifd, Tiff, tags as t};
+use bharat_tiff::image::chunk_bytes;
+use bharat_tiff::{Ifd, Tiff, tags as t};
 
 /// The vendor IFD pointer (`KodakIFD`).
 const KODAK_IFD: u16 = 0x8290;
@@ -131,8 +131,8 @@ pub(crate) fn decode(bytes: &[u8], mode: Mode, limits: &Limits) -> Result<RawIma
 /// The vendor IFD (`KodakIFD`): a plain IFD with absolute value offsets.
 fn kodak_ifd(bytes: &[u8], tiff: &Tiff, ifd0: &Ifd) -> Option<Ifd> {
     let off = u64::from(ifd0.u32(KODAK_IFD)?);
-    let opts = craft_tiff::ParseOptions { max_ifds: 4, max_depth: 1, follow_children: false, ..Default::default() };
-    craft_tiff::parse_ifd_at(bytes, off, tiff.order, 0, false, &opts).ok().map(|(i, _)| i)
+    let opts = bharat_tiff::ParseOptions { max_ifds: 4, max_depth: 1, follow_children: false, ..Default::default() };
+    bharat_tiff::parse_ifd_at(bytes, off, tiff.order, 0, false, &opts).ok().map(|(i, _)| i)
 }
 
 /// Black level per CFA position (the mosaic's first sample is position 0): the value below which only 0.01% of that
@@ -171,7 +171,7 @@ fn measured_black(d: &[u16], w: usize) -> BlackLevel {
 mod tests {
     use super::*;
     use crate::{decode, probe, probe_info};
-    use craft_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
+    use bharat_tiff::{ByteOrder, IfdBuilder, ImageData, TiffWriter, Value};
 
     const W: usize = 16;
     const H: usize = 8;

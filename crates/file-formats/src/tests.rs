@@ -26,14 +26,14 @@ fn known_formats_separate_build_disabled_and_unsupported_operations() {
     #[cfg(not(feature = "raster-codecs"))]
     assert_eq!(jpeg.read, Availability::BuildDisabled);
 
-    // Whether this build reads JPEG XL is craft-image-codecs' `jxl` feature to decide, and this
+    // Whether this build reads JPEG XL is bharat-image-codecs' `jxl` feature to decide, and this
     // crate cannot see that through `cfg!`: a workspace build turns it on without this crate
     // selecting anything, which is how a plain equality here failed every `--all-features` gate.
     // The codec's own answer is the one to check against, so a wrong read status is still caught.
     #[cfg(feature = "raster-codecs")]
     {
         let codec = Format::Jxl.raster_codec();
-        assert!(codec.is_some(), "JXL is handled by craft-image-codecs and must map to one of its formats");
+        assert!(codec.is_some(), "JXL is handled by bharat-image-codecs and must map to one of its formats");
         let expected = if codec.is_some_and(|codec| codec.caps().read) { Availability::Available } else { Availability::Unsupported };
         assert_eq!(Format::Jxl.capabilities().read, expected);
     }
@@ -99,8 +99,8 @@ fn jpeg_marker_walk_matches_the_codec_detection() {
         b"\xff\xd8\xff\xda\0\x08",
     ];
     for bytes in cases {
-        let expected = match craft_image_codecs::detect(bytes) {
-            Some(craft_image_codecs::Format::JpegLs) => Format::JpegLs,
+        let expected = match bharat_image_codecs::detect(bytes) {
+            Some(bharat_image_codecs::Format::JpegLs) => Format::JpegLs,
             _ => Format::Jpeg,
         };
         assert_eq!(super::detect("", bytes), Some(expected), "{bytes:02x?}");
@@ -111,8 +111,8 @@ fn jpeg_marker_walk_matches_the_codec_detection() {
 fn jpeg_ls_capabilities_follow_the_codec() {
     #[cfg(feature = "raster-codecs")]
     {
-        assert_eq!(Format::JpegLs.raster_codec(), Some(craft_image_codecs::Format::JpegLs));
-        assert_eq!(Format::JpegLs.extensions(), craft_image_codecs::Format::JpegLs.extensions());
+        assert_eq!(Format::JpegLs.raster_codec(), Some(bharat_image_codecs::Format::JpegLs));
+        assert_eq!(Format::JpegLs.extensions(), bharat_image_codecs::Format::JpegLs.extensions());
         assert_eq!(Format::JpegLs.capabilities().read, Availability::Available);
         assert_eq!(Format::JpegLs.capabilities().write, Availability::Available);
     }

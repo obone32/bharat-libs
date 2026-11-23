@@ -1,4 +1,4 @@
-//! What a cloud provider has to offer the Craft apps, and nothing about who
+//! What a cloud provider has to offer the Bharat apps, and nothing about who
 //! provides it.
 //!
 //! Every capability here is an RFC or an ordinary HTTP API that many systems

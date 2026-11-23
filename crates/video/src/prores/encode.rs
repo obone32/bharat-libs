@@ -5,7 +5,7 @@ use crate::prores::dct::fdct8x8;
 use crate::prores::header::{FRAME_ID, FrameHeader, PictureHeader, row_slice_widths};
 use crate::prores::tables::{DC_CB, DC_CTX_INIT, FIRST_DC_CB, LEVEL_CB, LEVEL_CTX_INIT, RUN_CB, RUN_CTX_INIT, SCAN_PROGRESSIVE, qscale};
 use crate::prores::{AlphaType, ChromaFormat, ColorInfo, Error, Frame, Interlace, Profile, Result};
-use craft_media::{CodecId, CodecParams};
+use bharat_media::{CodecId, CodecParams};
 
 /// Encoder configuration.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -642,7 +642,7 @@ mod alpha_tests {
 #[cfg(test)]
 mod alpha_conformance_tests {
     use super::*;
-    use craft_media::bitstream::BitReader;
+    use bharat_media::bitstream::BitReader;
 
     /// RDD 36:2022 §5.3.3 and Tables 12–14, using a bounds-checked reader.
     /// Unlike the production decoder's zero-padded hot path, this checks every

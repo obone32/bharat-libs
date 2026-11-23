@@ -5,7 +5,7 @@
 
 use std::collections::VecDeque;
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use super::filterbank::{Analysis, GRANULE};
 use super::quantize::{Granule, Model};
@@ -115,7 +115,7 @@ pub const DELAY: u32 = 1057;
 /// returns the rest.
 ///
 /// ```
-/// use craft_audio::mp3::{Config, DELAY, Encoder};
+/// use bharat_audio::mp3::{Config, DELAY, Encoder};
 ///
 /// let left: Vec<f32> = (0..48_000).map(|i| (i as f32 * 0.05).sin() * 0.5).collect();
 /// let right = left.clone();
@@ -124,7 +124,7 @@ pub const DELAY: u32 = 1057;
 /// mp3.extend(enc.flush()); // pads with silence to the last input sample
 /// assert_eq!(mp3.len() % 576, 0); // 192 kbit/s at 48 kHz: 576 bytes per frame
 /// assert_eq!(DELAY, 1057); // a decoder's output lags the input by this many samples
-/// # Ok::<(), craft_audio::mp3::Error>(())
+/// # Ok::<(), bharat_audio::mp3::Error>(())
 /// ```
 pub struct Encoder {
     cfg: Config,

@@ -1,7 +1,7 @@
 use std::collections::BTreeSet;
 
-use craft_captions::{Cue, Document, Format, WriteOptions, parse, write};
-use craft_captions::{FrameRate, TICKS_PER_SECOND, Tick};
+use bharat_captions::{Cue, Document, Format, WriteOptions, parse, write};
+use bharat_captions::{FrameRate, TICKS_PER_SECOND, Tick};
 
 const XML: &str = "http://www.w3.org/XML/1998/namespace";
 const TT: &str = "http://www.w3.org/ns/ttml";

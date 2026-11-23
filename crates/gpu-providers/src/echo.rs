@@ -1,4 +1,4 @@
-use craft_gpu::{GpuContext, GpuFault, GpuJob, GpuJobOutcome, GpuProvider};
+use bharat_gpu::{GpuContext, GpuFault, GpuJob, GpuJobOutcome, GpuProvider};
 
 /// Concatenates job params with bytes from the first input handle (shared test / debug provider).
 pub struct EchoProvider;

@@ -55,18 +55,18 @@ jobs:
       matrix:
         include:
           # `features`: each is linted alone, so code that needs another feature fails here.
-          - { crate: craft-xml, features: "" }
-          - { crate: craft-mime, features: "" }
-          - { crate: craft-cfb, features: "" }
-          - { crate: craft-mesh, features: "stl obj ply gltf" }
-          - { crate: craft-metafile, features: "write" }
-          - { crate: craft-dxf, features: "" }
-          - { crate: craft-gcode, features: "" }
-          - { crate: craft-svg-paths, features: "" }
-          - { crate: craft-silhouette-studio, features: "" }
-          - { crate: craft-tiff, features: "" }
-          - { crate: craft-heif, features: "testdata" }
-          - { crate: craft-cms, features: "" }
+          - { crate: bharat-xml, features: "" }
+          - { crate: bharat-mime, features: "" }
+          - { crate: bharat-cfb, features: "" }
+          - { crate: bharat-mesh, features: "stl obj ply gltf" }
+          - { crate: bharat-metafile, features: "write" }
+          - { crate: bharat-dxf, features: "" }
+          - { crate: bharat-gcode, features: "" }
+          - { crate: bharat-svg-paths, features: "" }
+          - { crate: bharat-silhouette-studio, features: "" }
+          - { crate: bharat-tiff, features: "" }
+          - { crate: bharat-heif, features: "testdata" }
+          - { crate: bharat-cms, features: "" }
     # fmt, clippy with default and with all features, and the tests run in the Workspace gate on
     # every OS; this lints each feature alone and checks the web build.
     name: ${{ matrix.crate }} feature sets, WASM

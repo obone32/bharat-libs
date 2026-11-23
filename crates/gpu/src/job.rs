@@ -7,7 +7,7 @@ pub struct HandleId(pub u32);
 /// Stable provider name (`craft.readback`, `effectcraft.compositor.frame`, …).
 pub type ProviderId = String;
 
-/// Versioned parameter blob; schema owned by the provider crate, not craft-gpu.
+/// Versioned parameter blob; schema owned by the provider crate, not bharat-gpu.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GpuJobParams(pub Vec<u8>);
 

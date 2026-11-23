@@ -1,4 +1,4 @@
-//! Shared optional PDF reading, rendering and writing for Craft applications.
+//! Shared optional PDF reading, rendering and writing for Bharat applications.
 //!
 //! Applications retain document models, layout, shaping, font policy and scheduling.
 //! Advanced backend re-exports are coupled to the pinned backend, not a universal document model.

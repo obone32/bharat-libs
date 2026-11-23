@@ -1,6 +1,6 @@
 [package]
-name = "craft-ppt-binary"
-description = "Reader for the PowerPoint 97-2003 binary file format (.ppt, .pot, .pps; [MS-PPT], [MS-ODRAW]) into the craft-pptx presentation model, on craft-cfb."
+name = "bharat-ppt-binary"
+description = "Reader for the PowerPoint 97-2003 binary file format (.ppt, .pot, .pps; [MS-PPT], [MS-ODRAW]) into the bharat-pptx presentation model, on bharat-cfb."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,9 +11,9 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-cfb = { workspace = true }
-craft-drawingml = { workspace = true }
-craft-pptx = { workspace = true }
+bharat-cfb = { workspace = true }
+bharat-drawingml = { workspace = true }
+bharat-pptx = { workspace = true }
 log = { workspace = true }
 miniz_oxide = { workspace = true }
 thiserror = { workspace = true }

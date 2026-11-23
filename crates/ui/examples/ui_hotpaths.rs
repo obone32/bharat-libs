@@ -1,10 +1,10 @@
-//! Test-only headless performance harness for craft-ui hot paths.
+//! Test-only headless performance harness for bharat-ui hot paths.
 //!
-//! Run through the server task workflow, e.g. `cargo run -p craft-ui --example ui_hotpaths --locked`.
-//! Set `CRAFT_UI_PERF_OUT` to write the raw JSON report (otherwise stdout); `CRAFT_UI_PERF_LABEL`
+//! Run through the server task workflow, e.g. `cargo run -p bharat-ui --example ui_hotpaths --locked`.
+//! Set `BHARAT_UI_PERF_OUT` to write the raw JSON report (otherwise stdout); `BHARAT_UI_PERF_LABEL`
 //! is copied into the report. Frames are `Context::run_ui` plus `Context::tessellate`; texture
 //! deltas are counted but never uploaded, and no GPU, window, compositor or native input path is
-//! exercised. Fonts are egui's bundled `default_fonts` unless `CRAFT_UI_PERF_FONT` points at a
+//! exercised. Fonts are egui's bundled `default_fonts` unless `BHARAT_UI_PERF_FONT` points at a
 //! pinned fixture file (recorded by the parent with its hash). Bodies, geometry, interactions and
 //! the mesh fingerprint are collected on the final measured frame; the hover probe is a separate
 //! unmeasured frame and never contributes to timings or counters.
@@ -18,7 +18,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use craft_ui::{
+use bharat_ui::{
     docking::{DockArea, DockError, DockStyle, Floating, Layout, Node, Permissions},
     layout::{SplitAxis, SplitSize, fit_toolbar, split_rect},
     tabs,
@@ -53,12 +53,12 @@ struct Frames {
 }
 
 /// Run all micro and dock/integration cases at 1× and 2×, gate each case, and emit the schema-3
-/// JSON report to `CRAFT_UI_PERF_OUT` (or stdout). Fails when no bundled or fixture font is
+/// JSON report to `BHARAT_UI_PERF_OUT` (or stdout). Fails when no bundled or fixture font is
 /// available.
 fn main() -> Result<(), Box<dyn Error>> {
     let (fonts, font_names) = font_definitions()?;
     if font_names.is_empty() {
-        return Err("the example needs egui's bundled default_fonts or CRAFT_UI_PERF_FONT".into());
+        return Err("the example needs egui's bundled default_fonts or BHARAT_UI_PERF_FONT".into());
     }
     let mut micro = Vec::new();
     for scale in [1.0f32, 2.0] {
@@ -144,8 +144,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let case_counts = json!({"micro": micro.len(), "dock": dock.len(), "panel_integration": integration.len()});
     let report = json!({
-        "schema": 3, "harness": "craft-ui/examples/ui_hotpaths",
-        "label": env::var("CRAFT_UI_PERF_LABEL").unwrap_or_default(),
+        "schema": 3, "harness": "bharat-ui/examples/ui_hotpaths",
+        "label": env::var("BHARAT_UI_PERF_LABEL").unwrap_or_default(),
         "os": env::consts::OS, "arch": env::consts::ARCH,
         "package_version": env!("CARGO_PKG_VERSION"), "debug_assertions": cfg!(debug_assertions),
         "build_profile": if cfg!(debug_assertions) { "debug" } else { "release" },
@@ -155,20 +155,20 @@ fn main() -> Result<(), Box<dyn Error>> {
         "notes": [
             "CPU-only headless measurement; no GPU renderer, native window, compositor or input.",
             "Dock frame scope is Context::run_ui + Context::tessellate; texture deltas are counted, not uploaded.",
-            "Fonts are egui default_fonts or the CRAFT_UI_PERF_FONT fixture; no installed system fonts.",
+            "Fonts are egui default_fonts or the BHARAT_UI_PERF_FONT fixture; no installed system fonts.",
             "Micro samples are mean-of-batch nanoseconds; frame samples are individual frame nanoseconds.",
             "Every micro operation black-boxes its inputs and result so loop-invariant hoisting cannot erase the measured work.",
             "Individual micro latencies are diagnostic only: below about one microsecond the single-call timer overhead dominates.",
             "Bodies, geometry, interactions and the mesh fingerprint come from the final measured frame; the hover probe is a separate unmeasured frame.",
         ],
         "minimum_warmups": WARMUPS, "minimum_warmup_ns": MIN_WARMUP.as_nanos(), "micro_samples": MICRO_SAMPLES, "micro_batch": MICRO_BATCH, "frame_samples": FRAME_SAMPLES,
-        "fonts": {"source": font_source(), "font_file": env::var_os("CRAFT_UI_PERF_FONT").map(|path| path.to_string_lossy().into_owned()), "font_names": font_names,
+        "fonts": {"source": font_source(), "font_file": env::var_os("BHARAT_UI_PERF_FONT").map(|path| path.to_string_lossy().into_owned()), "font_names": font_names,
             "families": fonts.families.iter().map(|(family, names)| (format!("{family:?}"), names)).collect::<BTreeMap<_, _>>()},
         "micro": micro, "dock": dock, "panel_integration": integration,
         "case_counts": case_counts,
     });
     let text = serde_json::to_string_pretty(&report)?;
-    if let Ok(path) = env::var("CRAFT_UI_PERF_OUT") {
+    if let Ok(path) = env::var("BHARAT_UI_PERF_OUT") {
         std::fs::write(&path, &text)?;
         eprintln!("ui_hotpaths: wrote {path} ({} bytes)", text.len());
     } else {
@@ -249,11 +249,11 @@ fn percentile(sorted: &[u64], percent: usize) -> u64 {
     sorted[(sorted.len() * percent).div_ceil(100).saturating_sub(1).min(sorted.len() - 1)]
 }
 
-/// Use egui's bundled fonts, or an empty definition set with the `CRAFT_UI_PERF_FONT` file inserted
+/// Use egui's bundled fonts, or an empty definition set with the `BHARAT_UI_PERF_FONT` file inserted
 /// first in both proportional and monospace families. Returns the used font names.
 fn font_definitions() -> Result<(egui::FontDefinitions, Vec<String>), Box<dyn Error>> {
     let mut fonts = egui::FontDefinitions::default();
-    if let Some(path) = env::var_os("CRAFT_UI_PERF_FONT") {
+    if let Some(path) = env::var_os("BHARAT_UI_PERF_FONT") {
         fonts = egui::FontDefinitions::empty();
         let name = "perf-fixture".to_owned();
         fonts.font_data.insert(name.clone(), Arc::new(egui::FontData::from_owned(std::fs::read(&path)?)));
@@ -265,10 +265,10 @@ fn font_definitions() -> Result<(egui::FontDefinitions, Vec<String>), Box<dyn Er
     Ok((fonts, names))
 }
 
-/// Describe the report's font source: the pinned `CRAFT_UI_PERF_FONT` file when
+/// Describe the report's font source: the pinned `BHARAT_UI_PERF_FONT` file when
 /// set, otherwise egui's bundled default fonts.
 fn font_source() -> &'static str {
-    if env::var_os("CRAFT_UI_PERF_FONT").is_some() { "CRAFT_UI_PERF_FONT (pinned fixture file)" } else { "egui default_fonts (bundled)" }
+    if env::var_os("BHARAT_UI_PERF_FONT").is_some() { "BHARAT_UI_PERF_FONT (pinned fixture file)" } else { "egui default_fonts (bundled)" }
 }
 
 /// A headless context at `scale` with the given fonts, dark visuals, zero animation time and no
@@ -333,7 +333,7 @@ fn check_tabs(natural: &[f32], selected: usize, available: f32, minimum: f32, ov
 
 /// Check a split layout: both panes are positive and sum to the span minus the gap, do not overlap
 /// or escape, `resized` stays finite, and an inverted rect is rejected. Returns the layout.
-fn check_split(rect: Rect, axis: SplitAxis, size: SplitSize, gap: f32, minimum: f32) -> Result<craft_ui::layout::SplitLayout, Box<dyn Error>> {
+fn check_split(rect: Rect, axis: SplitAxis, size: SplitSize, gap: f32, minimum: f32) -> Result<bharat_ui::layout::SplitLayout, Box<dyn Error>> {
     let layout = split_rect(rect, axis, size, gap, minimum).ok_or("split_rect returned None")?;
     let (span, first, second) = match axis {
         SplitAxis::Horizontal => (rect.width(), layout.first.width(), layout.second.width()),

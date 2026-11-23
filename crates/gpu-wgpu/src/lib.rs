@@ -1,4 +1,4 @@
-//! wgpu-backed [`GpuContext`](craft_gpu::GpuContext).
+//! wgpu-backed [`GpuContext`](bharat_gpu::GpuContext).
 //!
 //! WebGPU on `wasm32`; native APIs when backend features are enabled. With the `adapter-probe`
 //! feature (native only, pollster) and at least one `native-*` backend feature,
@@ -7,13 +7,13 @@
 //! advertised maximum. Without a usable adapter (the features above are off, no GPU is present,
 //! or on `wasm32` where real device creation needs the async worker-init path noted in
 //! `docs/gpu-backends.md`), the context degrades to the same in-memory staging behavior as
-//! `craft_gpu_null::NullContext` (not a dependency of this crate; named here only for context);
+//! `bharat_gpu_null::NullContext` (not a dependency of this crate; named here only for context);
 //! that is RFC-0022's defined no-adapter path, not an error.
 //!
 //! Readback is asynchronous end to end (`request_read` + `poll_reads`), because WebGPU can only
 //! map a buffer that way. Native, with a real device, drives it with `Buffer::map_async` plus
 //! `Device::poll`. The blocking `read_buffer` convenience (see
-//! [`GpuContext`](craft_gpu::GpuContext)'s trait docs) blocks efficiently on native by polling
+//! [`GpuContext`](bharat_gpu::GpuContext)'s trait docs) blocks efficiently on native by polling
 //! the device while it waits. On `wasm32` the backing is always the in-memory staging store
 //! today, whose reads complete synchronously, and `read_buffer` serves them; only a read that
 //! did not complete synchronously returns a fault there, since blocking would freeze the one
@@ -21,7 +21,7 @@
 
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-use craft_gpu::{DeviceCaps, GpuContext, GpuFault, HandleId, ReadOutcome, ReadRequest, WorkerKind};
+use bharat_gpu::{DeviceCaps, GpuContext, GpuFault, HandleId, ReadOutcome, ReadRequest, WorkerKind};
 
 #[cfg(test)]
 mod tests;
@@ -74,12 +74,12 @@ pub fn probe_caps() -> DeviceCaps {
 mod native {
     use std::sync::{Arc, Mutex};
 
-    use craft_gpu::{DeviceCaps, GpuFault};
+    use bharat_gpu::{DeviceCaps, GpuFault};
 
     use crate::{Backing, DeviceBacking};
 
     /// Features this context asks a device for. No provider dispatches a real WGSL job on wgpu
-    /// yet (`craft-gpu-providers` ships CPU stand-ins, by design, until that lands); extend this
+    /// yet (`bharat-gpu-providers` ships CPU stand-ins, by design, until that lands); extend this
     /// as real compute providers land, and it degrades gracefully regardless: see
     /// [`create_device`].
     const DESIRED_FEATURES: wgpu::Features = wgpu::Features::empty();
@@ -99,7 +99,7 @@ mod native {
     }
 
     /// Request a real device. `None` on the defined no-adapter path (no usable adapter): the
-    /// caller degrades to the staging backing, identical in shape to `craft-gpu-null`.
+    /// caller degrades to the staging backing, identical in shape to `bharat-gpu-null`.
     ///
     /// Never panics: `required_features` is intersected with what the adapter actually
     /// advertises, and `required_limits` is set to the adapter's own limits (never more), so
@@ -111,7 +111,7 @@ mod native {
         let features = DESIRED_FEATURES & adapter.features();
         let limits = adapter.limits();
         let desc =
-            wgpu::DeviceDescriptor { label: Some("craft-gpu-wgpu"), required_features: features, required_limits: limits, ..Default::default() };
+            wgpu::DeviceDescriptor { label: Some("bharat-gpu-wgpu"), required_features: features, required_limits: limits, ..Default::default() };
         let (device, queue) = pollster::block_on(adapter.request_device(&desc)).ok()?;
 
         let lost = Arc::new(Mutex::new(None));
@@ -139,7 +139,7 @@ mod native {
     }
 }
 
-/// No real device: buffers live on the host, exactly like `craft-gpu-null`. RFC-0022's defined
+/// No real device: buffers live on the host, exactly like `bharat-gpu-null`. RFC-0022's defined
 /// degrade path for "no adapter" (feature off, no GPU present, or the `wasm32` async-init gap).
 /// Each slot is `None` once freed (or never allocated): handles are stable indices, so a freed
 /// slot cannot simply be removed without shifting every later handle's index.
@@ -162,7 +162,7 @@ struct DeviceBacking {
     /// Each buffer paired with its true, caller-given byte length. wgpu requires every buffer
     /// with copy usage to be sized in multiples of [`COPY_ALIGN`]; the buffer itself is padded to
     /// that, but callers (`buffer_len`, `request_read`'s returned bytes) see the true length,
-    /// matching the staging path and `craft-gpu-null` exactly, with no padding visible. `None`
+    /// matching the staging path and `bharat-gpu-null` exactly, with no padding visible. `None`
     /// once freed: see the `Backing::Staging` doc for why the slot stays rather than shifting.
     buffers: Vec<Option<(wgpu::Buffer, u64)>>,
     /// Set by the device-lost callback registered in [`native::create_device`]; checked before
@@ -175,7 +175,7 @@ struct DeviceBacking {
 /// `copy_buffer_to_buffer` size, must be a multiple of this (4 bytes). Uploading or reading back
 /// a buffer length that doesn't land on this boundary (`b"xy"`, two bytes) is a validation error
 /// on native wgpu, surfaced as a panic from inside `wgpu-core`'s own uncaptured-error path unless
-/// padded first; `craft-gpu-null`'s plain `Vec<u8>` has no such constraint, so this padding is
+/// padded first; `bharat-gpu-null`'s plain `Vec<u8>` has no such constraint, so this padding is
 /// purely an artifact of the real backend, kept invisible to every caller of this crate.
 #[cfg(all(not(target_arch = "wasm32"), feature = "adapter-probe"))]
 const COPY_ALIGN: u64 = 4;
@@ -422,7 +422,7 @@ impl GpuContext for WgpuContext {
                 // reach the default handler and panic regardless of when this scope is popped.
                 let create_scope = d.device.push_error_scope(wgpu::ErrorFilter::OutOfMemory);
                 let staging = d.device.create_buffer(&wgpu::BufferDescriptor {
-                    label: Some("craft-gpu-wgpu.read-staging"),
+                    label: Some("bharat-gpu-wgpu.read-staging"),
                     size: copy_len,
                     usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST,
                     mapped_at_creation: false,
@@ -433,7 +433,7 @@ impl GpuContext for WgpuContext {
                 // The copy and its submission get their own scope rather than reusing the one
                 // already closed above, same split as upload_buffer's create vs. write.
                 let copy_scope = d.device.push_error_scope(wgpu::ErrorFilter::OutOfMemory);
-                let mut encoder = d.device.create_command_encoder(&wgpu::CommandEncoderDescriptor { label: Some("craft-gpu-wgpu.read-copy") });
+                let mut encoder = d.device.create_command_encoder(&wgpu::CommandEncoderDescriptor { label: Some("bharat-gpu-wgpu.read-copy") });
                 encoder.copy_buffer_to_buffer(buffer, 0, &staging, 0, copy_len);
                 d.queue.submit(Some(encoder.finish()));
                 if let Some(err) = pollster::block_on(copy_scope.pop()) {

@@ -29,7 +29,7 @@ pub mod rest;
 #[cfg(test)]
 mod tests;
 
-pub use craft_kiwi as kiwi;
+pub use bharat_kiwi as kiwi;
 
 pub use archive::{Archive, Limits, MAX_ENTRIES, Package, is_fig, write_archive};
 pub use canvas::{

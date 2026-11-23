@@ -9,21 +9,21 @@
 //! printing condition (see [`Conversion`]).
 //!
 //! Ported from PdfCraft #2770 by Guillem Hermida (`crates/render/src/separations.rs` at
-//! 6fcf2a4, MIT OR Apache-2.0), with craft-cms in place of moxcms.
+//! 6fcf2a4, MIT OR Apache-2.0), with bharat-cms in place of moxcms.
 
 use std::collections::HashSet;
 use std::ops::ControlFlow;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::{Arc, Mutex};
 
-use craft_cms::Profile;
-use craft_pdf::interpret::InterpreterSettings;
-use craft_pdf::interpret::color::{CmykSimulation, Ink as PdfInk, InkSinkFn, Plate};
-use craft_pdf::raster::{self, MAX_SIDE, RenderCache};
-use craft_pdf::syntax::Pdf;
-use craft_pdf::syntax::object::dict::keys::{DEST_OUTPUT_PROFILE, OUTPUT_CONDITION, OUTPUT_CONDITION_IDENTIFIER, OUTPUT_INTENTS, S};
-use craft_pdf::syntax::object::{Array, Dict, Name, Stream, String as PdfText};
-use craft_pdf::{OpenError, open_slice};
+use bharat_cms::Profile;
+use bharat_pdf::interpret::InterpreterSettings;
+use bharat_pdf::interpret::color::{CmykSimulation, Ink as PdfInk, InkSinkFn, Plate};
+use bharat_pdf::raster::{self, MAX_SIDE, RenderCache};
+use bharat_pdf::syntax::Pdf;
+use bharat_pdf::syntax::object::dict::keys::{DEST_OUTPUT_PROFILE, OUTPUT_CONDITION, OUTPUT_CONDITION_IDENTIFIER, OUTPUT_INTENTS, S};
+use bharat_pdf::syntax::object::{Array, Dict, Name, Stream, String as PdfText};
+use bharat_pdf::{OpenError, open_slice};
 
 use crate::cms::{CmsConversion, ProfileError, srgb8_to_lab};
 use crate::ink::{Alternate, InkId, InkSet, Spot};
@@ -63,7 +63,7 @@ const MAX_CONDITION: usize = 160;
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub enum Fallback {
-    /// craft-cms's Coated FOGRA39 profile.
+    /// bharat-cms's Coated FOGRA39 profile.
     #[default]
     Fogra39,
     /// The caller's CMYK ICC profile.
@@ -273,7 +273,7 @@ fn separate(
 /// The inks page `p` paints, found at `scale`, a low resolution: the process inks, then up to
 /// [`MAX_SPOT_INKS`] spots as the [`InkSet`], the renderer's inks to separate in the same
 /// order, and the names of spots left unseparated.
-fn discover<'a>(p: &'a craft_pdf::syntax::page::Page<'a>, cache: &RenderCache<'a>, scale: f32) -> Result<(InkSet, Vec<PdfInk>, Vec<String>), Error> {
+fn discover<'a>(p: &'a bharat_pdf::syntax::page::Page<'a>, cache: &RenderCache<'a>, scale: f32) -> Result<(InkSet, Vec<PdfInk>, Vec<String>), Error> {
     let log = Arc::new(Mutex::new(SpotLog::default()));
     let settings = InterpreterSettings { ink_sink: Some(spot_sink(&log)), ..Default::default() };
     raster::render(p, cache, &settings, &film(scale))?;
@@ -336,7 +336,7 @@ fn plate_scale(w: f32, h: f32, scale: f32) -> f32 {
 pub(crate) fn fallback(fallback: &Fallback) -> Result<(Option<CmykSimulation>, Conversion), Error> {
     let (conversion, icc): (CmsConversion, &[u8]) = match fallback {
         Fallback::DeviceFormulas => return Ok((None, Conversion::DeviceFormulas)),
-        Fallback::Fogra39 => (CmsConversion::fogra39(), craft_cms::builtin::COATED_FOGRA39_ICC),
+        Fallback::Fogra39 => (CmsConversion::fogra39(), bharat_cms::builtin::COATED_FOGRA39_ICC),
         Fallback::Profile(icc) => (CmsConversion::new(icc)?, icc),
     };
     let simulation = conversion.simulation(icc);
@@ -388,7 +388,7 @@ pub(crate) fn pdf_text(bytes: &[u8]) -> String {
 
 /// The printing condition of page `page` (ISO 32000-2 §14.11.5): of the page's own
 /// `/OutputIntents` (PDF 2.0), else the catalog's, the first whose `/DestOutputProfile` is a
-/// CMYK profile craft-cms converts into, a `GTS_PDFX` intent before the others.
+/// CMYK profile bharat-cms converts into, a `GTS_PDFX` intent before the others.
 pub(crate) fn output_intent(pdf: &Pdf, page: usize) -> Option<(CmykSimulation, Conversion)> {
     let (intent, conversion, icc) = intent_condition(pdf, page)?;
     let simulation = conversion.simulation(&icc);
@@ -427,7 +427,7 @@ pub(crate) struct IntentProfile {
 pub(crate) fn output_intent_profile(pdf: &Pdf, page: usize) -> Option<IntentProfile> {
     output_intents(pdf, page).iter().find_map(|intent| {
         let icc = intent.get::<Stream<'_>>(DEST_OUTPUT_PROFILE)?.decoded_within(MAX_PROFILE_BYTES).ok()?;
-        if *icc != *craft_cms::builtin::COATED_FOGRA39_ICC && CmsConversion::new(&icc).is_err() {
+        if *icc != *bharat_cms::builtin::COATED_FOGRA39_ICC && CmsConversion::new(&icc).is_err() {
             return None;
         }
         Some(IntentProfile {

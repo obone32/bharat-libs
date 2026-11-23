@@ -5,8 +5,8 @@
 
 mod mpegts_mux;
 
-use craft_media::mpegts::mux::{Av1Config, Codec, Config, Error, Frame, MAX_PCR_INTERVAL, Muxer, OpusMapping, Stream};
-use craft_media::mpegts::{self, Codec as Demuxed, StreamId};
+use bharat_media::mpegts::mux::{Av1Config, Codec, Config, Error, Frame, MAX_PCR_INTERVAL, Muxer, OpusMapping, Stream};
+use bharat_media::mpegts::{self, Codec as Demuxed, StreamId};
 use mpegts_mux::*;
 
 const DELAY: i64 = 63_000;
@@ -226,7 +226,7 @@ fn opus_with_an_explicit_mapping_and_trims() {
     for k in 0..20i64 {
         // three streams of 20 ms: two self-delimited packets, then the last one
         let au = [0xFC, 1, 0x55, 0xFC, 1, 0x66, 0xFC, 0x77];
-        let trim = if k == 0 { craft_media::mpegts::mux::OpusTrim { start: 312, end: 0 } } else { Default::default() };
+        let trim = if k == 0 { bharat_media::mpegts::mux::OpusTrim { start: 312, end: 0 } } else { Default::default() };
         let t = 90_000 + k * 1800;
         m.write_frame_with_trim(0, &Frame { data: &au, pts: t, dts: None, key: true }, trim).unwrap();
         let mut unit = if k == 0 { vec![0x7F, 0xF0, 8] } else { vec![0x7F, 0xE0, 8] };

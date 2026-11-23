@@ -13,7 +13,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc::Sender;
 
-use craft_cloud::{Capability, Conversation, Entry};
+use bharat_cloud::{Capability, Conversation, Entry};
 
 /// Work for a host's worker. Each one answers with one or more [`Event`].
 pub enum Job {
@@ -192,17 +192,17 @@ impl Fault {
 
 /// The contract's own error, in the shapes the pages act on.
 ///
-/// For a host that reaches a provider through [`craft_cloud`] directly. A host
+/// For a host that reaches a provider through [`bharat_cloud`] directly. A host
 /// that reaches a service through its own client crate maps that crate's error
 /// instead, since only it knows which code that service answers a refused
 /// conditional write with.
 ///
-/// [`craft_cloud::Error::Conflict`] is the one case worth telling apart. It
+/// [`bharat_cloud::Error::Conflict`] is the one case worth telling apart. It
 /// means somebody else's work is in the stored copy. The save must never be
 /// retried and never be forced.
-impl From<craft_cloud::Error> for Fault {
-    fn from(error: craft_cloud::Error) -> Fault {
-        use craft_cloud::Error;
+impl From<bharat_cloud::Error> for Fault {
+    fn from(error: bharat_cloud::Error) -> Fault {
+        use bharat_cloud::Error;
         match error {
             Error::Unreachable(detail) => Fault::Unreachable(detail),
             Error::Unauthenticated => Fault::Unauthenticated,

@@ -7,9 +7,9 @@ use super::common;
 use std::process::Command;
 
 use common::*;
-use craft_audio::opus::encoder::{Bandwidth, Mode, OpusEncoder};
+use bharat_audio::opus::encoder::{Bandwidth, Mode, OpusEncoder};
 
-/// ffmpeg, found and skipped by craft-media's oracle rules (EffectCraft looked in Homebrew's
+/// ffmpeg, found and skipped by bharat-media's oracle rules (EffectCraft looked in Homebrew's
 /// directory, then `PATH`).
 fn ffmpeg() -> Option<std::path::PathBuf> {
     crate::testkit::ffmpeg_or_skip("opus encoder ffmpeg oracle")

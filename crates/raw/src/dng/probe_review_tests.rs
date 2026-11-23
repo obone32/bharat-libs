@@ -1,5 +1,5 @@
 use super::*;
-use craft_tiff::{IfdBuilder, ImageData, TiffWriter};
+use bharat_tiff::{IfdBuilder, ImageData, TiffWriter};
 
 #[allow(clippy::unwrap_used)] // Test fixture construction must fail the test if its independent writer fails.
 fn plain() -> Vec<u8> {

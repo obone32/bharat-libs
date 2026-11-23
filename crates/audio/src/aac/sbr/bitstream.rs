@@ -3,7 +3,7 @@
 
 use std::sync::OnceLock;
 
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 use super::freq::FreqTables;
 use super::tables::{
@@ -403,7 +403,7 @@ pub(crate) fn read_data(br: &mut BitReader, t: &FreqTables, amp_res: bool, chann
 
 #[cfg(test)]
 mod tests {
-    use craft_media::bitstream::BitWriter;
+    use bharat_media::bitstream::BitWriter;
 
     use super::*;
 

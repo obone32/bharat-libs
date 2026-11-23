@@ -13,7 +13,7 @@ pub(crate) fn decode_into(data: &[u8], out: &mut Vec<u8>) -> Option<()> {
                 let next = r.read_byte()?;
 
                 if let Some(first) = octal_digit(next) {
-                    // Craft patch (octal overflow, craft-libs #2321): read one
+                    // Bharat patch (octal overflow, bharat-libs #2321): read one
                     // to three octal digits and keep the low eight bits of
                     // the value. "The number ddd may consist of one, two, or
                     // three octal digits; high-order overflow shall be

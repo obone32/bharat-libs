@@ -38,14 +38,14 @@ fn formats_and_reads_the_regions_numbers() {
 #[test]
 fn a_region_reads_back_its_own_decimal_mark() {
     // English in the US with a decimal comma and no grouping from the Windows settings.
-    let mut region = craft_i18n::Region::from_tag("en-US");
+    let mut region = bharat_i18n::Region::from_tag("en-US");
     region.decimal = Some(',');
-    let numbers = LocaleNumbers::new(Arc::new(Format::new(&region, craft_i18n::Digits::Locale)));
+    let numbers = LocaleNumbers::new(Arc::new(Format::new(&region, bharat_i18n::Digits::Locale)));
     let written = numbers.format(1234.5, 1..=1);
     assert_eq!((written.as_str(), numbers.parse(&written)), ("1.234,5", Ok(1234.5)));
     assert_eq!(numbers.parse("1.234"), Ok(1234.0), "the grouping moved to the point");
     region.grouping = Some(None);
-    let numbers = LocaleNumbers::new(Arc::new(Format::new(&region, craft_i18n::Digits::Locale)));
+    let numbers = LocaleNumbers::new(Arc::new(Format::new(&region, bharat_i18n::Digits::Locale)));
     assert_eq!(numbers.format(1234.5, 1..=1), "1234,5");
 }
 

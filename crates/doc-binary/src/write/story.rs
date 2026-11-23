@@ -6,11 +6,11 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use craft_wordmodel::para::{InlineObject, NoteKind, Paragraph};
-use craft_wordmodel::props::{CharProps, ParaProps};
-use craft_wordmodel::section::SectionProps;
-use craft_wordmodel::table::Table;
-use craft_wordmodel::{Block, Document};
+use bharat_wordmodel::para::{InlineObject, NoteKind, Paragraph};
+use bharat_wordmodel::props::{CharProps, ParaProps};
+use bharat_wordmodel::section::SectionProps;
+use bharat_wordmodel::table::Table;
+use bharat_wordmodel::{Block, Document};
 
 use super::grpprl::{self, CharCtx, Grpprl, ParaCtx};
 use super::picture::Pictures;
@@ -90,7 +90,7 @@ impl CharCtx for Lookup<'_> {
 
     fn char_style(&self, id: &str) -> Option<u16> {
         let st = self.doc.styles.get(id)?;
-        (st.kind == craft_wordmodel::styles::StyleKind::Character).then(|| self.styles.get(id).copied()).flatten()
+        (st.kind == bharat_wordmodel::styles::StyleKind::Character).then(|| self.styles.get(id).copied()).flatten()
     }
 
     fn revision(&mut self, rev: u32) -> Option<(u16, u32)> {
@@ -454,7 +454,7 @@ impl<'d> Text<'d> {
                 }
             }
             InlineObject::Image { media, w, h, crop, float, alt, .. } => {
-                if float.wrap != craft_wordmodel::para::Wrap::Inline {
+                if float.wrap != bharat_wordmodel::para::Wrap::Inline {
                     self.dropped.floating_pictures += 1;
                 }
                 let Some(bytes) = self.look.doc.media.get(media).cloned() else {
@@ -721,15 +721,15 @@ mod tests {
         assert_eq!(hyperlink_instr("https://example.org/a#b"), "HYPERLINK \"https://example.org/a#b\"");
         assert_eq!(hyperlink_instr("#Intro"), "HYPERLINK \\l \"Intro\"");
         assert_eq!(hyperlink_instr("other.doc#Part"), "HYPERLINK \"other.doc\" \\l \"Part\"");
-        assert_eq!(craft_wordmodel::link::hyperlink_target(&hyperlink_instr("#Intro")).as_deref(), Some("#Intro"));
+        assert_eq!(bharat_wordmodel::link::hyperlink_target(&hyperlink_instr("#Intro")).as_deref(), Some("#Intro"));
         assert_eq!(
-            craft_wordmodel::link::hyperlink_target(&hyperlink_instr("https://example.org/?q=\"x\"")).as_deref(),
+            bharat_wordmodel::link::hyperlink_target(&hyperlink_instr("https://example.org/?q=\"x\"")).as_deref(),
             Some("https://example.org/?q=\"x\"")
         );
         assert_eq!(
-            craft_wordmodel::link::hyperlink_target(&hyperlink_instr(r"file:///C:\docs\report.doc")).as_deref(),
+            bharat_wordmodel::link::hyperlink_target(&hyperlink_instr(r"file:///C:\docs\report.doc")).as_deref(),
             Some(r"file:///C:\docs\report.doc")
         );
-        assert_eq!(craft_wordmodel::link::hyperlink_target(&hyperlink_instr("#a\"b")).as_deref(), Some("#a\"b"));
+        assert_eq!(bharat_wordmodel::link::hyperlink_target(&hyperlink_instr("#a\"b")).as_deref(), Some("#a\"b"));
     }
 }

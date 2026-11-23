@@ -1,7 +1,7 @@
-# craft-video: Apple ProRes
+# bharat-video: Apple ProRes
 
 Clean-room Apple ProRes decoder and encoder in pure Rust, written from the public [SMPTE RDD 36:2022](https://pub.smpte.org/doc/rdd36/20220909-pub/rdd36-2022.pdf)
-bitstream description. Part of `craft-video` (feature `prores`). Layer L0: depends only on `craft-media` (with `bitstream` feature), `thiserror` and (optional,
+bitstream description. Part of `bharat-video` (feature `prores`). Layer L0: depends only on `bharat-media` (with `bitstream` feature), `thiserror` and (optional,
 feature `threads`) `rayon`. Builds for `wasm32-unknown-unknown`; no `unsafe`.
 
 Enable the `threads` Cargo feature separately for parallel slice processing; without it, encoding
@@ -10,7 +10,7 @@ and decoding are serial.
 ## API
 
 ```rust
-use craft_video::prores::*;
+use bharat_video::prores::*;
 
 // Decode one QuickTime sample (one ProRes frame).
 let frame: Frame = decode_frame(&sample)?;                 // 10-bit 4:2:2 / 12-bit 4:4:4
@@ -118,4 +118,4 @@ and encodes in under 40 ms threaded on modern multi-core systems.
 - The 4:2:2 decoder output is fixed at the coded 10-bit precision unless another depth is
   requested; there is no direct output of packed formats (v210, etc.).
 - No container handling: frames are QuickTime samples; demuxing/muxing lives in
-  the `isobmff` feature of `craft-media`.
+  the `isobmff` feature of `bharat-media`.

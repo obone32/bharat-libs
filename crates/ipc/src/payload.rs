@@ -247,7 +247,7 @@ mod tests {
 
     #[test]
     fn accepts_media_that_opens_and_references_it_cannot_resolve() {
-        let dir = std::env::temp_dir().join(format!("craft-payload-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("bharat-payload-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let file = dir.join("My Clip.mov");
         std::fs::write(&file, b"x").unwrap();
@@ -326,7 +326,7 @@ mod tests {
     fn only_regular_files_count_as_present_and_a_fifo_does_not_block() {
         // Forking `mkfifo` while another test holds a discovery lock would hand the child a copy of the lock fd.
         let _spawning = crate::SPAWN_GUARD.write().unwrap_or_else(std::sync::PoisonError::into_inner);
-        let dir = std::env::temp_dir().join(format!("craft-payload-fifo-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("bharat-payload-fifo-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let fifo = dir.join("pipe.mov");
         let made = std::process::Command::new("mkfifo").arg(&fifo).status().map(|s| s.success()).unwrap_or(false);

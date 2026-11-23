@@ -1,4 +1,4 @@
-use craft_metadata::{MergeRules, Metadata, XmpNamespace, XmpWrite, extract, merge_xmp, parse_iptc, parse_xmp_with, read_exif, write_xmp_with};
+use bharat_metadata::{MergeRules, Metadata, XmpNamespace, XmpWrite, extract, merge_xmp, parse_iptc, parse_xmp_with, read_exif, write_xmp_with};
 
 const LC: XmpNamespace = XmpNamespace { prefix: "lc", uri: "http://ns.example.com/lc/1.0/" };
 
@@ -7,11 +7,11 @@ fn write_xmp(meta: &Metadata, settings: Option<&str>) -> String {
     write_xmp_with(meta, &XmpWrite { toolkit: "Editor", namespace: Some(LC), properties: &properties })
 }
 
-fn parse_xmp(s: &str) -> Result<craft_metadata::XmpData, craft_metadata::XmpError> {
+fn parse_xmp(s: &str) -> Result<bharat_metadata::XmpData, bharat_metadata::XmpError> {
     parse_xmp_with(s, &[LC])
 }
 
-fn settings(d: &craft_metadata::XmpData) -> Option<String> {
+fn settings(d: &bharat_metadata::XmpData) -> Option<String> {
     d.properties.get("lc:settings").and_then(|v| v.first()).cloned()
 }
 use proptest::prelude::*;

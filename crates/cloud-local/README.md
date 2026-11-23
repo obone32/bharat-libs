@@ -1,6 +1,6 @@
-# craft-cloud-local
+# bharat-cloud-local
 
-A reference `CloudBackend` over one folder on disk, proving that `craft-cloud`'s contract needs
+A reference `CloudBackend` over one folder on disk, proving that `bharat-cloud`'s contract needs
 no specific provider behind it.
 
 ## No-escape policy

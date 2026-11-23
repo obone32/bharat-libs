@@ -906,7 +906,7 @@ fn the_callers_namespace_is_written_and_read_only_when_passed() {
     assert!(!crate::parse_xmp(&renamed).unwrap().properties.contains_key("lc:flag"));
 
     let plain = write_xmp(&Metadata::default());
-    assert!(plain.contains("x:xmptk=\"craft-metadata\"") && !plain.contains("xmlns:lc") && !plain.contains("xmlns:crs"));
+    assert!(plain.contains("x:xmptk=\"bharat-metadata\"") && !plain.contains("xmlns:lc") && !plain.contains("xmlns:crs"));
     // properties without a namespace to put them in are not written
     let orphan = write_xmp_with(&Metadata::default(), &XmpWrite { properties: &[("flag", "pick")], ..Default::default() });
     assert_eq!(orphan, plain);
@@ -941,7 +941,7 @@ fn resource_struct_attributes_and_elements_flatten_like_description_fields() {
 fn the_toolkit_is_read_and_written_back() {
     let x = write_lc(&Metadata::default(), &[]);
     assert_eq!(parse_xmp(&x).unwrap().toolkit.as_deref(), Some("Editor"));
-    assert_eq!(crate::parse_xmp(&write_xmp(&Metadata::default())).unwrap().toolkit.as_deref(), Some("craft-metadata"));
+    assert_eq!(crate::parse_xmp(&write_xmp(&Metadata::default())).unwrap().toolkit.as_deref(), Some("bharat-metadata"));
     let escaped = write_xmp_with(&Metadata::default(), &XmpWrite { toolkit: "A & \"B\"", ..Default::default() });
     assert_eq!(crate::parse_xmp(&escaped).unwrap().toolkit.as_deref(), Some("A & \"B\""));
     // any prefix bound to adobe:ns:meta/, the older xapmeta form, and none at all

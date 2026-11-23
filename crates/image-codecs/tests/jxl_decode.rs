@@ -1,7 +1,7 @@
-//! JPEG XL decode through craft-jxl: lossless round trips, metadata, and hostile containers.
+//! JPEG XL decode through bharat-jxl: lossless round trips, metadata, and hostile containers.
 #![cfg(feature = "jxl")]
 
-use craft_image_codecs::{ChannelLayout, CodecError, DecodeOptions, EncodeOptions, Format, Image, Limits, SampleType, decode, decode_with, encode};
+use bharat_image_codecs::{ChannelLayout, CodecError, DecodeOptions, EncodeOptions, Format, Image, Limits, SampleType, decode, decode_with, encode};
 
 fn rgba_8bit() -> Image {
     let data = vec![0, 255, 17, 127, 20, 40, 80, 255, 255, 0, 2, 0, 10, 20, 30, 64, 0, 0, 0, 1, 90, 80, 70, 128];

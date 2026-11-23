@@ -12,7 +12,7 @@ use crate::hevc::decode::picture::{Frame, FrameRef, Sample, stores_u8};
 use crate::hevc::decode::slice::{NalHeader, SliceHeader, nal_type};
 use crate::hevc::decode::slicedec::{Blk, F_INTRA, F_SKIP, PicState, SliceDecoder, SliceJob};
 use crate::hevc::decode::{ChromaFormat, ColorInfo, Picture};
-use craft_media::bitstream::{annexb_nals, length_prefixed_nals, unescape_rbsp};
+use bharat_media::bitstream::{annexb_nals, length_prefixed_nals, unescape_rbsp};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 

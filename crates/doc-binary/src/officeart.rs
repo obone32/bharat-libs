@@ -10,7 +10,7 @@ use std::io::Write;
 
 use image::ImageEncoder;
 
-use craft_wordmodel::props::Rgb;
+use bharat_wordmodel::props::Rgb;
 
 /// Deepest container nesting walked (groups inside groups…).
 const MAX_DEPTH: usize = 12;

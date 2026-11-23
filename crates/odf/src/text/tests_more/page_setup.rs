@@ -5,9 +5,9 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::props::{BorderStyle, Rgb};
-use craft_wordmodel::section::{LineNumberRestart, NoteRestart, NumFormat};
+use bharat_wordmodel::Document;
+use bharat_wordmodel::props::{BorderStyle, Rgb};
+use bharat_wordmodel::section::{LineNumberRestart, NoteRestart, NumFormat};
 
 fn open() -> Document {
     let styles = format!(
@@ -99,7 +99,7 @@ fn hostile_page_settings_do_not_panic() {
     );
     let d = import(&package(&content, Some(&styles))).unwrap();
     let s = settings(&d);
-    assert!(s.4.is_none_or(|n| n <= craft_wordmodel::section::MAX_NOTE_START), "{s:?}");
+    assert!(s.4.is_none_or(|n| n <= bharat_wordmodel::section::MAX_NOTE_START), "{s:?}");
     assert!(s.7.as_ref().is_none_or(|l| l.0 >= 1 && l.1.is_finite() && l.1 <= 1584.0), "{s:?}");
     let _ = export(&d).unwrap();
 }
@@ -132,7 +132,7 @@ fn a_page_layout_without_a_size_is_the_default_pages_size() {
         crate::text::tests::NS_T
     );
     let bytes = crate::text::tests::package(&content, Some(&styles));
-    let a4 = craft_wordmodel::SectionProps { page_w: 595.3, page_h: 841.9, ..Default::default() };
+    let a4 = bharat_wordmodel::SectionProps { page_w: 595.3, page_h: 841.9, ..Default::default() };
     let d = crate::text::tests::import_on_ext("odt", &bytes, &a4).unwrap().unwrap();
     assert_eq!((d.last_section.page_w, d.last_section.page_h), (595.3, 841.9));
     assert_eq!((d.last_section.margin_top, d.last_section.margin_left), (72.0, 90.0));
@@ -151,7 +151,7 @@ fn a_document_without_a_page_layout_has_the_default_paper_and_no_margins() {
         "<office:document-content {}><office:body><office:text><text:p>x</text:p></office:text></office:body></office:document-content>",
         crate::text::tests::NS_T
     );
-    let a4 = craft_wordmodel::SectionProps { page_w: 595.3, page_h: 841.9, ..Default::default() };
+    let a4 = bharat_wordmodel::SectionProps { page_w: 595.3, page_h: 841.9, ..Default::default() };
     let d = crate::text::tests::import_on_ext("odt", &crate::text::tests::package(&content, None), &a4).unwrap().unwrap();
     let s = &d.last_section;
     assert_eq!((s.page_w, s.page_h), (595.3, 841.9));
@@ -222,10 +222,10 @@ fn a_page_borders_padding_keeps_the_text_where_it_was() {
     // 45 pt of padding inside it (more than Word's 31 pt border spacing, which is measured
     // differently): the text stays 72 pt from the edge, written and read back.
     let mut d = Document::new();
-    d.body = vec![craft_wordmodel::para_block(craft_wordmodel::Paragraph::with_text("x", Default::default()))];
-    let edge = craft_wordmodel::props::Border { style: BorderStyle::Single, width: 3.0, color: Some(Rgb(0x2f, 0x55, 0x97)), space: 24.0 };
+    d.body = vec![bharat_wordmodel::para_block(bharat_wordmodel::Paragraph::with_text("x", Default::default()))];
+    let edge = bharat_wordmodel::props::Border { style: BorderStyle::Single, width: 3.0, color: Some(Rgb(0x2f, 0x55, 0x97)), space: 24.0 };
     d.last_section.page_borders =
-        Some(craft_wordmodel::props::Borders { top: Some(edge), bottom: Some(edge), left: Some(edge), right: Some(edge), ..Default::default() });
+        Some(bharat_wordmodel::props::Borders { top: Some(edge), bottom: Some(edge), left: Some(edge), right: Some(edge), ..Default::default() });
     let back = crate::text::import(&crate::text::export(&d).unwrap()).unwrap();
     let s = &back.last_section;
     for m in [s.margin_top, s.margin_bottom, s.margin_left, s.margin_right] {
@@ -235,10 +235,10 @@ fn a_page_borders_padding_keeps_the_text_where_it_was() {
     // storytold/wordcraft#5065: a page border of width 0 (a DOCX one without `w:sz`) is still
     // drawn, at the thinnest line, rather than lost: ODF has no border that is drawn and still
     // takes no room.
-    let thin = craft_wordmodel::props::Border { width: 0.0, ..edge };
-    d.last_section.page_borders = Some(craft_wordmodel::props::Borders { left: Some(thin), ..Default::default() });
+    let thin = bharat_wordmodel::props::Border { width: 0.0, ..edge };
+    d.last_section.page_borders = Some(bharat_wordmodel::props::Borders { left: Some(thin), ..Default::default() });
     let styles = crate::text::tests::styles_of(&crate::text::export(&d).unwrap());
-    let thinnest = crate::text::writer::pt(craft_wordmodel::props::Border::THINNEST);
+    let thinnest = crate::text::writer::pt(bharat_wordmodel::props::Border::THINNEST);
     assert!(styles.contains(&format!(r#"fo:border-left="{thinnest} solid"#)), "{styles}");
 }
 
@@ -260,11 +260,11 @@ fn background_plus_small_header_logo_keeps_background() {
     };
     let mut d = Document::new();
     let bg_media = d.add_media(png, "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: "PageBackground".into() });
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: "PageBackground".into() });
     let logo_media = d.add_media(logo_png, "png");
-    let mut hp = craft_wordmodel::Paragraph::new();
-    hp.text = format!("Company {}", craft_wordmodel::para::OBJ);
-    hp.objects.push(craft_wordmodel::InlineObject::Image {
+    let mut hp = bharat_wordmodel::Paragraph::new();
+    hp.text = format!("Company {}", bharat_wordmodel::para::OBJ);
+    hp.objects.push(bharat_wordmodel::InlineObject::Image {
         media: logo_media,
         w: 50.0,
         h: 20.0,
@@ -275,12 +275,12 @@ fn background_plus_small_header_logo_keeps_background() {
         ole: None,
     });
     hp.runs = vec![
-        craft_wordmodel::para::Run { len: 8, props: Default::default() },
-        craft_wordmodel::para::Run { len: craft_wordmodel::para::OBJ.len_utf8(), props: Default::default() },
+        bharat_wordmodel::para::Run { len: 8, props: Default::default() },
+        bharat_wordmodel::para::Run { len: bharat_wordmodel::para::OBJ.len_utf8(), props: Default::default() },
     ];
     d.parts.insert(
         1,
-        craft_wordmodel::Part { kind: craft_wordmodel::PartKind::Header, blocks: vec![craft_wordmodel::para_block(hp)], body: Default::default() },
+        bharat_wordmodel::Part { kind: bharat_wordmodel::PartKind::Header, blocks: vec![bharat_wordmodel::para_block(hp)], body: Default::default() },
     );
     d.last_section.headers.default = Some(1);
 
@@ -314,24 +314,24 @@ fn full_page_header_picture_with_background_round_trips() {
     };
     let mut d = Document::new();
     let bg_media = d.add_media(bg_png.clone(), "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: "PageBackground".into() });
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: "PageBackground".into() });
     let header_media = d.add_media(header_png.clone(), "png");
-    let mut hp = craft_wordmodel::Paragraph::new();
-    hp.text = format!("{}", craft_wordmodel::para::OBJ);
-    hp.objects.push(craft_wordmodel::InlineObject::Image {
+    let mut hp = bharat_wordmodel::Paragraph::new();
+    hp.text = format!("{}", bharat_wordmodel::para::OBJ);
+    hp.objects.push(bharat_wordmodel::InlineObject::Image {
         media: header_media,
         w: 595.0,
         h: 842.0,
         alt: "Full page header picture".into(),
-        float: craft_wordmodel::para::Float { wrap: craft_wordmodel::para::Wrap::BehindText, ..Default::default() },
+        float: bharat_wordmodel::para::Float { wrap: bharat_wordmodel::para::Wrap::BehindText, ..Default::default() },
         crop: [0.0; 4],
         fx: Default::default(),
         ole: None,
     });
-    hp.runs = vec![craft_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
+    hp.runs = vec![bharat_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
     d.parts.insert(
         1,
-        craft_wordmodel::Part { kind: craft_wordmodel::PartKind::Header, blocks: vec![craft_wordmodel::para_block(hp)], body: Default::default() },
+        bharat_wordmodel::Part { kind: bharat_wordmodel::PartKind::Header, blocks: vec![bharat_wordmodel::para_block(hp)], body: Default::default() },
     );
     d.last_section.headers.default = Some(1);
 
@@ -364,7 +364,7 @@ fn full_page_header_picture_with_background_round_trips() {
     let header_part = back.last_section.headers.default.and_then(|id| back.parts.get(&id)).expect("header part must survive round trip");
     let header_img_media = header_part.blocks.iter().find_map(|b| {
         b.as_para().and_then(|p| {
-            p.objects.iter().find_map(|o| if let craft_wordmodel::InlineObject::Image { media, .. } = o { Some(media.as_str()) } else { None })
+            p.objects.iter().find_map(|o| if let bharat_wordmodel::InlineObject::Image { media, .. } = o { Some(media.as_str()) } else { None })
         })
     });
     assert!(header_img_media.is_some(), "header part must contain image object");
@@ -408,13 +408,13 @@ fn text_header_keeps_page_background_picture() {
     };
     let mut d = Document::new();
     let bg_media = d.add_media(png, "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: String::new() });
-    let mut hp = craft_wordmodel::Paragraph::new();
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: String::new() });
+    let mut hp = bharat_wordmodel::Paragraph::new();
     hp.text = "Header text".into();
-    hp.runs = vec![craft_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
+    hp.runs = vec![bharat_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
     d.parts.insert(
         1,
-        craft_wordmodel::Part { kind: craft_wordmodel::PartKind::Header, blocks: vec![craft_wordmodel::para_block(hp)], body: Default::default() },
+        bharat_wordmodel::Part { kind: bharat_wordmodel::PartKind::Header, blocks: vec![bharat_wordmodel::para_block(hp)], body: Default::default() },
     );
     d.last_section.headers.default = Some(1);
 
@@ -447,9 +447,9 @@ fn no_unreferenced_images_left_in_package() {
 
     // Now insert a header picture into the document, changing page setup
     let header_media = d.add_media(png.clone(), "png");
-    let mut hp = craft_wordmodel::Paragraph::new();
-    hp.text = format!("{}", craft_wordmodel::para::OBJ);
-    hp.objects.push(craft_wordmodel::InlineObject::Image {
+    let mut hp = bharat_wordmodel::Paragraph::new();
+    hp.text = format!("{}", bharat_wordmodel::para::OBJ);
+    hp.objects.push(bharat_wordmodel::InlineObject::Image {
         media: header_media,
         w: 100.0,
         h: 50.0,
@@ -459,10 +459,10 @@ fn no_unreferenced_images_left_in_package() {
         fx: Default::default(),
         ole: None,
     });
-    hp.runs = vec![craft_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
+    hp.runs = vec![bharat_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
     d.parts.insert(
         1,
-        craft_wordmodel::Part { kind: craft_wordmodel::PartKind::Header, blocks: vec![craft_wordmodel::para_block(hp)], body: Default::default() },
+        bharat_wordmodel::Part { kind: bharat_wordmodel::PartKind::Header, blocks: vec![bharat_wordmodel::para_block(hp)], body: Default::default() },
     );
     d.last_section.headers.default = Some(1);
 
@@ -506,12 +506,12 @@ fn inactive_header_picture_does_not_suppress_page_background() {
     };
     let mut d = Document::new();
     let bg_media = d.add_media(png.clone(), "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: String::new() });
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: String::new() });
 
     let header_media = d.add_media(png, "png");
-    let mut hp = craft_wordmodel::Paragraph::new();
-    hp.text = format!("{}", craft_wordmodel::para::OBJ);
-    hp.objects.push(craft_wordmodel::InlineObject::Image {
+    let mut hp = bharat_wordmodel::Paragraph::new();
+    hp.text = format!("{}", bharat_wordmodel::para::OBJ);
+    hp.objects.push(bharat_wordmodel::InlineObject::Image {
         media: header_media,
         w: 100.0,
         h: 100.0,
@@ -521,10 +521,10 @@ fn inactive_header_picture_does_not_suppress_page_background() {
         fx: Default::default(),
         ole: None,
     });
-    hp.runs = vec![craft_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
+    hp.runs = vec![bharat_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
     d.parts.insert(
         100,
-        craft_wordmodel::Part { kind: craft_wordmodel::PartKind::Header, blocks: vec![craft_wordmodel::para_block(hp)], body: Default::default() },
+        bharat_wordmodel::Part { kind: bharat_wordmodel::PartKind::Header, blocks: vec![bharat_wordmodel::para_block(hp)], body: Default::default() },
     );
 
     // Point headers.first to the header with picture, but title_page is FALSE.
@@ -549,20 +549,20 @@ fn continuous_section_header_picture_does_not_suppress_page_background() {
     };
     let mut d = Document::new();
     let bg_media = d.add_media(png.clone(), "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: String::new() });
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: String::new() });
 
     // Body with a first section ending paragraph
-    let mut p1 = craft_wordmodel::Paragraph::new();
+    let mut p1 = bharat_wordmodel::Paragraph::new();
     p1.text = "First paragraph in section 1".into();
-    p1.runs = vec![craft_wordmodel::para::Run { len: p1.text.len(), props: Default::default() }];
-    p1.section = Some(Box::new(craft_wordmodel::SectionProps::default()));
-    d.body.push(craft_wordmodel::para_block(p1));
+    p1.runs = vec![bharat_wordmodel::para::Run { len: p1.text.len(), props: Default::default() }];
+    p1.section = Some(Box::new(bharat_wordmodel::SectionProps::default()));
+    d.body.push(bharat_wordmodel::para_block(p1));
 
     // Second section (last_section) is continuous
     let header_media = d.add_media(png, "png");
-    let mut hp = craft_wordmodel::Paragraph::new();
-    hp.text = format!("{}", craft_wordmodel::para::OBJ);
-    hp.objects.push(craft_wordmodel::InlineObject::Image {
+    let mut hp = bharat_wordmodel::Paragraph::new();
+    hp.text = format!("{}", bharat_wordmodel::para::OBJ);
+    hp.objects.push(bharat_wordmodel::InlineObject::Image {
         media: header_media,
         w: 100.0,
         h: 100.0,
@@ -572,13 +572,13 @@ fn continuous_section_header_picture_does_not_suppress_page_background() {
         fx: Default::default(),
         ole: None,
     });
-    hp.runs = vec![craft_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
+    hp.runs = vec![bharat_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
     d.parts.insert(
         200,
-        craft_wordmodel::Part { kind: craft_wordmodel::PartKind::Header, blocks: vec![craft_wordmodel::para_block(hp)], body: Default::default() },
+        bharat_wordmodel::Part { kind: bharat_wordmodel::PartKind::Header, blocks: vec![bharat_wordmodel::para_block(hp)], body: Default::default() },
     );
 
-    d.last_section.start = craft_wordmodel::section::SectionStart::Continuous;
+    d.last_section.start = bharat_wordmodel::section::SectionStart::Continuous;
     d.last_section.headers.default = Some(200);
 
     let saved = export(&d).unwrap();
@@ -602,20 +602,20 @@ fn trailing_empty_last_section_header_picture_does_not_suppress_page_background(
     };
     let mut d = Document::new();
     let bg_media = d.add_media(png.clone(), "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: String::new() });
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media: bg_media, fill_type: "frame".into(), title: String::new() });
 
     // Body with a single paragraph ending section 1 (nothing follows it)
-    let mut p1 = craft_wordmodel::Paragraph::new();
+    let mut p1 = bharat_wordmodel::Paragraph::new();
     p1.text = "Sole paragraph ending section 1".into();
-    p1.runs = vec![craft_wordmodel::para::Run { len: p1.text.len(), props: Default::default() }];
-    p1.section = Some(Box::new(craft_wordmodel::SectionProps::default()));
-    d.body.push(craft_wordmodel::para_block(p1));
+    p1.runs = vec![bharat_wordmodel::para::Run { len: p1.text.len(), props: Default::default() }];
+    p1.section = Some(Box::new(bharat_wordmodel::SectionProps::default()));
+    d.body.push(bharat_wordmodel::para_block(p1));
 
     // last_section is NextPage and has a header with a picture, but has no blocks following
     let header_media = d.add_media(png, "png");
-    let mut hp = craft_wordmodel::Paragraph::new();
-    hp.text = format!("{}", craft_wordmodel::para::OBJ);
-    hp.objects.push(craft_wordmodel::InlineObject::Image {
+    let mut hp = bharat_wordmodel::Paragraph::new();
+    hp.text = format!("{}", bharat_wordmodel::para::OBJ);
+    hp.objects.push(bharat_wordmodel::InlineObject::Image {
         media: header_media,
         w: 100.0,
         h: 100.0,
@@ -625,13 +625,13 @@ fn trailing_empty_last_section_header_picture_does_not_suppress_page_background(
         fx: Default::default(),
         ole: None,
     });
-    hp.runs = vec![craft_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
+    hp.runs = vec![bharat_wordmodel::para::Run { len: hp.text.len(), props: Default::default() }];
     d.parts.insert(
         300,
-        craft_wordmodel::Part { kind: craft_wordmodel::PartKind::Header, blocks: vec![craft_wordmodel::para_block(hp)], body: Default::default() },
+        bharat_wordmodel::Part { kind: bharat_wordmodel::PartKind::Header, blocks: vec![bharat_wordmodel::para_block(hp)], body: Default::default() },
     );
 
-    d.last_section.start = craft_wordmodel::section::SectionStart::NextPage;
+    d.last_section.start = bharat_wordmodel::section::SectionStart::NextPage;
     d.last_section.headers.default = Some(300);
 
     let saved = export(&d).unwrap();
@@ -669,7 +669,7 @@ fn replaced_page_picture_allocates_distinct_fill_name_and_keeps_retained_def() {
         crate::text::tests::zip_of(&[("content.xml", content.as_bytes()), ("styles.xml", styles.as_bytes()), ("Pictures/original.png", &orig_png)]);
     let mut d = import(&pkg).unwrap();
     let new_media = d.add_media(new_png.clone(), "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media: new_media, fill_type: "stretch".into(), title: "SharedBg".into() });
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media: new_media, fill_type: "stretch".into(), title: "SharedBg".into() });
 
     let saved = export(&d).unwrap();
     let s = crate::text::tests::entry(&saved, "styles.xml");
@@ -703,7 +703,7 @@ fn page_background_round_trips_do_not_grow_the_package() {
     };
     let mut d = Document::new();
     let media = d.add_media(png, "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media, fill_type: "frame".into(), title: "PageBackground".into() });
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media, fill_type: "frame".into(), title: "PageBackground".into() });
     let mut current = d;
     for generation in 1..=4 {
         let saved = export(&current).unwrap();
@@ -781,7 +781,7 @@ fn a_texture_name_is_written_as_an_ncname() {
     };
     let mut d = Document::new();
     let media = d.add_media(png, "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media, fill_type: "frame".into(), title: "Blue tissue paper".into() });
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media, fill_type: "frame".into(), title: "Blue tissue paper".into() });
     let saved = export(&d).unwrap();
     let s = crate::text::tests::entry(&saved, "styles.xml");
     assert!(s.contains(r#"<draw:fill-image draw:name="Blue_tissue_paper""#), "the fill name is an NCName: {s}");
@@ -836,7 +836,7 @@ fn many_colliding_fill_image_names_export_in_linear_time() {
     let mut d = import(&pkg).unwrap();
     // The user replaces the picture: its fill-image name now meets every kept name.
     let media = d.add_media(replacement, "png");
-    d.settings.page_picture = Some(craft_wordmodel::PagePicture { media, fill_type: "stretch".into(), title: "X".into() });
+    d.settings.page_picture = Some(bharat_wordmodel::PagePicture { media, fill_type: "stretch".into(), title: "X".into() });
     let start = std::time::Instant::now();
     let saved = export(&d).unwrap();
     assert!(start.elapsed() < std::time::Duration::from_secs(5), "export took {:?}", start.elapsed());

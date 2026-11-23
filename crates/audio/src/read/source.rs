@@ -1,7 +1,7 @@
 //! What the decoders read from: borrowed bytes or a shared [`ByteSource`], with small typed reads.
 
 use crate::{AudioError, Result};
-use craft_media::ByteSource;
+use bharat_media::ByteSource;
 #[cfg(feature = "symphonia")]
 use std::borrow::Cow;
 use std::io;

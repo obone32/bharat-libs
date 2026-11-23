@@ -4,8 +4,8 @@ mod common;
 
 use std::sync::Arc;
 
-use craft_pptx::table::{Cell, Table};
-use craft_pptx::{
+use bharat_pptx::table::{Cell, Table};
+use bharat_pptx::{
     ColorRef, Defaults, Geom, MediaId, Plain, Presentation, Rgba, SchemeSlot, Shape, ShapeId, ShapeKind, Size, Slide, SlideId, TextBody, Xfrm,
 };
 
@@ -29,7 +29,7 @@ fn add(p: &mut Presentation, mut s: Shape) -> ShapeId {
 }
 
 fn bytes_of(pptx: &[u8], name: &str) -> Vec<u8> {
-    craft_opc::Package::open(pptx, &craft_pptx::LIMITS).unwrap().get(name).unwrap().to_vec()
+    bharat_opc::Package::open(pptx, &bharat_pptx::LIMITS).unwrap().get(name).unwrap().to_vec()
 }
 
 fn part(pptx: &[u8], name: &str) -> String {
@@ -37,8 +37,8 @@ fn part(pptx: &[u8], name: &str) -> String {
 }
 
 fn round_trip(p: &Presentation) -> Presentation {
-    let bytes = craft_pptx::export(p, &Plain).unwrap();
-    craft_pptx::import(&bytes, &Plain).unwrap()
+    let bytes = bharat_pptx::export(p, &Plain).unwrap();
+    bharat_pptx::import(&bytes, &Plain).unwrap()
 }
 
 #[test]
@@ -46,14 +46,14 @@ fn shapes_survive_writing_and_reading() {
     let mut p = deck();
     let png = p.add_media("dot.png", "image/png", b"\x89PNG not really".to_vec()).unwrap();
     let mut text = TextBody::from_text("Hello\nWorld");
-    text.body.anchor = Some(craft_pptx::text::Anchor::Bottom);
+    text.body.anchor = Some(bharat_pptx::text::Anchor::Bottom);
     let a = add(
         &mut p,
         Shape {
             name: "Box".into(),
             xfrm: Some(Xfrm::new(10.0, 20.0, 200.0, 100.0)),
             geom: Geom::Preset { name: "roundRect".into(), adj: vec![25000.0] },
-            fill: Some(craft_pptx::Fill::solid(ColorRef::rgb(Rgba::rgb(0x12, 0x34, 0x56)))),
+            fill: Some(bharat_pptx::Fill::solid(ColorRef::rgb(Rgba::rgb(0x12, 0x34, 0x56)))),
             text: Some(text),
             descr: "alt".into(),
             ..Default::default()
@@ -64,7 +64,7 @@ fn shapes_survive_writing_and_reading() {
         Shape {
             name: "Picture".into(),
             xfrm: Some(Xfrm::new(300.0, 20.0, 50.0, 50.0)),
-            kind: ShapeKind::Picture { fill: craft_pptx::style::PictureFill { media: png, ..Default::default() } },
+            kind: ShapeKind::Picture { fill: bharat_pptx::style::PictureFill { media: png, ..Default::default() } },
             ..Default::default()
         },
     );
@@ -81,7 +81,7 @@ fn shapes_survive_writing_and_reading() {
     assert_eq!(s[0].geom, p.slides[0].shapes[0].geom);
     assert_eq!(s[0].fill, p.slides[0].shapes[0].fill);
     assert_eq!(s[0].descr, "alt");
-    assert_eq!(s[0].text.as_ref().map(|t| (t.text(), t.body.anchor)), Some(("Hello\nWorld".into(), Some(craft_pptx::text::Anchor::Bottom))));
+    assert_eq!(s[0].text.as_ref().map(|t| (t.text(), t.body.anchor)), Some(("Hello\nWorld".into(), Some(bharat_pptx::text::Anchor::Bottom))));
     let ShapeKind::Picture { fill } = &s[1].kind else { panic!("not a picture") };
     assert_eq!(q.media(fill.media).map(|m| m.data.as_slice()), Some(&b"\x89PNG not really"[..]));
     assert_eq!(s[2].kind, ShapeKind::Connector { start: Some((s[0].id, 1)), end: Some((s[1].id, 3)) });
@@ -93,8 +93,8 @@ fn shapes_survive_writing_and_reading() {
 fn a_deck_without_masters_gets_the_callers() {
     let mut p = Presentation::default();
     p.slides.push(Arc::new(Slide { id: SlideId(1), ..Default::default() }));
-    let bytes = craft_pptx::export(&p, &Plain).unwrap();
-    let q = craft_pptx::import(&bytes, &Plain).unwrap();
+    let bytes = bharat_pptx::export(&p, &Plain).unwrap();
+    let q = bharat_pptx::import(&bytes, &Plain).unwrap();
     assert_eq!(q.masters.len(), 1);
     assert_eq!(q.slides.len(), 1);
     assert_eq!(q.slides[0].layout, q.masters[0].layouts[0].id);
@@ -106,11 +106,11 @@ fn a_missing_picture_is_written_as_a_transparent_stand_in() {
     add(
         &mut p,
         Shape {
-            kind: ShapeKind::Picture { fill: craft_pptx::style::PictureFill { media: MediaId(999), ..Default::default() } },
+            kind: ShapeKind::Picture { fill: bharat_pptx::style::PictureFill { media: MediaId(999), ..Default::default() } },
             ..Default::default()
         },
     );
-    let bytes = craft_pptx::export(&p, &Plain).unwrap();
+    let bytes = bharat_pptx::export(&p, &Plain).unwrap();
     let png = bytes_of(&bytes, "ppt/media/image1.png");
     assert!(png.starts_with(b"\x89PNG\r\n\x1a\n") && png.ends_with(b"IEND\xAE\x42\x60\x82"), "{png:?}");
 }
@@ -120,14 +120,14 @@ fn a_missing_picture_is_written_as_a_transparent_stand_in() {
 fn the_callers_defaults_are_written() {
     struct Acme;
     impl Defaults for Acme {
-        fn master(&self, size: Size, after: u32) -> (craft_pptx::Master, u32) {
+        fn master(&self, size: Size, after: u32) -> (bharat_pptx::Master, u32) {
             Plain.master(size, after)
         }
-        fn default_text_style(&self) -> craft_pptx::text::ListStyle {
-            let mut ls = craft_pptx::text::ListStyle::default();
+        fn default_text_style(&self) -> bharat_pptx::text::ListStyle {
+            let mut ls = bharat_pptx::text::ListStyle::default();
             ls.set(
                 0,
-                craft_pptx::text::LevelStyle { run: craft_pptx::text::RunProps { size: Some(26.0), ..Default::default() }, ..Default::default() },
+                bharat_pptx::text::LevelStyle { run: bharat_pptx::text::RunProps { size: Some(26.0), ..Default::default() }, ..Default::default() },
             );
             ls
         }
@@ -138,12 +138,12 @@ fn the_callers_defaults_are_written() {
     let mut p = deck();
     let t = Table { style: "light1-accent2".into(), ..Table::new(1, 1, 100.0, 20.0) };
     add(&mut p, Shape { kind: ShapeKind::Table(t), ..Default::default() });
-    let bytes = craft_pptx::export(&p, &Acme).unwrap();
+    let bytes = bharat_pptx::export(&p, &Acme).unwrap();
     assert!(part(&bytes, "docProps/app.xml").contains("<Application>Acme</Application>"));
     assert!(part(&bytes, "ppt/tableStyles.xml").contains("styleName=\"Acme "), "{}", part(&bytes, "ppt/tableStyles.xml"));
-    let q = craft_pptx::import(&bytes, &Plain).unwrap();
+    let q = bharat_pptx::import(&bytes, &Plain).unwrap();
     assert_eq!(q.default_text_style.level(0).and_then(|l| l.run.size), Some(26.0));
-    assert!(part(&craft_pptx::export(&p, &Plain).unwrap(), "docProps/app.xml").contains("<Application>craft-pptx</Application>"));
+    assert!(part(&bharat_pptx::export(&p, &Plain).unwrap(), "docProps/app.xml").contains("<Application>bharat-pptx</Application>"));
 }
 
 /// From DeckCraft's `crates/pptx/src/lib.rs`.
@@ -176,19 +176,19 @@ fn reads_the_theme_of_a_pptx_and_of_a_thmx() {
     m.theme.name = "Harbour".into();
     m.theme.fonts.major.latin = "Lato".into();
     m.theme.colors.set(SchemeSlot::Accent1, Rgba::rgb(0x12, 0x34, 0x56));
-    let pptx = craft_pptx::export(&p, &Plain).unwrap();
-    let mut out = craft_opc::PackageOut::default();
+    let pptx = bharat_pptx::export(&p, &Plain).unwrap();
+    let mut out = bharat_opc::PackageOut::default();
     out.xml_part(
         "theme/theme/theme1.xml",
         "application/vnd.openxmlformats-officedocument.theme+xml",
         part(&pptx, "ppt/theme/theme1.xml").into_bytes(),
     );
-    let mut rels = craft_opc::RelsOut::default();
+    let mut rels = bharat_opc::RelsOut::default();
     rels.add("officeDocument", "theme/theme/theme1.xml", false);
     out.rels("", &rels);
     let thmx = out.finish().unwrap();
     for bytes in [pptx, thmx] {
-        let (t, _) = craft_pptx::import_theme(&bytes).unwrap();
+        let (t, _) = bharat_pptx::import_theme(&bytes).unwrap();
         assert_eq!(t.name, "Harbour");
         assert_eq!(t.fonts.major.latin, "Lato");
         assert_eq!(t.colors.get(SchemeSlot::Accent1), Rgba::rgb(0x12, 0x34, 0x56));
@@ -202,7 +202,7 @@ const NS_THM15: &str = "http://schemas.microsoft.com/office/thememl/2012/main";
 /// The namespace of every element named `local` in `xml`, resolved through the declarations in
 /// scope (`""` for none).
 fn namespaces_of(xml: &str, local: &str) -> Vec<String> {
-    fn rec(e: &craft_xml::El, scope: &mut Vec<(String, String)>, local: &str, out: &mut Vec<String>) {
+    fn rec(e: &bharat_xml::El, scope: &mut Vec<(String, String)>, local: &str, out: &mut Vec<String>) {
         let n = scope.len();
         scope.extend(e.ns_decls().map(|(p, u)| (p.to_string(), u.to_string())));
         if e.local() == local {
@@ -213,7 +213,7 @@ fn namespaces_of(xml: &str, local: &str) -> Vec<String> {
         }
         scope.truncate(n);
     }
-    let root = craft_xml::Options::default().strict().parse(xml.as_bytes()).unwrap_or_else(|e| panic!("not well-formed: {e}\n{xml}"));
+    let root = bharat_xml::Options::default().strict().parse(xml.as_bytes()).unwrap_or_else(|e| panic!("not well-formed: {e}\n{xml}"));
     let mut out = vec![];
     rec(&root, &mut vec![], local, &mut out);
     out
@@ -224,7 +224,7 @@ const PREFIXED_THEME: &str = r#"<a:theme xmlns:a="http://schemas.openxmlformats.
 
 /// The deck with its theme part replaced by `theme`.
 fn with_theme(theme: &str) -> Vec<u8> {
-    let pptx = craft_pptx::export(&deck(), &Plain).unwrap();
+    let pptx = bharat_pptx::export(&deck(), &Plain).unwrap();
     common::rewrite(&pptx, |name, data| Some(if name == "ppt/theme/theme1.xml" { theme.as_bytes().to_vec() } else { data.to_vec() }), &[])
 }
 
@@ -234,9 +234,9 @@ fn with_theme(theme: &str) -> Vec<u8> {
 fn a_default_namespace_theme_keeps_its_kept_parts_in_the_drawingml_namespace() {
     let theme = PREFIXED_THEME.replace("<a:", "<").replace("</a:", "</").replace("xmlns:a=", "xmlns=");
     assert!(!theme.contains("a:"), "{theme}");
-    let p = craft_pptx::import(&with_theme(&theme), &Plain).unwrap();
+    let p = bharat_pptx::import(&with_theme(&theme), &Plain).unwrap();
     assert_eq!(p.masters[0].theme.colors.get(SchemeSlot::Accent1), Rgba::rgb(0x12, 0x34, 0x56));
-    let once = craft_pptx::export(&p, &Plain).unwrap();
+    let once = bharat_pptx::export(&p, &Plain).unwrap();
     let xml = part(&once, "ppt/theme/theme1.xml");
     // The writer may add an `a:extLst` of its own to the colour scheme, so every one is checked.
     for local in ["objectDefaults", "custClrLst", "custClr", "extLst", "ext", "srgbClr"] {
@@ -249,7 +249,7 @@ fn a_default_namespace_theme_keeps_its_kept_parts_in_the_drawingml_namespace() {
     assert_eq!(namespaces_of(&xml, "sp3d"), [NS_A], "{xml}");
     // The second save writes the same kept parts.
     let kept = |x: &str| x[x.find("</a:themeElements>").expect("themeElements")..].to_string();
-    let twice = craft_pptx::export(&craft_pptx::import(&once, &Plain).unwrap(), &Plain).unwrap();
+    let twice = bharat_pptx::export(&bharat_pptx::import(&once, &Plain).unwrap(), &Plain).unwrap();
     assert_eq!(kept(&part(&twice, "ppt/theme/theme1.xml")), kept(&xml));
 }
 
@@ -257,8 +257,8 @@ fn a_default_namespace_theme_keeps_its_kept_parts_in_the_drawingml_namespace() {
 /// the `a:` it uses), with no default namespace added.
 #[test]
 fn a_prefixed_theme_keeps_its_kept_parts_unchanged() {
-    let p = craft_pptx::import(&with_theme(PREFIXED_THEME), &Plain).unwrap();
-    let xml = part(&craft_pptx::export(&p, &Plain).unwrap(), "ppt/theme/theme1.xml");
+    let p = bharat_pptx::import(&with_theme(PREFIXED_THEME), &Plain).unwrap();
+    let xml = part(&bharat_pptx::export(&p, &Plain).unwrap(), "ppt/theme/theme1.xml");
     assert!(!xml.contains(r#" xmlns=""#), "{xml}");
     let a = format!(r#"xmlns:a="{NS_A}""#);
     let kept = format!(
@@ -270,7 +270,7 @@ fn a_prefixed_theme_keeps_its_kept_parts_unchanged() {
 /// The deck with part `name` (root `root`) given a default PresentationML namespace and an
 /// unprefixed extension list, saved again: the part as written.
 fn default_namespace_extensions(name: &str, root: &str) -> String {
-    let pptx = craft_pptx::export(&deck(), &Plain).unwrap();
+    let pptx = bharat_pptx::export(&deck(), &Plain).unwrap();
     let ext = r#"<extLst><ext uri="{11111111-2222-3333-4444-555555555555}"><t:data xmlns:t="urn:test" v="1"/></ext></extLst>"#;
     let (open, close) = (format!("<{root} "), format!("</{root}>"));
     let doc = common::rewrite(
@@ -285,8 +285,8 @@ fn default_namespace_extensions(name: &str, root: &str) -> String {
         },
         &[],
     );
-    let p = craft_pptx::import(&doc, &Plain).unwrap();
-    part(&craft_pptx::export(&p, &Plain).unwrap(), name)
+    let p = bharat_pptx::import(&doc, &Plain).unwrap();
+    part(&bharat_pptx::export(&p, &Plain).unwrap(), name)
 }
 
 /// The namespaces of the `ext` elements in `xml` other than DrawingML's `a:ext` (an extent).
@@ -320,8 +320,8 @@ fn a_default_namespace_layout_and_master_keep_their_extensions_in_the_presentati
 fn templates_and_shows_differ_in_the_main_content_type() {
     let p = deck();
     for (ext, ct) in [("potx", "template.main+xml"), ("ppsx", "slideshow.main+xml"), ("pptx", "presentation.main+xml")] {
-        let bytes = craft_pptx::export_as(&p, &Plain, ext).unwrap();
+        let bytes = bharat_pptx::export_as(&p, &Plain, ext).unwrap();
         assert!(part(&bytes, "[Content_Types].xml").contains(ct), "{ext}");
-        assert_eq!(craft_pptx::import(&bytes, &Plain).unwrap().slides.len(), 1);
+        assert_eq!(bharat_pptx::import(&bytes, &Plain).unwrap().slides.len(), 1);
     }
 }

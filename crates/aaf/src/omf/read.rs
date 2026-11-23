@@ -2,7 +2,7 @@
 
 use std::collections::{HashMap, HashSet};
 
-use craft_timeline::time::{FrameRate, Tick};
+use bharat_timeline::time::{FrameRate, Tick};
 
 use super::bento::Container;
 use crate::model::{CClip, CItem, CKind, CTrack, CTransition, Composition, Document, Gain, Source, units_to_ticks};
@@ -483,8 +483,8 @@ impl R<'_, '_> {
                 let file_rate = sr.filter(|r| r.0 > 0 && r.1 > 0).unwrap_or(rate);
                 let length = units_to_ticks(self.i32(desc, "OMFI:MDFL:Length").unwrap_or(0), file_rate.0, file_rate.1);
                 let summary = self.c.get(desc, "OMFI:WAVD:Summary").or_else(|| self.c.get(desc, "OMFI:AIFD:Summary")).unwrap_or_default();
-                let fmt = craft_audio::essence_pcm::parse_wav(&summary)
-                    .or_else(|| craft_audio::essence_pcm::parse_aiff(&summary))
+                let fmt = bharat_audio::essence_pcm::parse_wav(&summary)
+                    .or_else(|| bharat_audio::essence_pcm::parse_aiff(&summary))
                     .map(|(_, ch, sr, bits)| (ch as u32, sr, bits));
                 let mut path = None;
                 for l in self.refs(desc, "OMFI:MDES:Locator") {
@@ -493,7 +493,7 @@ impl R<'_, '_> {
                         b"DOSL" => self.string(l, "OMFI:DOSL:PathName"),
                         b"MACL" => self.string(l, "OMFI:MACL:PathName"),
                         b"TXTL" => self.string(l, "OMFI:TXTL:Name"),
-                        b"NETL" => self.string(l, "OMFI:NETL:URLString").map(|u| craft_timeline::path::file_url_to_path(&u)),
+                        b"NETL" => self.string(l, "OMFI:NETL:URLString").map(|u| bharat_timeline::path::file_url_to_path(&u)),
                         _ => None,
                     };
                     if p.is_some() {
@@ -548,7 +548,7 @@ impl R<'_, '_> {
                     nested: None,
                 };
                 if let Some(d) = self.media.get(&id) {
-                    if let Some((pcm, ch, sr, b)) = craft_audio::essence_pcm::parse_wav(d).or_else(|| craft_audio::essence_pcm::parse_aiff(d)) {
+                    if let Some((pcm, ch, sr, b)) = bharat_audio::essence_pcm::parse_wav(d).or_else(|| bharat_audio::essence_pcm::parse_aiff(d)) {
                         s.embedded = Some(pcm);
                         s.file_channels = ch as u32;
                         s.channels = if s.channel.is_some() { 1 } else { ch as u32 };

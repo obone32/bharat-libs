@@ -691,7 +691,7 @@ mod tests {
         clean("Расскажи хотя бы что-нибудь, за что тебя хвалят.");
         clean("Что ты делаешь? Который час?");
         clean("Кто-то что-то сказал.");
-        // craft-libs#495 review: the second half of a compound conjunction.
+        // bharat-libs#495 review: the second half of a compound conjunction.
         clean("Он устал, тем более что шёл долго.");
         clean("Приду, при условии что успею.");
         clean("Он читал, в то время как она спала.");

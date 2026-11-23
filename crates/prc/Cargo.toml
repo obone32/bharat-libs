@@ -1,5 +1,5 @@
 [package]
-name = "craft-prc"
+name = "bharat-prc"
 description = "PRC 3D model reader and triangle-mesh writer (ISO 14739-1)"
 version.workspace = true
 edition.workspace = true

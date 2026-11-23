@@ -5,8 +5,8 @@
 //! shapes. A shape whose type is known here is read from `\shpinst` and its `\shprslt` skipped;
 //! any other (pictures, lines, shapes in a group) keeps the copy, as before.
 
-use craft_wordmodel::fill::Fill;
-use craft_wordmodel::para::{Anchor, Float, FloatAlign, ShapeKind, Wrap, WrapText};
+use bharat_wordmodel::fill::Fill;
+use bharat_wordmodel::para::{Anchor, Float, FloatAlign, ShapeKind, Wrap, WrapText};
 
 use super::reader::Reader;
 use super::state::{Dest, MAX_NOTE_BLOCKS, Output};

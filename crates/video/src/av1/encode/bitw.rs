@@ -25,7 +25,7 @@ pub(crate) fn obu(obu_type: u8, payload: &[u8], out: &mut Vec<u8>) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use craft_media::bitstream::BitWriter;
+    use bharat_media::bitstream::BitWriter;
 
     #[test]
     fn bits_and_leb128() {

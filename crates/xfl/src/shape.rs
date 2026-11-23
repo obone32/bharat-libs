@@ -1,7 +1,7 @@
 //! Borrowed views of native XFL shape and style elements.
 //!
 //! These views recognize XFL's element names and attribute grammar without depending on an
-//! application's geometry, paint, or animation types. They work with `craft_xml::El` and with
+//! application's geometry, paint, or animation types. They work with `bharat_xml::El` and with
 //! compatible borrowed element adapters implemented by consumers.
 
 use crate::edges::{self, Segment};
@@ -42,23 +42,23 @@ pub trait XflElement {
     }
 }
 
-/// Direct child elements of `craft_xml::El`, used by its `XflElement` implementation.
+/// Direct child elements of `bharat_xml::El`, used by its `XflElement` implementation.
 pub struct XmlElements<'a> {
-    nodes: std::slice::Iter<'a, craft_xml::Node>,
+    nodes: std::slice::Iter<'a, bharat_xml::Node>,
 }
 
 impl<'a> Iterator for XmlElements<'a> {
-    type Item = &'a craft_xml::El;
+    type Item = &'a bharat_xml::El;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.nodes.find_map(|node| match node {
-            craft_xml::Node::El(element) => Some(element),
+            bharat_xml::Node::El(element) => Some(element),
             _ => None,
         })
     }
 }
 
-impl XflElement for craft_xml::El {
+impl XflElement for bharat_xml::El {
     type Elements<'a> = XmlElements<'a>;
 
     fn local_name(&self) -> &str {
@@ -535,8 +535,8 @@ impl<E: XflElement> Edge<'_, E> {
 mod tests {
     use super::*;
 
-    fn parse(source: &[u8]) -> craft_xml::El {
-        craft_xml::Options::default().parse(source).unwrap()
+    fn parse(source: &[u8]) -> bharat_xml::El {
+        bharat_xml::Options::default().parse(source).unwrap()
     }
 
     #[test]

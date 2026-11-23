@@ -1,4 +1,4 @@
-# Test fixture in the craft-fonts manifest format. The "font files" are short text files:
+# Test fixture in the bharat-fonts manifest format. The "font files" are short text files:
 # embedding copies bytes and never parses them.
 #   family | style | file | scripts | licence | licence file | sha256 | source
 

@@ -3,7 +3,7 @@
 
 use std::path::PathBuf;
 
-use craft_audio::opus::{Decoder, OpusHead, StreamDecoder};
+use bharat_audio::opus::{Decoder, OpusHead, StreamDecoder};
 
 struct Rng(u64);
 impl Rng {
@@ -76,7 +76,7 @@ fn concealment_before_and_after_packets() {
 }
 
 /// The RFC 8251 vectors, or `None` after printing `SKIPPED` (a failure with
-/// `CRAFT_MEDIA_REQUIRE_ORACLES=1`). `scripts/fetch-opus-vectors.sh` fetches them.
+/// `BHARAT_MEDIA_REQUIRE_ORACLES=1`). `scripts/fetch-opus-vectors.sh` fetches them.
 fn vectors_dir() -> Option<PathBuf> {
     let d = crate::common::fixture_subdir("opus").join("vectors");
     if d.join("testvector01.bit").exists() {
@@ -160,8 +160,8 @@ fn ogg_with_a_malformed_opus_head_reports_it() {
     file.extend(ogg_page(b"OpusTags\0\0\0\0\0\0\0\0", 0, 0, 1));
     // One 20 ms silent CELT frame.
     file.extend(ogg_page(&[0xF8, 0xFF, 0xFE], 4, 960, 2));
-    match craft_audio::decode(&file, Some("opus")) {
-        Err(craft_audio::AudioError::Malformed(m)) => assert!(m.contains("family 0"), "{m}"),
+    match bharat_audio::decode(&file, Some("opus")) {
+        Err(bharat_audio::AudioError::Malformed(m)) => assert!(m.contains("family 0"), "{m}"),
         other => panic!("expected a malformed-header error, got {:?}", other.map(|(info, _)| info)),
     }
 }

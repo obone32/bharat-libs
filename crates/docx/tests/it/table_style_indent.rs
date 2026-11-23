@@ -42,13 +42,13 @@ const BODY: &str = r#"<w:tbl><w:tblPr><w:tblStyle w:val="Indented"/><w:tblW w:w=
 #[test]
 fn a_table_style_indent_of_zero_survives_a_save() {
     let styles = r#"<w:style w:type="table" w:default="1" w:styleId="Table"><w:name w:val="Table"/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:left w:w="108" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style><w:style w:type="table" w:styleId="Indented"><w:name w:val="Indented"/><w:basedOn w:val="Table"/><w:tblPr><w:tblInd w:w="720" w:type="dxa"/></w:tblPr></w:style><w:style w:type="table" w:styleId="Plain"><w:name w:val="Plain"/><w:tblPr><w:tblCellMar><w:left w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style>"#;
-    let d = craft_docx::read(&docx(BODY, styles)).unwrap();
+    let d = bharat_docx::read(&docx(BODY, styles)).unwrap();
     let parts = |id: &str| d.styles.get(id).and_then(|s| s.table.clone()).unwrap_or_default();
     assert_eq!(parts("Table").indent, Some(0.0));
     assert_eq!(parts("Indented").indent, Some(36.0));
     assert_eq!(parts("Plain").indent, None, "no w:tblInd stays unset");
 
-    let out = craft_docx::write(&d).unwrap();
+    let out = bharat_docx::write(&d).unwrap();
     let table = style_xml(&out, "Table");
     assert!(table.contains(r#"<w:tblInd w:w="0" w:type="dxa"/>"#), "{table}");
     let indented = style_xml(&out, "Indented");
@@ -68,7 +68,7 @@ fn a_table_style_indent_that_is_no_length_sets_none() {
         )
     };
     for (ty, want) in [("pct", None), ("auto", None), ("nil", Some(0.0)), ("dxa", Some(36.0))] {
-        let d = craft_docx::read(&docx(BODY, &style(ty))).unwrap();
+        let d = bharat_docx::read(&docx(BODY, &style(ty))).unwrap();
         let got = d.styles.get("Indented").and_then(|s| s.table.clone()).unwrap_or_default().indent;
         assert_eq!(got, want, "w:type={ty}");
     }
@@ -78,16 +78,16 @@ fn a_table_style_indent_that_is_no_length_sets_none() {
 fn a_table_style_indent_without_a_width_is_zero_and_overrides_its_base() {
     // `CT_TblWidth`'s `w:w` defaults to 0, so a based-on style's indent is reset, not inherited.
     let styles = r#"<w:style w:type="table" w:styleId="Base"><w:name w:val="Base"/><w:tblPr><w:tblInd w:w="720" w:type="dxa"/></w:tblPr></w:style><w:style w:type="table" w:styleId="Indented"><w:name w:val="Indented"/><w:basedOn w:val="Base"/><w:tblPr><w:tblInd w:type="dxa"/></w:tblPr></w:style>"#;
-    let d = craft_docx::read(&docx(BODY, styles)).unwrap();
-    let own_of = |d: &craft_wordmodel::Document, id: &str| d.styles.get(id).and_then(|s| s.table.clone()).unwrap_or_default().indent;
-    let own = |d: &craft_wordmodel::Document| own_of(d, "Indented");
+    let d = bharat_docx::read(&docx(BODY, styles)).unwrap();
+    let own_of = |d: &bharat_wordmodel::Document, id: &str| d.styles.get(id).and_then(|s| s.table.clone()).unwrap_or_default().indent;
+    let own = |d: &bharat_wordmodel::Document| own_of(d, "Indented");
     assert_eq!(own_of(&d, "Base"), Some(36.0), "the base sets an indent to override");
     assert_eq!(d.styles.table_style("Base").map(|s| s.parts.indent), Some(Some(36.0)));
     assert_eq!(own(&d), Some(0.0));
     assert_eq!(d.styles.table_style("Indented").map(|s| s.parts.indent), Some(Some(0.0)), "the base's 36 pt is overridden");
 
-    let out = craft_docx::write(&d).unwrap();
+    let out = bharat_docx::write(&d).unwrap();
     let indented = style_xml(&out, "Indented");
     assert!(indented.contains(r#"<w:tblInd w:w="0" w:type="dxa"/>"#), "{indented}");
-    assert_eq!(own(&craft_docx::read(&out).unwrap()), Some(0.0));
+    assert_eq!(own(&bharat_docx::read(&out).unwrap()), Some(0.0));
 }

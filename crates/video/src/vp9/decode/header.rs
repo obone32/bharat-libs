@@ -8,7 +8,7 @@ use crate::vp9::decode::tables::{
     ALTREF_FRAME, GOLDEN_FRAME, INV_MAP_TABLE, LAST_FRAME, LITERAL_TO_TYPE, MAX_SEGMENTS, MAX_TILE_WIDTH_B64, MIN_TILE_WIDTH_B64,
     SEGMENTATION_FEATURE_BITS, SEGMENTATION_FEATURE_SIGNED, SWITCHABLE, TX_MODE_SELECT, TX_MODE_TO_BIGGEST_TX_SIZE,
 };
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 pub const KEY_FRAME: u8 = 0;
 

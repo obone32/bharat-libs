@@ -1,4 +1,4 @@
-pub use craft_testkit::sample_damage::{mutations, noise};
+pub use bharat_testkit::sample_damage::{mutations, noise};
 
 pub mod java {
     use std::collections::HashMap;
@@ -167,10 +167,10 @@ pub mod java {
         v
     }
 
-    pub const HELLO: &str = "Hello, Craft!";
+    pub const HELLO: &str = "Hello, Bharat!";
 
     /// `public class com.example.Hello implements Runnable` with a `count` field, a `BIG` long
-    /// constant, `<init>`, `run()` (System.out.println("Hello, Craft!")), `pick(int)` (a tableswitch)
+    /// constant, `<init>`, `run()` (System.out.println("Hello, Bharat!")), `pick(int)` (a tableswitch)
     /// and `guarded()` (a try/catch over the println call).
     pub fn hello_class() -> Vec<u8> {
         let mut p = Pool::new();

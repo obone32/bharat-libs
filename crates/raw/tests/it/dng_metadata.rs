@@ -2,10 +2,10 @@
 //! written and, for the colour tags, against the full reader.
 
 use super::dng::{base_ifd, dng, dng_with};
-use craft_raw::dng_lines::{self, Error};
-use craft_raw::dng_metadata::{Metadata, Pattern};
-use craft_tiff::classic::{Tiff, tags as ct};
-use craft_tiff::{ByteOrder, IfdBuilder, ImageData, Value};
+use bharat_raw::dng_lines::{self, Error};
+use bharat_raw::dng_metadata::{Metadata, Pattern};
+use bharat_tiff::classic::{Tiff, tags as ct};
+use bharat_tiff::{ByteOrder, IfdBuilder, ImageData, Value};
 
 fn cfa_raw(edit: impl FnOnce(&mut IfdBuilder)) -> IfdBuilder {
     let mut raw = base_ifd(8, 4, 16, 1, true);
@@ -107,7 +107,7 @@ fn calibration_matches_the_full_reader() {
         ifd0.set(ct::FORWARD_MATRIX_1, Value::SRational(vec![(1, 1); 12]));
     });
     let c = with_metadata(&bytes, |m| m.calibration().unwrap());
-    let full = craft_raw::decode(&bytes).unwrap().color;
+    let full = bharat_raw::decode(&bytes).unwrap().color;
     assert_eq!(c.color_matrix, full.color_matrix);
     assert_eq!(c.illuminant, [Some(21), Some(17)]);
     assert_eq!(c.as_shot_neutral, full.as_shot_neutral);
@@ -120,7 +120,7 @@ fn calibration_matches_the_full_reader() {
 
 #[test]
 fn capture_info_matches_the_full_readers_cinema_tags() {
-    use craft_raw::dng_metadata::Timecode;
+    use bharat_raw::dng_metadata::Timecode;
     let tc = Timecode { hours: 10, minutes: 59, seconds: 7, frames: 23, drop_frame: true };
     let bytes = dng_with(cfa_raw(|_| {}), ByteOrder::Big, |ifd0| {
         ifd0.set(ct::FRAME_RATE, Value::SRational(vec![(24000, 1001)]));
@@ -129,7 +129,7 @@ fn capture_info_matches_the_full_readers_cinema_tags() {
         ifd0.set(ct::MODEL, Value::Ascii("Cam".into()));
     });
     let info = with_metadata(&bytes, |m| m.capture_info());
-    let cinema = craft_raw::decode(&bytes).unwrap().cinema;
+    let cinema = bharat_raw::decode(&bytes).unwrap().cinema;
     assert_eq!(info.dng_version, [1, 6, 0, 0]);
     assert_eq!(info.frame_rate, Some((24000, 1001)));
     assert_eq!((info.frame_rate, info.timecode), (cinema.frame_rate, cinema.timecode));
@@ -145,6 +145,6 @@ fn capture_info_matches_the_full_readers_cinema_tags() {
     let info = with_metadata(&bytes, |m| m.capture_info());
     assert_eq!((info.frame_rate, info.timecode, info.reel), (None, None, None));
     assert_eq!(info.camera.as_deref(), Some("Hand Cam Mk II"));
-    let cinema = craft_raw::decode(&bytes).unwrap().cinema;
+    let cinema = bharat_raw::decode(&bytes).unwrap().cinema;
     assert_eq!((cinema.frame_rate, cinema.timecode), (None, None));
 }

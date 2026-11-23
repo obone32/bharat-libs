@@ -91,9 +91,9 @@ fn granules_count_the_samples_and_trim_the_end() {
 
 // --- ffmpeg oracle ---
 
-/// An Ogg Vorbis file of the three headers and the audio packets, through craft-media's writer.
+/// An Ogg Vorbis file of the three headers and the audio packets, through bharat-media's writer.
 fn ogg(packets: &[(Vec<u8>, i64)]) -> Vec<u8> {
-    let mut w = craft_media::ogg::PageWriter::new(7);
+    let mut w = bharat_media::ogg::PageWriter::new(7);
     let mut out = Vec::new();
     for (i, (p, g)) in packets.iter().enumerate() {
         out.extend(if i < 3 { w.header(p) } else { w.packet(p, *g) });
@@ -103,7 +103,7 @@ fn ogg(packets: &[(Vec<u8>, i64)]) -> Vec<u8> {
 }
 
 fn comment() -> Vec<u8> {
-    craft_media::ogg::vorbis_comment("test", &[])
+    bharat_media::ogg::vorbis_comment("test", &[])
 }
 
 /// Encodes `input` (planar) and decodes it with ffmpeg's `decoder`; returns the planar output.
@@ -120,7 +120,7 @@ fn decoders(ff: &Path) -> Vec<&'static str> {
 }
 
 fn round_trip(input: &[Vec<f32>], rate: u32, quality: f32, decoder: &str, name: &str) -> Option<(Vec<Vec<f32>>, usize)> {
-    let ff = craft_media_testkit::ffmpeg_or_skip("vorbis oracle")?;
+    let ff = bharat_media_testkit::ffmpeg_or_skip("vorbis oracle")?;
     let mut e = Encoder::new(EncoderConfig::new(rate, input.len(), quality)).unwrap();
     let mut packets = vec![(e.identification(), 0), (comment(), 0), (e.setup(), 0)];
     let n = input[0].len();
@@ -133,7 +133,7 @@ fn round_trip(input: &[Vec<f32>], rate: u32, quality: f32, decoder: &str, name: 
     }
     packets.extend(e.finish().unwrap());
     let bytes: usize = packets[3..].iter().map(|p| p.0.len()).sum();
-    let dir = craft_media_testkit::fixtures_dir("audio/vorbis-encoder");
+    let dir = bharat_media_testkit::fixtures_dir("audio/vorbis-encoder");
     let path = dir.join(format!("{name}.ogg"));
     std::fs::write(&path, ogg(&packets)).unwrap();
     let out = Command::new(ff)
@@ -204,7 +204,7 @@ type Case = (&'static str, Vec<Vec<f32>>, [(f32, f64, std::ops::Range<usize>); 5
 
 #[test]
 fn ffmpeg_decodes_every_quality() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("vorbis oracle") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("vorbis oracle") else { return };
     let n = 48_000 * 3;
     let cases: [Case; 2] = [
         (
@@ -236,7 +236,7 @@ fn ffmpeg_decodes_every_quality() {
 /// residue partition from channel 0); a silent channel costs one bit per block.
 #[test]
 fn channel_counts_and_rates() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("vorbis oracle") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("vorbis oracle") else { return };
     let n = 44_100;
     for (rate, ch) in [(44_100u32, 1usize), (22_050, 2), (48_000, 3), (48_000, 6), (48_000, 7)] {
         let mut input: Vec<Vec<f32>> = (0..ch).map(|c| chords(n, c as u32 + 1).iter().map(|v| v * (1.0 - 0.1 * c as f32)).collect()).collect();

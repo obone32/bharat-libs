@@ -1,4 +1,4 @@
-use craft_cms::{Builtin, Curve, Intent, Mat3, Profile, Transform};
+use bharat_cms::{Builtin, Curve, Intent, Mat3, Profile, Transform};
 
 #[test]
 fn test_curve_constructors() {
@@ -42,9 +42,9 @@ fn test_profile_constructors() {
 
     // 1. Matrix shaper with already PCS D50-adapted matrix (e.g. read from ICC tags)
     let pcs_d50_matrix: Mat3 = [[0.4360747, 0.3850649, 0.1430804], [0.2225045, 0.7168786, 0.0606169], [0.0139322, 0.0971045, 0.7141733]];
-    let trc = [craft_cms::curve::srgb_trc(), craft_cms::curve::srgb_trc(), craft_cms::curve::srgb_trc()];
+    let trc = [bharat_cms::curve::srgb_trc(), bharat_cms::curve::srgb_trc(), bharat_cms::curve::srgb_trc()];
     let custom_from_pcs = Profile::matrix_shaper(white_d65, pcs_d50_matrix, trc.clone()).expect("matrix shaper from PCS D50");
-    assert_eq!(custom_from_pcs.color_space, craft_cms::ColorSpace::Rgb);
+    assert_eq!(custom_from_pcs.color_space, bharat_cms::ColorSpace::Rgb);
     assert!(custom_from_pcs.same_colors(srgb), "custom profile from PCS D50 matrix should match reference sRGB");
 
     // 2. Matrix shaper from unadapted D65 source primaries (undergoes single Bradford adaptation)
@@ -73,7 +73,7 @@ fn test_profile_constructors() {
 
     // Gray profile
     let gray = Profile::gray(white_d65, Curve::gamma(2.2).expect("curve")).expect("gray profile");
-    assert_eq!(gray.color_space, craft_cms::ColorSpace::Gray);
+    assert_eq!(gray.color_space, bharat_cms::ColorSpace::Gray);
 
     let gray_to_srgb = Transform::new(&gray, srgb, Intent::RelativeColorimetric, true).expect("transform from gray to sRGB");
     let mut srgb_out = [0.0f32; 3];
@@ -91,7 +91,7 @@ fn test_matrix_constructors_against_independent_moxcms_oracle() {
 
     // 1. PCS D50-adapted matrix profile
     let pcs_d50_matrix: Mat3 = [[0.4360747, 0.3850649, 0.1430804], [0.2225045, 0.7168786, 0.0606169], [0.0139322, 0.0971045, 0.7141733]];
-    let trc = [craft_cms::curve::srgb_trc(), craft_cms::curve::srgb_trc(), craft_cms::curve::srgb_trc()];
+    let trc = [bharat_cms::curve::srgb_trc(), bharat_cms::curve::srgb_trc(), bharat_cms::curve::srgb_trc()];
     let custom_from_pcs = Profile::matrix_shaper(white_d65, pcs_d50_matrix, trc.clone()).expect("matrix shaper from PCS D50");
 
     // 2. Unadapted source matrix profile
@@ -119,7 +119,7 @@ fn test_matrix_constructors_against_independent_moxcms_oracle() {
     let max_diff_src = test_pixels.iter().zip(&mox_out_src).map(|(a, b)| (*a as i32 - *b as i32).abs()).max().unwrap();
     assert!(max_diff_src <= 1, "moxcms source-adapted profile -> sRGB max diff was {max_diff_src}");
 
-    // Verify 3: craft_cms and moxcms agree when converting from custom_from_source to DisplayP3
+    // Verify 3: bharat_cms and moxcms agree when converting from custom_from_source to DisplayP3
     let p3 = Builtin::DisplayP3.profile();
     let mox_dst_p3 = ColorProfile::new_from_slice(&p3.to_bytes()).expect("moxcms parse Display P3");
     let mox_xform_p3 = mox_from_source.create_transform_8bit(Layout::Rgb, &mox_dst_p3, Layout::Rgb, MoxOpts::default()).unwrap();
@@ -131,7 +131,7 @@ fn test_matrix_constructors_against_independent_moxcms_oracle() {
     ours_xform_p3.convert_u8(&test_pixels, 3, &mut ours_p3_out, 3, false).unwrap();
 
     let max_p3_diff = ours_p3_out.iter().zip(&mox_p3_out).map(|(a, b)| (*a as i32 - *b as i32).abs()).max().unwrap();
-    assert!(max_p3_diff <= 1, "craft_cms vs moxcms custom source profile -> P3 max diff was {max_p3_diff}");
+    assert!(max_p3_diff <= 1, "bharat_cms vs moxcms custom source profile -> P3 max diff was {max_p3_diff}");
 }
 
 #[test]

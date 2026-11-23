@@ -1,9 +1,9 @@
 //! `TrackDecoder` on streams an app's own demuxer hands over without codec configuration:
 //! ADTS-framed AAC (MPEG-TS) and Opus without an `OpusHead` (RTP).
 
-use craft_audio::aac::{Encoder as AacEncoder, EncoderConfig};
-use craft_audio::opus::Encoder as OpusEncoder;
-use craft_audio::{CodecId, CodecParams, TrackDecoder};
+use bharat_audio::aac::{Encoder as AacEncoder, EncoderConfig};
+use bharat_audio::opus::Encoder as OpusEncoder;
+use bharat_audio::{CodecId, CodecParams, TrackDecoder};
 
 fn tone(n: usize) -> Vec<f32> {
     (0..n).map(|i| (i as f32 * 0.03).sin() * 0.4).collect()
@@ -18,7 +18,7 @@ fn adts_aac_without_extradata() {
     units.extend(enc.flush());
 
     // No AudioSpecificConfig: the first ADTS header gives it, and every header is stripped.
-    let lookahead: Vec<&[u8]> = units.iter().take(craft_audio::LOOKAHEAD_PACKETS).map(Vec::as_slice).collect();
+    let lookahead: Vec<&[u8]> = units.iter().take(bharat_audio::LOOKAHEAD_PACKETS).map(Vec::as_slice).collect();
     let mut dec = TrackDecoder::new(&CodecParams::new(CodecId::Aac), &lookahead).unwrap();
     assert_eq!((dec.codec(), dec.sample_rate(), dec.channels()), (CodecId::Aac, 48_000, 2));
     let frames: usize = units.iter().map(|u| dec.decode(u).unwrap().frames()).sum();

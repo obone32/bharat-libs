@@ -24,12 +24,12 @@ concurrency:
 jobs:
   native:
     # fmt, clippy and the tests run in the Workspace gate on every OS, with the licensed fonts and
-    # the plate tests; this runs the tests behind craft_pdf_unicode_fixtures and the read-only
+    # the plate tests; this runs the tests behind bharat_pdf_unicode_fixtures and the read-only
     # contract, which is its own workspace.
     name: PDF Unicode fixtures and read-only contract
     runs-on: ubuntu-latest
     env:
-      RUSTFLAGS: --cfg craft_pdf_unicode_fixtures
+      RUSTFLAGS: --cfg bharat_pdf_unicode_fixtures
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@v2.22.4
@@ -46,9 +46,9 @@ jobs:
         shell: bash
         run: |
           python scripts/test-fetch-pdf-test-fonts.py
-          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/craft-pdf-test-fonts"
-          echo "CRAFT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/craft-pdf-test-fonts" >> "$GITHUB_ENV"
-      - run: cargo test -p craft-pdf --all-features --locked --test unicode_writing --test upstream_compatibility --test upstream_reading
+          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/bharat-pdf-test-fonts"
+          echo "BHARAT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/bharat-pdf-test-fonts" >> "$GITHUB_ENV"
+      - run: cargo test -p bharat-pdf --all-features --locked --test unicode_writing --test upstream_compatibility --test upstream_reading
       - run: cargo test --manifest-path crates/pdf/read-only-contract/Cargo.toml --locked
   backends:
     name: PDF vendored contracts
@@ -67,7 +67,7 @@ jobs:
     name: PDF WASM runtime
     runs-on: ubuntu-latest
     env:
-      RUSTFLAGS: --cfg craft_pdf_unicode_fixtures
+      RUSTFLAGS: --cfg bharat_pdf_unicode_fixtures
       CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER: wasm-bindgen-test-runner
     steps:
       - name: Harden runner
@@ -86,8 +86,8 @@ jobs:
         shell: bash
         run: |
           python scripts/test-fetch-pdf-test-fonts.py
-          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/craft-pdf-test-fonts"
-          echo "CRAFT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/craft-pdf-test-fonts" >> "$GITHUB_ENV"
+          python scripts/fetch-pdf-test-fonts.py "$RUNNER_TEMP/bharat-pdf-test-fonts"
+          echo "BHARAT_PDF_TEST_FONT_DIR=$RUNNER_TEMP/bharat-pdf-test-fonts" >> "$GITHUB_ENV"
       - name: Read the wasm-bindgen version from Cargo.lock
         id: wasm-bindgen
         shell: bash
@@ -101,5 +101,5 @@ jobs:
         with:
           tool: wasm-bindgen@${{ steps.wasm-bindgen.outputs.version }}
           fallback: cargo-install
-      - run: cargo test -p craft-pdf --all-features --locked --target wasm32-unknown-unknown
+      - run: cargo test -p bharat-pdf --all-features --locked --target wasm32-unknown-unknown
       - run: cargo test --manifest-path crates/pdf/read-only-contract/Cargo.toml --locked --target wasm32-unknown-unknown

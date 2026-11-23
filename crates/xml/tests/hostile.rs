@@ -1,7 +1,7 @@
 //! Hostile input: every limit, entity expansion, truncation, wrong encodings, wrong nesting.
 //! Nothing here may panic, and nothing may grow beyond a small multiple of its input.
 
-use craft_xml::{Canonical, Doctype, El, Error, Limits, Options, UnknownEntity, parse, to_utf8};
+use bharat_xml::{Canonical, Doctype, El, Error, Limits, Options, UnknownEntity, parse, to_utf8};
 
 const CANON: Canonical<'static> = Canonical::new(&[("w", "urn:w"), ("r", "urn:r")]);
 
@@ -256,7 +256,7 @@ fn damaged_input_never_panics() {
                     // not written at all: the reader does not check names, the writer does.)
                     let written = root.to_xml();
                     if !written.is_empty() {
-                        let again = Options { names: craft_xml::Names::AsWritten, strict: false, ns_decls: true, ..opts }.parse(written.as_bytes());
+                        let again = Options { names: bharat_xml::Names::AsWritten, strict: false, ns_decls: true, ..opts }.parse(written.as_bytes());
                         assert!(again.is_ok(), "{written:?}");
                         assert_eq!(again.map(|e| e.to_xml()), Ok(written));
                     }
@@ -531,7 +531,7 @@ fn a_strict_pull_reader_refuses_what_is_outside_the_root() {
 
 #[test]
 fn strict_attributes_are_unique_before_name_rewriting() {
-    use craft_xml::{Names, Options};
+    use bharat_xml::{Names, Options};
     for names in [Names::AsWritten, Names::Local] {
         let strict = Options { names, ..Options::default() }.strict();
         for xml in [
@@ -562,7 +562,7 @@ fn strict_attributes_are_unique_before_name_rewriting() {
         }
         assert!(Options { names, ..Options::default() }.parse(b"<r a='1' a='2'/>").is_ok());
     }
-    let strict = Options { limits: craft_xml::Limits { max_attrs: 2, ..craft_xml::Limits::DEFAULT }, ..Options::default() }.strict();
+    let strict = Options { limits: bharat_xml::Limits { max_attrs: 2, ..bharat_xml::Limits::DEFAULT }, ..Options::default() }.strict();
     assert!(strict.parse(b"<r xmlns:a='a' xmlns:b='b'><c xmlns:c='c'/></r>").is_err());
     assert!(strict.parse(b"<r a='1' b='2' c='3'/>").is_err());
 }

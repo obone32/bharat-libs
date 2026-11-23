@@ -180,7 +180,7 @@ impl CffFontBlob {
 pub(crate) struct OpenTypeFontBlob {
     yoke: Arc<OpenTypeFontYoke>,
     cff_blob: Option<CffFontBlob>,
-    // Craft patch (flatten): the face index in a collection, for `OutlineFontData::index`.
+    // Bharat patch (flatten): the face index in a collection, for `OutlineFontData::index`.
     index: u32,
 }
 
@@ -258,7 +258,7 @@ impl OpenTypeFontBlob {
         self.yoke.backing_cart().clone()
     }
 
-    /// Craft patch (flatten): the face index the blob was read with.
+    /// Bharat patch (flatten): the face index the blob was read with.
     pub(crate) fn index(&self) -> u32 {
         self.index
     }

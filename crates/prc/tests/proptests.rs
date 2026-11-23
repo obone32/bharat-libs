@@ -1,6 +1,6 @@
 //! Arbitrary bytes through every reader: an error or a value, never a panic.
 
-use craft_prc::{BitReader, PrcFile, Schema};
+use bharat_prc::{BitReader, PrcFile, Schema};
 use proptest::prelude::*;
 
 proptest! {

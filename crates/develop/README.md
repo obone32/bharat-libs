@@ -1,11 +1,11 @@
-# craft-develop
+# bharat-develop
 
 The raw develop pipeline, CPU path: the shared pipeline of
-[#587](https://github.com/storytold/craft-libs/issues/587), moved from LightCraft one module at a time. No `unsafe`,
+[#587](https://github.com/obone32/bharat-libs/issues/587), moved from LightCraft one module at a time. No `unsafe`,
 no panics on hostile input, no file I/O, and it builds for `wasm32-unknown-unknown`.
 
 ```toml
-craft-develop = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-develop = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 ## What is here
@@ -20,7 +20,7 @@ craft-develop = { git = "https://github.com/storytold/craft-libs", rev = "<commi
 ## Parity with LightCraft
 
 Each module comes with a test that its output is LightCraft's at the base commit, compared with
-[`craft-render-parity`](../render-parity/README.md) at `Tolerance::BASELINE`. The expected pictures in
+[`bharat-render-parity`](../render-parity/README.md) at `Tolerance::BASELINE`. The expected pictures in
 `tests/fixtures/` were written by LightCraft's own crate at that commit, on the scene the test builds.
 
 Differences from LightCraft (ordinary-range output is covered by the baseline fixtures):

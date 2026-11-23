@@ -4,8 +4,8 @@
 
 use std::io::Write;
 
-use craft_docx::{read, write};
-use craft_wordmodel::{ContentControl, Document, StoryRef};
+use bharat_docx::{read, write};
+use bharat_wordmodel::{ContentControl, Document, StoryRef};
 
 const NS: &str =
     r#"xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml""#;
@@ -40,7 +40,7 @@ fn sdt(pr: &str, content: &str) -> String {
 
 fn controls(d: &Document) -> Vec<ContentControl> {
     let mut out = Vec::new();
-    craft_wordmodel::control::walk_controls(&d.body, &mut |c| out.push(c.clone()));
+    bharat_wordmodel::control::walk_controls(&d.body, &mut |c| out.push(c.clone()));
     out
 }
 

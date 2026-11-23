@@ -11,7 +11,7 @@ use crate::h264::decode::picture::{Frame, FrameRef, MbKind, MbState, Planes, Ref
 use crate::h264::decode::slice::{SliceHeader, SliceType};
 use crate::h264::decode::tables::{BLK4_XY, QPC_TABLE, RASTER_TO_BLK4, ZIGZAG4, ZIGZAG8};
 use crate::h264::decode::transform::{self, Dequant, LevelScale};
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 

@@ -2,17 +2,17 @@
 //! reference decoder (never linked).
 #![allow(dead_code)]
 
-use craft_video::prores::{ChromaFormat, Frame};
+use bharat_video::prores::{ChromaFormat, Frame};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-/// ffmpeg, or `None` after printing `SKIPPED` (see `craft_media_testkit`).
+/// ffmpeg, or `None` after printing `SKIPPED` (see `bharat_media_testkit`).
 pub fn ffmpeg() -> Option<PathBuf> {
-    craft_media_testkit::ffmpeg_or_skip("prores oracle")
+    bharat_media_testkit::ffmpeg_or_skip("prores oracle")
 }
 
 pub fn fixture_dir() -> PathBuf {
-    craft_media_testkit::fixtures_dir("prores")
+    bharat_media_testkit::fixtures_dir("prores")
 }
 
 fn run(ff: &Path, args: &[&str]) {
@@ -40,14 +40,14 @@ impl Spec {
 pub fn make(ff: &Path, spec: &Spec) -> PathBuf {
     let path = fixture_dir().join(format!("{}.mov", spec.name));
     if !path.exists() {
-        let tmp = craft_media_testkit::temp_path(&path);
+        let tmp = bharat_media_testkit::temp_path(&path);
         let frames = spec.frames.to_string();
         let mut args = vec!["-f", "lavfi", "-i", spec.lavfi.as_str(), "-frames:v", frames.as_str()];
         args.extend(spec.enc.iter().copied());
         let t = tmp.to_str().unwrap().to_string();
         args.push(&t);
         run(ff, &args);
-        craft_media_testkit::fixtures::publish(&tmp, &path).unwrap();
+        bharat_media_testkit::fixtures::publish(&tmp, &path).unwrap();
     }
     path
 }
@@ -265,10 +265,10 @@ pub fn source_frames(ff: &Path, spec: SourceFrameSpec<'_>) -> Vec<Frame> {
             (ChromaFormat::Yuv444, false) => "yuv444p10le",
             (ChromaFormat::Yuv444, true) => "yuva444p10le",
         };
-        let tmp = craft_media_testkit::temp_path(&path);
+        let tmp = bharat_media_testkit::temp_path(&path);
         let f = frames.to_string();
         run(ff, &["-f", "lavfi", "-i", lavfi, "-frames:v", &f, "-f", "rawvideo", "-pix_fmt", pix, tmp.to_str().unwrap()]);
-        craft_media_testkit::fixtures::publish(&tmp, &path).unwrap();
+        bharat_media_testkit::fixtures::publish(&tmp, &path).unwrap();
     }
     let bytes = std::fs::read(&path).unwrap();
     let s: Vec<u16> = bytes.as_chunks::<2>().0.iter().map(|c| u16::from_le_bytes([c[0], c[1]])).collect();

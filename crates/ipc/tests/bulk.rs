@@ -10,11 +10,11 @@ use std::time::{Duration, Instant};
 
 use serde_json::{Value, json};
 
-use craft_ipc::bulk::{BulkClient, FrameFormat, FrameLayout, FrameRequest, FrameSource, FrameSpec, FrameTickets, RenderedFrame};
-use craft_ipc::client::Client;
-use craft_ipc::server::{Activate, Activation, ControlSink, Frames, Server, ServerConfig};
-use craft_ipc::wire;
-use craft_ipc::{Endpoint, InstanceRecord, LinkError, RuntimeDir};
+use bharat_ipc::bulk::{BulkClient, FrameFormat, FrameLayout, FrameRequest, FrameSource, FrameSpec, FrameTickets, RenderedFrame};
+use bharat_ipc::client::Client;
+use bharat_ipc::server::{Activate, Activation, ControlSink, Frames, Server, ServerConfig};
+use bharat_ipc::wire;
+use bharat_ipc::{Endpoint, InstanceRecord, LinkError, RuntimeDir};
 
 const W: u32 = 4;
 const H: u32 = 3;

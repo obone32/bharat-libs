@@ -1,4 +1,4 @@
-//! The GP-GL dialect of Silhouette cutters (and the Graphtec Craft Robo they descend from), in
+//! The GP-GL dialect of Silhouette cutters (and the Graphtec Bharat Robo they descend from), in
 //! three generations: [`Generation::Legacy`], [`Generation::Cameo3`] and [`Generation::Cameo4`].
 //!
 //! [`encode`] gives the whole program: per operation a setup preamble (mat, cutting region, tool
@@ -41,7 +41,7 @@ pub fn su(mm: f64) -> i64 {
 /// Which generation of the dialect a machine speaks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Generation {
-    /// Before the Cameo 3 (Cameo 1/2, Portrait 1/2, Craft Robo, SD): `FW` media select, and
+    /// Before the Cameo 3 (Cameo 1/2, Portrait 1/2, Bharat Robo, SD): `FW` media select, and
     /// force, speed and blade offset without a tool holder.
     #[default]
     Legacy,

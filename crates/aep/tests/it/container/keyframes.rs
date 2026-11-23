@@ -3,7 +3,7 @@
 //! with (its MANIFEST, batch 2). The solid `L` is 1920x1080 in a 1920x1080 composition.
 
 use crate::container::helpers::{assert_near, base_layer, first_comp, layer_shown_as, open};
-use craft_aep::{Interpolation, KeyEase, KeyframeKind, Project, PropNode, Property, ValueSource};
+use bharat_aep::{Interpolation, KeyEase, KeyframeKind, Project, PropNode, Property, ValueSource};
 
 fn prop_of<R>(name: &str, path: &[&str], f: impl FnOnce(Property<'_, '_>) -> R) -> Option<R> {
     Some({

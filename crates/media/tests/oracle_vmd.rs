@@ -4,13 +4,13 @@
 
 use std::process::Command;
 
-use craft_media::vmd::open;
-use craft_media_testkit::vmd::{Audio, Frame, Spec, build};
+use bharat_media::vmd::open;
+use bharat_media_testkit::vmd::{Audio, Frame, Spec, build};
 
 /// `key=value` lines of ffprobe's stream description.
 fn probe(bytes: &[u8], name: &str) -> Option<String> {
-    let ffprobe = craft_media_testkit::ffprobe()?;
-    let dir = craft_media_testkit::private_dir("vmd-probe");
+    let ffprobe = bharat_media_testkit::ffprobe()?;
+    let dir = bharat_media_testkit::private_dir("vmd-probe");
     let path = dir.join(name);
     std::fs::write(&path, bytes).unwrap();
     let out = Command::new(ffprobe)

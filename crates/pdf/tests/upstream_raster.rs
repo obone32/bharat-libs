@@ -1,8 +1,8 @@
 //! Portable regressions adapted from PdfCraft 7437bde378f43856eada40af25b983812e615e8a and
 //! a2ec27b4775f53c40cad3456936d9406611e3a8d (MIT OR Apache-2.0).
 #![cfg(feature = "raster")]
-use craft_pdf::interpret::InterpreterSettings;
-use craft_pdf::{
+use bharat_pdf::interpret::InterpreterSettings;
+use bharat_pdf::{
     open_slice,
     raster::{self, Options, RenderCache},
 };
@@ -200,7 +200,7 @@ trailer << /Root 1 0 R >>
 #[cfg_attr(not(target_arch = "wasm32"), test)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test::wasm_bindgen_test)]
 fn tiff_predictor_packed_rgb_rows_keep_their_byte_boundaries() {
-    use craft_pdf::syntax::object::{FromBytes, Object};
+    use bharat_pdf::syntax::object::{FromBytes, Object};
     struct RowCase {
         bpc: u8,
         columns: u32,
@@ -1059,7 +1059,7 @@ mod default_color_spaces {
 /// which draws red as blue; they have the same length.
 mod icc_profile_cache {
     use super::default_color_spaces::{BLUE, RED, assert_near, colors, page_pdf, profile_stream, rgb_profile};
-    use craft_pdf::interpret::{
+    use bharat_pdf::interpret::{
         BlendMode, ClipPath, Context, Device, GlyphDrawMode, Image, InterpreterCache, InterpreterSettings, Paint, PathDrawMode, SoftMask,
         TransformExt, font::Glyph,
     };
@@ -1140,13 +1140,13 @@ mod icc_profile_cache {
     fn icc_profiles_used_again_are_read_once() {
         let (content, resources, objects) = page();
         let bytes = page_pdf(&content, &resources, &objects);
-        let pdf = craft_pdf::open_slice(&bytes, None).unwrap();
+        let pdf = bharat_pdf::open_slice(&bytes, None).unwrap();
         let page = &pdf.pages()[0];
         let cache = InterpreterCache::new();
         for pass in ["first", "second"] {
             let initial = page.initial_transform(true).to_kurbo();
             let mut ctx = Context::new(initial, Rect::new(0.0, 0.0, 130.0, 70.0), &cache, page.xref(), InterpreterSettings::default());
-            craft_pdf::interpret_page(page, &mut ctx, &mut Nothing).unwrap();
+            bharat_pdf::interpret_page(page, &mut ctx, &mut Nothing).unwrap();
             assert_eq!(cache.icc_profile_reads(), 4, "after the {pass} pass: each different profile is read once");
         }
     }

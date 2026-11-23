@@ -5,7 +5,7 @@ use std::fmt::Write as _;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
-use craft_xml::{Canonical, Doctype, El, Options, esc_attr};
+use bharat_xml::{Canonical, Doctype, El, Options, esc_attr};
 
 use crate::Error;
 
@@ -72,7 +72,7 @@ impl Manifest {
     /// past [`MAX_ENTRIES`] are dropped.
     pub fn parse(xml: &[u8]) -> Manifest {
         let canonical = Canonical::new(&[("manifest", MANIFEST_NS)]);
-        let (root, _) = Options::canonical(&canonical).parse_streaming_partial(xml, &[], |_| Ok::<(), craft_xml::Error>(()));
+        let (root, _) = Options::canonical(&canonical).parse_streaming_partial(xml, &[], |_| Ok::<(), bharat_xml::Error>(()));
         let Some(root) = root.filter(|r| named(r, "manifest")) else { return Manifest::default() };
         let entries = root.elements().filter(|e| named(e, "file-entry")).take(MAX_ENTRIES).filter_map(file_entry).collect();
         Manifest { version: attr(&root, "version").map(str::to_string), entries }
@@ -120,7 +120,7 @@ impl Manifest {
     /// The manifest as XML, as LibreOffice lays it out: one entry a line, encryption data
     /// included.
     pub fn to_xml(&self) -> String {
-        let mut o = format!("{}<manifest:manifest xmlns:manifest=\"{MANIFEST_NS}\"", craft_xml::DECL);
+        let mut o = format!("{}<manifest:manifest xmlns:manifest=\"{MANIFEST_NS}\"", bharat_xml::DECL);
         if let Some(v) = &self.version {
             let _ = write!(o, " manifest:version=\"{}\"", esc_attr(v));
         }

@@ -1,6 +1,6 @@
 # Frosted ribbon and panel backdrops
 
-`craft_ui::backdrop` extracts the CPU sampling and blur from
+`bharat_ui::backdrop` extracts the CPU sampling and blur from
 [WordCraft #4019](https://github.com/storytold/wordcraft/pull/4019). It can serve ribbons, rulers,
 floating palettes and inspectors without depending on a page renderer or an app's theme.
 

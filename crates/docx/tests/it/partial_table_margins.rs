@@ -26,7 +26,7 @@ fn a_left_only_table_margin_keeps_the_other_sides() {
         zip.start_file(name, zip::write::SimpleFileOptions::default()).unwrap();
         zip.write_all(data.as_bytes()).unwrap();
     }
-    let doc = craft_docx::read(&zip.finish().unwrap().into_inner()).unwrap();
+    let doc = bharat_docx::read(&zip.finish().unwrap().into_inner()).unwrap();
     let margins: Vec<_> = doc.body.iter().filter_map(|b| b.as_table()).map(|t| t.props.cell_margins).collect();
     assert_eq!(
         margins,

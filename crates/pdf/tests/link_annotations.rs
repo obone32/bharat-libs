@@ -9,7 +9,7 @@ use backend::destination::XyzDestination;
 use backend::error::KrillaError;
 use backend::geom::{Point, Quadrilateral, Rect};
 use backend::page::PageSettings;
-use craft_pdf::write::{Metadata, WriteError, Writer, backend};
+use bharat_pdf::write::{Metadata, WriteError, Writer, backend};
 
 fn link() -> Target {
     Target::Action(LinkAction::new("https://example.com".into()).into())

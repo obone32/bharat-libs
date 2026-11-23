@@ -285,7 +285,7 @@ const MAX_PROP_VALUE: usize = 4096;
 
 /// A custom property of ODF value type `t` (`office:value-type`, `meta:value-type`) and value
 /// `v`: as a document's custom property (OOXML variant type, value).
-pub(super) fn custom_prop(name: &str, t: Option<&str>, v: &str) -> Option<craft_wordmodel::CustomProp> {
+pub(super) fn custom_prop(name: &str, t: Option<&str>, v: &str) -> Option<bharat_wordmodel::CustomProp> {
     let name = clean_prop_name(name)?;
     let kind = match t.map(str::trim) {
         Some("float" | "percentage" | "currency") => "r8",
@@ -312,12 +312,12 @@ pub(super) fn custom_prop(name: &str, t: Option<&str>, v: &str) -> Option<craft_
             }
         };
     }
-    Some(craft_wordmodel::CustomProp { name, kind: kind.into(), value, link_target: None, odf_user_field: false })
+    Some(bharat_wordmodel::CustomProp { name, kind: kind.into(), value, link_target: None, odf_user_field: false })
 }
 
 /// The custom properties of a package's `meta.xml` (§4.3.2.14 `meta:user-defined`).
-pub(super) fn meta_props(xml: &[u8]) -> Vec<craft_wordmodel::CustomProp> {
-    let mut out: Vec<craft_wordmodel::CustomProp> = Vec::new();
+pub(super) fn meta_props(xml: &[u8]) -> Vec<bharat_wordmodel::CustomProp> {
+    let mut out: Vec<bharat_wordmodel::CustomProp> = Vec::new();
     let mut open: Option<(String, Option<String>, String)> = None;
     super::events(xml, |ev| match ev {
         super::Ev::Start(q, a) if q == "meta:user-defined" => {
@@ -346,8 +346,8 @@ pub(super) fn meta_props(xml: &[u8]) -> Vec<craft_wordmodel::CustomProp> {
 
 /// The user fields a package's `content.xml` declares (§7.4.7 `text:user-field-decl`), as custom
 /// properties.
-pub(super) fn user_fields(xml: &[u8]) -> Vec<craft_wordmodel::CustomProp> {
-    let mut out: Vec<craft_wordmodel::CustomProp> = Vec::new();
+pub(super) fn user_fields(xml: &[u8]) -> Vec<bharat_wordmodel::CustomProp> {
+    let mut out: Vec<bharat_wordmodel::CustomProp> = Vec::new();
     super::events(xml, |ev| {
         if let super::Ev::Start(q, a) = ev
             && q == "text:user-field-decl"
@@ -364,7 +364,7 @@ pub(super) fn user_fields(xml: &[u8]) -> Vec<craft_wordmodel::CustomProp> {
             if let Some(p) = get(&a, "text:name").and_then(|n| custom_prop(n, t, v))
                 && !out.iter().any(|o| o.name == p.name)
             {
-                out.push(craft_wordmodel::CustomProp { odf_user_field: true, ..p });
+                out.push(bharat_wordmodel::CustomProp { odf_user_field: true, ..p });
             }
         }
     });
@@ -396,12 +396,12 @@ const BIB_KINDS: [(&str, &str); 10] = [
 /// The source a `text:bibliography-mark` carries: its identifier as the tag, its type as the
 /// kind, and its author, title, year, publisher, address, journal, volume, pages, URL, editor,
 /// edition, number (issue) and month. `None` without an identifier.
-pub(super) fn bib_source(a: &Attrs) -> Option<craft_wordmodel::Source> {
+pub(super) fn bib_source(a: &Attrs) -> Option<bharat_wordmodel::Source> {
     let tag = bib_tag(get(a, "text:identifier")?)?;
     let v = |k: &str| get(a, k).map(|s| s.chars().filter(|c| !c.is_control()).take(1024).collect::<String>()).unwrap_or_default();
     let t = get(a, "text:bibliography-type").map(str::trim).unwrap_or("");
     let kind = BIB_KINDS.iter().find(|(o, _)| *o == t).map_or("other", |(_, k)| k).to_string();
-    Some(craft_wordmodel::Source {
+    Some(bharat_wordmodel::Source {
         tag,
         kind,
         author: v("text:author"),
@@ -422,7 +422,7 @@ pub(super) fn bib_source(a: &Attrs) -> Option<craft_wordmodel::Source> {
 }
 
 /// A source as a `text:bibliography-mark` around `result` (already escaped).
-pub(super) fn bib_mark(s: &craft_wordmodel::Source, result: &str) -> String {
+pub(super) fn bib_mark(s: &bharat_wordmodel::Source, result: &str) -> String {
     let t = BIB_KINDS.iter().find(|(_, k)| *k == s.kind).map_or("misc", |(o, _)| o);
     let author = if s.corporate.is_empty() { &s.author } else { &s.corporate };
     let mut a = format!(" text:identifier=\"{}\" text:bibliography-type=\"{t}\"", x(&s.tag));

@@ -3,11 +3,11 @@
 
 use crate::support;
 
-use craft_timeline::model::{
+use bharat_timeline::model::{
     ClipId, Generator, ItemId, Keyframe, Label, Marker, MarkerId, MarkerKind, MediaRef, Param, ParamValue, Project, TrackKind, TransitionAlign,
 };
-use craft_timeline::time::{FrameRate, TICKS_PER_SECOND, Tick};
-use craft_timeline::{ExportOptions, Format, detect_text as detect};
+use bharat_timeline::time::{FrameRate, TICKS_PER_SECOND, Tick};
+use bharat_timeline::{ExportOptions, Format, detect_text as detect};
 use proptest::prelude::*;
 use support::*;
 
@@ -576,11 +576,11 @@ fn optional_report_limit_bounds_distinct_otio_diagnostics_without_changing_defau
     let children: Vec<_> = (0..10).map(|i| serde_json::json!({"OTIO_SCHEMA": format!("Unsupported{i}.1")})).collect();
     let doc = serde_json::json!({"OTIO_SCHEMA":"Timeline.1", "tracks":{"OTIO_SCHEMA":"Stack.1", "children":[{"OTIO_SCHEMA":"Track.1", "kind":"Video", "children":children}]}}).to_string();
     let opts = iopts(None);
-    let mut bounded = craft_timeline::Report::default();
-    assert!(craft_timeline::otio::import_with_report_limit(&doc, &opts, &mut bounded, Some(2)).is_ok());
+    let mut bounded = bharat_timeline::Report::default();
+    assert!(bharat_timeline::otio::import_with_report_limit(&doc, &opts, &mut bounded, Some(2)).is_ok());
     assert_eq!(bounded.entries.len(), 3);
     assert!(bounded.mentions("further diagnostics omitted"));
-    let mut unlimited = craft_timeline::Report::default();
-    assert!(craft_timeline::otio::import(&doc, &opts, &mut unlimited).is_ok());
+    let mut unlimited = bharat_timeline::Report::default();
+    assert!(bharat_timeline::otio::import(&doc, &opts, &mut unlimited).is_ok());
     assert_eq!(unlimited.entries.len(), 10);
 }

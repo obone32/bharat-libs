@@ -1,6 +1,6 @@
 //! Encoder → decoder round trips and robustness against corrupt data (no ffmpeg needed).
 
-use craft_video::dnx::{ChromaFormat, DecodeOptions, Encoder, EncoderConfig, Frame, Profile, decode_frame, decode_frame_with, probe};
+use bharat_video::dnx::{ChromaFormat, DecodeOptions, Encoder, EncoderConfig, Frame, Profile, decode_frame, decode_frame_with, probe};
 
 /// A synthetic picture: gradients, a ring pattern and some hashed texture.
 fn picture(w: u32, h: u32, chroma: ChromaFormat, depth: u8, seed: u32) -> Frame {
@@ -109,7 +109,7 @@ fn corrupt_streams_never_panic() {
 fn encoder_describes_its_track() {
     let enc = Encoder::new(Profile::Hq, 1920, 1080).unwrap();
     let params = enc.codec_params();
-    assert_eq!(params.codec, craft_media::CodecId::Dnxhd);
+    assert_eq!(params.codec, bharat_media::CodecId::Dnxhd);
     assert_eq!(params.tag, Some(*b"AVdh"));
     assert_eq!((params.width, params.height), (Some(1920), Some(1080)));
     assert!(params.extradata.is_empty());
@@ -124,7 +124,7 @@ fn repeated_or_decreasing_scan_line_offsets_are_refused() {
     assert!(decode_frame(&good).is_ok());
     let rows = probe(&good).unwrap().mb_rows as usize;
     assert!(rows > 2);
-    let at = |s: usize| craft_video::dnx::header::SCAN_INDEX_OFFSET + 4 * s;
+    let at = |s: usize| bharat_video::dnx::header::SCAN_INDEX_OFFSET + 4 * s;
     let get = |d: &[u8], s: usize| <[u8; 4]>::try_from(&d[at(s)..at(s) + 4]).unwrap();
     // every row pointing at the first row's data
     let mut repeated = good.clone();

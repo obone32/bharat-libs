@@ -7,7 +7,7 @@
 use kurbo::{Affine, BezPath, PathEl, Point};
 
 pub mod write;
-pub use craft_file_formats::Format as DetectedFormat;
+pub use bharat_file_formats::Format as DetectedFormat;
 
 /// The maximum encoded input accepted by the import facade.
 pub const MAX_INPUT_BYTES: usize = 64 * 1024 * 1024;
@@ -29,7 +29,7 @@ pub enum ImportFormat {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Capability {
     pub format: ImportFormat,
-    pub detected_formats: &'static [craft_file_formats::Format],
+    pub detected_formats: &'static [bharat_file_formats::Format],
     pub extensions: &'static [&'static str],
     pub write_extensions: &'static [&'static str],
     pub mime_types: &'static [&'static str],
@@ -41,7 +41,7 @@ pub struct Capability {
 pub const CAPABILITIES: &[Capability] = &[
     Capability {
         format: ImportFormat::Svg,
-        detected_formats: &[craft_file_formats::Format::Svg],
+        detected_formats: &[bharat_file_formats::Format::Svg],
         extensions: &["svg"],
         write_extensions: &["svg"],
         mime_types: &["image/svg+xml"],
@@ -50,7 +50,7 @@ pub const CAPABILITIES: &[Capability] = &[
     },
     Capability {
         format: ImportFormat::Svgz,
-        detected_formats: &[craft_file_formats::Format::Svgz],
+        detected_formats: &[bharat_file_formats::Format::Svgz],
         extensions: &["svgz"],
         write_extensions: &["svgz"],
         mime_types: &["image/svg+xml"],
@@ -59,7 +59,7 @@ pub const CAPABILITIES: &[Capability] = &[
     },
     Capability {
         format: ImportFormat::Dxf,
-        detected_formats: &[craft_file_formats::Format::Dxf],
+        detected_formats: &[bharat_file_formats::Format::Dxf],
         extensions: &["dxf"],
         write_extensions: &["dxf"],
         mime_types: &["image/vnd.dxf", "application/dxf"],
@@ -68,7 +68,7 @@ pub const CAPABILITIES: &[Capability] = &[
     },
     Capability {
         format: ImportFormat::Pdf,
-        detected_formats: &[craft_file_formats::Format::Pdf],
+        detected_formats: &[bharat_file_formats::Format::Pdf],
         extensions: &["pdf"],
         write_extensions: &["pdf"],
         mime_types: &["application/pdf"],
@@ -77,7 +77,7 @@ pub const CAPABILITIES: &[Capability] = &[
     },
     Capability {
         format: ImportFormat::Eps,
-        detected_formats: &[craft_file_formats::Format::Eps, craft_file_formats::Format::PostScript, craft_file_formats::Format::Illustrator],
+        detected_formats: &[bharat_file_formats::Format::Eps, bharat_file_formats::Format::PostScript, bharat_file_formats::Format::Illustrator],
         extensions: &["eps", "ps", "ai"],
         write_extensions: &[],
         mime_types: &["application/postscript"],
@@ -87,13 +87,13 @@ pub const CAPABILITIES: &[Capability] = &[
     Capability {
         format: ImportFormat::Raster,
         detected_formats: &[
-            craft_file_formats::Format::Png,
-            craft_file_formats::Format::Jpeg,
-            craft_file_formats::Format::JpegLs,
-            craft_file_formats::Format::Bmp,
-            craft_file_formats::Format::Gif,
-            craft_file_formats::Format::Tiff,
-            craft_file_formats::Format::WebP,
+            bharat_file_formats::Format::Png,
+            bharat_file_formats::Format::Jpeg,
+            bharat_file_formats::Format::JpegLs,
+            bharat_file_formats::Format::Bmp,
+            bharat_file_formats::Format::Gif,
+            bharat_file_formats::Format::Tiff,
+            bharat_file_formats::Format::WebP,
         ],
         extensions: &["png", "jpg", "jpeg", "jls", "bmp", "gif", "tif", "tiff", "webp"],
         write_extensions: &["png", "jpg", "jpeg"],
@@ -181,8 +181,8 @@ pub enum Error {
     Write(String),
 }
 
-impl From<craft_pdf::write::WriteError> for Error {
-    fn from(error: craft_pdf::write::WriteError) -> Self {
+impl From<bharat_pdf::write::WriteError> for Error {
+    fn from(error: bharat_pdf::write::WriteError) -> Self {
         Self::Write(error.to_string())
     }
 }
@@ -190,8 +190,8 @@ impl From<craft_pdf::write::WriteError> for Error {
 /// Resolve detected file kinds to this reader registry. Illustrator files with PDF content use
 /// the PDF path reader; PostScript-family files use the EPS/PostScript interpreter.
 pub fn format_for(name: &str, bytes: &[u8]) -> Option<ImportFormat> {
-    use craft_file_formats::Format as F;
-    match craft_file_formats::detect(name, bytes)? {
+    use bharat_file_formats::Format as F;
+    match bharat_file_formats::detect(name, bytes)? {
         F::Svg => Some(ImportFormat::Svg),
         F::Svgz => Some(ImportFormat::Svgz),
         F::Dxf => Some(ImportFormat::Dxf),
@@ -209,7 +209,7 @@ pub fn supported_extensions() -> Vec<&'static str> {
 }
 
 /// Raw detected kinds routed to one reader family, for app open-dialog and capability adapters.
-pub fn supported_formats(format: ImportFormat) -> &'static [craft_file_formats::Format] {
+pub fn supported_formats(format: ImportFormat) -> &'static [bharat_file_formats::Format] {
     CAPABILITIES.iter().find(|capability| capability.format == format).map_or(&[], |capability| capability.detected_formats)
 }
 
@@ -252,10 +252,10 @@ struct SvgTag {
     class: Option<String>,
 }
 
-impl craft_svg::paths::Kind for SvgTag {
+impl bharat_svg::paths::Kind for SvgTag {
     const PROPERTIES: &'static [&'static str] = &["data-kind"];
 
-    fn of(style: &craft_svg::paths::StyleMap, class: &str) -> Option<Self> {
+    fn of(style: &bharat_svg::paths::StyleMap, class: &str) -> Option<Self> {
         let data_kind = style.get("data-kind").cloned();
         let class = (!class.is_empty()).then(|| class.to_owned());
         (data_kind.is_some() || class.is_some()).then_some(Self { data_kind, class })
@@ -263,8 +263,8 @@ impl craft_svg::paths::Kind for SvgTag {
 }
 
 fn import_svg(name: &str, bytes: &[u8], format: ImportFormat, limits: Limits) -> Result<Imported, Error> {
-    let text = craft_svg::svgz::text(bytes, limits.max_input_bytes).map_err(|error| Error::Decode(error.to_string()))?;
-    let imported = craft_svg::paths::import::<SvgTag>(&text, name).map_err(|error| Error::Decode(error.to_string()))?;
+    let text = bharat_svg::svgz::text(bytes, limits.max_input_bytes).map_err(|error| Error::Decode(error.to_string()))?;
+    let imported = bharat_svg::paths::import::<SvgTag>(&text, name).map_err(|error| Error::Decode(error.to_string()))?;
     if imported.shapes.len() > limits.max_shapes {
         return Err(Error::ShapeLimit);
     }
@@ -276,7 +276,7 @@ fn import_svg(name: &str, bytes: &[u8], format: ImportFormat, limits: Limits) ->
             tag: shape.kind.data_kind.clone(),
             class: shape.kind.class.clone(),
             stroke: shape.stroke.clone(),
-            stroke_rgb: shape.stroke.as_deref().and_then(|value| craft_svg::color::parse_color(value).ok()).map(|color| [color.r, color.g, color.b]),
+            stroke_rgb: shape.stroke.as_deref().and_then(|value| bharat_svg::color::parse_color(value).ok()).map(|color| [color.r, color.g, color.b]),
             layer: shape.layer.clone(),
         });
     }
@@ -291,7 +291,7 @@ fn import_svg(name: &str, bytes: &[u8], format: ImportFormat, limits: Limits) ->
 }
 
 fn import_dxf(bytes: &[u8], format: ImportFormat, limits: Limits) -> Result<Imported, Error> {
-    let imported = craft_dxf::paths::import(bytes).map_err(|error| Error::Decode(error.to_string()))?;
+    let imported = bharat_dxf::paths::import(bytes).map_err(|error| Error::Decode(error.to_string()))?;
     if imported.paths.len() > limits.max_shapes {
         return Err(Error::ShapeLimit);
     }
@@ -312,10 +312,10 @@ fn import_dxf(bytes: &[u8], format: ImportFormat, limits: Limits) -> Result<Impo
 }
 
 fn import_pdf(bytes: &[u8], format: ImportFormat, limits: Limits) -> Result<Imported, Error> {
-    let imported = craft_pdf::paths::import_page(
+    let imported = bharat_pdf::paths::import_page(
         bytes,
         0,
-        craft_pdf::paths::Limits { max_input_bytes: limits.max_input_bytes, max_paths: limits.max_shapes, ..Default::default() },
+        bharat_pdf::paths::Limits { max_input_bytes: limits.max_input_bytes, max_paths: limits.max_shapes, ..Default::default() },
     )
     .map_err(|error| Error::Decode(error.to_string()))?;
     let page = imported.pages.into_iter().next().ok_or_else(|| Error::Decode("PDF has no pages".into()))?;
@@ -340,9 +340,9 @@ fn import_pdf(bytes: &[u8], format: ImportFormat, limits: Limits) -> Result<Impo
 }
 
 fn import_eps(bytes: &[u8], format: ImportFormat, limits: Limits) -> Result<Imported, Error> {
-    let imported = craft_eps::paths::import(
+    let imported = bharat_eps::paths::import(
         bytes,
-        craft_eps::paths::Limits { max_input_bytes: limits.max_input_bytes, max_paths: limits.max_shapes, ..Default::default() },
+        bharat_eps::paths::Limits { max_input_bytes: limits.max_input_bytes, max_paths: limits.max_shapes, ..Default::default() },
     )
     .map_err(|error| Error::Decode(error.to_string()))?;
     let bounds = imported.page_bounds;
@@ -367,9 +367,9 @@ fn import_eps(bytes: &[u8], format: ImportFormat, limits: Limits) -> Result<Impo
 }
 
 fn import_raster(bytes: &[u8], format: ImportFormat, limits: Limits) -> Result<Imported, Error> {
-    let rgba = craft_raster_codecs::common::decode_rgba(
+    let rgba = bharat_raster_codecs::common::decode_rgba(
         bytes,
-        craft_raster_codecs::common::DecodeLimits {
+        bharat_raster_codecs::common::DecodeLimits {
             max_file_bytes: limits.max_input_bytes,
             max_width: limits.max_raster_width,
             max_height: limits.max_raster_height,
@@ -406,7 +406,7 @@ mod format_tests {
 
     #[test]
     fn jpeg_ls_is_routed_to_the_raster_reader() {
-        use craft_image_codecs::{ChannelLayout, EncodeOptions, Format, Image, encode};
+        use bharat_image_codecs::{ChannelLayout, EncodeOptions, Format, Image, encode};
         let gray: Vec<u8> = (0..6).map(|value| value * 40).collect();
         let Ok(image) = Image::from_u8(3, 2, ChannelLayout::Gray, gray.clone()) else {
             panic!("a 3 by 2 gray image");
@@ -423,7 +423,7 @@ mod format_tests {
             let red: Vec<u8> = raster.rgba.as_chunks::<4>().0.iter().map(|pixel| pixel[0]).collect();
             assert_eq!(red, gray, "{name}");
         }
-        assert!(supported_formats(ImportFormat::Raster).contains(&craft_file_formats::Format::JpegLs));
+        assert!(supported_formats(ImportFormat::Raster).contains(&bharat_file_formats::Format::JpegLs));
         assert!(supported_extensions().contains(&"jls"));
     }
 }

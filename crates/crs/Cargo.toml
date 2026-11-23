@@ -1,5 +1,5 @@
 [package]
-name = "craft-crs"
+name = "bharat-crs"
 description = "Adobe Camera Raw settings (the crs: namespace of an XMP packet or .xmp sidecar): the settings as written, numbers, curve points and the crop, read and written."
 version.workspace = true
 edition.workspace = true
@@ -11,6 +11,6 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-metadata = { workspace = true }
-craft-xml = { workspace = true }
+bharat-metadata = { workspace = true }
+bharat-xml = { workspace = true }
 thiserror = { workspace = true }

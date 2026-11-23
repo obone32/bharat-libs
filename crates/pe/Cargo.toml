@@ -1,6 +1,6 @@
 [package]
-name = "craft-pe"
-description = "PE/COFF headers from hostile bytes, from Craft Anything: the DOS stub pointer, COFF header, PE32/PE32+ optional header, data directories, section table, RVA-to-file mapping and the Rich header. Pure Rust, no I/O."
+name = "bharat-pe"
+description = "PE/COFF headers from hostile bytes, from Bharat Anything: the DOS stub pointer, COFF header, PE32/PE32+ optional header, data directories, section table, RVA-to-file mapping and the Rich header. Pure Rust, no I/O."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

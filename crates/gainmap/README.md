@@ -1,12 +1,12 @@
-# craft-gainmap
+# bharat-gainmap
 
-HDR gain maps for the Craft apps, from LightCraft's `lightcraft-codecs`: an SDR base image plus a
+HDR gain maps for the Bharat apps, from LightCraft's `lightcraft-codecs`: an SDR base image plus a
 small map of gains that rebuilds the HDR rendition on a display with headroom. This crate is the
 metadata and the arithmetic. It does not encode or decode images and does not know a container.
 No `unsafe`, no panics on malformed input; the only dependency is `thiserror`.
 
 ```toml
-craft-gainmap = { git = "https://github.com/storytold/craft-libs", rev = "<commit>" }
+bharat-gainmap = { git = "https://github.com/obone32/bharat-libs", rev = "<commit>" }
 ```
 
 | | |
@@ -19,7 +19,7 @@ craft-gainmap = { git = "https://github.com/storytold/craft-libs", rev = "<commi
 | `apple::apply`, `apple::Metadata` | Apple's legacy single-channel gain maps (a linear ratio, headroom from the maker note) |
 
 ```rust
-use craft_gainmap::{GainMapOptions, apply, compute};
+use bharat_gainmap::{GainMapOptions, apply, compute};
 
 // `sdr` and `hdr`: the same picture, linear RGB in the same primaries.
 let (map, meta) = compute(&sdr, &hdr, width, height, [0.2126, 0.7152, 0.0722], &GainMapOptions::default())?;

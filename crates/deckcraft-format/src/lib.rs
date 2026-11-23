@@ -135,9 +135,9 @@ pub struct Member<'a> {
 /// The package: `mimetype` (stored), the manifest naming `generator` around `presentation`
 /// (deflated, with non-finite numbers written as 0), then `members` in order.
 pub fn write<T: serde::Serialize>(presentation: &T, generator: &str, members: &[Member<'_>]) -> Result<Vec<u8>> {
-    use craft_zip::Compression::{Deflated, Stored};
-    let w = |e: craft_zip::Error| FormatError::Write(e.to_string());
-    let mut z = craft_zip::Writer::new();
+    use bharat_zip::Compression::{Deflated, Stored};
+    let w = |e: bharat_zip::Error| FormatError::Write(e.to_string());
+    let mut z = bharat_zip::Writer::new();
     z.add(MIMETYPE_ENTRY, MIMETYPE.as_bytes(), Stored).map_err(w)?;
     let m = Manifest { format: FORMAT.to_string(), version: VERSION, generator: generator.to_string(), presentation };
     let json = serde_json::to_vec(&Finite(&m)).map_err(|e| FormatError::Write(e.to_string()))?;

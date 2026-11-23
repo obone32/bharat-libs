@@ -5,9 +5,9 @@
 //! each checked against its pinned SHA-256 before decoding) are checked against the ID
 //! manifests their sidecars list.
 
-use craft_image_codecs::CodecError;
-use craft_image_codecs::f16;
-use craft_image_codecs::{Limits, decode, decode_deep_exr};
+use bharat_image_codecs::CodecError;
+use bharat_image_codecs::f16;
+use bharat_image_codecs::{Limits, decode, decode_deep_exr};
 use sha2::{Digest, Sha256};
 use std::io::Read as _;
 use std::io::Write as _;
@@ -302,9 +302,9 @@ const COUNTS_ONE: &[u32] = &[1; 16]; // for a 4x4 image
 fn rgba_flat(bytes: &[u8]) -> Vec<f32> {
     let img = decode(bytes).expect("decodes");
     let s = img.to_f32_samples().expect("f32");
-    assert_eq!(img.layout(), craft_image_codecs::ChannelLayout::Rgba);
-    assert_eq!(img.sample_type(), craft_image_codecs::SampleType::F32);
-    assert!(img.warnings.iter().any(|w| matches!(w, craft_image_codecs::DecodeWarning::DeepFlattened { .. })));
+    assert_eq!(img.layout(), bharat_image_codecs::ChannelLayout::Rgba);
+    assert_eq!(img.sample_type(), bharat_image_codecs::SampleType::F32);
+    assert!(img.warnings.iter().any(|w| matches!(w, bharat_image_codecs::DecodeWarning::DeepFlattened { .. })));
     s
 }
 
@@ -494,7 +494,7 @@ fn half_channels_round_trip() {
     });
     let deep = decode_deep_exr(&bytes, &Limits::none()).expect("deep");
     for c in &deep.channels {
-        assert_eq!(c.sample, craft_image_codecs::SampleType::F16, "{}", c.name);
+        assert_eq!(c.sample, bharat_image_codecs::SampleType::F16, "{}", c.name);
     }
     let a = deep.channel("A").expect("A");
     assert_eq!(a.samples.len(), 16);
@@ -518,7 +518,7 @@ fn without_alpha_front_sample_is_opaque() {
         }
     });
     let img = decode(&bytes).expect("decodes");
-    assert_eq!(img.layout(), craft_image_codecs::ChannelLayout::Rgb);
+    assert_eq!(img.layout(), bharat_image_codecs::ChannelLayout::Rgb);
     let px = img.to_f32_samples().expect("f32");
     // Even pixels: the front sample (z=2) is (r 0.4, g 0.2, b 0.9).
     assert!((px[0] - 0.4).abs() < 1e-6 && (px[1] - 0.2).abs() < 1e-6 && (px[2] - 0.9).abs() < 1e-6);
@@ -537,7 +537,7 @@ fn grayscale_deep_keeps_its_alpha() {
         }
     });
     let img = decode(&bytes).expect("decodes");
-    assert_eq!(img.layout(), craft_image_codecs::ChannelLayout::GrayA);
+    assert_eq!(img.layout(), bharat_image_codecs::ChannelLayout::GrayA);
     let px = img.to_f32_samples().expect("f32");
     for (p, s) in px.chunks(2).enumerate() {
         let (y, a) = (s[0], s[1]);
@@ -552,7 +552,7 @@ fn grayscale_deep_keeps_its_alpha() {
         _ => vec![p as f32],
     });
     let img = decode(&bytes).expect("decodes");
-    assert_eq!(img.layout(), craft_image_codecs::ChannelLayout::Gray);
+    assert_eq!(img.layout(), bharat_image_codecs::ChannelLayout::Gray);
     let px = img.to_f32_samples().expect("f32");
     for (p, v) in px.iter().enumerate() {
         assert!((v - 0.4).abs() < 1e-6, "pixel {p}: {v}, want 0.4");
@@ -607,9 +607,9 @@ fn hostile_sizes_and_offsets_error() {
     let tight = Limits { max_alloc: 64, ..Limits::none() };
     assert!(matches!(decode_deep_exr(&bytes, &tight), Err(CodecError::LimitExceeded(_))));
     // A non-deep file is unsupported for decode_deep.
-    let flat = craft_image_codecs::encode(
-        &craft_image_codecs::Image::from_u8(2, 2, craft_image_codecs::ChannelLayout::Rgba, [128; 16].to_vec()).expect("img"),
-        craft_image_codecs::Format::OpenExr,
+    let flat = bharat_image_codecs::encode(
+        &bharat_image_codecs::Image::from_u8(2, 2, bharat_image_codecs::ChannelLayout::Rgba, [128; 16].to_vec()).expect("img"),
+        bharat_image_codecs::Format::OpenExr,
         &Default::default(),
     )
     .expect("encode");
@@ -655,7 +655,7 @@ fn deep_tile_count_table_is_admitted_against_max_alloc() {
             "compression {compression}: a 4 MiB count table under a 1 MiB budget gave {:?}",
             got.map(|d| d.total_samples())
         );
-        let flat = craft_image_codecs::decode_with(&big, &craft_image_codecs::DecodeOptions { limits: tight, ..Default::default() });
+        let flat = bharat_image_codecs::decode_with(&big, &bharat_image_codecs::DecodeOptions { limits: tight, ..Default::default() });
         assert!(matches!(flat, Err(CodecError::LimitExceeded(_))), "compression {compression}: the flat decode gave {:?}", flat.map(|i| i.width()));
         // The same tile with its table stored at the clipped size fits the small budget.
         let clipped = gen_deep(4, 4, &RGBAZ, compression, Some((1024, 1024)), COUNTS_ONE, &sample_rgba);
@@ -739,7 +739,7 @@ fn clipped_count_tables_include_scratch_in_the_budget() {
             assert_eq!(decode_deep_exr(&bytes, &budget(required)).expect("table and any scratch fit exactly"), want, "{what}");
             assert!(matches!(decode_deep_exr(&bytes, &budget(required - 1)), Err(CodecError::LimitExceeded(_))), "{what}");
             let flat =
-                craft_image_codecs::decode_with(&bytes, &craft_image_codecs::DecodeOptions { limits: budget(required - 1), ..Default::default() });
+                bharat_image_codecs::decode_with(&bytes, &bharat_image_codecs::DecodeOptions { limits: budget(required - 1), ..Default::default() });
             assert!(matches!(flat, Err(CodecError::LimitExceeded(_))), "{what}");
             if compression == 0 {
                 assert_eq!(decode_deep_exr(&bytes, &budget(511)).expect("raw table needs no scratch"), want, "{what}");
@@ -1021,7 +1021,7 @@ fn real_deep_files_decode() {
         let img = decode(&bytes).unwrap_or_else(|e| panic!("{name}: {e}"));
         assert_eq!((img.width(), img.height()), (deep.width, deep.height), "{name}");
         assert_eq!(img.to_f32_samples().expect("f32").len(), 256 * 256 * 4, "{name}");
-        assert!(img.warnings.iter().any(|w| matches!(w, craft_image_codecs::DecodeWarning::DeepFlattened { .. })), "{name}");
+        assert!(img.warnings.iter().any(|w| matches!(w, bharat_image_codecs::DecodeWarning::DeepFlattened { .. })), "{name}");
     }
 }
 
@@ -1042,7 +1042,7 @@ struct ScratchDir(std::path::PathBuf);
 
 impl ScratchDir {
     fn new(tag: &str) -> Self {
-        let dir = std::env::temp_dir().join(format!("craft-image-codecs-{tag}-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("bharat-image-codecs-{tag}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).expect("create scratch dir");
         Self(dir)
@@ -1192,7 +1192,7 @@ fn cropped_deep_data_opens_on_the_display_stage() {
     let bytes = gen_deep_cropped(w, h, dwx, dwy, sw, sh, &RGBA_NO_Z, &counts, &sample);
     let img = decode(&bytes).expect("cropped deep EXR decodes");
     assert_eq!((img.width(), img.height()), (sw as u32, sh as u32), "opens on the display window stage");
-    assert!(img.warnings.iter().any(|w| matches!(w, craft_image_codecs::DecodeWarning::DisplayWindowStage { origin, .. } if *origin == (dwx, dwy))));
+    assert!(img.warnings.iter().any(|w| matches!(w, bharat_image_codecs::DecodeWarning::DisplayWindowStage { origin, .. } if *origin == (dwx, dwy))));
 
     // The data sits at its crop offset: the first data pixel's green channel carries its
     // data-row fraction, everything outside the data region stays transparent black.

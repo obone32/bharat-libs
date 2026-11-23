@@ -105,7 +105,7 @@ impl<'a> Deref for Pages<'a> {
     }
 }
 
-/// Craft patch: bound traversal work, not valid indirect page-tree depth. The root
+/// Bharat patch: bound traversal work, not valid indirect page-tree depth. The root
 /// and every raw `/Kids` entry consume one unit, including malformed, direct and
 /// repeated entries. This also bounds the stack, visited set and returned pages.
 /// Budget exhaustion or failed frame/page reservation rejects the whole traversal;

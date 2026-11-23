@@ -1,11 +1,11 @@
 //! Styles, swatches, stroke styles, colour groups and preferences.
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use craft_idml::model::{
+use bharat_idml::model::{
     ColorSpace, GradientStop, StrokeStyleKind, StyleGroup, StyleKind, StyleNode, SwatchKind, color_groups, named, preference, stroke_styles,
     style_groups, swatches,
 };
-use craft_idml::{El, parse_part, part_root, part_xml};
+use bharat_idml::{El, parse_part, part_root, part_xml};
 
 const STYLES: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <idPkg:Styles xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="16.0">

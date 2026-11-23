@@ -3,7 +3,7 @@
 //! Do not regenerate expectations from the new implementation: they establish the baseline.
 //! Legacy WCAFF1 bytes remain frozen, but are explicitly refused by the WCAFF2 engine.
 
-use craft_proof::affix::{AffixDict, capitalize};
+use bharat_proof::affix::{AffixDict, capitalize};
 use std::fmt::Write;
 
 #[path = "fixtures/affix_compatibility_cases.rs"]
@@ -56,7 +56,7 @@ fn non_french_affix_outputs_match_pre_french_baseline() {
         assert_eq!(snapshot(&case, &restored), result, "current compact round trip: {}", case.name);
         actual.push_str(&result);
     }
-    // craft-libs 55332dd predates this adaptation and supports a prefix plus a two-suffix
+    // bharat-libs 55332dd predates this adaptation and supports a prefix plus a two-suffix
     // chain (native test affix::tests::a_prefix_with_a_suffix_chain). The old Indonesian
     // fixture's bermain + kan + lah therefore became a word, in these three cases only.
     // Keep the frozen historical file untouched and assert every explicit transition once.

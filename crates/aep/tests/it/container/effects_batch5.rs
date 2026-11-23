@@ -3,10 +3,10 @@
 //! and Levels.
 
 use crate::container::helpers::{first_comp, open};
-use craft_aep::{EffectParam, HueSaturationData, LevelsData, ParamKind, ParamValue, Project};
+use bharat_aep::{EffectParam, HueSaturationData, LevelsData, ParamKind, ParamValue, Project};
 
 /// Runs `f` on the parameters of the first effect of layer L (the only layer).
-fn with_params<R>(name: &str, f: impl FnOnce(&[EffectParam<'_, '_>], &craft_aep::Effect<'_, '_>) -> R) -> Option<R> {
+fn with_params<R>(name: &str, f: impl FnOnce(&[EffectParam<'_, '_>], &bharat_aep::Effect<'_, '_>) -> R) -> Option<R> {
     Some({
         let bytes = crate::common::try_fixture(name)?;
         let file = open(&bytes);

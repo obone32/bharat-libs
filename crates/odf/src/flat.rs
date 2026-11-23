@@ -364,7 +364,7 @@ pub fn from_package(package: &[u8], limits: &Limits) -> Result<Vec<u8>, Error> {
     Ok(format!(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<office:document {} office:version=\"1.3\" office:mimetype=\"{}\">{flat}</office:document>\n",
         merged_namespaces(&[&content, &styles, &meta, &settings]),
-        craft_xml::esc_attr(&mime)
+        bharat_xml::esc_attr(&mime)
     )
     .into_bytes())
 }
@@ -407,7 +407,7 @@ fn flat_document(mime: &str, content: &str, styles: &str, meta: &str, settings: 
     format!(
         "<office:document {} office:version=\"1.3\" office:mimetype=\"{}\">{}</office:document>",
         merged_namespaces(&[content, styles, meta, settings]),
-        craft_xml::esc_attr(mime),
+        bharat_xml::esc_attr(mime),
         flat_parts(content, styles, meta, settings)
     )
 }
@@ -446,7 +446,7 @@ fn mimetype_of(root: &str) -> Option<String> {
     let tag = root.find('>').and_then(|e| root.get(..e))?;
     let from = tag.find(" office:mimetype=\"")? + " office:mimetype=\"".len();
     let value = tag.get(from..)?;
-    Some(craft_xml::unescape(value.get(..value.find('"')?)?))
+    Some(bharat_xml::unescape(value.get(..value.find('"')?)?))
 }
 
 /// The namespace declarations (`xmlns:p="…"`) on the root element of `xml`.

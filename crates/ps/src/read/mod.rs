@@ -27,7 +27,7 @@ mod source;
 mod type1;
 mod type42;
 
-use craft_eps::{Comments, Kind, MAX_EXTENDED_HEADER, postscript_section as shared_postscript_section};
+use bharat_eps::{Comments, Kind, MAX_EXTENDED_HEADER, postscript_section as shared_postscript_section};
 
 pub use interp::{FallbackFont, Limits};
 
@@ -57,7 +57,7 @@ pub fn bounding_box(ps: &[u8]) -> Option<[f64; 4]> {
 
 /// An EPS file (plain, or DOS EPS with a binary header)?
 pub fn is_eps(bytes: &[u8]) -> bool {
-    craft_eps::sniff(bytes).is_some_and(|file| file.kind == Kind::Eps)
+    bharat_eps::sniff(bytes).is_some_and(|file| file.kind == Kind::Eps)
 }
 
 /// How many converted EPS files are kept.

@@ -1,11 +1,11 @@
-# craft-sf2
+# bharat-sf2
 
 SoundFont 2 (`.sf2`) files, read. Bytes in, a neutral model out; no file access, no
 dependencies beyond `thiserror`, builds for wasm32.
 
 ```rust
-let bytes = craft_sf2::fixture::build(&[], &[], 1); // any .sf2 file's bytes
-match craft_sf2::read(&bytes) {
+let bytes = bharat_sf2::fixture::build(&[], &[], 1); // any .sf2 file's bytes
+match bharat_sf2::read(&bytes) {
     Ok(font) => println!("{}: {} presets, {} frames", font.name, font.presets.len(), font.pool.len()),
     Err(e) => println!("{e}"),
 }

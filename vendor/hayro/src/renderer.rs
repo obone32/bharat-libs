@@ -2215,7 +2215,7 @@ fn draw_soft_mask(mask: &SoftMask<'_>, settings: RenderSettings, width: u16, hei
     rendered_mask
 }
 
-/// Craft patch (CMYK masks): a luminosity mask whose group is DeviceCMYK. ISO 32000-2 §11.6.5.2
+/// Bharat patch (CMYK masks): a luminosity mask whose group is DeviceCMYK. ISO 32000-2 §11.6.5.2
 /// takes the luminosity of the group's CMYK result, which §10.4.2.2 defines as `1 - min(1, 0.3c
 /// + 0.59m + 0.11y + k)`. Taken from the colors as drawn, through the CMYK profile, K 100%
 /// would leave about a tenth of the masked object visible. So each process ink's plate of the

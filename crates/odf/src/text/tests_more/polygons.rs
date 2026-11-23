@@ -5,8 +5,8 @@
 
 use crate::text::tests::{NS_T, content_of, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::para::{InlineObject, ShapeKind};
+use bharat_wordmodel::Document;
+use bharat_wordmodel::para::{InlineObject, ShapeKind};
 
 const NS_D: &str =
     r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0""#;
@@ -130,7 +130,7 @@ fn hostile_paths_do_not_panic() {
         let d = open(&el);
         for (_, _, paths) in drawn(&d) {
             for (pts, _) in paths {
-                assert!(pts.len() <= craft_wordmodel::freeform::MAX_POINTS && pts.iter().all(|(x, y)| x.is_finite() && y.is_finite()));
+                assert!(pts.len() <= bharat_wordmodel::freeform::MAX_POINTS && pts.iter().all(|(x, y)| x.is_finite() && y.is_finite()));
             }
         }
         let _ = export(&d).unwrap();

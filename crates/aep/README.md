@@ -1,4 +1,4 @@
-# craft-aep
+# bharat-aep
 
 After Effects projects (`.aep`, `.aepx`): the container as a lossless chunk tree, and a typed,
 read-only view of what it holds. Bytes in, a neutral model out, and the tree back to bytes.
@@ -84,21 +84,21 @@ against them:
 ```sh
 git clone https://github.com/storytold/effectcraft-corpus.git
 git -C effectcraft-corpus checkout <commit from corpus.lock>
-CRAFT_AEP_FIXTURES=$PWD/effectcraft-corpus/aep CRAFT_AEP_FIXTURES_REQUIRED=1 cargo test -p craft-aep
+BHARAT_AEP_FIXTURES=$PWD/effectcraft-corpus/aep BHARAT_AEP_FIXTURES_REQUIRED=1 cargo test -p bharat-aep
 ```
 
 The tests reach the projects only through `tests/it/common/mod.rs`, which hands a test its case
-as a project of its own cut from the combined file. Without `CRAFT_AEP_FIXTURES` such a test
-prints `SKIPPED: fixture <name> missing` and passes; with `CRAFT_AEP_FIXTURES_REQUIRED` set, a
+as a project of its own cut from the combined file. Without `BHARAT_AEP_FIXTURES` such a test
+prints `SKIPPED: fixture <name> missing` and passes; with `BHARAT_AEP_FIXTURES_REQUIRED` set, a
 missing project fails it.
 
 ## Tools
 
 - `examples/aepdump.rs`: prints the chunk tree of a file (ids, sizes, short data, match names):
-  `cargo run -p craft-aep --example aepdump -- file.aep`.
+  `cargo run -p bharat-aep --example aepdump -- file.aep`.
 - `examples/stubicc.rs`: replaces every embedded ICC profile of a saved project by a stub that
   keeps only the profile's description: the JSON `colorProfileData` of the working space in an
   `.aep` chunk or the `.aepx` text, and a raw profile of an imported image:
-  `cargo run -p craft-aep --example stubicc -- in.aep out.aep`. A profile it cannot replace stops
+  `cargo run -p bharat-aep --example stubicc -- in.aep out.aep`. A profile it cannot replace stops
   it before anything is written. Use it before a generated project becomes test data, so no
   vendor colour data stays in it, and check the result independently.

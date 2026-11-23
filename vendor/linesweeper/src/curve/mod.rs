@@ -1145,7 +1145,7 @@ fn fit_quadratic(c: CubicBez) -> Quadratic {
         let c1 = (p3.x - p0.x) / (p3.y - p0.y);
         let mut c0 = (p0.x * p3.y - p3.x * p0.y) / (p3.y - p0.y);
         if !c0.is_finite() {
-            // Craft patch (huge chord): the product of an x coordinate and a
+            // Bharat patch (huge chord): the product of an x coordinate and a
             // height overflows when the two together pass f64::MAX, for example
             // x near 1e305 with heights near 1e4, and the difference of the two
             // products is then NaN. Take the line through p0 with slope c1.

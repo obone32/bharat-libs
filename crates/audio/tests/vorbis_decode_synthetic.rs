@@ -2,12 +2,12 @@
 //! floor 1 side by side, residues 0, 1 and 2, several submaps and channel coupling, followed by
 //! random audio packets. Every packet of random bits is decodable, so the two decoders (ours and
 //! ffmpeg's, the oracle; skipped when ffmpeg is absent, a failure with
-//! `CRAFT_MEDIA_REQUIRE_ORACLES=1`) must return the same samples, and no encoder's habits narrow
+//! `BHARAT_MEDIA_REQUIRE_ORACLES=1`) must return the same samples, and no encoder's habits narrow
 //! what is exercised. Floor 0, residue 0 and multi-submap mappings are the parts no encoder here
 //! writes.
 
-use craft_audio::vorbis::decoder::{Decoder, decode_ogg};
-use craft_media::ogg::{PageWriter, vorbis_comment};
+use bharat_audio::vorbis::decoder::{Decoder, decode_ogg};
+use bharat_media::ogg::{PageWriter, vorbis_comment};
 use std::process::Command;
 
 fn xorshift(seed: &mut u32) -> u32 {
@@ -267,7 +267,7 @@ fn run(name: &str, l: &Layout, seed: u32, tolerance: f32) {
     let mut s = seed;
     let ogg = stream(l, 40, &mut s);
     // Packet by packet our decoder must accept every one.
-    let file = craft_media::ogg::open(ogg.as_slice()).expect("open");
+    let file = bharat_media::ogg::open(ogg.as_slice()).expect("open");
     let st = &file.streams[0];
     let mut dec = Decoder::new(&st.headers[0], &st.headers[1], &st.headers[2]).expect("setup decodes");
     let mut total = vec![Vec::new(); usize::from(l.channels)];
@@ -285,8 +285,8 @@ fn run(name: &str, l: &Layout, seed: u32, tolerance: f32) {
     }
     let whole = decode_ogg(&ogg).expect("whole file");
     assert_eq!(whole.channels, total, "{name}: packet and file decoding differ");
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg() else { return };
-    let dir = craft_media_testkit::fixture_subdir("vorbis_synthetic");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg() else { return };
+    let dir = bharat_media_testkit::fixture_subdir("vorbis_synthetic");
     let path = dir.join(format!("{name}.ogg"));
     std::fs::write(&path, &ogg).expect("write fixture");
     let out = Command::new(&ffmpeg)
@@ -367,7 +367,7 @@ fn a_floor_zero_codebook_that_does_not_exist_is_a_packet_error() {
     let l = Layout { channels: 1, residue_types: [1, 1], mux: vec![0], coupling: vec![] };
     let mut seed = 5u32;
     let ogg = stream(&l, 6, &mut seed);
-    let file = craft_media::ogg::open(ogg.as_slice()).expect("open");
+    let file = bharat_media::ogg::open(ogg.as_slice()).expect("open");
     let st = &file.streams[0];
     let mut dec = Decoder::new(&st.headers[0], &st.headers[1], &st.headers[2]).expect("decoder");
     let good = file.read_packet(ogg.as_slice(), 0, 0).expect("packet");
@@ -379,6 +379,6 @@ fn a_floor_zero_codebook_that_does_not_exist_is_a_packet_error() {
     w.put(9, 8);
     w.put(1, 1);
     w.put(0, 64);
-    assert!(matches!(dec.decode_packet(&w.bytes), Err(craft_audio::vorbis::decoder::Error::Packet(_))));
+    assert!(matches!(dec.decode_packet(&w.bytes), Err(bharat_audio::vorbis::decoder::Error::Packet(_))));
     assert!(dec.decode_packet(&good).is_ok(), "the decoder carries on");
 }

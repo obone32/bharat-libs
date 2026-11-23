@@ -1,5 +1,5 @@
 [package]
-name = "craft-gpu-providers"
+name = "bharat-gpu-providers"
 description = "Shared GpuProvider implementations (composite, readback, …) — no app deps"
 version.workspace = true
 edition.workspace = true
@@ -10,7 +10,7 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-craft-gpu = { workspace = true }
+bharat-gpu = { workspace = true }
 
 [dev-dependencies]
-craft-gpu-null = { workspace = true }
+bharat-gpu-null = { workspace = true }

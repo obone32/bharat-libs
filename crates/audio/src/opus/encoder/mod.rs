@@ -16,7 +16,7 @@
 //!
 //! ```
 //! # #[cfg(feature = "opus-encode")] {
-//! use craft_audio::opus::encoder::{Application, Mode, Encoder};
+//! use bharat_audio::opus::encoder::{Application, Mode, Encoder};
 //! let mut enc = Encoder::new(2, 128_000).unwrap();
 //! let pcm = vec![0.0f32; Encoder::FRAME_SIZE * 2];
 //! let packet = enc.encode_float(&pcm).unwrap();

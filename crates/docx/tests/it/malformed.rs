@@ -2,7 +2,7 @@
 
 use std::io::Write;
 
-use craft_docx::{DocxError, read, write};
+use bharat_docx::{DocxError, read, write};
 use proptest::prelude::*;
 
 const W_NS: &str = r#"xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships""#;
@@ -22,9 +22,9 @@ fn doc_zip(document_xml: &[u8]) -> Vec<u8> {
 }
 
 fn sample() -> Vec<u8> {
-    let mut d = craft_wordmodel::Document::from_text("Hello world\nSecond paragraph with more text\nThird");
-    let t = craft_wordmodel::Table::new(2, 2, 200.0);
-    d.body.insert(1, std::sync::Arc::new(craft_wordmodel::Block::Table(t)));
+    let mut d = bharat_wordmodel::Document::from_text("Hello world\nSecond paragraph with more text\nThird");
+    let t = bharat_wordmodel::Table::new(2, 2, 200.0);
+    d.body.insert(1, std::sync::Arc::new(bharat_wordmodel::Block::Table(t)));
     write(&d).unwrap()
 }
 
@@ -65,7 +65,7 @@ fn missing_or_wrong_main_part() {
     // No root rels at all: falls back to word/document.xml.
     let z = zip(&[("word/document.xml", format!("<w:document {W_NS}><w:body><w:p><w:r><w:t>ok</w:t></w:r></w:p></w:body></w:document>").as_bytes())]);
     let d = read(&z).unwrap();
-    assert_eq!(d.plain_text(craft_wordmodel::StoryRef::Body), "ok");
+    assert_eq!(d.plain_text(bharat_wordmodel::StoryRef::Body), "ok");
 }
 
 fn body_zip(body: &str) -> Vec<u8> {
@@ -84,7 +84,7 @@ fn a_malformed_main_part_is_an_error_not_a_truncated_document() {
     }
     let whole = "<w:p><w:r><w:t>a &lt;- b</w:t></w:r></w:p><w:p><w:r><w:t>last</w:t></w:r></w:p>";
     let d = read(&body_zip(whole)).unwrap();
-    assert_eq!(d.plain_text(craft_wordmodel::StoryRef::Body), "a <- b\nlast", "well-formed text still reads whole");
+    assert_eq!(d.plain_text(bharat_wordmodel::StoryRef::Body), "a <- b\nlast", "well-formed text still reads whole");
 }
 
 #[test]
@@ -108,7 +108,7 @@ fn a_part_with_a_bad_checksum_is_left_out_and_reported() {
     let at = z.windows(7).position(|w| w == b"PICTURE").unwrap();
     z[at] = b'p';
     let damaged = read(&z).unwrap();
-    assert_eq!(damaged.plain_text(craft_wordmodel::StoryRef::Body), "kept", "the rest still opens");
+    assert_eq!(damaged.plain_text(bharat_wordmodel::StoryRef::Body), "kept", "the rest still opens");
     assert_eq!(damaged.skipped_parts, vec!["word/media/image1.png".to_string()]);
 }
 
@@ -131,11 +131,11 @@ fn deep_nesting_is_rejected() {
     }
     y.push_str("</w:body></w:document>");
     let d = read(&doc_zip(y.as_bytes())).unwrap();
-    fn all_text(bl: &craft_wordmodel::Blocks, out: &mut String) {
+    fn all_text(bl: &bharat_wordmodel::Blocks, out: &mut String) {
         for b in bl {
             match &**b {
-                craft_wordmodel::Block::Para(p) => out.push_str(&p.plain_text()),
-                craft_wordmodel::Block::Table(t) => t.rows.iter().flat_map(|r| &r.cells).for_each(|c| all_text(&c.blocks, out)),
+                bharat_wordmodel::Block::Para(p) => out.push_str(&p.plain_text()),
+                bharat_wordmodel::Block::Table(t) => t.rows.iter().flat_map(|r| &r.cells).for_each(|c| all_text(&c.blocks, out)),
             }
         }
     }
@@ -158,7 +158,7 @@ fn broken_secondary_parts_are_ignored() {
         ("word/comments.xml", b"<<<"),
     ]);
     let d = read(&z).unwrap();
-    assert_eq!(d.plain_text(craft_wordmodel::StoryRef::Body), "body");
+    assert_eq!(d.plain_text(bharat_wordmodel::StoryRef::Body), "body");
     // The unresolvable list still writes.
     write(&d).unwrap();
 }
@@ -172,7 +172,7 @@ fn many_fields_and_huge_attribute_values() {
     x.push_str(&format!(r#"<w:r><w:rPr><w:rFonts w:ascii="{}"/></w:rPr><w:t>x</w:t></w:r>"#, "F".repeat(100_000)));
     x.push_str("</w:p><w:p><w:r><w:t>later</w:t></w:r></w:p></w:body></w:document>");
     let d = read(&doc_zip(x.as_bytes())).unwrap();
-    assert!(d.plain_text(craft_wordmodel::StoryRef::Body).contains("later"));
+    assert!(d.plain_text(bharat_wordmodel::StoryRef::Body).contains("later"));
 }
 
 /// A paragraph with 2,000,000 attributes deflates to ~15 KB. Opening it is refused with a
@@ -186,7 +186,7 @@ fn millions_of_attributes_on_one_paragraph_are_capped() {
     let start = std::time::Instant::now();
     match read(&z) {
         Err(DocxError::Limit(_)) => {}
-        Ok(d) => assert!(d.plain_text(craft_wordmodel::StoryRef::Body).contains("kept")),
+        Ok(d) => assert!(d.plain_text(bharat_wordmodel::StoryRef::Body).contains("kept")),
         Err(e) => panic!("expected a Limit error or a document, got {e}"),
     }
     assert!(start.elapsed() < std::time::Duration::from_secs(10), "took {:?}", start.elapsed());
@@ -302,13 +302,13 @@ proptest! {
 
 /// The streams of a Standard-encrypted package (gap 9), and a compound file holding them.
 fn standard_streams() -> (Vec<u8>, Vec<u8>) {
-    let file = craft_docx::encrypt_standard_for_tests(&sample(), "pw", 128).unwrap();
-    let comp = craft_cfb::CompoundFile::open(&file).unwrap();
+    let file = bharat_docx::encrypt_standard_for_tests(&sample(), "pw", 128).unwrap();
+    let comp = bharat_cfb::CompoundFile::open(&file).unwrap();
     (comp.read_path("EncryptionInfo").unwrap(), comp.read_path("EncryptedPackage").unwrap())
 }
 
 fn compound(info: &[u8], package: &[u8]) -> Vec<u8> {
-    craft_cfb::write_streams(craft_cfb::Version::V3, &[("EncryptionInfo", info), ("EncryptedPackage", package)]).unwrap()
+    bharat_cfb::write_streams(bharat_cfb::Version::V3, &[("EncryptionInfo", info), ("EncryptedPackage", package)]).unwrap()
 }
 
 proptest! {
@@ -328,8 +328,8 @@ proptest! {
             }
         }
         let file = compound(&info, &package);
-        let _ = craft_docx::decrypt(&file, Some("pw"));
-        let _ = craft_docx::read_with_password(&file, Some("pw"));
+        let _ = bharat_docx::decrypt(&file, Some("pw"));
+        let _ = bharat_docx::read_with_password(&file, Some("pw"));
         prop_assert!(read(&file).is_err());
     }
 }

@@ -1,10 +1,10 @@
 //! Regression tests for CodeRabbit's second review pass on PR #661,
-//! reproduced against 1e84947c (storytold/craft-libs#661).
+//! reproduced against 1e84947c (obone32/bharat-libs#661).
 //!
 //! Reuses `review_repro`'s `Hold` backend and helpers, the same as
 //! `coderabbit_repro`.
 
-use craft_esign::{Envelope, EnvelopeStatus};
+use bharat_esign::{Envelope, EnvelopeStatus};
 
 use super::review_repro::{Hold, envelope_for, ready, send, who};
 use super::*;

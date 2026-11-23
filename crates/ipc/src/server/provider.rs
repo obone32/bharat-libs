@@ -46,7 +46,7 @@ pub(super) fn call<T: Send + 'static>(hub: &Hub, what: &str, run: impl FnOnce() 
     }
     let slot = Slot(Arc::clone(&hub.providers));
     let (tx, rx) = mpsc::channel();
-    let started = std::thread::Builder::new().name("craft-ipc-provider".into()).spawn(move || {
+    let started = std::thread::Builder::new().name("bharat-ipc-provider".into()).spawn(move || {
         let _slot = slot;
         let _ = tx.send(run());
     });

@@ -3,7 +3,7 @@
 
 use std::sync::Arc;
 
-use craft_xml::El;
+use bharat_xml::El;
 
 use crate::styles::Font;
 
@@ -168,7 +168,7 @@ pub fn encode_xstring(s: &str) -> String {
     for (i, &c) in chars.iter().enumerate() {
         if is_escape(&chars, i) {
             o.push_str("_x005F_");
-        } else if !craft_xml::is_xml_char(c) || (c.is_control() && !matches!(c, '\t' | '\n')) {
+        } else if !bharat_xml::is_xml_char(c) || (c.is_control() && !matches!(c, '\t' | '\n')) {
             o.push_str(&format!("_x{:04X}_", c as u32 & 0xFFFF));
         } else {
             o.push(c);
@@ -230,7 +230,7 @@ mod tests {
     }
 
     fn item(xml: &str) -> StringItem {
-        StringItem::read(&craft_xml::Options::local().parse(xml.as_bytes()).unwrap_or_default())
+        StringItem::read(&bharat_xml::Options::local().parse(xml.as_bytes()).unwrap_or_default())
     }
 
     #[test]

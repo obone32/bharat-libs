@@ -3,7 +3,7 @@ use super::{
     TableStyleParts, VAlign, flag, int, props, tw, u32_of,
 };
 use crate::units::tw_i16;
-use craft_wordmodel::props::PropChange;
+use bharat_wordmodel::props::PropChange;
 use std::sync::Arc;
 
 fn numbering_level_index(value: Option<&str>) -> Option<usize> {
@@ -224,13 +224,13 @@ impl Reader<'_> {
         self.no_default_table_style = !self.has_default_table_style(&root);
         // Styles that give only a list level take the list from the style they are based on
         // (Heading 3: level 3 of Heading 2's outline list).
-        let fixed: Vec<Option<craft_wordmodel::props::NumRef>> = sheet
+        let fixed: Vec<Option<bharat_wordmodel::props::NumRef>> = sheet
             .styles
             .iter()
             .map(|s| match s.para.numbering {
                 Some(n) if n.num == props::LEVEL_ONLY => {
                     let base = s.based_on.as_deref().and_then(|b| props::chain_list(&sheet, b));
-                    base.map(|num| craft_wordmodel::props::NumRef { num, level: n.level })
+                    base.map(|num| bharat_wordmodel::props::NumRef { num, level: n.level })
                 }
                 other => other,
             })
@@ -244,14 +244,14 @@ impl Reader<'_> {
         {
             normal.default = true;
         }
-        let old_fixed: Vec<Option<Option<craft_wordmodel::props::NumRef>>> = sheet
+        let old_fixed: Vec<Option<Option<bharat_wordmodel::props::NumRef>>> = sheet
             .styles
             .iter()
             .map(|s| {
                 s.para_change.as_ref().map(|ch| match ch.old.numbering {
                     Some(n) if n.num == props::LEVEL_ONLY => {
                         let base = s.based_on.as_deref().and_then(|b| props::chain_list(&sheet, b));
-                        base.map(|num| craft_wordmodel::props::NumRef { num, level: n.level })
+                        base.map(|num| bharat_wordmodel::props::NumRef { num, level: n.level })
                     }
                     other => other,
                 })

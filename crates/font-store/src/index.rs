@@ -1,4 +1,4 @@
-//! Font indexes (aiongg/craft-font-index, format 1.x): the families of every source in one
+//! Font indexes (aiongg/bharat-font-index, format 1.x): the families of every source in one
 //! [`Index`], and exact lookup.
 
 use std::collections::{BTreeMap, HashMap, HashSet};

@@ -1,6 +1,6 @@
 use super::dng::{base_ifd, dng, synthetic};
-use craft_raw::{BlackLevel, Cfa, DngCompression, DngWriteOptions, Limits, Orientation, RawData, RawImage, write_dng};
-use craft_tiff::{ByteOrder, ImageData, Value, tags};
+use bharat_raw::{BlackLevel, Cfa, DngCompression, DngWriteOptions, Limits, Orientation, RawData, RawImage, write_dng};
+use bharat_tiff::{ByteOrder, ImageData, Value, tags};
 use std::ffi::OsString;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};

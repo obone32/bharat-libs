@@ -1,5 +1,5 @@
 [package]
-name = "craft-sheet"
+name = "bharat-sheet"
 description = "Spreadsheet vocabulary shared by the spreadsheet format crates: cell positions and A1 text, cell values and error values, sheet-name quoting, Excel's built-in number formats and indexed colour palette."
 version.workspace = true
 edition.workspace = true

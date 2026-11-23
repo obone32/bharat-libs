@@ -9,11 +9,11 @@ use std::time::Duration;
 
 use serde_json::json;
 
-use craft_ipc::client::{Client, HelloClient};
-use craft_ipc::refresh::{Change, FileState, Tracker, write_atomic};
-use craft_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
-use craft_ipc::watch::{DEEP_INTERVAL, IntervalTicker, Intervals, ManualTicker, Notice, SHALLOW_INTERVAL, Ticker, Watcher};
-use craft_ipc::{Discovery, LinkError, RuntimeDir};
+use bharat_ipc::client::{Client, HelloClient};
+use bharat_ipc::refresh::{Change, FileState, Tracker, write_atomic};
+use bharat_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
+use bharat_ipc::watch::{DEEP_INTERVAL, IntervalTicker, Intervals, ManualTicker, Notice, SHALLOW_INTERVAL, Ticker, Watcher};
+use bharat_ipc::{Discovery, LinkError, RuntimeDir};
 
 const LIMIT: Duration = Duration::from_secs(10);
 const SECOND: Duration = Duration::from_secs(1);

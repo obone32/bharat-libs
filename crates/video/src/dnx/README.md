@@ -1,9 +1,9 @@
-# craft-video: DNx (VC-3)
+# bharat-video: DNx (VC-3)
 
 Clean-room Avid DNxHD / DNxHR (VC-3) decoder and encoder in pure Rust, written from the public
 **SMPTE ST 2019-1:2016** *VC-3 Picture Compression and Data Stream Format* and its
-**Amendment 1:2023** (both free from `pub.smpte.org`). Part of `craft-video` (feature `dnx`). Layer L0: depends on
-`craft-media`, `thiserror` and (optional, feature `threads`) `rayon`. Builds
+**Amendment 1:2023** (both free from `pub.smpte.org`). Part of `bharat-video` (feature `dnx`). Layer L0: depends on
+`bharat-media`, `thiserror` and (optional, feature `threads`) `rayon`. Builds
 for `wasm32-unknown-unknown`; no `unsafe`.
 
 Enable the `threads` Cargo feature separately for parallel row decoding and encoding. Without it,
@@ -34,7 +34,7 @@ only as an external fixture generator and test oracle.
 ## API
 
 ```rust
-use craft_video::dnx::*;
+use bharat_video::dnx::*;
 
 let frame: Frame = decode_frame(&sample)?;               // one or two coding units
 let f = decode_frame_with(&sample, &DecodeOptions { threads: false, ..Default::default() })?;
@@ -56,7 +56,7 @@ budget are rejected before plane allocation.
 `Frame { width, height, chroma, rgb, bit_depth, y, cb, cr: Vec<u16>, alpha, interlace,
 color_volume, cid, par }` holds planar samples without row padding. Interlaced frames are woven
 (field 1 = top field on even lines). RGB frames hold G, B, R in `y`, `cb`, `cr`. In MOV the
-sample entry is `AVdn` (DNxHD) or `AVdh` (DNxHR); `craft-video` reads the CID from the
+sample entry is `AVdn` (DNxHD) or `AVdh` (DNxHR); `bharat-video` reads the CID from the
 first frame header to label the stream.
 
 ## Decoder
@@ -65,7 +65,7 @@ first frame header to label the stream.
   independently and in parallel, writing straight into their 16-line bands.
 - VLCs are decoded with two-level lookup tables (11-bit primary) built from the Annex E lists.
 - Inverse quantisation with the CID's Annex D weights; IDCT: the exact orthonormal 8×8 inverse DCT
-  of equation 8.3, evaluated separably in `f32` (shared design with `craft-prores`).
+  of equation 8.3, evaluated separably in `f32` (shared design with `bharat-prores`).
   Output: `floor(x·s + 2^(b−1) + ½)` clipped to `[0, 2^b − 1]`, where `s = 4` at 12 bits (the
   12-bit coefficient domain is ¼ of the orthonormal DCT, as Table 14's 13-bit IDCT input range
   for 12-bit samples implies) and 1 otherwise.
@@ -107,7 +107,7 @@ the prose of §7.3.1.2; we follow the prose (normative text takes precedence).
   (including the 4-byte scan-line alignment), starting from the previous frame's value, then
   gives macroblocks one finer step, spread evenly over the frame, while the budget allows.
 - The encoder returns CBR frame samples and codec parameters; it does not expose a QuickTime
-  export API. Container muxing belongs to `craft-media`.
+  export API. Container muxing belongs to `bharat-media`.
 
 ## Accuracy (vs ffmpeg as an external oracle)
 
@@ -130,9 +130,9 @@ decoder within ±2 (90–99% identical). Luma PSNR against the source: HQ 58.8 d
 
 ## Performance
 
-`cargo test --release -p craft-video --features dnx,threads --test dnx perf:: -- --ignored --nocapture` on an M4 Pro
+`cargo test --release -p bharat-video --features dnx,threads --test dnx perf:: -- --ignored --nocapture` on an M4 Pro
 (14 cores) while the machine was **heavily overloaded** by other jobs (load average ≈ 190).
-Under the same load `craft-prores`' perf test measured 30 fps threaded / 11.8 fps single
+Under the same load `bharat-prores`' perf test measured 30 fps threaded / 11.8 fps single
 for a 1080p HQ frame, against 318 / 53 fps in its README on a less loaded machine, so these are
 lower bounds by a factor of roughly 4–10:
 
@@ -149,4 +149,4 @@ lower bounds by a factor of roughly 4–10:
 - Encoder: no DNxHD (HD CIDs), interlaced, alpha or VBR output; no RDO/trellis.
 - CIDs 1256/1260 and alpha decoding are implemented from the standard but have no oracle
   fixtures, because no available encoder produces them.
-- No MXF; DNx in MOV only (via `craft-media` / `craft-video`).
+- No MXF; DNx in MOV only (via `bharat-media` / `bharat-video`).

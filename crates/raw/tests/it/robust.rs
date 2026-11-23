@@ -1,6 +1,6 @@
 //! Malformed-input robustness: decoding random or corrupted files must never panic.
 
-use craft_raw::{BlackLevel, Cfa, ColorData, DngCompression, DngWriteOptions, Limits, OpcodeLists, Orientation, RawData, RawFormat, RawImage, Rect};
+use bharat_raw::{BlackLevel, Cfa, ColorData, DngCompression, DngWriteOptions, Limits, OpcodeLists, Orientation, RawData, RawFormat, RawImage, Rect};
 use proptest::prelude::*;
 
 fn sample(comp: DngCompression) -> Vec<u8> {
@@ -29,22 +29,22 @@ fn sample(comp: DngCompression) -> Vec<u8> {
         cinema: Default::default(),
         lens_metadata: Default::default(),
         level_sources: Default::default(),
-        notices: craft_raw::RawNotices::default(),
+        notices: bharat_raw::RawNotices::default(),
     };
-    craft_raw::write_dng(&raw, &DngWriteOptions { compression: comp, ..Default::default() }).unwrap()
+    bharat_raw::write_dng(&raw, &DngWriteOptions { compression: comp, ..Default::default() }).unwrap()
 }
 
 /// Everything the crate does with a file. A decoded image is internally consistent, and the header probe
 /// succeeds whenever the decode does.
 fn exercise(bytes: &[u8]) {
-    let _ = craft_raw::probe(bytes);
-    let _ = craft_raw::embedded_preview(bytes);
-    let _ = craft_raw::embedded_preview_covering(bytes, 256);
-    let _ = craft_raw::embedded_preview_color_space(bytes);
-    let _ = craft_raw::semantic_masks(bytes);
-    let _ = craft_raw::decode_reduced(bytes, 64, &Limits::default());
-    let info = craft_raw::probe_info(bytes);
-    if let Ok(img) = craft_raw::decode(bytes) {
+    let _ = bharat_raw::probe(bytes);
+    let _ = bharat_raw::embedded_preview(bytes);
+    let _ = bharat_raw::embedded_preview_covering(bytes, 256);
+    let _ = bharat_raw::embedded_preview_color_space(bytes);
+    let _ = bharat_raw::semantic_masks(bytes);
+    let _ = bharat_raw::decode_reduced(bytes, 64, &Limits::default());
+    let info = bharat_raw::probe_info(bytes);
+    if let Ok(img) = bharat_raw::decode(bytes) {
         img.validate().expect("a decoded image validates");
         assert_eq!(info.as_ref().ok(), Some(&img.info()), "the header probe describes the decoded image");
     }
@@ -80,9 +80,9 @@ proptest! {
     fn random_lj92_never_panics(data in proptest::collection::vec(any::<u8>(), 0..400)) {
         let mut s = vec![0xff, 0xd8, 0xff, 0xc3, 0, 11, 12, 0, 8, 0, 8, 1, 1, 0x11, 0];
         s.extend_from_slice(&data);
-        let _ = craft_raw::ljpeg::decode(&s, 1 << 20);
-        let _ = craft_raw::ljpeg::decode_hasselblad(&s, 1 << 20);
-        let _ = craft_raw::ljpeg::decode_subsampled(&s, 1 << 20, craft_raw::ljpeg::Prediction::Sequential);
+        let _ = bharat_raw::ljpeg::decode(&s, 1 << 20);
+        let _ = bharat_raw::ljpeg::decode_hasselblad(&s, 1 << 20);
+        let _ = bharat_raw::ljpeg::decode_subsampled(&s, 1 << 20, bharat_raw::ljpeg::Prediction::Sequential);
     }
 
     #[test]
@@ -90,11 +90,11 @@ proptest! {
         let mut list = count.to_be_bytes().to_vec();
         list.extend_from_slice(&id.to_be_bytes());
         list.extend_from_slice(&data);
-        let parsed = craft_raw::opcodes::parse_list(&list);
-        prop_assert_eq!(craft_raw::opcodes::parse_list(&craft_raw::opcodes::write_list(&parsed)), parsed);
-        for order in [craft_tiff::ByteOrder::Little, craft_tiff::ByteOrder::Big] {
+        let parsed = bharat_raw::opcodes::parse_list(&list);
+        prop_assert_eq!(bharat_raw::opcodes::parse_list(&bharat_raw::opcodes::write_list(&parsed)), parsed);
+        for order in [bharat_tiff::ByteOrder::Little, bharat_tiff::ByteOrder::Big] {
             for v2 in [false, true] {
-                let _ = craft_raw::gaintable::GainTableMap::parse(&data, order, v2);
+                let _ = bharat_raw::gaintable::GainTableMap::parse(&data, order, v2);
             }
         }
     }
@@ -106,7 +106,7 @@ proptest! {
         f.extend_from_slice(&[26, 0, 0, 0]);
         f.extend_from_slice(b"HEAPCCDR");
         f.extend_from_slice(&data);
-        prop_assert_eq!(craft_raw::probe(&f), Some(RawFormat::Crw));
+        prop_assert_eq!(bharat_raw::probe(&f), Some(RawFormat::Crw));
         exercise(&f);
     }
 }
@@ -115,7 +115,7 @@ proptest! {
 fn truncation_at_every_length() {
     for comp in COMPRESSIONS {
         let d = sample(comp);
-        assert!(craft_raw::decode(&d).is_ok());
+        assert!(bharat_raw::decode(&d).is_ok());
         for n in 0..d.len() {
             exercise(&d[..n]);
         }
@@ -143,8 +143,8 @@ fn every_single_byte_mutation_of_the_header_is_safe() {
 #[test]
 fn hostile_dimensions_are_rejected_quickly() {
     // a DNG claiming a 60000 × 60000 16-bit image with 10 bytes of data
-    use craft_tiff::tags as t;
-    use craft_tiff::{IfdBuilder, ImageData, TiffWriter, Value};
+    use bharat_tiff::tags as t;
+    use bharat_tiff::{IfdBuilder, ImageData, TiffWriter, Value};
     let mut ifd = IfdBuilder::new();
     ifd.set(t::DNG_VERSION, Value::Byte(vec![1, 4, 0, 0]));
     ifd.set(t::IMAGE_WIDTH, Value::Long(vec![60000]));
@@ -156,6 +156,6 @@ fn hostile_dimensions_are_rejected_quickly() {
     ifd.set_image(ImageData::Tiles { tile_width: 60000, tile_height: 60000, tiles: vec![vec![0xff, 0xd8, 0xff, 0xd9]] });
     let bytes = TiffWriter::default().write(&[ifd]).unwrap();
     let t0 = std::time::Instant::now();
-    assert!(craft_raw::decode(&bytes).is_err());
+    assert!(bharat_raw::decode(&bytes).is_err());
     assert!(t0.elapsed().as_secs_f64() < 2.0);
 }
