@@ -1,8 +1,8 @@
-# craft-pptx
+# bharat-pptx
 
 PresentationML (ECMA-376 part 1, chapter 19): what a `.pptx` presentation holds, as plain Rust
 types with serde. The DrawingML inside it (fills, lines, text bodies, tables, charts, themes)
-comes from `craft-drawingml`.
+comes from `bharat-drawingml`.
 
 | Item | What | Markup |
 |---|---|---|
@@ -13,7 +13,7 @@ comes from `craft-drawingml`.
 | `Placeholder`, `PhType`, `placeholder` | placeholders and the rule that matches a slide placeholder to its layout and master parents | `p:ph` |
 | `anim` | transitions and the flat list of animations the timing tree stands for, with the effect catalogues | `p:transition`, `p:timing` |
 
-Ids (`ShapeId`, `LayoutId`, `MasterId`, and `MediaId`, `SlideId` from `craft-drawingml`) are
+Ids (`ShapeId`, `LayoutId`, `MasterId`, and `MediaId`, `SlideId` from `bharat-drawingml`) are
 unique across a presentation; `Presentation::alloc_id` hands out fresh ones and refuses once they
 run out. `Presentation::default()` is an empty 16:9 deck with no masters: an application adds its
 own starting masters and layouts.
@@ -21,7 +21,7 @@ own starting masters and layouts.
 ## Reading
 
 `import(bytes, &defaults)` reads a `.pptx`, `.potx` or `.ppsx` into a `Presentation`, on
-`craft-opc` for the package and `craft-drawingml` for the DrawingML. It is lenient: unknown parts
+`bharat-opc` for the package and `bharat-drawingml` for the DrawingML. It is lenient: unknown parts
 are skipped, a malformed part is logged and left out, and a slide the presentation lists but the
 package lacks is left out and named by `import_checked`. Everything is bounded: entries, part and
 package sizes, inflate work, XML depth and nodes, shapes per part, group nesting, chart points and

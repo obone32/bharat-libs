@@ -1,5 +1,5 @@
 [package]
-name = "craft-evm"
+name = "bharat-evm"
 description = "Read-only EVM bytecode dispatcher and compiler metadata inspection"
 version.workspace = true
 edition.workspace = true
@@ -14,4 +14,4 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-craft-testkit = { workspace = true }
+bharat-testkit = { workspace = true }

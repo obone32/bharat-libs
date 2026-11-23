@@ -1,4 +1,4 @@
-# craft-hevcenc
+# bharat-hevcenc
 
 Clean-room, pure-Rust HEVC / H.265 encoder for export pipelines (layer L0, `std` only,
 no `unsafe`, builds for `wasm32-unknown-unknown`).
@@ -59,7 +59,7 @@ reaches 45.8 dB PSNR-Y at QP 22.
 
 ## Tests
 
-`cargo test -p craft-video --features hevc`:
+`cargo test -p bharat-video --features hevc`:
 
 - unit tests for CABAC, bitstream writer, parameter sets, transforms, intra modes, and frame coding;
 - covered: 8-bit and 10-bit, all-intra and IP, QP 0 noise (escape codes), QP 0..51, strong

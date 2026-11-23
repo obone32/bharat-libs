@@ -6,9 +6,9 @@ use std::sync::{Arc, Mutex};
 
 use serde_json::{Value, json};
 
-use craft_ipc::client::{Client, HelloClient};
-use craft_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
-use craft_ipc::{Discovery, LinkError, RuntimeDir};
+use bharat_ipc::client::{Client, HelloClient};
+use bharat_ipc::server::{Activate, Activation, ControlSink, FrameOpen, Frames, Server, ServerConfig};
+use bharat_ipc::{Discovery, LinkError, RuntimeDir};
 
 const ASSET: &str = "craft://photocraft/550e8400-e29b-41d4-a716-446655440000/image/flat";
 const LINK: &str = "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d";

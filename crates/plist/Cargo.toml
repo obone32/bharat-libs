@@ -1,5 +1,5 @@
 [package]
-name = "craft-plist"
+name = "bharat-plist"
 description = "Bounded cross-platform binary and XML Apple property-list reader"
 version.workspace = true
 edition.workspace = true

@@ -1,4 +1,4 @@
-use craft_gpu::{GpuContext, GpuFault, GpuJob, GpuJobOutcome, GpuProvider, f16_rgba_to_f32_bytes};
+use bharat_gpu::{GpuContext, GpuFault, GpuJob, GpuJobOutcome, GpuProvider, f16_rgba_to_f32_bytes};
 
 use crate::params::{params_contain, parse_u32};
 

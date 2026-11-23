@@ -1,5 +1,5 @@
 //! Program header and dynamic section tests. `an_address_past_the_last_file_offset_maps_to_nothing`
-//! is from Craft Anything's `elf.rs`; the image builder is a small stand-in for its testkit's.
+//! is from Bharat Anything's `elf.rs`; the image builder is a small stand-in for its testkit's.
 
 use super::*;
 

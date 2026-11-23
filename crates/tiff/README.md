@@ -1,8 +1,8 @@
-# craft-tiff
+# bharat-tiff
 
 The TIFF / IFD reader and writer underneath raw decoding (DNG, CR2, NEF, ARW…) and Exif. Moved from
-LightCraft's `lightcraft-tiff` as the first step of shared RAW support (craft-libs#783, #587). It depends
-on no other Craft crate.
+LightCraft's `lightcraft-tiff` as the first step of shared RAW support (bharat-libs#783, #587). It depends
+on no other Bharat crate.
 
 ## Features
 

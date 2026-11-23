@@ -1,6 +1,6 @@
 [package]
-name = "craft-macho"
-description = "Mach-O header pieces from hostile bytes, from Craft Anything: universal (fat and fat64) slice tables, CPU and load command names, load command minimum sizes and the thread-state program counter. Pure Rust, no I/O."
+name = "bharat-macho"
+description = "Mach-O header pieces from hostile bytes, from Bharat Anything: universal (fat and fat64) slice tables, CPU and load command names, load command minimum sizes and the thread-state program counter. Pure Rust, no I/O."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

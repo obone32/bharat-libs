@@ -1,4 +1,4 @@
-//! PDF authoring shared by Craft apps, using Krilla's drawing primitives.
+//! PDF authoring shared by Bharat apps, using Krilla's drawing primitives.
 //!
 //! Applications supply already laid-out pages and retain their document models, font
 //! licensing and fallback policy, export presets, tagging semantics and postprocessing.
@@ -10,9 +10,9 @@ pub use krilla as backend;
 
 // Require the root workspace patch; an unpatched backend can abort during unwind, writes
 // RGB blending groups and no print output intent, and has no optional content.
-const _: bool = backend::CRAFT_UNWIND_POISONING;
-const _: bool = backend::CRAFT_PRINT_COLOR;
-const _: bool = backend::CRAFT_OPTIONAL_CONTENT;
+const _: bool = backend::BHARAT_UNWIND_POISONING;
+const _: bool = backend::BHARAT_PRINT_COLOR;
+const _: bool = backend::BHARAT_OPTIONAL_CONTENT;
 
 pub mod print;
 #[cfg(feature = "write-svg")]

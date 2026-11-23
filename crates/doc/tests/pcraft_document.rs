@@ -3,7 +3,7 @@
 mod common;
 
 use common::*;
-use craft_doc::{Error, Kind, Limits, outline, pcraft_document};
+use bharat_doc::{Error, Kind, Limits, outline, pcraft_document};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -45,8 +45,8 @@ fn reads_the_callers_document_head_without_requiring_declared_payloads() {
         assert_eq!(head.layers[0].name, existing.layers[0].name);
         assert_eq!(head.mode, existing.canvas.unwrap().mode);
         // The shared JSON reader uses the same caller-owned document schema.
-        let shared: craft_pcraft_format::Manifest<Head> =
-            craft_pcraft_format::read_manifest::<_, craft_pcraft_format::Error>(json.as_bytes(), &Default::default(), &[], 1).unwrap();
+        let shared: bharat_pcraft_format::Manifest<Head> =
+            bharat_pcraft_format::read_manifest::<_, bharat_pcraft_format::Error>(json.as_bytes(), &Default::default(), &[], 1).unwrap();
         assert_eq!(head, shared.document);
     }
 }
@@ -66,7 +66,7 @@ fn skips_oversized_and_unreadable_unrequested_entries() {
     limits.max_entry = json.len() as u64;
     limits.max_total = json.len() as u64;
     assert_eq!(pcraft_document::<Head>(&bytes, &limits).unwrap().layers.len(), 1);
-    assert!(matches!(craft_doc::renditions(&bytes, &limits), Err(Error::Malformed(_))), "the declared thumbnail is absent");
+    assert!(matches!(bharat_doc::renditions(&bytes, &limits), Err(Error::Malformed(_))), "the declared thumbnail is absent");
 }
 
 #[test]

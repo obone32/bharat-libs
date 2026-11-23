@@ -14,9 +14,9 @@ Leave these to the automated tests; repeat them by hand only to investigate a fa
 
 | Automated | Where |
 |---|---|
-| Linux input methods on this box: fcitx5 on Xvfb (XIM), fcitx5 on headless sway (text-input-v3) and IBus on Xvfb; Pinyin, Hangul, Telex and Anthy compositions, a click into a composing field, a pointer unplugged while composing | [IME harness](https://github.com/storytold/craft-libs/pull/212), `tools/ime-harness/` |
-| Each app's key screens in Arabic, Japanese, Traditional Chinese, Korean, Thai and Vietnamese with no system fonts; one scripted IME composition and one non-Latin shortcut per app | `craft_ui::testing` ([craft-ui README](../crates/ui/README.md#testing-screens-in-each-language)) |
-| The shortcut rule for Russian, Arabic 101, Hebrew, Greek, Thai, AZERTY, Dvorak and QWERTZ presses as egui reports them | craft-keymap's tests |
+| Linux input methods on this box: fcitx5 on Xvfb (XIM), fcitx5 on headless sway (text-input-v3) and IBus on Xvfb; Pinyin, Hangul, Telex and Anthy compositions, a click into a composing field, a pointer unplugged while composing | [IME harness](https://github.com/obone32/bharat-libs/pull/212), `tools/ime-harness/` |
+| Each app's key screens in Arabic, Japanese, Traditional Chinese, Korean, Thai and Vietnamese with no system fonts; one scripted IME composition and one non-Latin shortcut per app | `bharat_ui::testing` ([bharat-ui README](../crates/ui/README.md#testing-screens-in-each-language)) |
+| The shortcut rule for Russian, Arabic 101, Hebrew, Greek, Thai, AZERTY, Dvorak and QWERTZ presses as egui reports them | bharat-keymap's tests |
 
 The manual list covers what those can't reach: the input methods and layouts of Windows and
 macOS, desktop Linux sessions, the browser on phones, and screen readers.

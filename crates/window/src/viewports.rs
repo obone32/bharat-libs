@@ -263,7 +263,7 @@ impl Snapshot {
 
 /// The viewport id of a window that isn't in the root viewport.
 pub fn child_viewport_id(id: WindowId) -> ViewportId {
-    ViewportId::from_hash_of(("craft_window", id.get()))
+    ViewportId::from_hash_of(("bharat_window", id.get()))
 }
 
 /// How far past its monitor's corner a window's frame can reach, in points: on Windows a maximized

@@ -1,10 +1,10 @@
-//! `craft_audio::decode` routes each container and codec below to the home-grown demuxers and
+//! `bharat_audio::decode` routes each container and codec below to the home-grown demuxers and
 //! decoders, or to symphonia (FLAC): each pair decodes, sample-aligned, to its presentation length
 //! (edit lists, Matroska `CodecDelay` and `DiscardPadding`, Ogg Opus pre-skip and end trimming
 //! applied), within an SNR of ffmpeg's decode; truncated and corrupted copies never panic. Fixtures
 //! are written by ffmpeg (skipped without it).
 
-use craft_audio::{ChannelLayout, CodecId, Container, decode, probe};
+use bharat_audio::{ChannelLayout, CodecId, Container, decode, probe};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -352,7 +352,7 @@ fn run(ff: &Path, args: &[&str]) -> bool {
 }
 
 /// The fixture for `c`, written by ffmpeg (cached), or `None` when this ffmpeg lacks an encoder
-/// (a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`).
+/// (a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`).
 fn fixture(ff: &Path, c: &Case) -> Option<PathBuf> {
     let out = crate::testkit::fixtures_dir("routing").join(c.name);
     let source = match (c.mono, c.surround) {
@@ -368,7 +368,7 @@ fn fixture(ff: &Path, c: &Case) -> Option<PathBuf> {
         args.push(&tmp);
         run(ff, &args)
     });
-    assert!(made.is_some() || !craft_media_testkit::oracles_required(), "{}: ffmpeg could not write this fixture", c.name);
+    assert!(made.is_some() || !bharat_media_testkit::oracles_required(), "{}: ffmpeg could not write this fixture", c.name);
     made
 }
 
@@ -505,7 +505,7 @@ fn snr_planar(ours: &[Vec<f32>], reference: &[Vec<f32>]) -> f64 {
 /// exact frame: what follows matches `decode` from there, bit for bit.
 #[test]
 fn streaming_and_seeking_match_the_whole_file_decode() {
-    use craft_audio::{DecodeOptions, Decoder};
+    use bharat_audio::{DecodeOptions, Decoder};
     let ff = require_ffmpeg!();
     for c in CASES {
         let Some(path) = fixture(&ff, c) else { continue };
@@ -540,12 +540,12 @@ fn streaming_and_seeking_match_the_whole_file_decode() {
     }
 }
 
-/// `TrackDecoder` on the packets craft-media's demuxer reads gives the audio `decode` presents:
+/// `TrackDecoder` on the packets bharat-media's demuxer reads gives the audio `decode` presents:
 /// the same samples once the container's priming is skipped.
 #[test]
 fn track_decoder_on_demuxed_packets_matches_decode() {
-    use craft_audio::TrackDecoder;
-    use craft_media::isobmff;
+    use bharat_audio::TrackDecoder;
+    use bharat_media::isobmff;
     let ff = require_ffmpeg!();
     for name in ["aac.m4a", "aac-5.1.m4a", "opus.mp4", "mp2.mp4", "mp3.mp4", "pcm-s24be.mov"] {
         let c = CASES.iter().find(|c| c.name == name).unwrap();
@@ -577,7 +577,7 @@ fn track_decoder_on_demuxed_packets_matches_decode() {
 /// a longer decode.
 #[test]
 fn track_choice_and_the_sample_limit() {
-    use craft_audio::{AudioError, DecodeOptions, decode_with, tracks};
+    use bharat_audio::{AudioError, DecodeOptions, decode_with, tracks};
     let ff = require_ffmpeg!();
     for ext in ["mkv", "mp4"] {
         let out = crate::testkit::fixtures_dir("routing").join(format!("two-tracks.{ext}"));
@@ -628,7 +628,7 @@ fn track_choice_and_the_sample_limit() {
 /// `Decoder::open` reads from a file without loading it.
 #[test]
 fn decoder_reads_from_a_file() {
-    use craft_audio::{DecodeOptions, Decoder};
+    use bharat_audio::{DecodeOptions, Decoder};
     let ff = require_ffmpeg!();
     let c = CASES.iter().find(|c| c.name == "aac.m4a").unwrap();
     let Some(path) = fixture(&ff, c) else { return };
@@ -646,7 +646,7 @@ fn decoder_reads_from_a_file() {
 /// `fixture`'s AAC packets in a Matroska file with no block durations, like ffmpeg 6's,
 /// and a `DURATION` tag for the track when `tag` is given.
 fn aac_mkv_without_durations(bytes: &[u8], tag: Option<&str>) -> Vec<u8> {
-    use craft_media::matroska::{Demuxer, LacingMode, MkvWriter, MuxOptions, TrackKind, TrackSpec};
+    use bharat_media::matroska::{Demuxer, LacingMode, MkvWriter, MuxOptions, TrackKind, TrackSpec};
     let mut demux = Demuxer::from_slice(bytes).unwrap();
     let track = demux.file().tracks[0].clone();
     let mut spec = TrackSpec::new(TrackKind::Audio, track.codec_id.clone());
@@ -815,7 +815,7 @@ fn mp4_with_wrong_durations_or_edits_presents_its_audio() {
         assert!(buf.frames().abs_diff(whole.frames()) <= 1024, "{name}: {} frames", buf.frames());
         assert_eq!((probe(&file, None).unwrap().frames, info.frames), (buf.frames() as u64, buf.frames() as u64), "{name}");
         // A seek lands on the same audio: a packet's place comes from its index, not the durations.
-        let mut d = craft_audio::Decoder::from_bytes(&file, None, &craft_audio::DecodeOptions::default()).unwrap();
+        let mut d = bharat_audio::Decoder::from_bytes(&file, None, &bharat_audio::DecodeOptions::default()).unwrap();
         assert_eq!(d.seek(50_000).unwrap(), 50_000, "{name}");
         let block = d.next_block().unwrap().unwrap();
         for (a, b) in block.channels[0].iter().zip(&buf.channels[0][50_000..]) {
@@ -841,7 +841,7 @@ fn mp4_with_an_empty_edit_before_its_media_edit_applies_the_media_edit() {
         let tmp = tmp.to_string_lossy();
         run(ff.as_path(), &["-itsoffset", "0.5", "-f", "lavfi", "-i", &input, "-t", "5", "-c:a", "aac", "-aac_pns", "0", &tmp])
     });
-    assert!(made.is_some() || !craft_media_testkit::oracles_required(), "ffmpeg could not write aac-itsoffset.m4a");
+    assert!(made.is_some() || !bharat_media_testkit::oracles_required(), "ffmpeg could not write aac-itsoffset.m4a");
     let Some(path) = made else { return };
     let bytes = std::fs::read(&path).unwrap();
     // elst v0 from the name's start: the name (4), version and flags (4), entries (4), then 12

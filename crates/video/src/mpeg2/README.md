@@ -1,4 +1,4 @@
-# MPEG-2 and MPEG-1 video decoder, MPEG-2 encoder (`craft_video::mpeg2`, features `mpeg2-decode`, `mpeg2-encode`)
+# MPEG-2 and MPEG-1 video decoder, MPEG-2 encoder (`bharat_video::mpeg2`, features `mpeg2-decode`, `mpeg2-encode`)
 
 Clean-room MPEG-2 video and MPEG-1 video decoder, and the first steps of an MPEG-2 video encoder
 (I, P and B pictures, see "Encoder"), in pure Rust. Depends only on
@@ -20,16 +20,16 @@ consulted; FFmpeg is used only as an external fixture generator and test oracle.
 ## API
 
 ```rust
-let mut dec = craft_video::mpeg2::Decoder::new();
-for (i, au) in craft_video::mpeg2::access_units(&es).into_iter().enumerate() {
+let mut dec = bharat_video::mpeg2::Decoder::new();
+for (i, au) in bharat_video::mpeg2::access_units(&es).into_iter().enumerate() {
     for pic in dec.decode(&es[au], i as i64)? {             // display order
         // pic.y / pic.cb / pic.cr: tight 8-bit planes; pic.chroma: 4:2:0 / 4:2:2
         // pic.field_order(), pic.picture_type, pic.pts, pic.info (SequenceInfo)
     }
 }
 let rest = dec.flush();
-let info = craft_video::mpeg2::probe(&es);                    // sequence header + extensions
-let au = craft_video::mpeg2::scan_access_unit(&es[..]);       // picture types without decoding
+let info = bharat_video::mpeg2::probe(&es);                    // sequence header + extensions
+let au = bharat_video::mpeg2::scan_access_unit(&es[..]);       // picture types without decoding
 ```
 
 `decode` takes any chunk holding whole pictures (an access unit from a TS/PS/MXF/MOV sample).
@@ -77,13 +77,13 @@ the synthetic-stream tests confirmed against FFmpeg:
 
 ## Encoder (feature `mpeg2-encode`)
 
-The encoder is built in steps, tracked in storytold/craft-libs#1133: I and P pictures came in
+The encoder is built in steps, tracked in obone32/bharat-libs#1133: I and P pictures came in
 #1136, B pictures in #1195, and constant and variable bitrate with a VBV guarantee in the third
 step. It writes valid MPEG-2 elementary streams that meet their VBV buffer, but not yet DVD or
 broadcast deliverables: those need the later steps listed below.
 
 ```rust
-use craft_video::mpeg2::{Encoder, EncoderConfig, RateControl, YuvFrame};
+use bharat_video::mpeg2::{Encoder, EncoderConfig, RateControl, YuvFrame};
 
 let mut cfg = EncoderConfig::new(720, 576, 25, 1);
 cfg.rate = RateControl::Vbr { kbps: 6000, max_kbps: 9800 }; // or Cbr, Abr, Quantiser(1..=31)
@@ -159,7 +159,7 @@ What it does:
 Later steps (#1133): DVD presets
 (sizes, aspect, GOP length, 9.8 Mb/s, 23.976 soft telecine); interlaced coding (field/frame DCT,
 field prediction, alternate scan) and 4:2:2 High Level CBR for XDCAM HD422. MPEG-2 essence in the
-MXF writer and a program stream muxer belong to `craft-media`.
+MXF writer and a program stream muxer belong to `bharat-media`.
 
 ## Accuracy (vs FFmpeg as an external oracle)
 
@@ -202,7 +202,7 @@ FFmpeg's integer IDCT saturates differently from the exact one.
 
 ## Performance
 
-`cargo test --release -p craft-video --features mpeg2,threads --test mpeg2 perf:: -- --ignored --nocapture` decodes the
+`cargo test --release -p bharat-video --features mpeg2,threads --test mpeg2 perf:: -- --ignored --nocapture` decodes the
 1080i fixture (1920×1080 4:2:0, 25 Mb/s, IBBP, field MC/DCT; FFmpeg-encoded) on an M4 Pro
 (14 cores) that was heavily loaded by other jobs (load average ≈ 190), best of five runs:
 **271 fps on one thread, 274 fps with slice rows on rayon** (runs under heavier momentary load

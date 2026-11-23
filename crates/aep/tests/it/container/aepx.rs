@@ -6,7 +6,7 @@
 //! `u32` at byte 16) is one higher in the `.aepx`, and pad bytes are not written in XML (an odd
 //! body gets a zero pad byte). The XMP packet of the fixtures is the base packet in both forms.
 
-use craft_aep::{AepError, AepFile, Body, Chunk, Limits, Project, is_aepx, parse, parse_any, read_aepx, read_aepx_with_limits, write};
+use bharat_aep::{AepError, AepFile, Body, Chunk, Limits, Project, is_aepx, parse, parse_any, read_aepx, read_aepx_with_limits, write};
 
 /// The `.aepx` fixtures; each has the `.aep` of the same name.
 const PAIRS: &[&str] = &["aepx-pair"];
@@ -86,7 +86,7 @@ fn the_typed_view_reads_the_same_values() {
         assert_eq!(items(&pb), items(&px), "{name}");
         for (cb, cx) in pb.all_items().iter().filter_map(|i| i.comp()).zip(px.all_items().iter().filter_map(|i| i.comp())) {
             assert_eq!(cb.header(), cx.header(), "{name}");
-            let layers = |c: &craft_aep::Comp<'_, '_>| c.layers().map(|l| (l.name(), l.header(), l.transform(1920, 1080))).collect::<Vec<_>>();
+            let layers = |c: &bharat_aep::Comp<'_, '_>| c.layers().map(|l| (l.name(), l.header(), l.transform(1920, 1080))).collect::<Vec<_>>();
             assert_eq!(layers(&cb), layers(&cx), "{name}");
         }
     }
@@ -140,7 +140,7 @@ fn damaged_aepx_is_an_error_or_a_tree_never_a_panic() {
 }
 
 /// Every pair of the local corpus (not in the repository): `AEP_CORPUS=<folder> cargo test
-/// --release -p craft-aep --test it container::aepx:: -- --ignored --nocapture`.
+/// --release -p bharat-aep --test it container::aepx:: -- --ignored --nocapture`.
 #[test]
 #[ignore = "needs the local corpus (AEP_CORPUS)"]
 fn every_corpus_pair_gives_the_same_chunk_tree() {

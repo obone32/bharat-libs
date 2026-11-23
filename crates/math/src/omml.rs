@@ -1,14 +1,14 @@
 //! Office Math Markup (OMML, ECMA-376 Part 1 §22.1) read into and written from the equation tree
 //! ([`crate::math`]).
 //!
-//! The reader takes an `m:oMath` element of a [`craft_xml`] tree read with the canonical
+//! The reader takes an `m:oMath` element of a [`bharat_xml`] tree read with the canonical
 //! prefixes of [`NAMESPACES`] (`m:` for math, `w:` for WordprocessingML, `mc:` for markup
 //! compatibility), whatever prefixes the file used; [`parse`] does that for a string. It keeps
 //! the source XML in [`Math::omml`], and the writer writes that back unchanged while the
 //! equation's colour is the same, so a saved file carries the equation exactly as Word wrote it.
 //! The writer otherwise writes the tree: `m:oMath`, inside `m:oMathPara` for a display equation.
 
-use craft_xml::{Canonical, El, Options};
+use bharat_xml::{Canonical, El, Options};
 
 use crate::math::{Math, MathJc};
 use crate::rgb::Rgb;
@@ -29,7 +29,7 @@ pub const W_NS_STRICT: &str = "http://purl.oclc.org/ooxml/wordprocessingml/main"
 /// Markup compatibility (`mc:AlternateContent`).
 pub const MC_NS: &str = "http://schemas.openxmlformats.org/markup-compatibility/2006";
 
-/// The canonical prefixes the reader expects, for [`craft_xml::Canonical`].
+/// The canonical prefixes the reader expects, for [`bharat_xml::Canonical`].
 pub const NAMESPACES: &[(&str, &str)] = &[("m", MATH_NS), ("m", MATH_NS_STRICT), ("w", W_NS), ("w", W_NS_STRICT), ("mc", MC_NS)];
 
 /// Most elements [`parse`] reads from one string.
@@ -41,7 +41,7 @@ pub const MAX_ELEMENTS: usize = 250_000;
 /// namespaces; its prefixes are already the canonical ones and are read as written.
 pub fn parse(xml: &str) -> Option<El> {
     let canonical = Canonical::new(NAMESPACES);
-    let limits = craft_xml::Limits { max_nodes: MAX_ELEMENTS.saturating_mul(2), ..craft_xml::Limits::DEFAULT };
+    let limits = bharat_xml::Limits { max_nodes: MAX_ELEMENTS.saturating_mul(2), ..bharat_xml::Limits::DEFAULT };
     let first = |root: El| -> Option<El> {
         if matches!(root.name.as_str(), "m:oMath" | "m:oMathPara") {
             return Some(root);
@@ -54,7 +54,7 @@ pub fn parse(xml: &str) -> Option<El> {
 
 /// Kept OMML (canonical prefixes, no declarations) read as written.
 fn parse_kept(xml: &str) -> Option<El> {
-    let limits = craft_xml::Limits { max_nodes: MAX_ELEMENTS.saturating_mul(2), ..craft_xml::Limits::DEFAULT };
+    let limits = bharat_xml::Limits { max_nodes: MAX_ELEMENTS.saturating_mul(2), ..bharat_xml::Limits::DEFAULT };
     Options { ns_decls: false, ..Options::default() }.with_limits(limits).parse(xml.as_bytes()).ok()
 }
 

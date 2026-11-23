@@ -1,6 +1,6 @@
 //! RFC 9924 APV intra frame encoder.
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use crate::apv::dct::{fdct8x8, quantize8x8};
 use crate::apv::header::{FrameHeader, MAX_DIMENSION, PBU_PRIMARY_FRAME, write_frame_header, write_metadata_pbu};

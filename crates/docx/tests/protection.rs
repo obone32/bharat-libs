@@ -2,7 +2,7 @@
 //! `w:enforcement` is missing ([MS-OI29500] §2.1.402 c), so the reader must keep the
 //! restriction — and, on save, its hash — rather than unlocking the document. Synthetic
 //! fixture written for this test (the test carried over from WordCraft's reader, which
-//! craft-docx replaced).
+//! bharat-docx replaced).
 
 use std::io::{Cursor, Write};
 
@@ -31,13 +31,13 @@ fn fixture(protection: &str) -> Vec<u8> {
 #[test]
 fn protection_without_enforcement_is_enforced_like_word() {
     let no_enforcement = r#"<w:documentProtection w:edit="readOnly" w:cryptAlgorithmSid="4" w:cryptSpinCount="100000" w:hash="AAAA" w:salt="BBBB"/>"#;
-    let read = craft_docx::read_with_password(&fixture(no_enforcement), None).unwrap();
+    let read = bharat_docx::read_with_password(&fixture(no_enforcement), None).unwrap();
     assert_eq!(read.settings.protection.as_deref(), Some("readOnly"), "Word enforces protection with no w:enforcement");
     assert!(read.settings.protect_hash.iter().any(|(k, _)| k == "w:hash"), "the password hash is kept");
-    let again = craft_docx::read_with_password(&craft_docx::write(&read).unwrap(), None).unwrap();
+    let again = bharat_docx::read_with_password(&bharat_docx::write(&read).unwrap(), None).unwrap();
     assert_eq!(again.settings.protection.as_deref(), Some("readOnly"), "saving keeps the protection");
     assert!(again.settings.protect_hash.iter().any(|(k, _)| k == "w:hash"), "saving keeps the hash");
     // Explicitly off stays off (ignored but persisted, as the standard says).
-    let off = craft_docx::read_with_password(&fixture(r#"<w:documentProtection w:edit="readOnly" w:enforcement="0"/>"#), None).unwrap();
+    let off = bharat_docx::read_with_password(&fixture(r#"<w:documentProtection w:edit="readOnly" w:enforcement="0"/>"#), None).unwrap();
     assert!(off.settings.protection.is_none());
 }

@@ -6,7 +6,7 @@
 //! extension (`058-key-opacity-2key`), built like the single-case file's composition `C` (plus
 //! the compositions it uses). [`try_fixture`] hands a test the case as a project of its own: the
 //! combined file with every project item removed that the case composition does not use
-//! (directly or through precomposition layers), written back with [`craft_aep::write`].
+//! (directly or through precomposition layers), written back with [`bharat_aep::write`].
 //! The case composition is renamed `C` as in the single-case files; everything else of the file
 //! (project settings, the effect definitions, the XMP packet) stays, and the layers and items keep
 //! the ids they have in the combined file.
@@ -15,8 +15,8 @@
 //! combined file's own name) is read as it is. When the file is not
 //! there the test prints `SKIPPED: fixture <name> missing` and returns without failing (the
 //! macros below), so the suite runs without the projects. The directory is the one in the
-//! `CRAFT_AEP_FIXTURES` environment variable (which may also hold the old single-case
-//! files); without it every such test skips. With `CRAFT_AEP_FIXTURES_REQUIRED` set (to
+//! `BHARAT_AEP_FIXTURES` environment variable (which may also hold the old single-case
+//! files); without it every such test skips. With `BHARAT_AEP_FIXTURES_REQUIRED` set (to
 //! anything but an empty string) a missing project fails the test instead, so a run against the
 //! corpus cannot pass by skipping.
 #![allow(dead_code, unused_macros)]
@@ -27,14 +27,14 @@ use std::collections::{BTreeSet, HashMap};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, OnceLock};
 
-use craft_aep::{AepFile, Body, Chunk, ItemKind, Project};
+use bharat_aep::{AepFile, Body, Chunk, ItemKind, Project};
 
 pub use cases::CASES;
 
-/// The directory the test projects are read from, or `None` when `CRAFT_AEP_FIXTURES` is
+/// The directory the test projects are read from, or `None` when `BHARAT_AEP_FIXTURES` is
 /// not set (the projects are opt-in).
 pub fn dir() -> Option<PathBuf> {
-    std::env::var_os("CRAFT_AEP_FIXTURES").filter(|d| !d.is_empty()).map(PathBuf::from)
+    std::env::var_os("BHARAT_AEP_FIXTURES").filter(|d| !d.is_empty()).map(PathBuf::from)
 }
 
 /// The combined files the cases live in (and the empty project, a file of its own), sorted.
@@ -131,7 +131,7 @@ pub fn resolve(name: &str) -> Option<PathBuf> {
 /// The ids of the compositions an item uses as precomposition layers, as the file stores them:
 /// the little-endian `u32` of each `idpi` chunk (the importer does not read them; the exporter
 /// writes them).
-pub fn used_item_ids(item: &craft_aep::Item<'_, '_>) -> Vec<u32> {
+pub fn used_item_ids(item: &bharat_aep::Item<'_, '_>) -> Vec<u32> {
     item.chunk().children().filter(|c| c.is(b"idpi")).filter_map(|c| Some(u32::from_le_bytes(c.bytes()?.get(..4)?.try_into().ok()?))).collect()
 }
 
@@ -189,9 +189,9 @@ pub fn names(ext: &str) -> Option<Vec<String>> {
 
 pub fn skipped(name: &str) {
     assert!(
-        std::env::var_os("CRAFT_AEP_FIXTURES_REQUIRED").is_none_or(|v| v.is_empty()),
-        "fixture {name} missing (CRAFT_AEP_FIXTURES_REQUIRED is set; CRAFT_AEP_FIXTURES = {:?})",
-        std::env::var_os("CRAFT_AEP_FIXTURES")
+        std::env::var_os("BHARAT_AEP_FIXTURES_REQUIRED").is_none_or(|v| v.is_empty()),
+        "fixture {name} missing (BHARAT_AEP_FIXTURES_REQUIRED is set; BHARAT_AEP_FIXTURES = {:?})",
+        std::env::var_os("BHARAT_AEP_FIXTURES")
     );
     println!("SKIPPED: fixture {name} missing");
 }
@@ -202,7 +202,7 @@ fn parsed(file: &PathBuf) -> &'static AepFile<'static> {
     let mut files = FILES.get_or_init(Default::default).lock().unwrap_or_else(|e| e.into_inner());
     files.entry(file.clone()).or_insert_with(|| {
         let bytes: &'static [u8] = Box::leak(std::fs::read(file).unwrap_or_else(|e| panic!("{}: {e}", file.display())).into_boxed_slice());
-        Box::leak(Box::new(craft_aep::parse_any(bytes).unwrap_or_else(|e| panic!("{}: {e}", file.display()))))
+        Box::leak(Box::new(bharat_aep::parse_any(bytes).unwrap_or_else(|e| panic!("{}: {e}", file.display()))))
     })
 }
 
@@ -226,7 +226,7 @@ fn item_id(item: &Chunk<'_>) -> Option<u32> {
 
 /// The cases that import a footage file without using it in their composition, and how to find
 /// that item: it stays with the case.
-const UNUSED_FOOTAGE: &[(&str, &str, fn(&craft_aep::Item<'_, '_>) -> bool)] = &[
+const UNUSED_FOOTAGE: &[(&str, &str, fn(&bharat_aep::Item<'_, '_>) -> bool)] = &[
     ("350-footage-wav-imported", "the WAV", |i| i.footage().and_then(|f| f.path).is_some_and(|p| p.ends_with("test-tone.wav"))),
     ("352-footage-pngseq-imported", "the png sequence", |i| i.sequence_info().is_some_and(|s| s.prefix == "seq_" && s.suffix == ".png")),
 ];
@@ -258,7 +258,7 @@ pub fn isolate(file: &AepFile<'_>, comp: &str) -> Result<Vec<u8>, String> {
     let fold = out.chunks.iter_mut().find(|c| c.is_list(b"Fold")).ok_or("no LIST Fold")?;
     prune(fold, &keep);
     rename(fold, case.id().ok_or("case without id")?, "C");
-    craft_aep::write(&out).map_err(|e| e.to_string())
+    bharat_aep::write(&out).map_err(|e| e.to_string())
 }
 
 /// Removes the items of `list` (and of its folders) that are not kept; a folder stays while it

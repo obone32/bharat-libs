@@ -14,7 +14,7 @@
 //! differently could in principle differ; the hashes were made on x86-64 Linux.
 //!
 //! An intentional change of the output (for example a different LPC order choice) regenerates the
-//! table with `cargo test -p craft-audio --features flac-encode golden -- --ignored --nocapture print`.
+//! table with `cargo test -p bharat-audio --features flac-encode golden -- --ignored --nocapture print`.
 
 use super::encoder::{Encoder, EncoderConfig};
 

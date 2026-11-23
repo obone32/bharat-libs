@@ -1,10 +1,10 @@
-# craft-vcard
+# bharat-vcard
 
 vCard: contacts as vCard text (`.vcf` files, CardDAV address data).
 
 - `parse(text)` reads vCard 2.1, 3.0 and 4.0, one card or many in a text. `parse_bytes(bytes)`
   reads a file: UTF-8, UTF-16 with a byte order mark, and vCard 2.1 values each in their own
-  `CHARSET` (quoted-printable or raw), decoded by `craft_mime::charset`.
+  `CHARSET` (quoted-printable or raw), decoded by `bharat_mime::charset`.
 - `write(&[&Contact])` writes vCard 3.0, the version every address book reads. Lines are folded
   at 75 octets, values are escaped, and no value can start a new property or card.
 - `Contact` is this crate's own plain model: names, organisation, labelled e-mail addresses and

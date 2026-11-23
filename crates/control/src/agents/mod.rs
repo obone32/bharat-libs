@@ -2,8 +2,8 @@
 //! how the app tells its own `<id>-cli mcp` where it listens, and where that CLI sends each tool
 //! call.
 //!
-//! One switch serves every Craft app: the ArtCraft Launcher's *Settings › AI agents › Let AI agents
-//! use Craft apps*, which writes the launcher's app list (`craft_ai_agents`). With the suite's
+//! One switch serves every Bharat app: the ArtCraft Launcher's *Settings › AI agents › Let AI agents
+//! use Bharat apps*, which writes the launcher's app list (`bharat_ai_agents`). With the suite's
 //! `AI-MCP` flag on, an app lets agents in when that list names it ([`AgentSwitch`]); without the
 //! flag, the app's own earlier consent decides ([`agents_allowed`]). Apps have no agents switch of
 //! their own.
@@ -23,7 +23,7 @@
 //! | The connection file | [`Connection`], [`write_connection`], [`read_connection`], [`remove_connection`], [`remove_stale_connection`], [`probe`] | desktop, feature `agents` |
 //! | The CLI's side | [`Live`], [`LiveConfig`], [`Route`], [`Window`], [`Consent`], [`HeadlessFolders`], [`find_window`], [`launcher`] | desktop, feature `agents` |
 //!
-//! The same formats as `craft_automation::agents` on the shared UI library's branch (`next`),
+//! The same formats as `bharat_automation::agents` on the shared UI library's branch (`next`),
 //! which adds the egui link host and the Agents page of Preferences.
 //!
 //! # Adding an app

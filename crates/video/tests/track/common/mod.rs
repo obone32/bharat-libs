@@ -1,10 +1,10 @@
-//! Fixtures (ffmpeg encodes a short clip into a container), demuxing with craft-media, ffmpeg's
+//! Fixtures (ffmpeg encodes a short clip into a container), demuxing with bharat-media, ffmpeg's
 //! own decode of each fixture as the reference, and the checks every codec runs.
 #![allow(dead_code)]
 
-use craft_media::CodecParams;
-use craft_video::TrackDecoder;
-use craft_video::frame::{Samples, VideoFrame};
+use bharat_media::CodecParams;
+use bharat_video::TrackDecoder;
+use bharat_video::frame::{Samples, VideoFrame};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -41,32 +41,32 @@ const MIN_PSNR: f64 = 58.0;
 
 /// `name.ext` made by ffmpeg from 24 frames of a noisy test pattern at 176x144, with `args`
 /// choosing the encoder, and its decode as `pix_fmt` raw video. `None` (a skip) without ffmpeg or
-/// the encoder; a failure with `CRAFT_MEDIA_REQUIRE_ORACLES=1`.
+/// the encoder; a failure with `BHARAT_MEDIA_REQUIRE_ORACLES=1`.
 pub fn fixture(name: &str, ext: &str, args: &[&str], pix_fmt: &str) -> Option<Fixture> {
-    let ff = craft_media_testkit::ffmpeg()?;
-    let dir = craft_media_testkit::fixture_subdir("video-track");
-    let required = craft_media_testkit::oracles_required();
+    let ff = bharat_media_testkit::ffmpeg()?;
+    let dir = bharat_media_testkit::fixture_subdir("video-track");
+    let required = bharat_media_testkit::oracles_required();
     let file = dir.join(format!("{name}.{ext}"));
     let raw = dir.join(format!("{name}.{ext}.{pix_fmt}.raw"));
-    craft_media_testkit::generate_and_report(name, &[file.clone(), raw.clone()], || {
+    bharat_media_testkit::generate_and_report(name, &[file.clone(), raw.clone()], || {
         if !file.exists() {
-            let tmp = craft_media_testkit::temp_path(&file);
+            let tmp = bharat_media_testkit::temp_path(&file);
             let mut cmd = Command::new(&ff);
             cmd.args(["-hide_banner", "-loglevel", "error", "-y", "-f", "lavfi", "-i"])
                 .arg("testsrc2=size=176x144:rate=25,noise=alls=12:allf=t+u")
                 .args(["-frames:v", &FRAMES.to_string(), "-an"])
                 .args(args)
                 .arg(&tmp);
-            craft_media_testkit::run_generator(&mut cmd, &tmp, &file, required)?;
+            bharat_media_testkit::run_generator(&mut cmd, &tmp, &file, required)?;
         }
         if !raw.exists() {
-            let tmp = craft_media_testkit::temp_path(&raw);
+            let tmp = bharat_media_testkit::temp_path(&raw);
             let mut cmd = Command::new(&ff);
             cmd.args(["-hide_banner", "-loglevel", "error", "-y", "-i"])
                 .arg(&file)
                 .args(["-fps_mode", "passthrough", "-f", "rawvideo", "-pix_fmt", pix_fmt])
                 .arg(&tmp);
-            craft_media_testkit::run_generator(&mut cmd, &tmp, &raw, required)?;
+            bharat_media_testkit::run_generator(&mut cmd, &tmp, &raw, required)?;
         }
         Some(Fixture { reference: std::fs::read(&raw).unwrap(), file: file.clone(), max_diff: 0 })
     })
@@ -74,12 +74,12 @@ pub fn fixture(name: &str, ext: &str, args: &[&str], pix_fmt: &str) -> Option<Fi
 
 /// Whether ffmpeg has `encoder`, without skipping.
 pub fn has_encoder(encoder: &str) -> bool {
-    craft_media_testkit::tool("ffmpeg").is_some_and(|ff| craft_media_testkit::ffmpeg_has_encoder(&ff, encoder))
+    bharat_media_testkit::tool("ffmpeg").is_some_and(|ff| bharat_media_testkit::ffmpeg_has_encoder(&ff, encoder))
 }
 
 /// The video track of an MP4 file.
 pub fn mp4(path: &Path) -> Track {
-    use craft_media::isobmff::{TrackKind, open};
+    use bharat_media::isobmff::{TrackKind, open};
     let bytes = std::fs::read(path).unwrap();
     let file = open(bytes.as_slice()).unwrap();
     let t = file.track_of_kind(TrackKind::Video).unwrap();
@@ -92,7 +92,7 @@ pub fn mp4(path: &Path) -> Track {
 
 /// The video stream of an MPEG transport stream.
 pub fn ts(path: &Path) -> Track {
-    use craft_media::mpegts::{Kind, open};
+    use bharat_media::mpegts::{Kind, open};
     let bytes = std::fs::read(path).unwrap();
     let file = open(bytes.as_slice()).unwrap();
     let s = file.find(Kind::Video, |_| true).unwrap();
@@ -105,7 +105,7 @@ pub fn ts(path: &Path) -> Track {
 
 /// The video stream of an AVI file. AVI has no timestamps: a chunk's index stands in.
 pub fn avi(path: &Path) -> Track {
-    use craft_media::avi::{StreamKind, open};
+    use bharat_media::avi::{StreamKind, open};
     let bytes = std::fs::read(path).unwrap();
     let file = open(bytes.as_slice()).unwrap();
     let s = file.streams.iter().position(|s| s.kind == StreamKind::Video).unwrap();

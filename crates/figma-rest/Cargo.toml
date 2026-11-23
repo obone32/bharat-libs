@@ -1,5 +1,5 @@
 [package]
-name = "craft-figma-rest"
+name = "bharat-figma-rest"
 description = "Typed model of the Figma REST API file JSON (GET /v1/files/:key): the document tree, paints, effects, text styles, layout and component metadata, read and written with serde without losing fields it has no name for. The neutral model the .fig and .sketch readers map onto."
 version.workspace = true
 edition.workspace = true

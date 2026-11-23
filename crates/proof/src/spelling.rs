@@ -55,7 +55,7 @@ pub(crate) fn capitals_part(part: &str, max: usize) -> bool {
 mod tests {
     use super::*;
 
-    /// craft-libs#485's cased-letter rule, shared by every language: a word or part is in
+    /// bharat-libs#485's cased-letter rule, shared by every language: a word or part is in
     /// capitals only with a cased letter; a part without letters counts as an abbreviation.
     #[test]
     fn capitals_need_a_cased_letter() {
@@ -85,7 +85,7 @@ mod tests {
         assert_eq!(word_to_check(&d, "PRZEDSIĘBIORSTWO", &defaults), Some("PRZEDSIĘBIORSTWO"), "only short capitals are acronyms");
     }
 
-    /// craft-libs#487 review: a trailing combining mark stays on the word it marks.
+    /// bharat-libs#487 review: a trailing combining mark stays on the word it marks.
     #[test]
     fn trailing_combining_marks_are_kept() {
         let d = AffixDict::from_hunspell("", "1\nkot\n", &[]).unwrap();

@@ -106,14 +106,14 @@ fn the_fixture_maps_onto_the_rest_shape() {
 #[test]
 fn the_result_reads_as_the_typed_model() {
     let out = map(&fixture_file());
-    let file = craft_figma_rest::File::from_value(out.json.clone(), 1000).unwrap();
+    let file = bharat_figma_rest::File::from_value(out.json.clone(), 1000).unwrap();
     let doc = file.document.as_ref().unwrap();
     let label = doc.walk().find(|n| n.id.as_deref() == Some("L")).unwrap();
-    assert_eq!(label.kind, Some(craft_figma_rest::NodeType::Text));
+    assert_eq!(label.kind, Some(bharat_figma_rest::NodeType::Text));
     assert_eq!(label.character_style_overrides.as_ref().map(Vec::len), Some(11));
     let star = doc.walk().find(|n| n.id.as_deref() == Some("S")).unwrap();
     assert_eq!(star.extra["pointCount"], 5);
-    assert_eq!(craft_figma_rest::File::from_value(file.to_value().unwrap(), 1000).unwrap(), file);
+    assert_eq!(bharat_figma_rest::File::from_value(file.to_value().unwrap(), 1000).unwrap(), file);
 }
 
 #[test]
@@ -150,7 +150,7 @@ fn deep_nesting_stops_with_a_warning_within_a_small_stack() {
             "{:?}",
             out.warnings
         );
-        assert!(craft_figma_rest::check(&out.json, usize::MAX).is_ok());
+        assert!(bharat_figma_rest::check(&out.json, usize::MAX).is_ok());
         // Within the limit, nothing is skipped.
         let shallow: Vec<Value> = (0..20)
             .map(|i| {
@@ -309,5 +309,5 @@ fn a_shape_group_combines_its_paths() {
         .filter_map(|n| n["booleanOperation"].as_str())
         .collect();
     assert!(ops.contains(&"SUBTRACT"), "{group}");
-    assert!(out.networks.iter().flatten().all(craft_figma_rest::ext::VectorNetwork::is_consistent));
+    assert!(out.networks.iter().flatten().all(bharat_figma_rest::ext::VectorNetwork::is_consistent));
 }

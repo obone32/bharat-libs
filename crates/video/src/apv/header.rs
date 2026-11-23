@@ -1,6 +1,6 @@
 //! RFC 9924 §5.3 and §8 syntax structures: Access Unit, PBU, Frame Header, Tile Info, and Metadata.
 
-use craft_media::bitstream::{BitReader, BitWriter};
+use bharat_media::bitstream::{BitReader, BitWriter};
 
 use crate::apv::tables::DEFAULT_Q_MATRIX_VAL;
 use crate::apv::{ChromaFormat, ColorInfo, ContentLightLevel, Error, MasteringDisplay, Result};

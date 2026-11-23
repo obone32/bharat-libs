@@ -3,7 +3,7 @@
 //! **[MS-OFFCRYPTO]: Office Document Cryptography Structure** and ECMA-376.
 //!
 //! A password-encrypted `.docx`, `.xlsx` or `.pptx` is not a zip but a compound file
-//! ([MS-CFB], read and written with `craft-cfb`) holding `EncryptionInfo` (how the key comes
+//! ([MS-CFB], read and written with `bharat-cfb`) holding `EncryptionInfo` (how the key comes
 //! from the password) and `EncryptedPackage` (the zip, AES encrypted). This crate goes between
 //! the two: file bytes in, package bytes out, and back. It knows nothing about what the package
 //! holds.
@@ -23,13 +23,13 @@
 //! are wiped from memory when dropped and never logged.
 //!
 //! ```
-//! # fn main() -> Result<(), craft_offcrypto::Error> {
+//! # fn main() -> Result<(), bharat_offcrypto::Error> {
 //! let package = b"PK\x03\x04 a zip package";
-//! let file = craft_offcrypto::encrypt_with_spin_count(package, "secret", 1000)?;
-//! assert!(craft_offcrypto::is_encrypted(&file));
-//! assert_eq!(craft_offcrypto::decrypt(&file, None), Err(craft_offcrypto::Error::PasswordRequired));
-//! assert_eq!(craft_offcrypto::decrypt(&file, Some("guess")), Err(craft_offcrypto::Error::WrongPassword));
-//! assert_eq!(craft_offcrypto::decrypt(&file, Some("secret"))?, package);
+//! let file = bharat_offcrypto::encrypt_with_spin_count(package, "secret", 1000)?;
+//! assert!(bharat_offcrypto::is_encrypted(&file));
+//! assert_eq!(bharat_offcrypto::decrypt(&file, None), Err(bharat_offcrypto::Error::PasswordRequired));
+//! assert_eq!(bharat_offcrypto::decrypt(&file, Some("guess")), Err(bharat_offcrypto::Error::WrongPassword));
+//! assert_eq!(bharat_offcrypto::decrypt(&file, Some("secret"))?, package);
 //! # Ok(())
 //! # }
 //! ```

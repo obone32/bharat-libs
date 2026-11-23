@@ -20,6 +20,6 @@ fn hostile_input_never_panics() {
     let (_, at) = avi_odml([0, 0]);
     let seeds = [avi(true, false, false), avi(true, true, true), avi(false, false, false), avi_odml(at).0];
     for (i, s) in seeds.iter().enumerate() {
-        craft_media_testkit::hostile::hammer(&format!("avi seed {i}"), s, 30_000, exercise);
+        bharat_media_testkit::hostile::hammer(&format!("avi seed {i}"), s, 30_000, exercise);
     }
 }

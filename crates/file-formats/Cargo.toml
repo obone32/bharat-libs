@@ -1,6 +1,6 @@
 [package]
-name = "craft-file-formats"
-description = "Shared bounded file signature and extension resolution for Craft applications"
+name = "bharat-file-formats"
+description = "Shared bounded file signature and extension resolution for Bharat applications"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,15 +8,15 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-craft-eps = { workspace = true }
-craft-image-codecs = { workspace = true, optional = true }
-craft-raw = { workspace = true, optional = true }
-craft-ora = { workspace = true, optional = true }
-craft-kra = { workspace = true, optional = true }
-craft-pcraft-bundle = { workspace = true, optional = true }
-craft-idml = { workspace = true }
-craft-svg = { workspace = true }
-craft-zip = { workspace = true }
+bharat-eps = { workspace = true }
+bharat-image-codecs = { workspace = true, optional = true }
+bharat-raw = { workspace = true, optional = true }
+bharat-ora = { workspace = true, optional = true }
+bharat-kra = { workspace = true, optional = true }
+bharat-pcraft-bundle = { workspace = true, optional = true }
+bharat-idml = { workspace = true }
+bharat-svg = { workspace = true }
+bharat-zip = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 
@@ -24,19 +24,19 @@ serde_json = { workspace = true }
 default = []
 # These flags report which shared parser/codec families a client builds. The application still
 # selects the corresponding shared crates in its dependency graph.
-raster-codecs = ["dep:craft-image-codecs"]
-heif = ["raster-codecs", "craft-image-codecs/heif"]
-avif = ["raster-codecs", "craft-image-codecs/avif"]
+raster-codecs = ["dep:bharat-image-codecs"]
+heif = ["raster-codecs", "bharat-image-codecs/heif"]
+avif = ["raster-codecs", "bharat-image-codecs/avif"]
 pdf = []
 svg = []
-ora = ["dep:craft-ora"]
-kra = ["dep:craft-kra"]
+ora = ["dep:bharat-ora"]
+kra = ["dep:bharat-kra"]
 xcf = []
 pdn = []
-raw = ["dep:craft-raw"]
+raw = ["dep:bharat-raw"]
 psd = []
 affinity = []
-pcraft = ["dep:craft-pcraft-bundle"]
+pcraft = ["dep:bharat-pcraft-bundle"]
 ase = []
 office = []
 designcraft = []

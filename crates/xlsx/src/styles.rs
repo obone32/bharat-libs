@@ -2,8 +2,8 @@
 //! cells refer to by index. Attributes a file may leave out are `Option`s, because a
 //! differential format (`<dxf>`) states only what it changes.
 
-use craft_sheet::{BorderStyle, DEFAULT_PALETTE, HAlign, Pattern, Script, Underline, VAlign, builtin_format};
-use craft_xml::El;
+use bharat_sheet::{BorderStyle, DEFAULT_PALETTE, HAlign, Pattern, Script, Underline, VAlign, builtin_format};
+use bharat_xml::El;
 
 use crate::write::{flag, list, num, set};
 
@@ -545,7 +545,7 @@ impl Xf {
         if let Some(p) = self.protection {
             e.push(p.to_el());
         }
-        e.children.extend(self.el.elements().filter(|c| c.name != "alignment" && c.name != "protection").cloned().map(craft_xml::Node::El));
+        e.children.extend(self.el.elements().filter(|c| c.name != "alignment" && c.name != "protection").cloned().map(bharat_xml::Node::El));
         e
     }
 }
@@ -702,13 +702,13 @@ impl Styles {
             })
             .collect();
         let mut colors = root.child("colors").cloned().unwrap_or_else(|| El::new("colors"));
-        colors.children.retain(|n| !matches!(n, craft_xml::Node::El(c) if c.name == "indexedColors"));
+        colors.children.retain(|n| !matches!(n, bharat_xml::Node::El(c) if c.name == "indexedColors"));
         if !self.indexed_colors.is_empty() {
             let mut ix = El::new("indexedColors");
             for c in &self.indexed_colors {
                 ix.push(El::new("rgbColor").with_attr("rgb", format!("FF{:06X}", c & 0xFF_FFFF)));
             }
-            colors.children.insert(0, craft_xml::Node::El(ix));
+            colors.children.insert(0, bharat_xml::Node::El(ix));
         }
         let owned = vec![
             ("numFmts", list(&root, "numFmts", num_fmts)),
@@ -723,7 +723,7 @@ impl Styles {
         ];
         let mut out = crate::write::assemble(&root, ORDER, owned);
         crate::ns::declare(&mut out);
-        let mut w = craft_xml::Writer::document();
+        let mut w = bharat_xml::Writer::document();
         w.tree(&out);
         w.into_bytes()
     }
@@ -745,7 +745,7 @@ mod tests {
     use super::*;
 
     fn styles(xml: &str) -> Styles {
-        Styles::read(craft_xml::Options::local().parse(xml.as_bytes()).unwrap_or_default())
+        Styles::read(bharat_xml::Options::local().parse(xml.as_bytes()).unwrap_or_default())
     }
 
     #[test]

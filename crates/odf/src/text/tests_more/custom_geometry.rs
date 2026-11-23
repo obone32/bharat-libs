@@ -5,8 +5,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::Document;
-use craft_wordmodel::para::{InlineObject, ShapeKind};
+use bharat_wordmodel::Document;
+use bharat_wordmodel::para::{InlineObject, ShapeKind};
 
 const NS_D: &str =
     r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0""#;
@@ -163,7 +163,7 @@ fn a_freeform_with_open_and_closed_paths_is_saved_as_a_custom_shape() {
     let mut d = open(&shape(r#"draw:type="smiley" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 Z N M 5000 15000 L 16000 15000 F N""#, ""));
     // As WordCraft's own freeform (the geometry read is written back whole otherwise).
     for b in d.body.iter_mut() {
-        if let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
+        if let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
             for o in &mut p.objects {
                 if let InlineObject::Shape { extra, .. } = o {
                     extra.odf_geometry = None;
@@ -226,7 +226,7 @@ fn a_custom_shapes_geometry_is_written_back_as_it_was_read() {
     // Made an ellipse: written as one.
     let mut changed = d.clone();
     for b in changed.body.iter_mut() {
-        if let craft_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
+        if let bharat_wordmodel::Block::Para(p) = std::sync::Arc::make_mut(b) {
             for o in &mut p.objects {
                 if let InlineObject::Shape { kind, extra, .. } = o {
                     *kind = ShapeKind::Ellipse;

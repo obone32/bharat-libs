@@ -104,8 +104,8 @@ fn parts_with_hostile_names_are_not_written() {
 fn who_changed_the_document_last_and_when_round_trip() {
     // meta.xml: the author (`meta:initial-creator`), who changed it last (`dc:creator`), when
     // (`dc:date`) and how often it was saved (`meta:editing-cycles`).
-    let mut d = craft_wordmodel::Document::new();
-    d.body = vec![craft_wordmodel::para_block(craft_wordmodel::Paragraph::with_text("x", Default::default()))];
+    let mut d = bharat_wordmodel::Document::new();
+    d.body = vec![bharat_wordmodel::para_block(bharat_wordmodel::Paragraph::with_text("x", Default::default()))];
     d.core.creator = "Ada".into();
     d.core.last_modified_by = "Grace".into();
     d.core.created = "2026-01-02T03:04:05Z".into();

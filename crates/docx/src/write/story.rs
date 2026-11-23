@@ -1,12 +1,12 @@
 //! Blocks, paragraphs, runs, objects and tables → WordprocessingML.
 
-use craft_wordmodel::effects::ShapeEffects;
-use craft_wordmodel::fill::{Fill, GradientFlip, GradientKind, PathShape};
-use craft_wordmodel::para::{AltText, Anchor, Float, NoteKind, ShapeKind, Wrap};
-use craft_wordmodel::props::{CharProps, PropChange, Rgb, TextColor};
-use craft_wordmodel::section::{LineNumberRestart, NoteProps, SectionProps, SectionStart};
-use craft_wordmodel::table::Table;
-use craft_wordmodel::{Block, Blocks, InlineObject, Paragraph, RevisionKind};
+use bharat_wordmodel::effects::ShapeEffects;
+use bharat_wordmodel::fill::{Fill, GradientFlip, GradientKind, PathShape};
+use bharat_wordmodel::para::{AltText, Anchor, Float, NoteKind, ShapeKind, Wrap};
+use bharat_wordmodel::props::{CharProps, PropChange, Rgb, TextColor};
+use bharat_wordmodel::section::{LineNumberRestart, NoteProps, SectionProps, SectionStart};
+use bharat_wordmodel::table::Table;
+use bharat_wordmodel::{Block, Blocks, InlineObject, Paragraph, RevisionKind};
 
 use super::props::{ChangeAttrs, borders, open_change, ppr_inner, rpr, rpr_inner, tblpr, tcpr, trpr};
 use super::{PartRels, Writer};

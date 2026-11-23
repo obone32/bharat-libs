@@ -1,4 +1,4 @@
-# craft-usd
+# bharat-usd
 
 Bounded wire primitives for USD Crate, independent of application scene and material models.
 

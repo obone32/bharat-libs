@@ -1,5 +1,5 @@
 [package]
-name = "craft-lottie"
+name = "bharat-lottie"
 description = "Lottie (Bodymovin) JSON and dotLottie ZIP containers: the lottie-spec 1.0 document model, bounded readers and writers, animated properties, keyframes, ease tangents, bezier paths, gradients, value coercions and embedded image data URIs"
 version.workspace = true
 edition.workspace = true
@@ -11,6 +11,6 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-zip = { workspace = true }
+bharat-zip = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

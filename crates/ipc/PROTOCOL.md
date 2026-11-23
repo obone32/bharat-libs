@@ -1,7 +1,7 @@
-# Craft Link protocol, version 1
+# Bharat Link protocol, version 1
 
-Extends the existing Craft control channel (the control protocol document of each app). Every
-existing method keeps its exact behaviour. New methods are additive. `craft-ipc` implements this
+Extends the existing Bharat control channel (the control protocol document of each app). Every
+existing method keeps its exact behaviour. New methods are additive. `bharat-ipc` implements this
 protocol.
 
 ## 1. Transport and framing
@@ -29,12 +29,12 @@ protocol.
   `{"id":null,"ok":false,"error":"idle connection closed"}`. A client that keeps a quiet connection
   longer must call `events.subscribe` or reconnect. A request may arrive in any number of pieces
   with pauses between them; the server keeps the bytes of an unfinished line.
-- **Launch on demand** (library rule, not wire): `craft_ipc::launch` runs an app binary only if the
+- **Launch on demand** (library rule, not wire): `bharat_ipc::launch` runs an app binary only if the
   path is absolute and the file is regular and executable, and the file and its directory belong to
   the user or root and are not writable by every user. Empty and relative `PATH` entries are
-  skipped. A fork that starts an app by another route must call `craft_ipc::trust::check_executable`.
-  Caches use `craft_ipc::cache::private_cache_dir` (`0700`, owner checked, no symlink, no
-  fallback to a shared temp directory); `CRAFT_LINK_CACHE_DIR` must be absolute.
+  skipped. A fork that starts an app by another route must call `bharat_ipc::trust::check_executable`.
+  Caches use `bharat_ipc::cache::private_cache_dir` (`0700`, owner checked, no symlink, no
+  fallback to a shared temp directory); `BHARAT_LINK_CACHE_DIR` must be absolute.
 
 ## 2. Authentication (required on every transport: sockets, pipes, loopback TCP)
 
@@ -136,7 +136,7 @@ did not survive the hand-off.
 | `image-doc` | `asset`: moniker (section 9), `path`: absolute path of the producer document or image file | Stills, vectors and other single images. `result_path` is the last-known flattened image. `place`, `source` and `format` in the reply stay as above. `rate_num`, `rate_den` and `duration_ticks` are absent from `format` in the reply. |
 
 An unknown `format` gets `payload_invalid`. A new `format` value is additive and needs no protocol
-bump. The server checks the shape of `payload` with `craft_ipc::payload::OpenPayload` before it
+bump. The server checks the shape of `payload` with `bharat_ipc::payload::OpenPayload` before it
 forwards `link.open` to the app. A missing `payload`, a `payload` that is not an object, a missing or
 unknown `format`, a missing field, a relative `path` or a bad `asset` moniker gets `payload_invalid`
 and the app never sees the request. `params` that is not an object stays `bad_params`. The server
@@ -202,7 +202,7 @@ behaviour).
 - `link.changed`: `{"link_id","epoch"}`. Sent by EffectCraft when the bound comp changes (any
   `bump()` whose change touches the comp).
 - `link.result`: `{"link_id","epoch","path"}`. A fresh last-known result was written.
-- `doc.changed`: `{"doc_id","revision","cause"}`. Generic change feed (from `craft-command`).
+- `doc.changed`: `{"doc_id","revision","cause"}`. Generic change feed (from `bharat-command`).
 - `app.closing`: `{}`. Sent before a clean exit.
 
 ## 5. Command passthrough (existing, unchanged)
@@ -263,8 +263,8 @@ record that the schema accepts also parses in Rust.
 A moniker has no query and no fragment. It names an asset, not a state: the state is the epoch.
 A moniker can outlive its asset. Resolving a dead moniker gives `link_unknown`. Parsing then
 formatting a moniker gives the canonical text (uppercase `%XX`). Formatting then parsing gives back
-an equal moniker. `craft_ipc::moniker::Moniker` implements both. The module uses only `serde` and
-`std`, so an app can copy it to a wasm build. The `craft-ipc` crate as a whole still does not build
+an equal moniker. `bharat_ipc::moniker::Moniker` implements both. The module uses only `serde` and
+`std`, so an app can copy it to a wasm build. The `bharat-ipc` crate as a whole still does not build
 for wasm32 (local sockets).
 
 ## 10. Refresh and watch rules for linked files
@@ -281,7 +281,7 @@ These rules apply to any linked asset with a `result_path` (a still, a rendered 
    the larger of the two values. An epoch never decreases.
 3. **Fingerprint.** `(size, mtime_ms, sha256)` of the file. The hash is of the full content.
 4. **Polling when the producer is offline.** The consumer calls `poll` about once per second
-   (`craft_ipc::watch::Watcher` runs this schedule with a thread and an injectable ticker). A poll
+   (`bharat_ipc::watch::Watcher` runs this schedule with a thread and an injectable ticker). A poll
    reads size and mtime. It hashes the file only when size or mtime differ from the last fingerprint.
    Some file systems have coarse mtime, so the consumer also calls a deep poll (always hash) about
    once every 30 seconds. A touch that leaves the hash equal does not bump the epoch.

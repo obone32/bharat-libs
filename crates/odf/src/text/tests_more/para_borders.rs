@@ -3,8 +3,8 @@
 
 use crate::text::tests::{NS_T, package};
 use crate::text::{export, import};
-use craft_wordmodel::props::{Border, BorderStyle, Borders, ParaProps};
-use craft_wordmodel::{Document, Paragraph, Rgb, para_block};
+use bharat_wordmodel::props::{Border, BorderStyle, Borders, ParaProps};
+use bharat_wordmodel::{Document, Paragraph, Rgb, para_block};
 
 fn open(props: &str, text: &str) -> Document {
     let content = format!(
@@ -63,7 +63,7 @@ fn a_width_0_border_is_written_as_the_thinnest_line() {
     let line = Border { style: BorderStyle::Single, width: 0.0, color: Some(Rgb(0xc0, 0, 0)), space: 0.0 };
     let mut p = Paragraph::new();
     p.text = "Edged".into();
-    p.runs = vec![craft_wordmodel::para::Run { len: 5, props: craft_wordmodel::props::CharProps { border: Some(line), ..Default::default() } }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: 5, props: bharat_wordmodel::props::CharProps { border: Some(line), ..Default::default() } }];
     p.props.borders = Some(Borders { bottom: Some(line), ..Default::default() });
     let mut d = Document::new();
     d.body = vec![para_block(p)];
@@ -88,17 +88,17 @@ fn a_width_0_border_is_written_as_the_thinnest_line() {
 fn a_named_styles_width_0_border_is_written_as_the_thinnest_line() {
     let line = Border { style: BorderStyle::Single, width: 0.0, color: Some(Rgb(0, 0x80, 0)), space: 0.0 };
     let mut d = Document::new();
-    std::sync::Arc::make_mut(&mut d.styles).upsert(craft_wordmodel::styles::Style {
+    std::sync::Arc::make_mut(&mut d.styles).upsert(bharat_wordmodel::styles::Style {
         id: "Edged".into(),
         name: "Edged".into(),
-        kind: craft_wordmodel::styles::StyleKind::Paragraph,
+        kind: bharat_wordmodel::styles::StyleKind::Paragraph,
         para: ParaProps { borders: Some(Borders { bottom: Some(line), ..Default::default() }), ..Default::default() },
-        chr: craft_wordmodel::props::CharProps { border: Some(line), ..Default::default() },
+        chr: bharat_wordmodel::props::CharProps { border: Some(line), ..Default::default() },
         ..Default::default()
     });
     let mut p = Paragraph::new();
     p.text = "Edged".into();
-    p.runs = vec![craft_wordmodel::para::Run { len: 5, props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: 5, props: Default::default() }];
     p.props.style = Some("Edged".into());
     d.body = vec![para_block(p)];
     let out = crate::text::tests::styles_of(&export(&d).unwrap());
@@ -124,7 +124,7 @@ fn borders_and_background_round_trip() {
     };
     let mut p = Paragraph::new();
     p.text = "Boxed".into();
-    p.runs = vec![craft_wordmodel::para::Run { len: 5, props: Default::default() }];
+    p.runs = vec![bharat_wordmodel::para::Run { len: 5, props: Default::default() }];
     p.props = want.clone();
     let mut d = Document::new();
     d.body = vec![para_block(p)];

@@ -1,4 +1,4 @@
-# craft-affinity
+# bharat-affinity
 
 An independent, bounded Rust reader for native Affinity documents: `.af` from Affinity 3 and
 `.afdesign`, `.afphoto` and `.afpub` from Affinity 1 and 2 (container versions 8 to 12). It reads
@@ -7,10 +7,10 @@ and returns a neutral `Document` in pixels with every transform composed. Mappin
 onto an application's own model stays in the application. It does not write Affinity files.
 
 ```rust
-match craft_affinity::read(bytes, craft_affinity::Limits::default()) {
+match bharat_affinity::read(bytes, bharat_affinity::Limits::default()) {
     Ok(document) => { /* spreads, nodes, warnings */ }
     // The flattened PNG preview every document embeds, when the native document can't be read.
-    Err(reason) => { let preview = craft_affinity::preview(bytes); }
+    Err(reason) => { let preview = bharat_affinity::preview(bytes); }
 }
 ```
 
@@ -129,7 +129,7 @@ text-frame fixture.
 
   ```sh
   scripts/fetch-affinity-corpus.sh
-  AFFINITY_CORPUS=target/fixtures/affinity cargo test -p craft-affinity --all-features
+  AFFINITY_CORPUS=target/fixtures/affinity cargo test -p bharat-affinity --all-features
   ```
 
   Without `AFFINITY_CORPUS` the corpus tests are skipped. `AFFINITY_SAMPLES` names any other

@@ -1,5 +1,5 @@
 [package]
-name = "craft-sourcemap"
+name = "bharat-sourcemap"
 description = "Bounded Source Map v3 parser, source inventory and generated-position lookup"
 version.workspace = true
 edition.workspace = true

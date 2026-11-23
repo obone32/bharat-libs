@@ -5,8 +5,8 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use craft_wordmodel::props::CharProps;
-use craft_wordmodel::{Revision, RevisionKind};
+use bharat_wordmodel::props::CharProps;
+use bharat_wordmodel::{Revision, RevisionKind};
 
 use crate::fib::Fib;
 use crate::piece::PrmRef;

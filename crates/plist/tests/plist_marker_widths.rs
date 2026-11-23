@@ -1,4 +1,4 @@
-use craft_plist::{Value, parse_binary};
+use bharat_plist::{Value, parse_binary};
 
 fn single_object(object: &[u8]) -> Vec<u8> {
     let mut data = b"bplist00".to_vec();
@@ -48,7 +48,7 @@ fn supported_maximum_widths_keep_their_values() {
 
 #[test]
 fn minor_version_compatibility_is_explicit_and_keeps_bounds() {
-    use craft_plist::{BinaryOptions, FormatError, Limits, parse_binary_with_options};
+    use bharat_plist::{BinaryOptions, FormatError, Limits, parse_binary_with_options};
     let compat = BinaryOptions { allow_unknown_minor_version: true };
     for minor in [b'0', b'1', b'9', 0xff] {
         let mut data = single_object(&[0x00]);

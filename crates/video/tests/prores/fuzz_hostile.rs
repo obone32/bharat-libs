@@ -4,7 +4,7 @@
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use craft_video::prores::{ChromaFormat, DecodeOptions, Encoder, EncoderConfig, Frame, Profile, decode_frame, decode_frame_with, probe};
+use bharat_video::prores::{ChromaFormat, DecodeOptions, Encoder, EncoderConfig, Frame, Profile, decode_frame, decode_frame_with, probe};
 
 struct Rng(u64);
 impl Rng {
@@ -32,7 +32,7 @@ fn count_panics() {
 }
 
 fn run_one(data: &[u8], label: &str) {
-    craft_media_testkit::set_progress(label);
+    bharat_media_testkit::set_progress(label);
     count_panics();
     let before = PANICS.load(Ordering::SeqCst);
     let res = catch_unwind(AssertUnwindSafe(|| {
@@ -81,7 +81,7 @@ const DEADLINE_SECS: u64 = 300;
 
 #[test]
 fn hostile_prores_streams_never_panic() {
-    craft_media_testkit::with_deadline(DEADLINE_SECS, sweep);
+    bharat_media_testkit::with_deadline(DEADLINE_SECS, sweep);
 }
 
 fn sweep() {

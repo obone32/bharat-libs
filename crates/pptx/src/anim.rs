@@ -6,7 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::ShapeId;
-use craft_drawingml::{style, text};
+use bharat_drawingml::{style, text};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename_all = "camelCase")]

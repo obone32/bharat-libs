@@ -3,7 +3,7 @@
 //! Every expected value is the one the case was made with (its MANIFEST row).
 
 use crate::container::helpers::open;
-use craft_aep::Project;
+use bharat_aep::Project;
 
 #[test]
 fn a_renamed_effect_keeps_its_name_in_the_value_group() {
@@ -73,7 +73,7 @@ fn an_image_sequence_knows_its_numbering() {
 
 #[test]
 fn project_settings_are_read_from_the_header_chunks() {
-    use craft_aep::{ProjectSettings, TimeDisplay, WorkingSpace};
+    use bharat_aep::{ProjectSettings, TimeDisplay, WorkingSpace};
     let read = |name: &str| {
         Some({
             let bytes = crate::common::try_fixture(name)?;

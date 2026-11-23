@@ -4,7 +4,7 @@
 
 use std::process::Command;
 
-use craft_media::bitstream::BitWriter;
+use bharat_media::bitstream::BitWriter;
 
 use super::headers::{self, Sequence, Timing, VopHeader};
 use super::picture::{Mb, Mode, write_mb};
@@ -90,7 +90,7 @@ fn stream(width: u32, height: u32, intra: &[Mb], inter: &[Mb], escape_only: bool
 
 #[test]
 fn code_tables_decode_like_the_fixed_length_escape() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("mpeg4 code tables") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("mpeg4 code tables") else { return };
     let (ei, ep) = (events(tables::intra()), events(tables::inter()));
     let mb_w = 8usize;
     let n = ei.len().max(ep.len()).div_ceil(6);
@@ -101,7 +101,7 @@ fn code_tables_decode_like_the_fixed_length_escape() {
         mb.mode = Mode::Intra;
     }
     let inter = macroblocks(&ep, false, mb_w * mb_h);
-    let dir = craft_media_testkit::private_dir("mpeg4-tables");
+    let dir = bharat_media_testkit::private_dir("mpeg4-tables");
     let decode = |name: &str, escape_only: bool| -> Vec<u8> {
         let path = dir.join(name);
         std::fs::write(&path, stream(w, h, &intra, &inter, escape_only)).expect("write");

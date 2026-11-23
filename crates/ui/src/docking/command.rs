@@ -1,7 +1,7 @@
 //! The shared docking command vocabulary (feature `serde`).
 //!
 //! Applications deserialize a control command's JSON params, with its id under `"command"`,
-//! into [`DockCommand`] and apply it. craft-ui does not depend on `serde_json`.
+//! into [`DockCommand`] and apply it. bharat-ui does not depend on `serde_json`.
 //!
 //! ```ignore
 //! let mut params = params.clone();

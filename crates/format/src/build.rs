@@ -5,7 +5,7 @@
 //! The generated code, for the app to `include!`, is per family a `FOLDED` list (each folded
 //! format and its parts) and a `PENDING` list, both prefixed by the family's `list_prefix`, then a
 //! module per change file. It names the app's `Part` type, which the including module has in scope
-//! (`type Part = craft_format::Part<AppError>;`), and a change file's step as `step` (a
+//! (`type Part = bharat_format::Part<AppError>;`), and a change file's step as `step` (a
 //! `pub fn step(v: &mut Value) -> Result<(), AppError>`, when the file has one).
 
 use std::fmt::Write as _;

@@ -35,4 +35,4 @@ jobs:
         with:
           toolchain: stable
           targets: wasm32-unknown-unknown
-      - run: cargo check -p craft-ecproj-format --locked --target wasm32-unknown-unknown
+      - run: cargo check -p bharat-ecproj-format --locked --target wasm32-unknown-unknown

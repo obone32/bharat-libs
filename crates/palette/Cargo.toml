@@ -1,5 +1,5 @@
 [package]
-name = "craft-palette"
+name = "bharat-palette"
 description = "Bounded, application-independent GIMP palette reading"
 version.workspace = true
 edition.workspace = true

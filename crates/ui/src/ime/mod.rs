@@ -8,9 +8,9 @@
 //! # fn paste(_: &str) {} fn copy() {} fn cut() {} fn delete_around(_: usize, _: usize) {}
 //! # fn delete_whole_chars_around(_: usize, _: usize) {}
 //! # fn caret_rect() -> egui::Rect { egui::Rect::ZERO }
-//! # let ctx = egui::Context::default(); let mut composer = craft_ui::ime::Composer::new();
+//! # let ctx = egui::Context::default(); let mut composer = bharat_ui::ime::Composer::new();
 //! # let editing = true;
-//! use craft_ui::ime::Edit;
+//! use bharat_ui::ime::Edit;
 //! // Every pass, before shortcuts and other keyboard handling:
 //! for edit in composer.update(&ctx, editing) {
 //!     match edit {
@@ -23,7 +23,7 @@
 //!         Edit::Copy => copy(),
 //!         Edit::Cut => cut(),
 //!         Edit::DeleteSurrounding { before_chars, after_chars } => delete_around(before_chars, after_chars),
-//!         // Whole chars inside the byte counts; `craft_ui::ime::surrounding_chars` counts them.
+//!         // Whole chars inside the byte counts; `bharat_ui::ime::surrounding_chars` counts them.
 //!         Edit::DeleteSurroundingBytes { before_bytes, after_bytes } => delete_whole_chars_around(before_bytes, after_bytes),
 //!     }
 //! }

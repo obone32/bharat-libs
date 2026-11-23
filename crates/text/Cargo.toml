@@ -1,11 +1,11 @@
 [package]
-name = "craft-text"
+name = "bharat-text"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-description = "Text processing below the Craft composer: hyphenation with a bundled US English dictionary and patterns, other languages through hypher"
+description = "Text processing below the Bharat composer: hyphenation with a bundled US English dictionary and patterns, other languages through hypher"
 
 [lints]
 workspace = true

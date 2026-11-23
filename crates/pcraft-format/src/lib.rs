@@ -23,11 +23,11 @@
 //! `wasm32-unknown-unknown`.
 //!
 //! ```
-//! use craft_pcraft_format::{FORMAT_VERSION, Limits, Manifest, Step};
+//! use bharat_pcraft_format::{FORMAT_VERSION, Limits, Manifest, Step};
 //!
 //! let raw = br#"{"format_version":1,"generator":"photocraft-format 0.1.0","document":{"name":"Untitled"}}"#;
 //! let steps: &[Step] = &[];
-//! let manifest: Manifest<serde_json::Value> = craft_pcraft_format::read_manifest(raw, &Limits::default(), steps, FORMAT_VERSION).unwrap();
+//! let manifest: Manifest<serde_json::Value> = bharat_pcraft_format::read_manifest(raw, &Limits::default(), steps, FORMAT_VERSION).unwrap();
 //! assert_eq!(manifest.document["name"], "Untitled");
 //! assert_eq!(manifest.thumbnail, None);
 //! ```
@@ -106,13 +106,13 @@ pub fn is_valid_hash(hash: &str) -> bool {
 /// The struct is `#[non_exhaustive]`: build one with [`Manifest::new`] and set the previews.
 ///
 /// ```compile_fail
-/// let _ = craft_pcraft_format::Manifest { format_version: 1, generator: String::new(), document: (), thumbnail: None, composite: None };
+/// let _ = bharat_pcraft_format::Manifest { format_version: 1, generator: String::new(), document: (), thumbnail: None, composite: None };
 /// ```
 ///
 /// It has no `Deserialize`, so a manifest is read only through [`read_manifest`]:
 ///
 /// ```compile_fail
-/// let _: craft_pcraft_format::Manifest<serde_json::Value> = serde_json::from_str("{}").unwrap();
+/// let _: bharat_pcraft_format::Manifest<serde_json::Value> = serde_json::from_str("{}").unwrap();
 /// ```
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[non_exhaustive]
@@ -144,7 +144,7 @@ impl<D> Manifest<D> {
 /// The struct is `#[non_exhaustive]`: build one with [`TileRef::new`].
 ///
 /// ```compile_fail
-/// let _ = craft_pcraft_format::TileRef { tx: 0, ty: 0, hash: String::new() };
+/// let _ = bharat_pcraft_format::TileRef { tx: 0, ty: 0, hash: String::new() };
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
@@ -171,9 +171,9 @@ impl TileRef {
 /// [`Error::TooNew`] is `#[non_exhaustive]`: match it with `..`.
 ///
 /// ```compile_fail
-/// fn found(e: craft_pcraft_format::Error) -> u32 {
+/// fn found(e: bharat_pcraft_format::Error) -> u32 {
 ///     match e {
-///         craft_pcraft_format::Error::TooNew { found, supported: _, generator: _ } => found,
+///         bharat_pcraft_format::Error::TooNew { found, supported: _, generator: _ } => found,
 ///         _ => 0,
 ///     }
 /// }

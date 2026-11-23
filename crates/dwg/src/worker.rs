@@ -409,7 +409,7 @@ mod tests {
         assert!(encode_as(b"not a dxf", "AC1032").is_err());
         // A configured worker that cannot start is an error even after the opt-in: the conversion
         // never runs here instead.
-        use_worker(PathBuf::from("/nonexistent/craft-dwg-worker"), Vec::new());
+        use_worker(PathBuf::from("/nonexistent/bharat-dwg-worker"), Vec::new());
         assert!(decode(b"AC1032", Limits::DEFAULT).unwrap_err().contains("could not start"));
         assert!(encode_as(b"not a dxf", "AC1032").unwrap_err().contains("could not start"));
     }

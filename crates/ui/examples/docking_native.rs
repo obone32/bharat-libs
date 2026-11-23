@@ -1,11 +1,11 @@
 //! Docking with floating panels in their own OS windows. Run with
-//! `cargo run -p craft-ui --example docking_native --features native-windows`.
+//! `cargo run -p bharat-ui --example docking_native --features native-windows`.
 //!
 //! Prints every action it applies and every native window's place, for checking moves by
 //! hand or under a headless X server.
 
-use craft_ui::docking::{DockArea, DockContent, DockStyle, Floating, Layout, Node};
-use craft_ui::layout::{SplitAxis, SplitSize};
+use bharat_ui::docking::{DockArea, DockContent, DockStyle, Floating, Layout, Node};
+use bharat_ui::layout::{SplitAxis, SplitSize};
 
 struct Panels;
 

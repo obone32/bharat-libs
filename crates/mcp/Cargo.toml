@@ -1,5 +1,5 @@
 [package]
-name = "craft-mcp"
+name = "bharat-mcp"
 description = "Transport-independent MCP server initialization and tool envelopes"
 version.workspace = true
 edition.workspace = true
@@ -11,5 +11,5 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-craft-jsonrpc = { workspace = true }
+bharat-jsonrpc = { workspace = true }
 serde_json = { workspace = true }

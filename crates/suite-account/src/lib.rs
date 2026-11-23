@@ -1,6 +1,6 @@
-//! The Craft App Suite's shared account store: the suite's keychain.
+//! The Bharat App Suite's shared account store: the suite's keychain.
 //!
-//! Somebody signs in once and every Craft App acts as them. Before this, each application kept its
+//! Somebody signs in once and every Bharat App acts as them. Before this, each application kept its
 //! own session file. Taken across the suite that meant a sign-in per application, a copy of a
 //! bearer token on disk per application, and a separate place to revoke per application.
 //!
@@ -80,8 +80,8 @@
 //!   simply writes through it again.
 //!
 //! ```no_run
-//! # fn main() -> Result<(), craft_suite_account::Error> {
-//! use craft_suite_account::{Shared, Store};
+//! # fn main() -> Result<(), bharat_suite_account::Error> {
+//! use bharat_suite_account::{Shared, Store};
 //!
 //! let store = Store::open();
 //! match store.shared() {

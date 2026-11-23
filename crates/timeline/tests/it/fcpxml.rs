@@ -3,12 +3,12 @@
 
 use crate::support;
 
-use craft_timeline::model::{
+use bharat_timeline::model::{
     BinEntry, ClipId, ItemId, ItemKind, Keyframe, Label, Marker, MarkerId, MarkerKind, MediaRef, Param, ParamValue, Project, Sequence, TrackKind,
     TransitionAlign,
 };
-use craft_timeline::time::{FrameRate, TICKS_PER_SECOND, Tick};
-use craft_timeline::{ExportOptions, FcpxmlVersion, Format, Report, detect_text as detect};
+use bharat_timeline::time::{FrameRate, TICKS_PER_SECOND, Tick};
+use bharat_timeline::{ExportOptions, FcpxmlVersion, Format, Report, detect_text as detect};
 use proptest::prelude::*;
 use support::*;
 
@@ -623,11 +623,11 @@ fn optional_report_limit_bounds_distinct_fcpxml_diagnostics() {
     );
     let opts = iopts(None);
     let mut limited = Report::default();
-    assert!(craft_timeline::fcpxml::import_with_report_limit(&doc, &opts, &mut limited, Some(2)).is_ok());
+    assert!(bharat_timeline::fcpxml::import_with_report_limit(&doc, &opts, &mut limited, Some(2)).is_ok());
     assert_eq!(limited.entries.len(), 3);
     assert!(limited.mentions("further diagnostics omitted"));
     let mut ordinary = Report::default();
-    assert!(craft_timeline::fcpxml::import(&doc, &opts, &mut ordinary).is_ok());
+    assert!(bharat_timeline::fcpxml::import(&doc, &opts, &mut ordinary).is_ok());
     assert_eq!(ordinary.entries.len(), 10);
 }
 
@@ -635,9 +635,9 @@ fn optional_report_limit_bounds_distinct_fcpxml_diagnostics() {
 fn optional_report_limit_bounds_fcpxml_export_diagnostics_without_changing_output() {
     let (p, s) = project();
     let mut ordinary = Report::default();
-    let text = craft_timeline::fcpxml::export(&p, s, &xopts(), &mut ordinary).unwrap();
+    let text = bharat_timeline::fcpxml::export(&p, s, &xopts(), &mut ordinary).unwrap();
     let mut limited = Report::default();
-    let bounded = craft_timeline::fcpxml::export_with_report_limit(&p, s, &xopts(), &mut limited, Some(0)).unwrap();
+    let bounded = bharat_timeline::fcpxml::export_with_report_limit(&p, s, &xopts(), &mut limited, Some(0)).unwrap();
     assert_eq!(bounded, text);
     let total = |r: &Report| r.entries.iter().map(|e| e.count).sum::<u32>();
     assert_eq!(total(&limited), total(&ordinary));

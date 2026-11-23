@@ -5,12 +5,12 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use craft_media::avi::{IndexSource, OpenOptions, StreamKind, open, open_with};
+use bharat_media::avi::{IndexSource, OpenOptions, StreamKind, open, open_with};
 
 fn fixture(name: &str, args: &[&str]) -> Option<PathBuf> {
-    let ffmpeg = craft_media_testkit::ffmpeg_or_skip("avi oracle")?;
-    let out = craft_media_testkit::fixtures_dir("avi").join(name);
-    craft_media_testkit::fixtures::generate(&out, |tmp: &Path| {
+    let ffmpeg = bharat_media_testkit::ffmpeg_or_skip("avi oracle")?;
+    let out = bharat_media_testkit::fixtures_dir("avi").join(name);
+    bharat_media_testkit::fixtures::generate(&out, |tmp: &Path| {
         let mut c = Command::new(&ffmpeg);
         c.args(["-v", "error", "-y"]).args(args).args(["-f", "avi"]).arg(tmp);
         c.status().is_ok_and(|s| s.success())
@@ -18,7 +18,7 @@ fn fixture(name: &str, args: &[&str]) -> Option<PathBuf> {
 }
 
 fn packets(path: &Path, stream: usize) -> usize {
-    let ffprobe = craft_media_testkit::ffprobe().expect("ffprobe next to ffmpeg");
+    let ffprobe = bharat_media_testkit::ffprobe().expect("ffprobe next to ffmpeg");
     let out = Command::new(ffprobe)
         .args(["-v", "error", "-select_streams", &stream.to_string(), "-count_packets", "-show_entries", "stream=nb_read_packets", "-of", "csv=p=0"])
         .arg(path)
@@ -28,7 +28,7 @@ fn packets(path: &Path, stream: usize) -> usize {
 }
 
 fn packet_bytes(path: &Path, stream: usize) -> u64 {
-    let ffprobe = craft_media_testkit::ffprobe().expect("ffprobe next to ffmpeg");
+    let ffprobe = bharat_media_testkit::ffprobe().expect("ffprobe next to ffmpeg");
     let out = Command::new(ffprobe)
         .args(["-v", "error", "-select_streams", &stream.to_string(), "-show_entries", "packet=size", "-of", "csv=p=0"])
         .arg(path)
@@ -98,12 +98,12 @@ fn ffmpeg_files_match_ffprobe_on_every_index_path() {
     }
 }
 
-fn sizes(f: &craft_media::avi::AviFile, s: usize) -> Vec<(u64, u32)> {
+fn sizes(f: &bharat_media::avi::AviFile, s: usize) -> Vec<(u64, u32)> {
     f.streams[s].chunks.iter().map(|c| (c.offset, c.size)).collect()
 }
 
 /// A file past 1 GB, as long recordings are: ffmpeg writes `RIFF AVIX` extensions and the
-/// OpenDML index. Needs ffmpeg and 1.2 GB of disk: `cargo test -p craft-media --features avi
+/// OpenDML index. Needs ffmpeg and 1.2 GB of disk: `cargo test -p bharat-media --features avi
 /// --test oracle_avi -- --ignored`.
 #[test]
 #[ignore]

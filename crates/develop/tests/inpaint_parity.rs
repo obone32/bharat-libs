@@ -1,10 +1,10 @@
-//! Parity with LightCraft (craft-libs#587): the hole fills of one scene are what `lightcraft-inpaint` at
+//! Parity with LightCraft (bharat-libs#587): the hole fills of one scene are what `lightcraft-inpaint` at
 //! `a75497d6` gave for it. The fixtures in `tests/fixtures/` are that crate's `complete` (default parameters) and
 //! `membrane_fill` on [`scene`], three little-endian `f32` per pixel, row by row.
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
-use craft_develop::inpaint::{CompleteParams, complete, membrane_fill};
-use craft_render_parity::{Image, Tolerance, compare};
+use bharat_develop::inpaint::{CompleteParams, complete, membrane_fill};
+use bharat_render_parity::{Image, Tolerance, compare};
 
 const W: usize = 96;
 const H: usize = 72;

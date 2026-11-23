@@ -69,12 +69,12 @@ fn reference_links_resolve_and_their_definitions_leave_the_body() {
 
     // The definition is not a paragraph, and its text is nowhere in the body.
     let doc = import(&format!("Reference link: [click here][ref1]{def}"));
-    let text = doc.plain_text(craft_wordmodel::StoryRef::Body);
+    let text = doc.plain_text(bharat_wordmodel::StoryRef::Body);
     assert_eq!(text, "Reference link: click here", "{text:?}");
 
     // A definition inside a fence is code, not a definition.
     let fenced = "```\n[ref1]: https://example.com/ref\n```\n\n[ref1]\n";
-    let body = import(fenced).plain_text(craft_wordmodel::StoryRef::Body);
+    let body = import(fenced).plain_text(bharat_wordmodel::StoryRef::Body);
     assert!(body.contains("[ref1]: https://example.com/ref"), "the fenced definition is still code: {body:?}");
     assert_eq!(links(fenced), vec![], "a fenced definition defines nothing");
 }
@@ -88,7 +88,7 @@ fn nested_undefined_reference_labels_have_bounded_work() {
     let started = std::time::Instant::now();
     let doc = import(&src);
     let elapsed = started.elapsed();
-    assert_eq!(doc.plain_text(craft_wordmodel::StoryRef::Body), literal);
+    assert_eq!(doc.plain_text(bharat_wordmodel::StoryRef::Body), literal);
     assert!(elapsed < std::time::Duration::from_secs(10), "nested undefined references took {elapsed:?}");
 }
 
@@ -132,7 +132,7 @@ fn reference_lookup_keeps_long_unicode_labels_and_nested_text() {
 /// fence this pass thought had closed.
 #[test]
 fn a_definition_shaped_line_that_is_not_a_definition_stays_in_the_document() {
-    let body = |md: &str| import(md).plain_text(craft_wordmodel::StoryRef::Body);
+    let body = |md: &str| import(md).plain_text(bharat_wordmodel::StoryRef::Body);
 
     // A definition cannot interrupt a paragraph: this is the author's text, lines and all.
     let para = "Status update\n[Warning]: unstable\nmore text\n";
@@ -148,7 +148,7 @@ fn a_definition_shaped_line_that_is_not_a_definition_stays_in_the_document() {
     // taken and the reference resolves.
     let indented = "    ```\n\n[x]: /y\n\nSee [x].\n";
     let doc = import(indented);
-    let text = doc.plain_text(craft_wordmodel::StoryRef::Body);
+    let text = doc.plain_text(bharat_wordmodel::StoryRef::Body);
     assert!(text.contains("```") && text.ends_with("See x."), "{text:?}");
 
     // A definition still gives up its line after a blank line, at the start of the document,
@@ -360,23 +360,23 @@ fn three_column_table_with_distinctive_text() {
 fn table_cells_past_the_document_limits_are_not_built() {
     // Every body row was padded to the header's width before any cap (#3701).
     let wide = format!("{}|\n{}|\n|\n| b |\n", "|a".repeat(50_000), "|-".repeat(50_000));
-    craft_flow::begin_import();
+    bharat_flow::begin_import();
     let flow = parse(&wide);
     let FBlock::Table(t) = &flow.blocks[0] else { panic!("expected table") };
     assert_eq!(t.rows.len(), 3);
     assert!(t.rows.iter().all(|r| r.len() == MAX_COLS));
     assert_eq!(t.rows[2][0].text(), "b");
-    assert!(craft_flow::Dropped::TableCells.reported(), "the columns left out are logged");
+    assert!(bharat_flow::Dropped::TableCells.reported(), "the columns left out are logged");
     // Rows past the limit still belong to the table, so the text after it reads as before.
     let tall = format!("| a |\n| - |\n{}\nafter\n", "| x |\n".repeat(MAX_ROWS + 10));
-    craft_flow::begin_import();
+    bharat_flow::begin_import();
     let flow = parse(&tall);
     let FBlock::Table(t) = &flow.blocks[0] else { panic!("expected table") };
     assert_eq!(t.rows.len(), MAX_ROWS);
     let FBlock::Para(p) = &flow.blocks[1] else { panic!("expected paragraph") };
     assert_eq!(p.text(), "after");
     assert_eq!(flow.blocks.len(), 2);
-    assert!(craft_flow::Dropped::TableCells.reported(), "the rows left out are logged");
+    assert!(bharat_flow::Dropped::TableCells.reported(), "the rows left out are logged");
 }
 
 /// A short row is padded to its header's width, so a small file of one-cell rows under wide
@@ -387,7 +387,7 @@ fn tables_share_one_cell_budget() {
     let header = |n: usize| format!("|{}|\n|{}|\n", vec![" h "; n].join("|"), vec!["-"; n].join("|"));
     let fits = crate::MAX_TABLE_CELLS / MAX_COLS;
     let src = format!("{}{}\nafter\n\n{}| 1 | 2 |\n", header(MAX_COLS), "| x |\n".repeat(fits + 100), header(2));
-    craft_flow::begin_import();
+    bharat_flow::begin_import();
     let flow = parse(&src);
     let tables: Vec<&FTable> = flow.blocks.iter().filter_map(|b| if let FBlock::Table(t) = b { Some(t) } else { None }).collect();
     let cells: usize = tables.iter().flat_map(|t| &t.rows).map(Vec::len).sum();
@@ -395,13 +395,13 @@ fn tables_share_one_cell_budget() {
     assert_eq!(tables.iter().map(|t| t.rows.len()).collect::<Vec<_>>(), [fits], "the second table is past the budget");
     let texts: Vec<String> = flow.blocks.iter().filter_map(|b| if let FBlock::Para(p) = b { Some(p.text()) } else { None }).collect();
     assert_eq!(texts, ["after"]);
-    assert!(craft_flow::Dropped::TableCells.reported());
+    assert!(bharat_flow::Dropped::TableCells.reported());
     // Within the budget a table is whole and nothing is logged.
-    craft_flow::begin_import();
+    bharat_flow::begin_import();
     let flow = parse(&format!("{}| 1 | 2 |\n", header(2)));
     let [FBlock::Table(t)] = flow.blocks.as_slice() else { panic!("{:?}", flow.blocks) };
     assert_eq!(t.rows.len(), 2);
-    assert!(!craft_flow::Dropped::TableCells.reported());
+    assert!(!bharat_flow::Dropped::TableCells.reported());
 }
 
 #[test]
@@ -489,7 +489,7 @@ fn code_span_line_endings_stay_literal_on_export() {
             p.push_text(source, &Fmt { code: true, ..Default::default() });
             let mut doc = model::to_doc(&model::Flow { blocks: vec![FBlock::Para(p)], ..Default::default() });
             // The flow builder removes CR controls; keep the native document's raw input.
-            let p = doc.para_mut(craft_wordmodel::StoryRef::Body, &craft_wordmodel::Path::top(0)).unwrap();
+            let p = doc.para_mut(bharat_wordmodel::StoryRef::Body, &bharat_wordmodel::Path::top(0)).unwrap();
             p.text = source.to_string();
             p.runs[0].len = source.len();
             let md = export(&doc);
@@ -516,7 +516,7 @@ fn code_span_line_endings_in_table_cells_stay_literal() {
         let cell = Cell { blocks: vec![FBlock::Para(p)], ..Default::default() };
         let table = FTable { rows: vec![vec![cell, Cell::default()], vec![Cell::default(), Cell::default()]], ..Default::default() };
         let mut doc = model::to_doc(&model::Flow { blocks: vec![FBlock::Table(table)], ..Default::default() });
-        let p = doc.para_mut(craft_wordmodel::StoryRef::Body, &craft_wordmodel::Path(vec![0, 0, 0, 0])).unwrap();
+        let p = doc.para_mut(bharat_wordmodel::StoryRef::Body, &bharat_wordmodel::Path(vec![0, 0, 0, 0])).unwrap();
         p.text = source.clone();
         p.runs[0].len = source.len();
         let md = export(&doc);
@@ -636,7 +636,7 @@ fn a_list_inside_a_quote_stays_quoted() {
 
 #[test]
 fn lines_after_line_break_stay_in_paragraph() {
-    use craft_wordmodel::{CharProps, Document, Paragraph, StoryRef, para_block};
+    use bharat_wordmodel::{CharProps, Document, Paragraph, StoryRef, para_block};
     let cases = ["Shopping\n- milk\n# not a heading", "a\n1. x", "a\n2) x", "a\n+ x", "a\n---", "a\n***", "a\n==", "a\n--", "a\n> q"];
     for s in cases {
         let mut d = Document::new();

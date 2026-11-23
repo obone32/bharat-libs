@@ -1,10 +1,10 @@
 //! Regression tests for the CodeRabbit findings reviewed on PR #661,
-//! reproduced against ef496161 (storytold/craft-libs#661).
+//! reproduced against ef496161 (obone32/bharat-libs#661).
 //!
 //! Reuses `review_repro`'s `Hold` backend and helpers: a test chooses when,
 //! and in what order, a held request is answered.
 
-use craft_esign::{Envelope, EnvelopeStatus};
+use bharat_esign::{Envelope, EnvelopeStatus};
 
 use super::review_repro::{Hold, envelope_for, ready, send, who};
 use super::*;

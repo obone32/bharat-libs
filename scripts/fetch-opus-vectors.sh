@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Fetch the Opus RFC 8251 conformance vectors (opus_testvectors-rfc8251, 75 MB) into DIR
-# (default target/fixtures/opus/vectors), checked against their SHA-256. craft-audio's Opus
+# (default target/fixtures/opus/vectors), checked against their SHA-256. bharat-audio's Opus
 # conformance test reads them from there; they are test data, never committed.
 #
 # The archive is fetched in parallel byte ranges, and a range whose connection slows to a crawl is

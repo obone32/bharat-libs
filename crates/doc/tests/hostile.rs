@@ -4,7 +4,7 @@
 mod common;
 
 use common::*;
-use craft_doc::{Error, Limits, info, outline, renditions, sniff};
+use bharat_doc::{Error, Limits, info, outline, renditions, sniff};
 use proptest::prelude::*;
 
 fn small() -> Limits {

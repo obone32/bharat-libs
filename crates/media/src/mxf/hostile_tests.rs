@@ -393,8 +393,8 @@ fn every_writer_entry_point_takes_the_identification() {
     // the defaults, and the same bytes when they are passed explicitly
     let default = write_opatom_pcm(&opts, &[1, 2, 3]).unwrap();
     let m = open(&default).unwrap();
-    assert_eq!((m.company_name.as_deref(), m.product_name.as_deref()), (Some("craft-media"), Some("craft-media")));
-    assert_eq!(default, write_opatom_pcm_as(&opts, &[1, 2, 3], "craft-media", "craft-media", env!("CARGO_PKG_VERSION")).unwrap());
+    assert_eq!((m.company_name.as_deref(), m.product_name.as_deref()), (Some("bharat-media"), Some("bharat-media")));
+    assert_eq!(default, write_opatom_pcm_as(&opts, &[1, 2, 3], "bharat-media", "bharat-media", env!("CARGO_PKG_VERSION")).unwrap());
     // two products of one length differ in the product UID as well as in the name
     let other = write_opatom_pcm_as(&opts, &[1, 2, 3], "Acme", "Edited", "9.9").unwrap();
     assert_eq!(named.len(), other.len());

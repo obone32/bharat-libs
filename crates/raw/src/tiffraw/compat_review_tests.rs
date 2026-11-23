@@ -1,5 +1,5 @@
 use super::*;
-use craft_tiff::image::Layout;
+use bharat_tiff::image::Layout;
 
 fn image(width: u32, height: u32, bits: u16, cpp: u16, compression: u16, len: usize) -> ImageInfo {
     ImageInfo {

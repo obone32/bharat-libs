@@ -3,8 +3,8 @@
 
 use crate::text::import;
 use crate::text::tests::NS_T;
-use craft_wordmodel::para::InlineObject;
-use craft_wordmodel::props::Rgb;
+use bharat_wordmodel::para::InlineObject;
+use bharat_wordmodel::props::Rgb;
 
 const NS_D: &str =
     r#"xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0""#;

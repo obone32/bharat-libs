@@ -1,5 +1,5 @@
 [package]
-name = "craft-xlsx"
+name = "bharat-xlsx"
 description = "Excel workbooks (.xlsx, .xlsm, SpreadsheetML in an OPC package) and binary workbooks (.xlsb): the workbook part, shared strings, the styles tables and a worksheet's rows and cells as a stream, with every other part reachable for the caller."
 version.workspace = true
 edition.workspace = true
@@ -15,11 +15,11 @@ workspace = true
 test-support = []
 
 [dependencies]
-craft-drawingml = { workspace = true }
-craft-opc = { workspace = true }
-craft-sheet = { workspace = true }
-craft-xml = { workspace = true }
+bharat-drawingml = { workspace = true }
+bharat-opc = { workspace = true }
+bharat-sheet = { workspace = true }
+bharat-xml = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-craft-xlsx = { path = ".", features = ["test-support"] }
+bharat-xlsx = { path = ".", features = ["test-support"] }

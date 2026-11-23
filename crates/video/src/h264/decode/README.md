@@ -1,8 +1,8 @@
-# H.264 / AVC decoder (`craft_video::h264::decode`, feature `h264-decode`)
+# H.264 / AVC decoder (`bharat_video::h264::decode`, feature `h264-decode`)
 
 Clean-room, pure-Rust (no `unsafe`) H.264 / AVC decoder, implemented from the public ITU-T
 Rec. H.264 (ISO/IEC 14496-10) specification. It depends only on
-`craft_media::bitstream`, `thiserror`, and optionally `rayon` (feature `threads`), and builds
+`bharat_media::bitstream`, `thiserror`, and optionally `rayon` (feature `threads`), and builds
 for `wasm32-unknown-unknown`.
 
 All syntax tables (CAVLC code tables, the 1024 CABAC `(m, n)` context initialisation pairs,
@@ -40,7 +40,7 @@ oracles and fixture generators.
 ## API
 
 ```rust
-use craft_video::h264::decode::Decoder;
+use bharat_video::h264::decode::Decoder;
 
 let mut dec = Decoder::new(); // or Decoder::with_threads(n), Decoder::from_avcc(&avcc)?
 // dec.threads(): worker threads in use; dec.set_draft(true): draft mode (playback only)
@@ -95,7 +95,7 @@ below it saves ~9 % of the decoding work (the B-pyramid's non-reference half of 
 ## Memory and configuration records
 
 A picture is refused when the pictures the decoder would hold do not fit
-`Decoder::set_memory_budget` (`craft_video::budget::DECODE_MEMORY_BUDGET` by default: 4 GiB,
+`Decoder::set_memory_budget` (`bharat_video::budget::DECODE_MEMORY_BUDGET` by default: 4 GiB,
 1 GiB on 32-bit targets): the DPB (the larger of its slots at the new size and what it holds
 now), the picture being decoded, and what is in flight or waiting in the output queue. Pictures
 already held count at their own size, and a buffer shared by the DPB and the queue counts once.
@@ -108,7 +108,7 @@ starts no picture.
 
 ## Tests
 
-`cargo test -p craft-video --features h264-decode,threads` (fixtures are generated on first use into `target/fixtures/h264/`
+`cargo test -p bharat-video --features h264-decode,threads` (fixtures are generated on first use into `target/fixtures/h264/`
 with ffmpeg + libx264; tests print a message and skip when `/opt/homebrew/bin/ffmpeg` is absent).
 
 - Unit tests: CAVLC tables (prefix-freeness / Kraft sums, spec-style residual example), CABAC engine
@@ -177,12 +177,12 @@ encoder is unavailable.
 | vt_high | testsrc2+noise 640x360 | VideoToolbox, High |
 | vt_high_1080p | testsrc2 1920x1080 | VideoToolbox, High 8 Mbit/s |
 
-`cargo test --release -p craft-video --features h264-decode,threads --test h264_decode conformance::coverage_report -- --ignored --nocapture`
+`cargo test --release -p bharat-video --features h264-decode,threads --test h264_decode conformance::coverage_report -- --ignored --nocapture`
 prints which coding tools each fixture exercises.
 
 ## Performance
 
-`cargo test --release -p craft-video --features h264-decode,threads --test h264_decode perf:: -- --ignored --nocapture` (1080p High profile,
+`cargo test --release -p bharat-video --features h264-decode,threads --test h264_decode perf:: -- --ignored --nocapture` (1080p High profile,
 CABAC, B-pyramid, 120 frames, 8.8 Mbit/s; bit-exactness is verified first). Measured on an Apple M4
 Pro (14 cores) while the machine was heavily shared (load average 40-180), so these are lower bounds:
 
@@ -208,7 +208,7 @@ inverse transforms and dequantisation 9 %, motion compensation 8 %, intra predic
 picture copies 4 %. At ~4.5 GHz a 4K frame takes ~85 ms of one
 core, so 23.976 fps needs about two cores' worth of frame threads.
 
-The example `cargo run --release -p craft-video --features h264-decode,threads --example h264_h264dec -- in.h264 out.yuv` decodes a
+The example `cargo run --release -p bharat-video --features h264-decode,threads --example h264_h264dec -- in.h264 out.yuv` decodes a
 file; `H264_BENCH_ITERS=n` (and `H264_THREADS=t`, `H264_DRAFT=1`) turns it into a benchmark,
 `H264_STATS=1` prints the coverage counters.
 

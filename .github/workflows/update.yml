@@ -38,5 +38,5 @@ jobs:
         with:
           toolchain: stable
           components: clippy
-      - run: cargo clippy -p craft-update --all-targets --locked --features egui -- -D warnings
-      - run: cargo test -p craft-update --locked --features egui -- --nocapture
+      - run: cargo clippy -p bharat-update --all-targets --locked --features egui -- -D warnings
+      - run: cargo test -p bharat-update --locked --features egui -- --nocapture

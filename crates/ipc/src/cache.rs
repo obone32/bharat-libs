@@ -1,11 +1,11 @@
-//! A private per-user cache directory for Craft Link.
+//! A private per-user cache directory for Bharat Link.
 //!
 //! Prepared media and other link caches must not sit in a directory that another user can create
 //! first. This module picks the directory, creates it `0700`, refuses a symlink, a wrong owner or a
 //! loose mode, and writes files `0600` through a temp name and a rename. It never falls back to
 //! `$TMPDIR` or `/tmp`: with no home and no override it returns an error.
 //!
-//! Order: `CRAFT_LINK_CACHE_DIR` (absolute), `$XDG_CACHE_HOME/artcraft/link`, then
+//! Order: `BHARAT_LINK_CACHE_DIR` (absolute), `$XDG_CACHE_HOME/artcraft/link`, then
 //! `$HOME/.cache/artcraft/link`. A leaf name `sub` is added under the chosen directory.
 
 use std::collections::BTreeMap;
@@ -15,7 +15,7 @@ use std::path::{Path, PathBuf};
 use crate::error::LinkError;
 
 /// Environment variable that overrides the cache root.
-pub const CACHE_DIR_ENV: &str = "CRAFT_LINK_CACHE_DIR";
+pub const CACHE_DIR_ENV: &str = "BHARAT_LINK_CACHE_DIR";
 
 /// [`cache_dir_with`] for the process environment.
 pub fn private_cache_dir(sub: &str) -> Result<PathBuf, LinkError> {
@@ -42,10 +42,10 @@ fn base_and_rest(env: &BTreeMap<String, String>) -> Result<(PathBuf, Vec<String>
     let absolute = |key: &str| env.get(key).filter(|value| !value.is_empty()).map(PathBuf::from);
     if let Some(root) = absolute(CACHE_DIR_ENV) {
         if !root.is_absolute() {
-            return Err(refused(&root, "CRAFT_LINK_CACHE_DIR is not absolute"));
+            return Err(refused(&root, "BHARAT_LINK_CACHE_DIR is not absolute"));
         }
         let (Some(parent), Some(leaf)) = (root.parent(), root.file_name().and_then(|name| name.to_str())) else {
-            return Err(refused(&root, "CRAFT_LINK_CACHE_DIR has no parent directory"));
+            return Err(refused(&root, "BHARAT_LINK_CACHE_DIR has no parent directory"));
         };
         return Ok((parent.to_path_buf(), vec![leaf.to_string()]));
     }
@@ -55,7 +55,7 @@ fn base_and_rest(env: &BTreeMap<String, String>) -> Result<(PathBuf, Vec<String>
     if let Some(home) = absolute("HOME").filter(|path| path.is_absolute()) {
         return Ok((home.join(".cache"), vec!["artcraft".into(), "link".into()]));
     }
-    Err(refused(Path::new(""), "no cache directory: set CRAFT_LINK_CACHE_DIR, XDG_CACHE_HOME or HOME (a shared temp directory is not used)"))
+    Err(refused(Path::new(""), "no cache directory: set BHARAT_LINK_CACHE_DIR, XDG_CACHE_HOME or HOME (a shared temp directory is not used)"))
 }
 
 /// Create `path` and missing parents `0700`. An existing directory is left as it is: it is the

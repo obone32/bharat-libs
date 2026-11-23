@@ -1,8 +1,8 @@
 //! Golden programs: the exact commands each language emits for fixed jobs. A change here changes
 //! what reaches a machine, so review any diff by hand.
 
-use craft_plotter::gpgl::silhouette::{self, Generation, Mat, Setup};
-use craft_plotter::{Command, Error, Framing, Job, Operation, Path, Program, Registration, ToolSettings, dmpl, gpgl, hpgl};
+use bharat_plotter::gpgl::silhouette::{self, Generation, Mat, Setup};
+use bharat_plotter::{Command, Error, Framing, Job, Operation, Path, Program, Registration, ToolSettings, dmpl, gpgl, hpgl};
 
 /// A closed square and an open triangle.
 fn design() -> Vec<Path> {

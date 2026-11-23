@@ -972,7 +972,7 @@ impl<'segs> Sweeper<'segs> {
                             y_int,
                             self.y,
                             self.events.intersection,
-                            // Craft patch (clippy lints): the format arguments are taken by reference already.
+                            // Bharat patch (clippy lints): the format arguments are taken by reference already.
                             self.line,
                         );
                     }
@@ -1435,7 +1435,7 @@ impl<'segs> SweepLine<'_, '_, 'segs> {
 
     /// Get the line segment at position `idx` in the new order.
     ///
-    /// Craft patch (exited slots): a segment that exits at this sweep line stays in
+    /// Bharat patch (exited slots): a segment that exits at this sweep line stays in
     /// its position until the sweep advances, so unlike [`Self::segment_range`] this
     /// can return a segment that has exited.
     pub fn line_segment(&self, idx: usize) -> Option<SegIdx> {

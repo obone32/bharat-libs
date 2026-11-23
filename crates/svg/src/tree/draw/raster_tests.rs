@@ -1,6 +1,6 @@
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::indexing_slicing)]
 use super::*;
-use craft_image_codecs::{ChannelLayout, Format, Image};
+use bharat_image_codecs::{ChannelLayout, Format, Image};
 use std::sync::Arc;
 
 fn kind(format: Format, bytes: Vec<u8>) -> usvg::ImageKind {
@@ -16,7 +16,7 @@ fn kind(format: Format, bytes: Vec<u8>) -> usvg::ImageKind {
 
 fn encoded(format: Format) -> Vec<u8> {
     let image = Image::from_u8(2, 2, ChannelLayout::Rgb, [17, 83, 149].repeat(4)).unwrap();
-    craft_image_codecs::encode(&image, format, &Default::default()).unwrap()
+    bharat_image_codecs::encode(&image, format, &Default::default()).unwrap()
 }
 
 fn segment(out: &mut Vec<u8>, marker: u8, payload: &[u8]) {
@@ -113,7 +113,7 @@ fn corrupt_webp() -> Vec<u8> {
 fn renderer_validator_accepts_complete_png_jpeg_gif_and_webp_at_exact_pixel_allowance() {
     for format in [Format::Png, Format::Jpeg, Format::Gif, Format::WebP] {
         let data = encoded(format);
-        assert_eq!(craft_image_codecs::probe_allocation_size(&data).unwrap(), (2, 2));
+        assert_eq!(bharat_image_codecs::probe_allocation_size(&data).unwrap(), (2, 2));
         let mut remaining = 4;
         assert_eq!(validate_raster(&kind(format, data), 4, &mut remaining), Ok(()), "{format:?}");
         assert_eq!(remaining, 0, "{format:?}: exact area must be charged");
@@ -130,7 +130,7 @@ fn renderer_validator_rejects_corrupt_pixels_after_valid_dimensions_without_refu
         (Format::WebP, corrupt_webp(), (2, 2)),
     ];
     for (format, data, dimensions) in cases {
-        assert_eq!(craft_image_codecs::probe_allocation_size(&data).unwrap(), dimensions, "{format:?}");
+        assert_eq!(bharat_image_codecs::probe_allocation_size(&data).unwrap(), dimensions, "{format:?}");
         match format {
             Format::Gif => {
                 gif::DecodeOptions::new().read_info(data.as_slice()).expect("intact GIF headers before corrupt LZW pixels");
@@ -157,7 +157,7 @@ fn twelve_bit_jpeg_is_valid_for_the_general_codec_but_not_the_svg_renderer() {
     for bits in [8, 12] {
         // DC=0, EOB=0, then six one-pad bits: a constant mid-gray block.
         let data = gray_jpeg(bits, &[0x3f]);
-        let decoded = craft_image_codecs::decode(&data).unwrap();
+        let decoded = bharat_image_codecs::decode(&data).unwrap();
         assert_eq!(decoded.dimensions(), (8, 8));
         let mut remaining = 64;
         let expected = if bits == 8 { Ok(()) } else { Err(RasterValidationFailure::Invalid) };

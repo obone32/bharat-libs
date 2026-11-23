@@ -1,5 +1,5 @@
 [package]
-name="craft-java-class"
+name="bharat-java-class"
 description="Java class-file inspection and JVM bytecode decoding with retained bounds and partial reports"
 version.workspace=true
 edition.workspace=true
@@ -12,4 +12,4 @@ workspace=true
 serde={workspace=true}
 thiserror={workspace=true}
 [dev-dependencies]
-craft-testkit = { workspace = true }
+bharat-testkit = { workspace = true }

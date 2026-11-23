@@ -1,5 +1,5 @@
 [package]
-name = "craft-shx"
+name = "bharat-shx"
 description = "Bounded SHP shape-source compiler for SHX shape, big-font and Unicode containers"
 version.workspace = true
 edition.workspace = true

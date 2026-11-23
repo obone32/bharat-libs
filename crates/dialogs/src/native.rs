@@ -144,7 +144,7 @@ fn show_message<W: HasWindowHandle + HasDisplayHandle>(m: Message, parent: Optio
 fn worker(reply: Reply) -> Option<mpsc::Sender<Pending>> {
     let (tx, rx) = mpsc::channel::<Pending>();
     std::thread::Builder::new()
-        .name("craft-dialogs".into())
+        .name("bharat-dialogs".into())
         .spawn(move || {
             if let Ok(pending) = rx.recv() {
                 reply.send(block_on(pending));

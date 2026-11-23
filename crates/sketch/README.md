@@ -1,4 +1,4 @@
-# craft-sketch
+# bharat-sketch
 
 A clean-room reader for the `.sketch` container, for files saved by Sketch 48 and newer.
 No `unsafe`.
@@ -31,14 +31,14 @@ half).
 ## Reading
 
 ```rust
-if craft_sketch::is_sketch(&bytes) {
-    let archive = craft_sketch::Archive::open(&bytes)?;
+if bharat_sketch::is_sketch(&bytes) {
+    let archive = bharat_sketch::Archive::open(&bytes)?;
     for (id, page) in &archive.pages {                       // in the document's order
         let layers = page.get("layers");
     }
     let styles = archive.document.get("layerStyles");
     let image = archive.image("images/0a1b….png");            // Option<Vec<u8>>
-    let fonts = craft_sketch::embedded_font_families(&archive.document);
+    let fonts = bharat_sketch::embedded_font_families(&archive.document);
     for warning in &archive.warnings { /* pages skipped, a newer format than tested */ }
 }
 ```
@@ -70,12 +70,12 @@ so a page list can't repeat an unpacking within the budget.
 ## ZIP
 
 The archive is read with the `zip` crate directly, with the bounds above applied to each member.
-A shared bounded ZIP reader is planned (craft-libs #126); this crate moves to it when it lands.
+A shared bounded ZIP reader is planned (bharat-libs #126); this crate moves to it when it lands.
 
 ## The layers as REST file JSON (`rest`)
 
 `rest::to_rest` maps the pages and layers onto the REST API file JSON that
-[`craft-figma-rest`](../figma-rest/README.md) models: artboards and frames, groups, shape paths
+[`bharat-figma-rest`](../figma-rest/README.md) models: artboards and frames, groups, shape paths
 and shape groups with their boolean operations, text with its attributed runs, bitmaps, symbol
 masters (components) and instances (expanded from their master with the instance's overrides,
 including those in nested instances and swaps), stacks (auto layout), shared styles, swatches
@@ -85,8 +85,8 @@ generated ones carry `pointCount` and `innerRadius`. What isn't understood is sk
 warning.
 
 ```rust
-let archive = craft_sketch::Archive::open(&bytes)?;
-let mapped = craft_sketch::rest::to_rest(&archive, "Untitled", craft_sketch::rest::Options::default());
+let archive = bharat_sketch::Archive::open(&bytes)?;
+let mapped = bharat_sketch::rest::to_rest(&archive, "Untitled", bharat_sketch::rest::Options::default());
 if mapped.too_old { /* text stored the pre-48 way */ }
 ```
 

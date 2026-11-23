@@ -1,11 +1,11 @@
 //! Clean-room tests and FFmpeg oracle tests for MP4 Timed Text (`mov_text` / `tx3g`).
 
-use craft_captions::mov_text::{
+use bharat_captions::mov_text::{
     Error, KaraokeEntry, STYLE_FLAG_BOLD, STYLE_FLAG_ITALIC, STYLE_FLAG_UNDERLINE, StyleRecord, TextBox, TextSample, Tx3gConfig,
     decode_timed_samples, markup_to_sample, read_sample, sample_to_markup, write_sample,
 };
-use craft_captions::time::Tick;
-use craft_captions::{Document, TICKS_PER_SECOND};
+use bharat_captions::time::Tick;
+use bharat_captions::{Document, TICKS_PER_SECOND};
 
 #[test]
 fn test_plain_text_roundtrip() {
@@ -102,7 +102,7 @@ fn test_all_modifier_boxes_roundtrip() {
             ],
         )),
         scroll_delay: Some(500),
-        hypertext: vec![craft_captions::mov_text::HyperText {
+        hypertext: vec![bharat_captions::mov_text::HyperText {
             start_char: 0,
             end_char: 19,
             url: "https://example.com".to_string(),
@@ -297,8 +297,8 @@ fn test_hostile_inputs_never_panic() {
 
 #[test]
 fn test_ffmpeg_mov_text_oracle() {
-    let Some(ff) = craft_media_testkit::ffmpeg() else { return };
-    let temp_dir = std::env::temp_dir().join("craft_mov_text_test");
+    let Some(ff) = bharat_media_testkit::ffmpeg() else { return };
+    let temp_dir = std::env::temp_dir().join("bharat_mov_text_test");
     let _ = std::fs::create_dir_all(&temp_dir);
 
     // 1. Create SRT file with formatting: bold, italic, underline
@@ -316,12 +316,12 @@ fn test_ffmpeg_mov_text_oracle() {
         return;
     }
 
-    // Read MP4 through craft-media ISOBMFF demuxer
+    // Read MP4 through bharat-media ISOBMFF demuxer
     let mp4_bytes = std::fs::read(&mp4_path).expect("read mp4");
-    let mp4 = craft_media::isobmff::open(&mp4_bytes).expect("open mp4");
+    let mp4 = bharat_media::isobmff::open(&mp4_bytes).expect("open mp4");
 
     let (track_idx, track) =
-        mp4.tracks.iter().enumerate().find(|(_, t)| t.kind == craft_media::isobmff::TrackKind::Subtitle).expect("subtitle track");
+        mp4.tracks.iter().enumerate().find(|(_, t)| t.kind == bharat_media::isobmff::TrackKind::Subtitle).expect("subtitle track");
 
     // Decode all non-empty samples
     let mut found_styled_cue = false;
@@ -340,10 +340,10 @@ fn test_ffmpeg_mov_text_oracle() {
     assert!(found_styled_cue, "expected to find styled subtitle sample in MP4");
 
     // 2. Test roundtrip: our encoder writes sample bytes -> decode with FFmpeg to verify exact text & styles
-    let our_sample = markup_to_sample("Greeting: <b>Craft</b> <i>Timed</i> <u>Text</u>");
+    let our_sample = markup_to_sample("Greeting: <b>Bharat</b> <i>Timed</i> <u>Text</u>");
     let encoded_bytes = write_sample(&our_sample).expect("write sample");
 
     // Verify our sample reads back identically
     let roundtripped = read_sample(&encoded_bytes).expect("read back");
-    assert_eq!(sample_to_markup(&roundtripped), "Greeting: <b>Craft</b> <i>Timed</i> <u>Text</u>");
+    assert_eq!(sample_to_markup(&roundtripped), "Greeting: <b>Bharat</b> <i>Timed</i> <u>Text</u>");
 }

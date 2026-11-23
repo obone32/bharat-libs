@@ -8,7 +8,7 @@
 //!
 //! [`Decoder`]: crate::aac::Decoder
 
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 use super::tables::SAMPLE_RATES;
 
@@ -187,7 +187,7 @@ pub fn latm_split(frame: &[u8], last: &mut Option<LatmConfig>) -> Option<(Vec<u8
 #[cfg(test)]
 mod tests {
     use super::*;
-    use craft_media::bitstream::BitWriter;
+    use bharat_media::bitstream::BitWriter;
 
     /// A LOAS frame: `fields` (value, bits) after the 3-byte header, then `payload` with its
     /// length, padded to a byte; the header's length is set to the body's.

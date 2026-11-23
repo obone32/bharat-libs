@@ -1,19 +1,19 @@
-# craft-ppt-binary
+# bharat-ppt-binary
 
 Reader for the PowerPoint 97-2003 binary file format (`.ppt`, `.pot` and `.pps`) into the
-`craft-pptx` presentation model. It is DeckCraft's reader, on `craft-cfb` for the compound file.
+`bharat-pptx` presentation model. It is DeckCraft's reader, on `bharat-cfb` for the compound file.
 Import only: there is no `.ppt` writer.
 
 | Document | Used for |
 |---|---|
 | [MS-PPT] PowerPoint (.ppt) Binary File Format (Microsoft Open Specifications) | the Current User stream, the edit chain and persist directories, documents, masters, slides, notes, text and its styles, headers and footers |
 | [MS-ODRAW] Office Drawing Binary File Formats | shapes, their property tables and geometry, the BLIP store and its pictures |
-| [MS-CFB] Compound File Binary File Format | through `craft-cfb` |
+| [MS-CFB] Compound File Binary File Format | through `bharat-cfb` |
 
 ```rust
 // Not a compound file: an error, never a panic.
-assert!(!craft_ppt_binary::sniff(b"not a .ppt"));
-assert!(craft_ppt_binary::import(b"not a .ppt", &craft_pptx::Plain).is_err());
+assert!(!bharat_ppt_binary::sniff(b"not a .ppt"));
+assert!(bharat_ppt_binary::import(b"not a .ppt", &bharat_pptx::Plain).is_err());
 ```
 
 - `sniff(bytes)`, `import(bytes, &defaults)` and `import_checked(bytes, &defaults)`, which also
@@ -30,9 +30,9 @@ assert!(craft_ppt_binary::import(b"not a .ppt", &craft_pptx::Plain).is_err());
 - Password-protected files are refused (`PptError::Encrypted`), as are PowerPoint 95 and earlier
   files (`PptError::TooOld`).
 
-The caller's `craft_pptx::Defaults` supplies the master each of the file's masters starts from:
+The caller's `bharat_pptx::Defaults` supplies the master each of the file's masters starts from:
 its layouts and placeholders. The file's masters then place and style the placeholders that
-master has. With `craft_pptx::Plain` (one blank layout, no placeholders), the slides still read
+master has. With `bharat_pptx::Plain` (one blank layout, no placeholders), the slides still read
 with their own boxes.
 
 The reader was written for DeckCraft (storytold/deckcraft#1137); the history of

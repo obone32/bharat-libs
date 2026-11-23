@@ -1,7 +1,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 //! Clean-room reader for Excel 97-2003 workbooks (`.xls`, BIFF8), written from Microsoft's
 //! public specifications **[MS-XLS]: Excel Binary File Format (.xls) Structure** (the Workbook
-//! stream) and [MS-CFB] (the compound file around it, read by `craft-cfb`).
+//! stream) and [MS-CFB] (the compound file around it, read by `bharat-cfb`).
 //!
 //! [`read`] gives a [`Workbook`]: the worksheets with their cells (values, cached formula
 //! results, and formulas as A1 text, including shared and array formulas), the cell formats
@@ -25,11 +25,11 @@
 //!
 //! ```
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
-//! # let bytes = craft_xls::testing::workbook(&[("Sheet1", vec![vec!["a".into(), "2.5".into()]])])?;
-//! let read = craft_xls::read(&bytes)?;
+//! # let bytes = bharat_xls::testing::workbook(&[("Sheet1", vec![vec!["a".into(), "2.5".into()]])])?;
+//! let read = bharat_xls::read(&bytes)?;
 //! let sheet = &read.workbook.sheets[0];
 //! assert_eq!(sheet.name, "Sheet1");
-//! assert_eq!(sheet.cells[&craft_xls::CellRef::new(0, 1)].value, craft_xls::Value::Number(2.5));
+//! assert_eq!(sheet.cells[&bharat_xls::CellRef::new(0, 1)].value, bharat_xls::Value::Number(2.5));
 //! # Ok(())
 //! # }
 //! ```
@@ -50,7 +50,7 @@ mod styles;
 #[doc(hidden)]
 pub mod testing;
 
-pub use craft_sheet::{DEFAULT_PALETTE, quote_sheet, sheet_needs_quotes};
+pub use bharat_sheet::{DEFAULT_PALETTE, quote_sheet, sheet_needs_quotes};
 pub use model::{
     Alignment, BorderLine, BorderStyle, Borders, Calc, CalcMode, Cell, CellError, CellFormat, CellRef, ClientAnchor, Color, Column, ConditionRule,
     ConditionalFormat, DataValidation, DefinedName, DifferentialFormat, DxfFill, ErrorStyle, Fill, Font, Formula, HAlign, Note, Operator, Pattern,

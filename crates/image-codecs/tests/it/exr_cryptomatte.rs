@@ -4,7 +4,7 @@
 //! the manifest round trip and the per-pixel pairs. Malformed inputs must error or
 //! degrade, never panic.
 
-use craft_image_codecs::{Limits, cryptomatte_id, cryptomatte_key, cryptomatte_layers, cryptomatte_preview_color, decode_cryptomatte};
+use bharat_image_codecs::{Limits, cryptomatte_id, cryptomatte_key, cryptomatte_layers, cryptomatte_preview_color, decode_cryptomatte};
 use exr::meta::attribute::{AttributeValue, Text};
 use exr::prelude::{
     AnyChannel, AnyChannels, Blocks, Compression, Encoding, FlatSamples, ImageAttributes, IntegerBounds, Layer, LayerAttributes, LineOrder,

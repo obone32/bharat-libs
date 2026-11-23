@@ -28,7 +28,7 @@ pub fn header(bytes: &[u8]) -> Result<(u32, u32, u16), CodecError> {
     // Read stored dimensions directly. Undoing probe_size with the compatibility EXIF
     // orientation is incorrect when its lenient parser disagrees with the strict one.
     let (w, h, _) = crate::codecs::webp::probe(bytes, &crate::Limits::default())?;
-    let orientation = exif.map_or(1, craft_metadata::compat_orientation::orientation);
+    let orientation = exif.map_or(1, bharat_metadata::compat_orientation::orientation);
     Ok((w, h, orientation))
 }
 

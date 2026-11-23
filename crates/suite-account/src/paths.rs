@@ -1,11 +1,11 @@
 //! Where the suite keeps its list of accounts.
 //!
-//! One folder for the whole Craft App Suite. It sits beside the per-application folders. It is not
+//! One folder for the whole Bharat App Suite. It sits beside the per-application folders. It is not
 //! a child of any of them.
 //!
-//! `craft-settings` gives each application `<platform config dir>/<app id>`. That is the right home
+//! `bharat-settings` gives each application `<platform config dir>/<app id>`. That is the right home
 //! for that application's own preferences. An account is not one of those. The same person signs in
-//! once and every Craft App acts as them. The record therefore belongs to the suite. An account
+//! once and every Bharat App acts as them. The record therefore belongs to the suite. An account
 //! placed under one application's folder would make every other application read a folder it does
 //! not own.
 //! Removing that application would then sign everybody out. The launcher's own folder fails for the
@@ -33,7 +33,7 @@ pub const FILE: &str = "accounts.json";
 pub const ENV_VAR: &str = "ARTCRAFT_SUITE_DIR";
 
 /// File names beside the executable that switch portable mode on. The launcher's Windows portable
-/// zip ships `portable.txt`. `portable` is `craft-settings`' own spelling.
+/// zip ships `portable.txt`. `portable` is `bharat-settings`' own spelling.
 pub const PORTABLE_MARKERS: &[&str] = &["portable.txt", "portable"];
 
 /// The folder a portable install keeps the suite's accounts in, beside the executable.

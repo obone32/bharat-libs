@@ -7,10 +7,10 @@
 use std::io::Read;
 use std::process::{Command, Stdio};
 
-use craft_media::vmd::{FrameKind, open};
-use craft_media_testkit::hostile::Rng;
-use craft_media_testkit::vmd::{Frame, Spec, build, delta_lines, lz_pack, palette_chunk};
-use craft_video::vmd::{Decoder, Error, Rect};
+use bharat_media::vmd::{FrameKind, open};
+use bharat_media_testkit::hostile::Rng;
+use bharat_media_testkit::vmd::{Frame, Spec, build, delta_lines, lz_pack, palette_chunk};
+use bharat_video::vmd::{Decoder, Error, Rect};
 
 /// A file and the picture (indices and 6-bit palette) expected after each block.
 struct Movie {
@@ -135,7 +135,7 @@ const MOVIES: [(u64, usize, usize, usize); 5] = [(1, 40, 30, 40), (2, 300, 5, 30
 /// gives as RGB.
 #[test]
 fn pictures_convert_to_rgb_video_frames() {
-    use craft_video::frame::{ColorFamily, Samples, VideoFrame};
+    use bharat_video::frame::{ColorFamily, Samples, VideoFrame};
     for (seed, w, h, frames) in MOVIES {
         let m = movie(seed, w, h, frames);
         let file = open(&m.bytes).unwrap();
@@ -177,8 +177,8 @@ fn decodes_the_pictures_that_were_packed() {
 
 #[test]
 fn matches_ffmpeg() {
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg_or_skip("vmd video oracle") else { return };
-    let dir = craft_media_testkit::private_dir("vmd-video");
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg_or_skip("vmd video oracle") else { return };
+    let dir = bharat_media_testkit::private_dir("vmd-video");
     for (seed, w, h, frames) in MOVIES {
         let m = movie(seed, w, h, frames);
         let path = dir.join(format!("movie{seed}.vmd"));
@@ -446,7 +446,7 @@ fn bad_headers_are_errors() {
 fn hostile_input_never_panics() {
     for (seed, w, h, frames) in [(11, 24, 10, 12), (12, 140, 3, 8)] {
         let m = movie(seed, w, h, frames);
-        craft_media_testkit::hostile::hammer(&format!("vmd video seed {seed}"), &m.bytes, 20_000, |d| {
+        bharat_media_testkit::hostile::hammer(&format!("vmd video seed {seed}"), &m.bytes, 20_000, |d| {
             let Ok(file) = open(d) else { return };
             let Ok(mut decoder) = Decoder::new(file.header_bytes()) else { return };
             for (i, frame) in file.frames.iter().enumerate() {
@@ -464,23 +464,23 @@ fn hostile_input_never_panics() {
     }
 }
 
-/// Real files, for whoever has some: every `.vmd` in the directory `CRAFT_MEDIA_VMD_SAMPLES`
+/// Real files, for whoever has some: every `.vmd` in the directory `BHARAT_MEDIA_VMD_SAMPLES`
 /// names must decode to the pictures ffmpeg gets. Game files are not redistributable, so none
 /// are in the repository and the test is skipped without the variable.
 #[test]
 fn real_files_match_ffmpeg() {
-    let Some(dir) = std::env::var_os("CRAFT_MEDIA_VMD_SAMPLES").filter(|d| !d.is_empty()) else {
-        craft_media_testkit::skip_test("vmd samples", "CRAFT_MEDIA_VMD_SAMPLES is not set");
+    let Some(dir) = std::env::var_os("BHARAT_MEDIA_VMD_SAMPLES").filter(|d| !d.is_empty()) else {
+        bharat_media_testkit::skip_test("vmd samples", "BHARAT_MEDIA_VMD_SAMPLES is not set");
         return;
     };
-    let Some(ffmpeg) = craft_media_testkit::ffmpeg_or_skip("vmd video samples") else { return };
+    let Some(ffmpeg) = bharat_media_testkit::ffmpeg_or_skip("vmd video samples") else { return };
     let mut paths: Vec<_> = std::fs::read_dir(&dir)
         .unwrap()
         .filter_map(|e| Some(e.ok()?.path()))
         .filter(|p| p.extension().is_some_and(|e| e.eq_ignore_ascii_case("vmd")))
         .collect();
     paths.sort();
-    assert!(!paths.is_empty(), "no .vmd files in CRAFT_MEDIA_VMD_SAMPLES");
+    assert!(!paths.is_empty(), "no .vmd files in BHARAT_MEDIA_VMD_SAMPLES");
     let mut pictures = 0u64;
     for path in &paths {
         let name = path.display();

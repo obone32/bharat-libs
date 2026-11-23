@@ -4,8 +4,8 @@
 
 use std::borrow::Cow;
 
-use craft_keymap::ui::{ConflictMode, DialogState, English, FixedRow, Options, Outcome, ShortcutsDialog, Text};
-use craft_keymap::{
+use bharat_keymap::ui::{ConflictMode, DialogState, English, FixedRow, Options, Outcome, ShortcutsDialog, Text};
+use bharat_keymap::{
     Active, Bindable, Binding, Chord, CommandRef, ConflictKind, ContextRule, Flavor, ForeignEntry, ForeignKey, ForeignSet, ImportOptions, Keymap,
     Kind, Lookup, Overrides, Platform, Profiles, Scope, Scopes, Trigger,
 };
@@ -821,7 +821,7 @@ fn summary_escapes_html_and_keeps_text_lines() {
     catalog.push(
         Bindable::new("edit.tricky", label, Scope::app())
             .with_path(vec!["Edit".into(), "Tricky".into()])
-            .with_default(craft_keymap::Binding::parse("F6").expect("F6")),
+            .with_default(bharat_keymap::Binding::parse("F6").expect("F6")),
     );
     km = Keymap::new(catalog, Scopes::new().with_panel("Timeline").with_context("Text"), Platform::Mac);
     let mut h = open(Fx::new(km));
@@ -1008,7 +1008,7 @@ fn pseudo_locale_marks_every_string_and_fits() {
         h.state_mut().state.select(&CommandRef::from("object.distribute"));
         h.run();
         check_pseudo(&h, width, &step("long label selected"));
-        let export = craft_i18n::fmt(&p("{label}: {chord}"), &[("label", &p("Export…")), ("chord", "⌘E")]);
+        let export = bharat_i18n::fmt(&p("{label}: {chord}"), &[("label", &p("Export…")), ("chord", "⌘E")]);
         click(&mut h, &export);
         press(&mut h, Modifiers::COMMAND, EguiKey::S);
         assert!(has(&h, &p("Take It")), "{}", step("conflict bar"));

@@ -1,4 +1,4 @@
-//! Focus handoff between Craft apps.
+//! Focus handoff between Bharat apps.
 //!
 //! The platform calls live behind [`ActivationBackend`]. An app adapter
 //! implements it with the real winit and egui calls, so this crate depends on

@@ -2,14 +2,14 @@
 //! and AVI with the parameter sets in the stream header only (an Annex B configuration).
 
 use crate::common;
-use craft_media::CodecId;
-use craft_video::{TrackDecoder, VideoError};
+use bharat_media::CodecId;
+use bharat_video::{TrackDecoder, VideoError};
 
 const X264: &[&str] = &["-c:v", "libx264", "-preset", "fast", "-bf", "2", "-g", "12", "-pix_fmt", "yuv420p"];
 
 /// The NAL unit types of an Annex B packet.
 fn nal_types(data: &[u8]) -> Vec<u8> {
-    craft_media::bitstream::annexb_nals(data).iter().filter_map(|n| n.first()).map(|b| b & 0x1f).collect()
+    bharat_media::bitstream::annexb_nals(data).iter().filter_map(|n| n.first()).map(|b| b & 0x1f).collect()
 }
 
 /// The parameter sets are in the `avcC` record only, so decoding again after a reset needs them

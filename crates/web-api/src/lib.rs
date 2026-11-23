@@ -1,8 +1,8 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-//! One page command API for every Craft web build.
+//! One page command API for every Bharat web build.
 //!
-//! Craft web apps (the `apps/<app>-web` builds of VectorCraft, PhotoCraft, FilmCraft, …) accept
+//! Bharat web apps (the `apps/<app>-web` builds of VectorCraft, PhotoCraft, FilmCraft, …) accept
 //! JSON control requests `{method, params}` from their page and answer `{ok, result}` or
 //! `{ok: false, error}` — the same protocol as the desktop control server. Until now each app kept
 //! its own copy of the code that exposes this to the page as `window.<app>`, in a different shape.
@@ -22,8 +22,8 @@
 //!
 //! ```ignore
 //! use std::rc::Rc;
-//! use craft_web_api::methods::Methods;
-//! use craft_web_api::page::{PageApi, Request};
+//! use bharat_web_api::methods::Methods;
+//! use bharat_web_api::page::{PageApi, Request};
 //!
 //! // The control channel: send a ControlRequest, await its reply object.
 //! let request: Request = Rc::new(move |method: String, params: serde_json::Value| {

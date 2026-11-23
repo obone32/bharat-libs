@@ -1,7 +1,7 @@
 #[path = "support/mod.rs"]
 mod support;
 
-use craft_pcap::decode;
+use bharat_pcap::decode;
 use support::{ipv4_pkt, udp};
 
 #[test]

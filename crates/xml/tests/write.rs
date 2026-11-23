@@ -1,6 +1,6 @@
 //! Escaping, serialising, the writer, and what a round trip keeps.
 
-use craft_xml::{El, Local, Node, Options, Writer, esc, esc_attr, is_name, is_xml_char, parse, push_esc_attr};
+use bharat_xml::{El, Local, Node, Options, Writer, esc, esc_attr, is_name, is_xml_char, parse, push_esc_attr};
 
 /// Reads keeping everything the tree can hold.
 fn full() -> Options<'static> {
@@ -149,12 +149,12 @@ fn writer_compact() {
     w.close();
     w.close();
     assert_eq!(w.finish(), "<a k=\"v&quot;\"><b>t &amp; u<![CDATA[x]]]]><![CDATA[>y]]></b><?p d?><c>&lt;</c><raw/></a>");
-    assert_eq!(Writer::document().into_bytes(), craft_xml::DECL_STANDALONE.as_bytes());
+    assert_eq!(Writer::document().into_bytes(), bharat_xml::DECL_STANDALONE.as_bytes());
     let mut plain = Writer::new();
     plain.decl(false);
     plain.doctype("not a name");
     plain.pi("xml", "x");
-    assert_eq!(plain.finish(), craft_xml::DECL);
+    assert_eq!(plain.finish(), bharat_xml::DECL);
 }
 
 #[test]

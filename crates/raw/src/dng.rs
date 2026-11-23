@@ -8,9 +8,9 @@ use crate::{
     BlackLevel, Camera, Cfa, CinemaTags, ColorData, LevelSource, LevelSources, Limits, Matrix3, Mode, Orientation, RawData, RawError, RawFormat,
     RawImage, RawNotices, Rect, Result, Timecode, opcodes,
 };
-use craft_tiff::image::{ImageInfo, Layout};
-use craft_tiff::tags::{self as t, photometric};
-use craft_tiff::{ByteOrder, Ifd, Tiff, Value};
+use bharat_tiff::image::{ImageInfo, Layout};
+use bharat_tiff::tags::{self as t, photometric};
+use bharat_tiff::{ByteOrder, Ifd, Tiff, Value};
 
 /// The main raw IFD: full-resolution (NewSubfileType 0) CFA or LinearRaw image with the most pixels.
 pub(crate) fn raw_ifd(tiff: &Tiff) -> Option<&Ifd> {
@@ -196,7 +196,7 @@ pub(crate) fn is_plain_cfa_tiff(tiff: &Tiff, bytes: &[u8]) -> bool {
         t::compression::JPEG => info
             .chunks(bytes.len() as u64)
             .first()
-            .and_then(|c| craft_tiff::image::chunk_bytes(bytes, c))
+            .and_then(|c| bharat_tiff::image::chunk_bytes(bytes, c))
             .is_some_and(|src| crate::ljpeg::frame_info(src).is_ok()),
         _ => false,
     }
@@ -530,7 +530,7 @@ fn cinema_tags(ifd0: &Ifd, raw: &Ifd) -> CinemaTags {
 /// `ActiveArea` columns by `ImageLength` rows while the file holds the whole `ImageWidth` by `ImageLength` raster from
 /// the strip's offset on. DJI Mavic 3 DNGs write the count of the active columns (5280) for a strip of full 5376-wide
 /// rows that ends at the end of the file, so reading only the counted bytes refuses a complete image
-/// (storytold/craft-libs#2040). The strip is lengthened only then, so every other short strip is still refused, and
+/// (obone32/bharat-libs#2040). The strip is lengthened only then, so every other short strip is still refused, and
 /// it never reaches past the end of the file. The active area has to start at column 0, so it is the stored rows'
 /// leading columns.
 fn extend_understated_strip(bytes: &[u8], info: &mut ImageInfo, raw: &Ifd) {

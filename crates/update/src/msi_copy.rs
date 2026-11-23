@@ -1,7 +1,7 @@
 //! Whether a running Windows copy was installed by its MSI, and the `msiexec` properties its
 //! self-update needs to keep that copy's context.
 //!
-//! Every Craft App MSI registers its exe under `App Paths` (HKLM when installed for everyone,
+//! Every Bharat App MSI registers its exe under `App Paths` (HKLM when installed for everyone,
 //! HKCU for one account). A copy whose exe one of those entries names is an MSI copy, wherever its
 //! folder is: `Program Files\ArtCraft\<App>`, the older `Program Files\<App>`, a folder the person
 //! chose. Recognising it only reads the registry, so it is cheap enough for any status check.

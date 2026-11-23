@@ -1,10 +1,10 @@
 //! Helpers shared by the integration tests: a hand-laid compound file (independent of the
-//! `craft-cfb` writer, and with a layout the hostile-input tests can poke at) and BIFF8 record
+//! `bharat-cfb` writer, and with a layout the hostile-input tests can poke at) and BIFF8 record
 //! builders. Every test file is assembled from the [MS-CFB] and [MS-XLS] structures; no
 //! Excel-produced file is used.
 #![allow(dead_code, reason = "each test binary uses its own part of these helpers")]
 
-use craft_xls::{CellRef, Error, Limits, Value, Workbook};
+use bharat_xls::{CellRef, Error, Limits, Value, Workbook};
 
 pub const END: u32 = 0xFFFF_FFFE;
 pub const FREE: u32 = 0xFFFF_FFFF;
@@ -209,7 +209,7 @@ pub fn read_xls(bytes: &[u8]) -> Result<(Workbook, Report), Error> {
 }
 
 pub fn read_limited(bytes: &[u8], limits: Limits) -> Result<(Workbook, Report), Error> {
-    let read = craft_xls::read_with(bytes, limits)?;
+    let read = bharat_xls::read_with(bytes, limits)?;
     Ok((read.workbook, Report { warnings: read.warnings.iter().map(ToString::to_string).collect() }))
 }
 

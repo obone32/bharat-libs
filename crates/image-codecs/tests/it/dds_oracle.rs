@@ -7,7 +7,7 @@
 //! On a mismatch the test prints every digest it computed in the form of [`PINNED`], so a new
 //! table can be pasted in once a change of output is intended.
 
-use craft_image_codecs::{ChannelLayout, DdsCompression, DdsOptions, EncodeOptions, Format, Image, decode, encode};
+use bharat_image_codecs::{ChannelLayout, DdsCompression, DdsOptions, EncodeOptions, Format, Image, decode, encode};
 use sha2::{Digest, Sha256};
 
 /// `(case, SHA-256)`, taken from the code before the speed-ups.

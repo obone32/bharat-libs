@@ -1,4 +1,4 @@
-//! Open and Save against cloud storage, the same pages in every Craft app.
+//! Open and Save against cloud storage, the same pages in every Bharat app.
 //!
 //! What this offers is what a person asks for when they say "open the one in
 //! my cloud": a Backstage page with their own files on one side and what other
@@ -31,7 +31,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc::{Receiver, Sender, channel};
 use std::time::Duration;
 
-use craft_cloud::{Capability, Entry, EntryKind};
+use bharat_cloud::{Capability, Entry, EntryKind};
 use egui::{Align2, Rect, RichText, Sense, Stroke, Ui, pos2, vec2};
 use serde_json::{Value as Json, json};
 

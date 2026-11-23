@@ -29,7 +29,7 @@ mod xml;
 /// Callers perform ICC conversion and compose page pixels/vector strokes. Other platforms
 /// return `rgb::PrintError::Unsupported`; the PDF spooler remains independent of this API.
 pub mod rgb {
-    pub use craft_winprint_gdi::*;
+    pub use bharat_winprint_gdi::*;
 }
 
 /// A system spooler failure. Document permissions belong to the caller.
@@ -149,7 +149,7 @@ impl Default for Job {
             scaling: Scaling::Exact,
             grayscale: false,
             grey_pages: false,
-            title: "Craft".into(),
+            title: "Bharat".into(),
             options: Vec::new(),
             driver_settings: None,
         }
@@ -271,7 +271,7 @@ pub struct PrinterOption {
     pub default: String,
 }
 
-/// Options Craft's Print dialog sets itself (paper, two-sided, collation), so the driver's
+/// Options Bharat's Print dialog sets itself (paper, two-sided, collation), so the driver's
 /// copies of them are neither shown nor sent.
 pub const HANDLED_OPTIONS: &[&str] = &["PageSize", "PageRegion", "Duplex", "Collate", "ImageableArea", "PaperDimension"];
 
@@ -301,7 +301,7 @@ fn name_label(s: &str) -> (&str, &str) {
 }
 
 /// The job options a PPD offers, in file order, without the installable-hardware group and the
-/// options Craft sets itself ([`HANDLED_OPTIONS`]). Lenient: malformed lines are skipped.
+/// options Bharat sets itself ([`HANDLED_OPTIONS`]). Lenient: malformed lines are skipped.
 pub fn parse_ppd(ppd: &str) -> Vec<PrinterOption> {
     let mut out: Vec<PrinterOption> = Vec::new();
     let (mut group, mut group_key) = (String::new(), String::new());
@@ -478,7 +478,7 @@ pub const HAS_DRIVER_SETTINGS_DIALOG: bool = cfg!(windows);
 /// `job.driver_settings` holds the new settings. `Ok(false)`: the user canceled, or the dialog
 /// returned the settings it opened on unchanged (some drivers return OK from Cancel), and the job
 /// is unchanged. The settings are kept in the job only; unlike [`open_printer_preferences`],
-/// craft-print does not save them as the printer's defaults.
+/// bharat-print does not save them as the printer's defaults.
 ///
 /// The paper, orientation and scaling the job's ticket sets are its own, whatever the dialog
 /// shows. An error says which step failed: the printer, reading the driver's settings, or the
@@ -555,7 +555,7 @@ pub(crate) fn whole_dev_mode(mut bytes: Vec<u8>) -> Option<Vec<u8>> {
 /// interface language (`AppleLanguages`) unless `SOFTWARE` is set, in which case it uses `LANG`.
 fn lpstat_with(args: &[&str]) -> std::process::Command {
     let mut c = std::process::Command::new("lpstat");
-    c.args(args).env("LC_ALL", "C").env("LANG", "C").env("SOFTWARE", "Craft");
+    c.args(args).env("LC_ALL", "C").env("LANG", "C").env("SOFTWARE", "Bharat");
     c
 }
 
@@ -760,7 +760,7 @@ mod lpstat_limits {
     /// A command that isn't there is no printers, at once.
     #[test]
     fn no_lpstat_is_no_printers() {
-        let found = printers_via(&mut Command::new("craft-print-no-such-lpstat"), Duration::from_secs(5), &mut sh("true"), Duration::from_secs(5));
+        let found = printers_via(&mut Command::new("bharat-print-no-such-lpstat"), Duration::from_secs(5), &mut sh("true"), Duration::from_secs(5));
         assert!(found.is_empty());
     }
 }
@@ -848,7 +848,7 @@ pub(crate) fn printer_list(queues: impl IntoIterator<Item = (String, Option<bool
         .collect()
 }
 
-/// A printer list in the text form craft-print's former PowerShell backend printed: one per line,
+/// A printer list in the text form bharat-print's former PowerShell backend printed: one per line,
 /// `*` before the system default, followed by a tab and 2/1 for duplex support. The first `*`
 /// wins when a broken spooler marks more than one. [`printers`] no longer uses it; it stays for
 /// callers that parse lists in this form.

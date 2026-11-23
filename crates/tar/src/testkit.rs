@@ -1,4 +1,4 @@
-//! Archive builders and damage generators for the tests, from Craft Anything's testkit.
+//! Archive builders and damage generators for the tests, from Bharat Anything's testkit.
 
 #![allow(clippy::indexing_slicing, clippy::cast_possible_truncation)]
 
@@ -92,4 +92,4 @@ pub fn cpio_newc(files: &[(&str, &[u8], u32)]) -> Vec<u8> {
     out
 }
 
-pub use craft_testkit::sample_damage::{mutations, noise};
+pub use bharat_testkit::sample_damage::{mutations, noise};

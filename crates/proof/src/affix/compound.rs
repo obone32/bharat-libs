@@ -1228,14 +1228,14 @@ mod tests {
 
     /// Real dictionaries (the Language packs' `.aff`/`.dic`): words the CLI answers right and
     /// wrong on the same files (black-box; mostly random compounds of the dictionary's forms).
-    /// Run when a craft-i18n checkout is in `CRAFT_I18N_DIR` and its harness has fetched the pack
-    /// files (`CRAFT_I18N_CACHE`, default `$CRAFT_I18N_DIR/target/language-data-cache`, files named
+    /// Run when a bharat-i18n checkout is in `BHARAT_I18N_DIR` and its harness has fetched the pack
+    /// files (`BHARAT_I18N_CACHE`, default `$BHARAT_I18N_DIR/target/language-data-cache`, files named
     /// by their sha256); each language whose files are missing is skipped.
     #[test]
     fn pack_dictionaries_compound_as_the_cli_does() {
-        let Some(dir) = std::env::var_os("CRAFT_I18N_DIR").map(std::path::PathBuf::from) else { return };
+        let Some(dir) = std::env::var_os("BHARAT_I18N_DIR").map(std::path::PathBuf::from) else { return };
         let Ok(manifest) = std::fs::read_to_string(dir.join("language-data/manifest.toml")) else { return };
-        let cache = std::env::var_os("CRAFT_I18N_CACHE").map_or_else(|| dir.join("target/language-data-cache"), std::path::PathBuf::from);
+        let cache = std::env::var_os("BHARAT_I18N_CACHE").map_or_else(|| dir.join("target/language-data-cache"), std::path::PathBuf::from);
         let manifest: toml::Table = manifest.parse().unwrap();
         let files = manifest.get("file").and_then(toml::Value::as_array).cloned().unwrap_or_default();
         let read = |locale: &str, kind: &str| {
@@ -1354,7 +1354,7 @@ mod tests {
         ),
     ];
 
-    /// craft-libs#497 review: hundreds of prefixes and suffixes that each add a part to the same
+    /// bharat-libs#497 review: hundreds of prefixes and suffixes that each add a part to the same
     /// one-letter stem, with distinct pattern flags, make tens of thousands of ways for one
     /// piece. They are capped and counted, so a word still answers at once.
     #[test]

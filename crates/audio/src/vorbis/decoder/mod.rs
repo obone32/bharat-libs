@@ -497,8 +497,8 @@ pub struct Decoded {
 /// and counted, not fatal. Collected PCM is limited to 256 MiB; use the packet
 /// decoder for longer streams without retaining the entire output.
 pub fn decode_ogg(data: &[u8]) -> Result<Decoded> {
-    let ogg = craft_media::ogg::open(data).map_err(|e| Error::Ogg(e.to_string()))?;
-    let index = ogg.stream_of(craft_media::ogg::Codec::Vorbis).ok_or_else(|| Error::Ogg("no Vorbis stream".into()))?;
+    let ogg = bharat_media::ogg::open(data).map_err(|e| Error::Ogg(e.to_string()))?;
+    let index = ogg.stream_of(bharat_media::ogg::Codec::Vorbis).ok_or_else(|| Error::Ogg("no Vorbis stream".into()))?;
     let stream = &ogg.streams[index];
     let [id, comment, setup, ..] = stream.headers.as_slice() else { return Err(Error::Ogg("the stream has fewer than three header packets".into())) };
     let mut decoder = Decoder::new(id, comment, setup)?;

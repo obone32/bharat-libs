@@ -1,4 +1,4 @@
-# craft-pkcs7
+# bharat-pkcs7
 
 The formats of digital signatures, read, verified and written: what a signed PDF, a signed mail
 message or a digital ID file is made of.
@@ -48,6 +48,6 @@ Weak algorithms are read, not refused, because old signed documents use them:
 
 Moved from PdfCraft's `pdfcraft-sign`.
 
-The inspection profile follows Craft Anything’s bounded reader and Afloat’s raw-certificate
-and non-minimal-length contributions (craft-anything #1131, #1514, #1646). Existing verification
+The inspection profile follows Bharat Anything’s bounded reader and Afloat’s raw-certificate
+and non-minimal-length contributions (bharat-anything #1131, #1514, #1646). Existing verification
 and trust APIs are unchanged; high-level CMS/metadata adapters remain separate work.

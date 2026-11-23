@@ -1,8 +1,8 @@
-//! Round trips over equaSHion's corpus (storytold/craft-libs#29): its typed LaTeX equations
+//! Round trips over equaSHion's corpus (obone32/bharat-libs#29): its typed LaTeX equations
 //! (`corpus/equations.tsv`), the MathLive-style LaTeX of `corpus/latex.tsv` and its OMML samples
 //! from WordCraft and DeckCraft files (`corpus/omml/`).
 
-use craft_math::{Math, math, math_latex, mathml, omml};
+use bharat_math::{Math, math, math_latex, mathml, omml};
 
 const DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/corpus");
 

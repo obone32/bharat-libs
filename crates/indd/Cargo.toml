@@ -1,6 +1,6 @@
 [package]
-name = "craft-indd"
-description = "Shared InDesign document to IDML conversion facade for Craft applications"
+name = "bharat-indd"
+description = "Shared InDesign document to IDML conversion facade for Bharat applications"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

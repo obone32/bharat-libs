@@ -1,9 +1,9 @@
 //! ACAD_TABLE and TABLESTYLE.
 
-use craft_dxf::model::table::{MAX_SIDE, Table, TableStyle};
-use craft_dxf::model::write::{Drawing, Format};
-use craft_dxf::model::{Color, Document, Entity, EntityKind, Lineweight, entity_records, records};
-use craft_dxf::{Tag, parse};
+use bharat_dxf::model::table::{MAX_SIDE, Table, TableStyle};
+use bharat_dxf::model::write::{Drawing, Format};
+use bharat_dxf::model::{Color, Document, Entity, EntityKind, Lineweight, entity_records, records};
+use bharat_dxf::{Tag, parse};
 
 fn tags(text: &str) -> Vec<Tag> {
     let lines: Vec<&str> = text.split(['\n', '|']).map(str::trim).filter(|l| !l.is_empty()).map(|l| if l == "~" { "" } else { l }).collect();

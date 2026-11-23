@@ -39,7 +39,7 @@ use std::sync::Arc;
 use proptest::prelude::*;
 use proptest::test_runner::TestCaseError;
 
-use craft_pdf::cos::{Dict, Document, Object, PdfString, SaveOptions, write_full, write_incremental};
+use bharat_pdf::cos::{Dict, Document, Object, PdfString, SaveOptions, write_full, write_incremental};
 
 /// The prefix every generated key carries. `Document::new_empty` puts `/Type` and `/Pages` in the
 /// catalog; property 1 asserts those two structurally rather than ignoring them.

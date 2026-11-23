@@ -1,19 +1,19 @@
-# craft-docx
+# bharat-docx
 
-DOCX (ECMA-376 / ISO/IEC 29500 WordprocessingML) read and written, on the `craft-wordmodel`
+DOCX (ECMA-376 / ISO/IEC 29500 WordprocessingML) read and written, on the `bharat-wordmodel`
 document model. Also Word XML Documents (Flat OPC, one `.xml` file holding the whole package)
 and Word 2003 XML, password-protected packages and Restrict Editing password hashes.
 
-It is WordCraft's DOCX crate, moved onto the shared crates: `craft-opc` for the package,
-`craft-xml` for parsing, `craft-offcrypto` for encryption, `craft-wordmodel` for the model.
+It is WordCraft's DOCX crate, moved onto the shared crates: `bharat-opc` for the package,
+`bharat-xml` for parsing, `bharat-offcrypto` for encryption, `bharat-wordmodel` for the model.
 
 ```rust
-use craft_wordmodel::Document;
+use bharat_wordmodel::Document;
 
 let doc = Document::from_text("Hello\nWorld");
-let bytes = craft_docx::write(&doc).unwrap();
-let back = craft_docx::read(&bytes).unwrap();
-assert_eq!(back.plain_text(craft_wordmodel::StoryRef::Body), doc.plain_text(craft_wordmodel::StoryRef::Body));
+let bytes = bharat_docx::write(&doc).unwrap();
+let back = bharat_docx::read(&bytes).unwrap();
+assert_eq!(back.plain_text(bharat_wordmodel::StoryRef::Body), doc.plain_text(bharat_wordmodel::StoryRef::Body));
 ```
 
 ## Reading
@@ -42,9 +42,9 @@ written back as it was read.
 `write(doc)`, `write_as(doc, Flavor)` for `.docx`, `.docm`, `.dotx` and `.dotm`; `write_flat`
 and `write_wordml2003` for the XML forms; `encrypt` for a password.
 
-Equations (OMML) are read and written by `craft_math::omml`.
+Equations (OMML) are read and written by `bharat_math::omml`.
 
 ## Not here yet
 
 - DrawingML (`a:`) shape fills, lines, custom geometry and colours are still read with this
-  crate's own code; they move to `craft-drawingml`.
+  crate's own code; they move to `bharat-drawingml`.

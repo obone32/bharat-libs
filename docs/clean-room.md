@@ -1,10 +1,10 @@
-# Clean-room format work in craft-libs
+# Clean-room format work in bharat-libs
 
 Several crates here read or write formats that other open-source projects also implement, often
-under licences the Craft apps cannot take code from (GPL, LGPL, AGPL, CDDL) or under terms that
+under licences the Bharat apps cannot take code from (GPL, LGPL, AGPL, CDDL) or under terms that
 forbid it (Adobe's). This document is the standard a format crate follows so that every line of
 it is ours, and so that a reviewer can check that claim from the repository alone. It is the
-written form of what `craft-jpeg`, `craft-media` and `craft-crw` did.
+written form of what `bharat-jpeg`, `bharat-media` and `bharat-crw` did.
 
 ## What "clean-room" means here
 
@@ -65,7 +65,7 @@ folder with:
 
 When the derivation was done in another repository, the crate's `clean-room/` may hold only items
 3, 5, 6 and 8, provided it pins that repository, path and revision (in its README and in `NOTICE`)
-for the starting assumptions, the plan and the derivation documents, as `craft-crw` does.
+for the starting assumptions, the plan and the derivation documents, as `bharat-crw` does.
 
 Scripts in the record use the Python standard library only and run under `python -I`. Local-only
 material (reference models, oracle binaries, copyrighted specification PDFs, dumps that may carry

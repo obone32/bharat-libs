@@ -4,7 +4,7 @@
 //! joined `name` onto the resolved folder with no validation of `name` at all. The second round
 //! (benandez's re-review) reproduced three escapes the first fix still left open: a dangling
 //! symlink, a check-then-use race on a swapped link, and a hard link sharing a file's inode.
-//! Driven through `craft_ui::cloud`'s public functions the way an application does, with a
+//! Driven through `bharat_ui::cloud`'s public functions the way an application does, with a
 //! sentinel file and directory kept as a sibling of the configured root: every test here must
 //! leave both untouched and unread.
 
@@ -12,9 +12,9 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use craft_cloud::{Entry, EntryKind};
-use craft_cloud_local::LocalBackend;
-use craft_ui::cloud::{self, CloudApp, CloudFiles, Destination, DocumentKind, Job};
+use bharat_cloud::{Entry, EntryKind};
+use bharat_cloud_local::LocalBackend;
+use bharat_ui::cloud::{self, CloudApp, CloudFiles, Destination, DocumentKind, Job};
 
 const NOTE: DocumentKind = DocumentKind { extensions: &["txt"], mimes: &["text/plain"], noun: "note", default_extension: "txt" };
 
@@ -23,8 +23,8 @@ type OpenedDocs = Arc<Mutex<Vec<(String, Vec<u8>)>>>;
 
 struct Harness {
     cloud: CloudFiles,
-    share: craft_ui::share::ShareDialog,
-    presence: craft_ui::presence::PresenceBar,
+    share: bharat_ui::share::ShareDialog,
+    presence: bharat_ui::presence::PresenceBar,
     opened: OpenedDocs,
     said: Arc<Mutex<Vec<String>>>,
 }
@@ -33,8 +33,8 @@ impl Harness {
     fn new() -> Harness {
         Harness {
             cloud: CloudFiles::new(),
-            share: craft_ui::share::ShareDialog::new(),
-            presence: craft_ui::presence::PresenceBar::new(),
+            share: bharat_ui::share::ShareDialog::new(),
+            presence: bharat_ui::presence::PresenceBar::new(),
             opened: Arc::new(Mutex::new(Vec::new())),
             said: Arc::new(Mutex::new(Vec::new())),
         }
@@ -65,10 +65,10 @@ impl CloudApp for Harness {
         Ok(Vec::new())
     }
     fn close(&mut self, _uid: u64) {}
-    fn sharing(&mut self) -> &mut craft_ui::share::ShareDialog {
+    fn sharing(&mut self) -> &mut bharat_ui::share::ShareDialog {
         &mut self.share
     }
-    fn presence(&mut self) -> &mut craft_ui::presence::PresenceBar {
+    fn presence(&mut self) -> &mut bharat_ui::presence::PresenceBar {
         &mut self.presence
     }
     fn paint_icon(&self, _painter: &egui::Painter, _rect: egui::Rect, _kind: EntryKind, _colour: egui::Color32) {}

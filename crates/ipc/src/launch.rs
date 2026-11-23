@@ -1,4 +1,4 @@
-//! Find and start a Craft app.
+//! Find and start a Bharat app.
 //!
 //! `resolve` reads the process environment. The decision itself is
 //! `resolve_with`, which takes an owned env map, a home directory, and the
@@ -77,7 +77,7 @@ pub fn launch_at(
     let mut child = cmd.spawn().map_err(LinkError::io)?;
     let pid = child.id();
     std::thread::Builder::new()
-        .name("craft-ipc-wait".into())
+        .name("bharat-ipc-wait".into())
         .spawn(move || {
             let _ = child.wait();
         })
@@ -165,7 +165,7 @@ fn resolve_with(
     Err(LinkError::NotInstalled { app: app.to_string() })
 }
 
-/// `CRAFT_<APP>_BIN`. Set means authoritative, including a missing file.
+/// `BHARAT_<APP>_BIN`. Set means authoritative, including a missing file.
 fn env_override(app: &str, env: &BTreeMap<String, String>) -> Option<Result<PathBuf, LinkError>> {
     let value = env.get(&bin_env_key(app))?;
     let path = PathBuf::from(value);
@@ -176,7 +176,7 @@ fn env_override(app: &str, env: &BTreeMap<String, String>) -> Option<Result<Path
 }
 
 fn bin_env_key(app: &str) -> String {
-    let mut key = String::from("CRAFT_");
+    let mut key = String::from("BHARAT_");
     for byte in app.bytes() {
         if byte.is_ascii_alphanumeric() {
             key.push(byte.to_ascii_uppercase() as char);
@@ -337,7 +337,7 @@ fn display_name(app: &str) -> String {
             name.push(first.to_ascii_uppercase());
             name.push_str(chars.as_str());
         }
-        name.push_str("Craft");
+        name.push_str("Bharat");
         return name;
     }
     let mut chars = app.chars();
@@ -351,7 +351,7 @@ fn display_name(app: &str) -> String {
 }
 
 /// macOS bundles. Windows uninstall-registry lookup is not implemented (no winreg).
-/// PATH, `CRAFT_<APP>_BIN`, and `installed.json` still apply on Windows.
+/// PATH, `BHARAT_<APP>_BIN`, and `installed.json` still apply on Windows.
 #[cfg(target_os = "macos")]
 fn platform_bundle(app: &str, home: Option<&Path>) -> Option<PathBuf> {
     let bundle = format!("{}.app", display_name(app));
@@ -463,7 +463,7 @@ mod tests {
         chmod(&bin_dir, 0o777);
         assert!(super::resolve_with("effectcraft", &env, None, None, &[]).is_err(), "world-writable directory");
         // The same holds for the override, the manifest and the fixed search directories.
-        let by_env = env_map(&[("CRAFT_EFFECTCRAFT_BIN", bin.to_str().unwrap())]);
+        let by_env = env_map(&[("BHARAT_EFFECTCRAFT_BIN", bin.to_str().unwrap())]);
         assert!(matches!(super::resolve_with("effectcraft", &by_env, None, None, &[]), Err(LinkError::Refused { .. })));
         assert!(super::resolve_with("effectcraft", &env_map(&[]), None, None, std::slice::from_ref(&bin_dir)).is_err());
         let data = root.path().join("xdg");
@@ -480,7 +480,7 @@ mod tests {
         chmod(&bin, 0o644);
         assert!(super::resolve_with("effectcraft", &env, None, None, &[]).is_err(), "not executable");
         // A relative override is refused, not run from the current directory.
-        let relative = env_map(&[("CRAFT_EFFECTCRAFT_BIN", "Cargo.toml")]);
+        let relative = env_map(&[("BHARAT_EFFECTCRAFT_BIN", "Cargo.toml")]);
         assert!(super::resolve_with("effectcraft", &relative, None, None, &[]).is_err());
         // launch_at checks the path too.
         let err = launch_at("effectcraft", &bin, &[], &[], None, &mut |_| {}).unwrap_err();
@@ -521,8 +521,8 @@ mod tests {
 
     #[test]
     fn bin_env_key_uppercases_and_replaces_other_bytes() {
-        assert_eq!(super::bin_env_key("effectcraft"), "CRAFT_EFFECTCRAFT_BIN");
-        assert_eq!(super::bin_env_key("film-craft"), "CRAFT_FILM_CRAFT_BIN");
+        assert_eq!(super::bin_env_key("effectcraft"), "BHARAT_EFFECTCRAFT_BIN");
+        assert_eq!(super::bin_env_key("film-craft"), "BHARAT_FILM_CRAFT_BIN");
     }
 
     #[test]
@@ -549,7 +549,7 @@ mod tests {
         let real_dir = root.path().join("bin");
         let real = real_dir.join("effectcraft");
         touch(&real);
-        let env = env_map(&[("CRAFT_EFFECTCRAFT_BIN", missing.to_str().unwrap()), ("PATH", real_dir.to_str().unwrap())]);
+        let env = env_map(&[("BHARAT_EFFECTCRAFT_BIN", missing.to_str().unwrap()), ("PATH", real_dir.to_str().unwrap())]);
         let err = super::resolve_with("effectcraft", &env, None, None, &[real_dir]).unwrap_err();
         match err {
             LinkError::NotInstalled { app } => assert_eq!(app, "effectcraft"),
@@ -562,7 +562,7 @@ mod tests {
         let root = Tmp::new("envok");
         let bin = root.path().join("custom");
         touch(&bin);
-        let env = env_map(&[("CRAFT_EFFECTCRAFT_BIN", bin.to_str().unwrap())]);
+        let env = env_map(&[("BHARAT_EFFECTCRAFT_BIN", bin.to_str().unwrap())]);
         let got = super::resolve_with("effectcraft", &env, None, None, &[]).unwrap();
         assert_eq!(got, bin);
     }
@@ -667,9 +667,9 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn launch_at_reaches_hello() {
-        // The child branch returns at once when CRAFT_LAUNCH_DIR is unset.
+        // The child branch returns at once when BHARAT_LAUNCH_DIR is unset.
         // A normal cargo test takes the parent path and does not park.
-        if let Ok(dir) = std::env::var("CRAFT_LAUNCH_DIR") {
+        if let Ok(dir) = std::env::var("BHARAT_LAUNCH_DIR") {
             child_launch(&dir);
         }
         parent_launch();
@@ -738,7 +738,7 @@ mod tests {
         let script = path.join("launcher");
         std::fs::write(&script, format!("#!/bin/sh\nexec '{}' \"$@\"\n", exe.display())).unwrap();
         chmod(&script, 0o755);
-        let result = launch_at("effectcraft", &script, &args, &[("CRAFT_LAUNCH_DIR", dir_text)], Some(&runtime), &mut |phase| phases.push(phase));
+        let result = launch_at("effectcraft", &script, &args, &[("BHARAT_LAUNCH_DIR", dir_text)], Some(&runtime), &mut |phase| phases.push(phase));
         let record = result.unwrap_or_else(|err| panic!("launch_at failed: {err}; phases={phases:?}"));
         assert_eq!(phases, vec![Phase::Spawned, Phase::RecordSeen, Phase::HelloOk]);
         let ready = std::fs::read_to_string(path.join("ready")).unwrap();

@@ -1,6 +1,6 @@
 #![cfg(not(target_arch = "wasm32"))]
 
-use craft_testkit::{SourceLimits, rust_sources_with_limits};
+use bharat_testkit::{SourceLimits, rust_sources_with_limits};
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 
@@ -11,7 +11,7 @@ impl ScratchDir {
     fn new(tag: &str) -> Self {
         let base = std::env::temp_dir();
         for n in 0..1000u32 {
-            let path = base.join(format!("craft_testkit_limits_{tag}_{}_{n}", std::process::id()));
+            let path = base.join(format!("bharat_testkit_limits_{tag}_{}_{n}", std::process::id()));
             match std::fs::create_dir(&path) {
                 Ok(()) => return Self(path),
                 Err(e) if e.kind() == ErrorKind::AlreadyExists => continue,

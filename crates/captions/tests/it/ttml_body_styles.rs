@@ -1,7 +1,7 @@
 //! TTML body styles reach caption paragraphs; timed spans, whitespace, and nested cue content retain their styles.
 
-use craft_captions::{Format, parse};
-use craft_captions::{TICKS_PER_SECOND, Tick};
+use bharat_captions::{Format, parse};
+use bharat_captions::{TICKS_PER_SECOND, Tick};
 
 fn caption(xml: &str, format: Format) -> String {
     let doc = parse(xml.as_bytes(), format).unwrap();

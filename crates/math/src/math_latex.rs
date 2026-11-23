@@ -1271,7 +1271,7 @@ mod tests {
         assert!(tex.contains(r"\middle\|"), "Expected \\middle\\|, got: {tex}");
     }
 
-    /// Commands MathLive and typed input use, from equaSHion (storytold/craft-libs#29).
+    /// Commands MathLive and typed input use, from equaSHion (obone32/bharat-libs#29).
     #[test]
     fn mathlive_and_other_spellings() {
         let lin = |src: &str| crate::math::to_linear(&parse_latex(src));

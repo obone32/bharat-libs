@@ -5,7 +5,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use craft_video::vp9::decode::Decoder;
+use bharat_video::vp9::decode::Decoder;
 
 struct Rng(u64);
 impl Rng {
@@ -44,8 +44,8 @@ fn ivf_frames(data: &[u8]) -> Vec<Vec<u8>> {
 }
 
 fn make(ff: &std::path::Path, name: &str, args: &str, pix: &str) -> Option<Vec<Vec<u8>>> {
-    let out = craft_media_testkit::fixtures_dir("vp9").join(format!("{name}.ivf"));
-    let p = craft_media_testkit::fixtures::generate(&out, |tmp| {
+    let out = bharat_media_testkit::fixtures_dir("vp9").join(format!("{name}.ivf"));
+    let p = bharat_media_testkit::fixtures::generate(&out, |tmp| {
         let a: Vec<&str> = args.split_whitespace().collect();
         matches!(
             Command::new(ff)
@@ -75,7 +75,7 @@ fn count_panics() {
 }
 
 fn run_all(frames: &[Vec<u8>], label: &str) {
-    craft_media_testkit::set_progress(label);
+    bharat_media_testkit::set_progress(label);
     count_panics();
     let before = PANICS.load(Ordering::SeqCst);
     let res = catch_unwind(AssertUnwindSafe(|| {
@@ -149,22 +149,22 @@ const DEADLINE_SECS: u64 = 600;
 /// CI runs a rotating share of every part of the sweep; `FILMCRAFT_FUZZ_ITERS=300` runs all of it (see [`Depth`]).
 #[test]
 fn hostile_streams_never_panic() {
-    craft_media_testkit::with_deadline(DEADLINE_SECS, sweep);
+    bharat_media_testkit::with_deadline(DEADLINE_SECS, sweep);
 }
 
 fn sweep() {
-    let Some(ff) = craft_media_testkit::ffmpeg_or_skip("VP9 fuzz") else { return };
+    let Some(ff) = bharat_media_testkit::ffmpeg_or_skip("VP9 fuzz") else { return };
     let depth = Depth::from_env();
     for &(name, args, pix) in SEEDS {
-        if !craft_media_testkit::ffmpeg_has_encoder(&ff, "libvpx-vp9") {
-            craft_media_testkit::skip_test("VP9 fuzz", &format!("this ffmpeg has no libvpx-vp9 encoder (seed {name})"));
+        if !bharat_media_testkit::ffmpeg_has_encoder(&ff, "libvpx-vp9") {
+            bharat_media_testkit::skip_test("VP9 fuzz", &format!("this ffmpeg has no libvpx-vp9 encoder (seed {name})"));
             continue;
         }
         let Some(seed) = make(&ff, name, args, pix) else {
             panic!("ffmpeg has libvpx-vp9 but could not encode the {name} seed");
         };
         if seed.is_empty() {
-            craft_media_testkit::skip_test("VP9 fuzz", &format!("the {name} seed has no frames"));
+            bharat_media_testkit::skip_test("VP9 fuzz", &format!("the {name} seed has no frames"));
             continue;
         }
         // truncate each of the first frames at every length

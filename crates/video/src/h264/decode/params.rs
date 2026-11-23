@@ -2,7 +2,7 @@
 
 use crate::h264::decode::error::{Result, ensure, unsupported};
 use crate::h264::decode::tables::{DEFAULT_4X4_INTER, DEFAULT_4X4_INTRA, DEFAULT_8X8_INTER, DEFAULT_8X8_INTRA, ZIGZAG4, ZIGZAG8};
-use craft_media::bitstream::BitReader;
+use bharat_media::bitstream::BitReader;
 
 /// Maximum supported reconstructed luma area. 8K UHD fits comfortably while
 /// hostile SPS dimensions cannot allocate full pictures and decoder work state.
@@ -697,7 +697,7 @@ impl Pps {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use craft_media::bitstream::BitWriter;
+    use bharat_media::bitstream::BitWriter;
 
     #[test]
     fn scaling_list_default_signal() {

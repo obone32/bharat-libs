@@ -181,8 +181,8 @@ fn reference_decode(granules: &[Granule]) -> Vec<f32> {
 }
 
 fn ffmpeg_decode_mono(bytes: &[u8], name: &str) -> Option<(Vec<f32>, String)> {
-    let ff = craft_media_testkit::ffmpeg_or_skip("mp3 Huffman tables")?;
-    let path = craft_media_testkit::fixtures_dir("mp3enc").join(name);
+    let ff = bharat_media_testkit::ffmpeg_or_skip("mp3 Huffman tables")?;
+    let path = bharat_media_testkit::fixtures_dir("mp3enc").join(name);
     std::fs::write(&path, bytes).unwrap();
     let out =
         std::process::Command::new(ff).args(["-v", "error", "-i"]).arg(&path).args(["-f", "f32le", "-acodec", "pcm_f32le", "-"]).output().unwrap();
@@ -276,7 +276,7 @@ fn parse(bytes: &[u8]) -> Vec<Parsed> {
         let rate = if lsf { tables::RATES_LSF } else { tables::RATES_MPEG1 }[rate_index as usize];
         let len = (if lsf { 72_000 } else { 144_000 } * kbps / rate) as usize + usize::from(padding);
         let nch = if mode == 3 { 1 } else { 2 };
-        let mut r = craft_media::bitstream::BitReader::new(&bytes[pos + 4..pos + len]);
+        let mut r = bharat_media::bitstream::BitReader::new(&bytes[pos + 4..pos + len]);
         let main_data_begin = r.read_bits(if lsf { 8 } else { 9 }).unwrap() as usize;
         r.skip(if lsf { nch } else { [5, 3][nch - 1] + 4 * nch }).unwrap();
         let (mut part2_3, mut global_gain) = (Vec::new(), Vec::new());

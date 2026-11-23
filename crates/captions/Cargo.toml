@@ -1,5 +1,5 @@
 [package]
-name = "craft-captions"
+name = "bharat-captions"
 description = "Caption and subtitle files behind one neutral model: SubRip, WebVTT, Scenarist SCC, MacCaption MCC, EBU STL and TTML/IMSC1/DFXP readers and writers with exact time, and CEA-608/708 coding"
 version.workspace = true
 edition.workspace = true
@@ -16,8 +16,8 @@ default = []
 mov-text = []
 
 [dependencies]
-craft-timeline = { workspace = true }
-craft-xml = { workspace = true }
+bharat-timeline = { workspace = true }
+bharat-xml = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
@@ -25,6 +25,6 @@ proptest = { workspace = true }
 # A second XML reader for the tests: checks of written TTML, and the comparison in tests/it/ttml_xml_views.rs.
 roxmltree = "0.21"
 # ffmpeg as the reference for the ASS tests (tests/it/ass.rs).
-craft-media-testkit = { workspace = true }
-# craft-media isobmff for mov_text oracle demuxing/muxing tests.
-craft-media = { workspace = true, features = ["isobmff"] }
+bharat-media-testkit = { workspace = true }
+# bharat-media isobmff for mov_text oracle demuxing/muxing tests.
+bharat-media = { workspace = true, features = ["isobmff"] }

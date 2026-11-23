@@ -4,12 +4,12 @@
 //! An anchor's placement is typed ([`Placement`]); the object it places stays the tree the file
 //! has (`xdr:sp`, `xdr:pic`, `xdr:graphicFrame`, `xdr:grpSp`, `xdr:cxnSp`), so it is written back
 //! as it was. [`Anchor`] says what the object is and which relationships it uses, and gives its
-//! `a:xfrm`; its fill, line and text are read with `craft_drawingml::read` (`fill_of`, `line`,
+//! `a:xfrm`; its fill, line and text are read with `bharat_drawingml::read` (`fill_of`, `line`,
 //! `text_body`), which match by local name. Charts themselves are separate parts: see
 //! [`crate::Package::chart`].
 
-use craft_drawingml::Xfrm;
-use craft_xml::El;
+use bharat_drawingml::Xfrm;
+use bharat_xml::El;
 
 /// A cell corner plus an offset into the cell, in EMU (`xdr:from`, `xdr:to`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -24,10 +24,10 @@ impl Marker {
     fn read(e: &El) -> Marker {
         let n = |k: &str| e.child(format!("xdr:{k}").as_str()).map(|c| c.text().trim().to_string()).unwrap_or_default();
         Marker {
-            col: craft_xml::value::to_u32(&n("col")).unwrap_or(0),
-            col_off: craft_xml::value::to_i64_lossy(&n("colOff")).unwrap_or(0),
-            row: craft_xml::value::to_u32(&n("row")).unwrap_or(0),
-            row_off: craft_xml::value::to_i64_lossy(&n("rowOff")).unwrap_or(0),
+            col: bharat_xml::value::to_u32(&n("col")).unwrap_or(0),
+            col_off: bharat_xml::value::to_i64_lossy(&n("colOff")).unwrap_or(0),
+            row: bharat_xml::value::to_u32(&n("row")).unwrap_or(0),
+            row_off: bharat_xml::value::to_i64_lossy(&n("rowOff")).unwrap_or(0),
         }
     }
 
@@ -79,7 +79,7 @@ pub struct Anchor {
 }
 
 fn ext(e: Option<&El>) -> (i64, i64) {
-    let v = |k: &str| e.and_then(|e| e.attr(k)).and_then(craft_xml::value::to_i64_lossy).unwrap_or(0);
+    let v = |k: &str| e.and_then(|e| e.attr(k)).and_then(bharat_xml::value::to_i64_lossy).unwrap_or(0);
     (v("cx"), v("cy"))
 }
 
@@ -97,7 +97,7 @@ impl Anchor {
             }
             "xdr:absoluteAnchor" => {
                 let pos = a.child("xdr:pos");
-                let v = |k: &str| pos.and_then(|p| p.attr(k)).and_then(craft_xml::value::to_i64_lossy).unwrap_or(0);
+                let v = |k: &str| pos.and_then(|p| p.attr(k)).and_then(bharat_xml::value::to_i64_lossy).unwrap_or(0);
                 let (cx, cy) = ext(a.child("xdr:ext"));
                 Placement::Absolute { x: v("x"), y: v("y"), cx, cy }
             }
@@ -170,7 +170,7 @@ impl Anchor {
             "xdr:grpSp" => self.object.path(&["xdr:grpSpPr", "a:xfrm"]),
             _ => self.object.path(&["xdr:spPr", "a:xfrm"]),
         }?;
-        Some(craft_drawingml::read::xfrm(x))
+        Some(bharat_drawingml::read::xfrm(x))
     }
 
     /// A chart in a graphic frame, its part reached through relationship `rel_id`.
@@ -285,7 +285,7 @@ impl Drawing {
         crate::ns::declare(&mut root);
         // The drawing's own namespace has a prefix; the main SpreadsheetML one is not used.
         root.attrs.retain(|(k, _)| k != "xmlns");
-        let mut w = craft_xml::Writer::document();
+        let mut w = bharat_xml::Writer::document();
         w.tree(&root);
         w.into_bytes()
     }
@@ -300,7 +300,7 @@ mod tests {
 <mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"><mc:Choice xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" Requires="cx1"><xdr:absoluteAnchor><xdr:pos x="1" y="2"/><xdr:ext cx="3" cy="4"/><xdr:graphicFrame><xdr:nvGraphicFramePr><xdr:cNvPr id="4" name="Waterfall"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm/><a:graphic><a:graphicData uri="http://schemas.microsoft.com/office/drawing/2014/chartex"><cx:chart xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId2"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:absoluteAnchor></mc:Choice><mc:Fallback/></mc:AlternateContent></xdr:wsDr>"#;
 
     fn read(xml: &str) -> El {
-        craft_xml::Options::canonical(&crate::ns::CANONICAL).parse(xml.as_bytes()).unwrap_or_default()
+        bharat_xml::Options::canonical(&crate::ns::CANONICAL).parse(xml.as_bytes()).unwrap_or_default()
     }
 
     #[test]
@@ -325,8 +325,8 @@ mod tests {
         );
         let (x, _) = shape.xfrm().unwrap_or_default();
         assert_eq!((x.x, x.w, x.h, x.rot), (1.0, 1.0, 2.0, 90.0));
-        let mut src = craft_drawingml::part::NoSource;
-        let fill = craft_drawingml::read::fill_of(&mut src, shape.object.child("xdr:spPr").unwrap_or(&El::default()));
+        let mut src = bharat_drawingml::part::NoSource;
+        let fill = bharat_drawingml::read::fill_of(&mut src, shape.object.child("xdr:spPr").unwrap_or(&El::default()));
         assert!(fill.is_some());
         let Item::Other(alt) = &d.items[2] else { panic!("{:?}", d.items[2]) };
         let ex = Drawing::alternate_anchors(alt);

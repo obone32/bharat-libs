@@ -1,4 +1,4 @@
-use craft_gpu::GpuJobParams;
+use bharat_gpu::GpuJobParams;
 
 pub(crate) fn parse_u32(params: &GpuJobParams, prefix: &[u8]) -> Option<u32> {
     // `windows(0)` panics; an empty prefix is a caller bug, answered with None, not a crash.
